@@ -199,7 +199,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
-        (function() { emailjs.init("I3zAazDdXnuEPYiBm"); })();
+        // Helyes inicializálás
+        emailjs.init({
+            publicKey: "I3zAazDdXnuEPYiBm",
+        });
 
         document.getElementById('stacks').addEventListener('input', function() {
             const val = parseInt(this.value);
@@ -222,16 +225,20 @@
             btn.disabled = true;
             btn.textContent = 'Sending...';
 
+            const currentTime = new Date().toLocaleString('hu-HU');
+            const messageText = "Requested " + stacks + " stacks of cactus.";
+
+            // Az adatok küldése az EmailJS-nek
             emailjs.send("service_i2ieznq", "template_i5r4wnd", {
-                project: "Cactus request",
-                rubux: "0",
-                email: "cactus@fluxi.hu",
-                message: "Player: " + playerName + ", stacks: " + stacks
+                name: playerName,
+                time: currentTime,
+                message: messageText
             }).then(() => {
                 document.getElementById('form').classList.add('hidden');
                 document.getElementById('success').classList.add('show');
-            }).catch(() => {
-                alert('An error occurred. Please try again.');
+            }).catch((error) => {
+                console.error('EmailJS Error:', error);
+                alert('Hiba történt a küldés során. Nézd meg a konzolt (F12) a részletekért!');
                 btn.disabled = false;
                 btn.textContent = 'Send request';
             });
