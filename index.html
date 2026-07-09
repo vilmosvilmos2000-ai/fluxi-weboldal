@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fluxi.hu</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            animation: fadeIn 1.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .logo {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sub {
+            font-size: 1.2rem;
+            color: #666;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+        .loader {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #1a1a1a;
+            border-top-color: #667eea;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+        .dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        .dots span:nth-child(2) { animation-delay: 0.2s; }
+        .dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes pulse {
+            0%, 100% { background: #333; }
+            50% { background: #667eea; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">fluxi</div>
+        <div class="sub">hamarosan kész</div>
+        <div class="loader"></div>
+        <div class="dots">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</body>
+</html>
