@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cactus - fluxi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .back {
+            display: inline-block;
+            color: #444;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            transition: color 0.2s;
+        }
+        .back:hover { color: #888; }
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .hero .icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .hero h1 span {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: #555;
+            font-size: 1rem;
+        }
+        .info {
+            background: rgba(46, 204, 113, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #2ecc71;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .card {
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 35px;
+        }
+        .field {
+            margin-bottom: 22px;
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        input {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 15px 18px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: #2ecc71; }
+        .stack-input {
+            position: relative;
+        }
+        .stack-input input {
+            padding-right: 70px;
+        }
+        .stack-suffix {
+            position: absolute;
+            right: 18px;
+            bottom: 15px;
+            color: #2ecc71;
+            font-weight: 600;
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+        .stack-hint {
+            font-size: 0.8rem;
+            color: #555;
+            margin-top: 6px;
+        }
+        .btn {
+            width: 100%;
+            padding: 17px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.25);
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .success { display: none; text-align: center; padding: 30px; }
+        .success.show { display: block; }
+        .success-icon { font-size: 3rem; margin-bottom: 15px; }
+        .success h2 { font-size: 1.5rem; margin-bottom: 8px; color: #2ecc71; }
+        .success p { color: #666; }
+        .form.hidden { display: none; }
+        .error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+        .error.show { display: block; }
+        .footer {
+            text-align: center;
+            padding: 30px 0 0;
+            color: #333;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">&larr; back</a>
+
+        <div class="hero">
+            <div class="icon">&#x1F335;</div>
+            <h1><span>Cactus</span></h1>
+            <p>Request cactus from the farm</p>
+        </div>
+
+        <div class="info">&#x1F514; Please TP to the spawn before requesting.</div>
+
+        <div class="card">
+            <div class="form" id="form">
+                <div class="field">
+                    <label for="playerName">Player name</label>
+                    <input type="text" id="playerName" placeholder="e.g. Steve" required>
+                </div>
+                <div class="field">
+                    <label for="stacks">How many stacks?</label>
+                    <div class="stack-input">
+                        <input type="number" id="stacks" placeholder="0" min="1" max="4" required>
+                        <span class="stack-suffix">stacks</span>
+                    </div>
+                    <div class="stack-hint">Max 4 stacks (256 cactus total)</div>
+                </div>
+                <button class="btn" id="submitBtn" onclick="sendRequest()">Send request</button>
+                <div class="error" id="formError">Invalid input. Please check your entries.</div>
+            </div>
+
+            <div class="success" id="success">
+                <div class="success-icon">&#x2705;</div>
+                <h2>Request sent!</h2>
+                <p>Someone will bring the cactus to you at spawn.</p>
+            </div>
+        </div>
+
+        <div class="footer">&copy; 2026 fluxi.hu</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        (function() { emailjs.init("I3zAazDdXnuEPYiBm"); })();
+
+        document.getElementById('stacks').addEventListener('input', function() {
+            const val = parseInt(this.value);
+            if (val > 4) this.value = 4;
+            if (val < 0) this.value = 0;
+        });
+
+        function sendRequest() {
+            const playerName = document.getElementById('playerName').value.trim();
+            const stacks = document.getElementById('stacks').value.trim();
+            const btn = document.getElementById('submitBtn');
+            const err = document.getElementById('formError');
+
+            err.classList.remove('show');
+
+            if (!playerName || !stacks) { err.classList.add('show'); return; }
+            const s = parseInt(stacks);
+            if (isNaN(s) || s < 1 || s > 4) { err.classList.add('show'); return; }
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            emailjs.send("service_i2ieznq", "template_6c90y9p", {
+                project: "Cactus request",
+                rubux: "0",
+                email: "cactus@fluxi.hu",
+                message: "Player: " + playerName + ", stacks: " + stacks
+            }).then(() => {
+                document.getElementById('form').classList.add('hidden');
+                document.getElementById('success').classList.add('show');
+            }).catch(() => {
+                alert('An error occurred. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Send request';
+            });
+        }
+    </script>
+</body>
+</html>
