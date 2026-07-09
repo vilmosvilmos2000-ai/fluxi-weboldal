@@ -38,39 +38,32 @@
             backdrop-filter: blur(10px);
         }
         .lang-btn:hover { border-color: #ff4655; color: #fff; }
-        nav {
+        .top-nav {
+            text-align: center;
+            padding: 25px 40px 0;
             position: fixed;
             top: 0; left: 0; right: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 40px;
             z-index: 99;
             background: linear-gradient(180deg, rgba(10,10,10,0.9) 0%, transparent);
             backdrop-filter: blur(10px);
         }
-        .nav-logo {
-            font-size: 1.3rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ff4655, #ff6b7a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .nav-links { display: flex; gap: 25px; }
-        .nav-links a {
-            color: #666;
+        .top-nav a {
+            color: #888;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 500;
+            letter-spacing: 0.5px;
             transition: color 0.2s;
+            display: inline-block;
+            padding: 8px 16px;
         }
-        .nav-links a:hover { color: #fff; }
+        .top-nav a:hover { color: #fff; }
         .container {
             position: relative;
             z-index: 1;
             max-width: 1000px;
             margin: 0 auto;
-            padding: 120px 20px 80px;
+            padding: 120px 20px 40px;
         }
         .hero {
             text-align: center;
@@ -96,9 +89,7 @@
             max-width: 600px;
             margin: 0 auto;
         }
-        section {
-            margin-bottom: 80px;
-        }
+        section { margin-bottom: 80px; }
         .section-title {
             font-size: 2rem;
             font-weight: 700;
@@ -117,20 +108,9 @@
             padding: 40px;
             transition: all 0.3s;
         }
-        .card:hover {
-            border-color: #333;
-            transform: translateY(-2px);
-        }
-        .card p {
-            color: #888;
-            font-size: 1.05rem;
-            margin-bottom: 15px;
-        }
+        .card:hover { border-color: #333; transform: translateY(-2px); }
+        .card p { color: #888; font-size: 1.05rem; margin-bottom: 15px; }
         .card p:last-child { margin-bottom: 0; }
-        .highlight {
-            color: #ff4655;
-            font-weight: 600;
-        }
         .game-card {
             background: #111;
             border: 1px solid #1a1a1a;
@@ -216,25 +196,10 @@
             padding: 30px;
             transition: all 0.3s;
         }
-        .value-card:hover {
-            border-color: #333;
-            transform: translateY(-5px);
-        }
-        .value-card .icon {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-        .value-card h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        .value-card p {
-            color: #666;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
+        .value-card:hover { border-color: #333; transform: translateY(-5px); }
+        .value-card .icon { font-size: 2rem; margin-bottom: 15px; display: block; }
+        .value-card h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
+        .value-card p { color: #666; font-size: 0.9rem; line-height: 1.6; }
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -262,6 +227,33 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+        .bottom-cta {
+            text-align: center;
+            padding: 60px 20px 30px;
+        }
+        .bottom-cta p {
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        .bottom-cta a {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        .bottom-cta a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
         .footer {
             text-align: center;
             padding: 40px 0;
@@ -275,90 +267,81 @@
     <div class="bg"></div>
     <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
 
-    <div style="text-align: center; padding: 20px 40px 0; position: fixed; top: 0; left: 0; right: 0; z-index: 99; background: linear-gradient(180deg, rgba(10,10,10,0.9) 0%, transparent); backdrop-filter: blur(10px);">
-        <a href="/" style="color: #666; text-decoration: none; font-size: 0.9rem; font-weight: 500; display: inline-block; padding: 10px 20px; transition: color 0.2s;">Home</a>
-    </div>
-    <div style="position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center;">
-        <a href="/" style="background: #111; border: 1px solid #222; border-radius: 12px; padding: 10px 18px; color: #888; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: all 0.3s;">Home</a>
+    <div class="top-nav">
+        <a href="/">âŚ‚ Home</a>
     </div>
 
     <div class="container">
         <div class="hero">
-            <span class="hero-icon">🎮</span>
+            <span class="hero-icon">đźŽ®</span>
             <h1>Fluxi Studio</h1>
-            <p data-i18n="heroText">Roblox játékfejlesztéssel foglalkozó stúdió, ahol a kreativitás és a minőség találkozik.</p>
+            <p data-i18n="heroText">Roblox jĂˇtĂ©kfejlesztĂ©ssel foglalkozĂł stĂşdiĂł, ahol a kreativitĂˇs Ă©s a minĹ‘sĂ©g talĂˇlkozik.</p>
         </div>
 
         <section>
-            <h2 class="section-title" data-i18n="aboutTitle">Rólunk</h2>
+            <h2 class="section-title" data-i18n="aboutTitle">RĂłlunk</h2>
             <div class="card">
-                <p data-i18n="about1">A Fluxi Studio egy fiatal és szenvedélyes fejlesztői csapat, akiket a Roblox játékfejlesztés iránti szeretet hajt. Hiszünk abban, hogy minden játék mögött egy történet áll, és az a küldetésünk, hogy ezeket a történeteket életre keltsük a Roblox világában. Csapatunk tapasztalt scriptelők, UI/UX tervezők és 3D modellezők együttműködéséből áll, akik folyamatosan dolgoznak azon, hogy új és kreatív élményeket nyújtsanak a játékosoknak.</p>
-                <p data-i18n="about2">Nem csak játékokat fejlesztünk, hanem közösséget építünk. Minden projektünkbe beletesszük a szívünket-lelkünket, hogy a játékosok ne csak szórakozzanak, hanem igazi élményekkel gazdagodjanak. A Fluxi Studio célja, hogy a Roblox egyik legismertebb és legmegbízhatóbb fejlesztői stúdiójává váljon.</p>
-                <p data-i18n="about3">Ha szeretnél te is részese lenni ennek a közösségnek, akkor csatlakozz hozzánk, játssz a játékainkkal, és ha van egy jó ötleted, nyugodtan írj nekünk! A Fluxi Studio mindenki számára nyitott, aki szeretne valami újat alkotni a Roblox világában. Legyen szó akár egy teljesen új játékról, akár egy már meglévő projekt továbbfejlesztéséről, nálunk minden ötlet számít.</p>
+                <p data-i18n="about1">A Fluxi Studio egy fiatal Ă©s szenvedĂ©lyes fejlesztĹ‘i csapat, akiket a Roblox jĂˇtĂ©kfejlesztĂ©s irĂˇnti szeretet hajt. HiszĂĽnk abban, hogy minden jĂˇtĂ©k mĂ¶gĂ¶tt egy tĂ¶rtĂ©net Ăˇll, Ă©s az a kĂĽldetĂ©sĂĽnk, hogy ezeket a tĂ¶rtĂ©neteket Ă©letre keltsĂĽk a Roblox vilĂˇgĂˇban. Csapatunk tapasztalt scriptelĹ‘k, UI/UX tervezĹ‘k Ă©s 3D modellezĹ‘k egyĂĽttmĹ±kĂ¶dĂ©sĂ©bĹ‘l Ăˇll, akik folyamatosan dolgoznak azon, hogy Ăşj Ă©s kreatĂ­v Ă©lmĂ©nyeket nyĂşjtsanak a jĂˇtĂ©kosoknak.</p>
+                <p data-i18n="about2">Nem csak jĂˇtĂ©kokat fejlesztĂĽnk, hanem kĂ¶zĂ¶ssĂ©get Ă©pĂ­tĂĽnk. Minden projektĂĽnkbe beletesszĂĽk a szĂ­vĂĽnket-lelkĂĽnket, hogy a jĂˇtĂ©kosok ne csak szĂłrakozzanak, hanem igazi Ă©lmĂ©nyekkel gazdagodjanak. A Fluxi Studio cĂ©lja, hogy a Roblox egyik legismertebb Ă©s legmegbĂ­zhatĂłbb fejlesztĹ‘i stĂşdiĂłjĂˇvĂˇ vĂˇljon.</p>
+                <p data-i18n="about3">Ha szeretnĂ©l te is rĂ©szese lenni ennek a kĂ¶zĂ¶ssĂ©gnek, akkor csatlakozz hozzĂˇnk, jĂˇtssz a jĂˇtĂ©kainkkal, Ă©s ha van egy jĂł Ă¶tleted, nyugodtan Ă­rj nekĂĽnk! A Fluxi Studio mindenki szĂˇmĂˇra nyitott, aki szeretne valami Ăşjat alkotni a Roblox vilĂˇgĂˇban.</p>
             </div>
         </section>
 
         <section>
-            <h2 class="section-title"><span data-i18n="gameTitle">Játékaink</span></h2>
+            <h2 class="section-title"><span data-i18n="gameTitle">JĂˇtĂ©kaink</span></h2>
             <div class="game-card">
-                <div class="game-thumb">
-                    <span>🎯</span>
-                </div>
+                <div class="game-thumb"><span>đźŽŻ</span></div>
                 <div class="game-body">
                     <h3>Medon</h3>
-                    <div class="desc" data-i18n="gameDesc">
-                        A Medon egy egyedi Roblox játékélmény, ahol a stratégia és a gyorsaság találkozik. Merülj el a Medon világában, ahol minden döntés számít és minden mozdulat közelebb visz a győzelemhez. Fedezd fel a pályákat, gyűjts erőforrásokat, és bizonyítsd be, hogy te vagy a legjobb! A játék folyamatosan fejlődik, új frissítésekkel és tartalmakkal bővül, így sosem unatkozhatsz. Csatlakozz a Medon közösségéhez, és légy részese ennek a kalandnak!
-                    </div>
+                    <div class="desc" data-i18n="gameDesc">A Medon egy egyedi Roblox jĂˇtĂ©kĂ©lmĂ©ny, ahol a stratĂ©gia Ă©s a gyorsasĂˇg talĂˇlkozik. MerĂĽlj el a Medon vilĂˇgĂˇban, ahol minden dĂ¶ntĂ©s szĂˇmĂ­t Ă©s minden mozdulat kĂ¶zelebb visz a gyĹ‘zelemhez. Fedezd fel a pĂˇlyĂˇkat, gyĹ±jts erĹ‘forrĂˇsokat, Ă©s bizonyĂ­tsd be, hogy te vagy a legjobb! A jĂˇtĂ©k folyamatosan fejlĹ‘dik, Ăşj frissĂ­tĂ©sekkel Ă©s tartalmakkal bĹ‘vĂĽl, Ă­gy sosem unatkozhatsz.</div>
                     <div class="tags">
-                        <span data-i18n="tag1">Akció</span>
-                        <span data-i18n="tag2">Stratégia</span>
-                        <span data-i18n="tag3">Többjátékos</span>
+                        <span data-i18n="tag1">AkciĂł</span>
+                        <span data-i18n="tag2">StratĂ©gia</span>
+                        <span data-i18n="tag3">TĂ¶bbjĂˇtĂ©kos</span>
                     </div>
-                    <a href="https://www.roblox.com/games/120174086384472/Medon" target="_blank" class="play-btn">
-                        🎮 <span data-i18n="playBtn">Játssz most</span>
-                    </a>
+                    <a href="https://www.roblox.com/games/120174086384472/Medon" target="_blank" class="play-btn">đźŽ® <span data-i18n="playBtn">JĂˇtssz most</span></a>
                 </div>
             </div>
         </section>
 
         <section>
-            <h2 class="section-title" data-i18n="valuesTitle">Miért válassz minket?</h2>
+            <h2 class="section-title" data-i18n="valuesTitle">MiĂ©rt vĂˇlassz minket?</h2>
             <div class="values">
                 <div class="value-card">
-                    <span class="icon">🎨</span>
-                    <h4 data-i18n="val1Title">Kreatív dizájn</h4>
-                    <p data-i18n="val1Text">Minden játékunk egyedi vizuális stílussal rendelkezik, amelyet tapasztalt tervezőink álmodnak meg. A részletekre való odafigyelés garantálja a lenyűgöző élményt.</p>
+                    <span class="icon">đźŽ¨</span>
+                    <h4 data-i18n="val1Title">KreatĂ­v dizĂˇjn</h4>
+                    <p data-i18n="val1Text">Minden jĂˇtĂ©kunk egyedi vizuĂˇlis stĂ­lussal rendelkezik, amelyet tapasztalt tervezĹ‘ink Ăˇlmodnak meg. A rĂ©szletekre valĂł odafigyelĂ©s garantĂˇlja a lenyĹ±gĂ¶zĹ‘ Ă©lmĂ©nyt.</p>
                 </div>
                 <div class="value-card">
-                    <span class="icon">⚡</span>
-                    <h4 data-i18n="val2Title">Optimalizált teljesítmény</h4>
-                    <p data-i18n="val2Text">A játékaink optimalizálva vannak, hogy minden eszközön simán fussanak. Nem számít, hogy PC-n, telefonon vagy tableten játszol, a minőség ugyanaz marad.</p>
+                    <span class="icon">âšˇ</span>
+                    <h4 data-i18n="val2Title">OptimalizĂˇlt teljesĂ­tmĂ©ny</h4>
+                    <p data-i18n="val2Text">A jĂˇtĂ©kaink optimalizĂˇlva vannak, hogy minden eszkĂ¶zĂ¶n simĂˇn fussanak.</p>
                 </div>
                 <div class="value-card">
-                    <span class="icon">🤝</span>
-                    <h4 data-i18n="val3Title">Közösségi fókusz</h4>
-                    <p data-i18n="val3Text">Hallgatunk a közösségünkre! A visszajelzések alapján folyamatosan fejlesztjük a játékainkat, hogy a lehető legjobb élményt nyújtsuk nektek.</p>
+                    <span class="icon">đź¤ť</span>
+                    <h4 data-i18n="val3Title">KĂ¶zĂ¶ssĂ©gi fĂłkusz</h4>
+                    <p data-i18n="val3Text">Hallgatunk a kĂ¶zĂ¶ssĂ©gĂĽnkre! A visszajelzĂ©sek alapjĂˇn folyamatosan fejlesztjĂĽk a jĂˇtĂ©kainkat.</p>
                 </div>
                 <div class="value-card">
-                    <span class="icon">🛠️</span>
-                    <h4 data-i18n="val4Title">Egyedi fejlesztés</h4>
-                    <p data-i18n="val4Text">Ha van egy ötleted, de nincs tapasztalatod a fejlesztésben, mi segítünk megvalósítani. Az egyedi projekteket ugyanolyan odaadással kezeljük, mint a sajátjainkat.</p>
+                    <span class="icon">đź› ď¸Ź</span>
+                    <h4 data-i18n="val4Title">Egyedi fejlesztĂ©s</h4>
+                    <p data-i18n="val4Text">Ha van egy Ă¶tleted, de nincs tapasztalatod a fejlesztĂ©sben, mi segĂ­tĂĽnk megvalĂłsĂ­tani.</p>
                 </div>
                 <div class="value-card">
-                    <span class="icon">🔒</span>
-                    <h4 data-i18n="val5Title">Biztonság és megbízhatóság</h4>
-                    <p data-i18n="val5Text">A játékaink biztonságosak és megbízhatóak. Folyamatosan figyeljük a játékélményt és gyorsan reagálunk minden felmerülő problémára.</p>
+                    <span class="icon">đź”’</span>
+                    <h4 data-i18n="val5Title">BiztonsĂˇg Ă©s megbĂ­zhatĂłsĂˇg</h4>
+                    <p data-i18n="val5Text">A jĂˇtĂ©kaink biztonsĂˇgosak Ă©s megbĂ­zhatĂłak.</p>
                 </div>
                 <div class="value-card">
-                    <span class="icon">🚀</span>
-                    <h4 data-i18n="val6Title">Folyamatos fejlődés</h4>
-                    <p data-i18n="val6Text">Sosem állunk meg. Rendszeres frissítésekkel, új funkciókkal és tartalmakkal bővítjük a játékainkat, hogy mindig legyen valami új felfedeznivaló.</p>
+                    <span class="icon">đźš€</span>
+                    <h4 data-i18n="val6Title">Folyamatos fejlĹ‘dĂ©s</h4>
+                    <p data-i18n="val6Text">Sosem Ăˇllunk meg. Rendszeres frissĂ­tĂ©sekkel bĹ‘vĂ­tjĂĽk a jĂˇtĂ©kainkat.</p>
                 </div>
             </div>
         </section>
 
         <section>
-            <h2 class="section-title" data-i18n="statsTitle">Számokban</h2>
+            <h2 class="section-title" data-i18n="statsTitle">SzĂˇmokban</h2>
             <div class="stats">
                 <div class="stat-card">
                     <div class="num">5+</div>
@@ -366,51 +349,56 @@
                 </div>
                 <div class="stat-card">
                     <div class="num">100+</div>
-                    <div class="lbl" data-i18n="stat2">Játékos</div>
+                    <div class="lbl" data-i18n="stat2">JĂˇtĂ©kos</div>
                 </div>
                 <div class="stat-card">
                     <div class="num">24/7</div>
-                    <div class="lbl" data-i18n="stat3">Támogatás</div>
+                    <div class="lbl" data-i18n="stat3">TĂˇmogatĂˇs</div>
                 </div>
             </div>
         </section>
+
+        <div class="bottom-cta">
+            <p data-i18n="ctaText">Van egy Ă¶tleted? Programozok neked rubuxĂ©rt!</p>
+            <a href="/studio" data-i18n="ctaBtn">đź’° Rendelj most â†’</a>
+        </div>
     </div>
 
-    <div style="text-align: center; padding: 40px 20px 20px;"> <a href="/studio" style="display: inline-flex; align-items: center; gap: 10px; padding: 18px 36px; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 1.05rem; transition: all 0.3s; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);">💰 Programozok rubuxért →</a></div> <div class='footer' style='margin-top: 0;'>
-        &copy; 2026 Fluxi Studio
-    </div>
+    <div class="footer">&copy; 2026 Fluxi Studio</div>
 
     <script>
         const i18n = {
             hu: {
-                heroText: "Roblox játékfejlesztéssel foglalkozó stúdió, ahol a kreativitás és a minőség találkozik.",
-                aboutTitle: "Rólunk",
-                about1: "A Fluxi Studio egy fiatal és szenvedélyes fejlesztői csapat, akiket a Roblox játékfejlesztés iránti szeretet hajt. Hiszünk abban, hogy minden játék mögött egy történet áll, és az a küldetésünk, hogy ezeket a történeteket életre keltsük a Roblox világában. Csapatunk tapasztalt scriptelők, UI/UX tervezők és 3D modellezők együttműködéséből áll, akik folyamatosan dolgoznak azon, hogy új és kreatív élményeket nyújtsanak a játékosoknak.",
-                about2: "Nem csak játékokat fejlesztünk, hanem közösséget építünk. Minden projektünkbe beletesszük a szívünket-lelkünket, hogy a játékosok ne csak szórakozzanak, hanem igazi élményekkel gazdagodjanak. A Fluxi Studio célja, hogy a Roblox egyik legismertebb és legmegbízhatóbb fejlesztői stúdiójává váljon.",
-                about3: "Ha szeretnél te is részese lenni ennek a közösségnek, akkor csatlakozz hozzánk, játssz a játékainkkal, és ha van egy jó ötleted, nyugodtan írj nekünk! A Fluxi Studio mindenki számára nyitott, aki szeretne valami újat alkotni a Roblox világában.",
-                gameTitle: "Játékaink",
-                gameDesc: "A Medon egy egyedi Roblox játékélmény, ahol a stratégia és a gyorsaság találkozik. Merülj el a Medon világában, ahol minden döntés számít és minden mozdulat közelebb visz a győzelemhez. Fedezd fel a pályákat, gyűjts erőforrásokat, és bizonyítsd be, hogy te vagy a legjobb! A játék folyamatosan fejlődik, új frissítésekkel és tartalmakkal bővül, így sosem unatkozhatsz.",
-                tag1: "Akció",
-                tag2: "Stratégia",
-                tag3: "Többjátékos",
-                playBtn: "Játssz most",
-                valuesTitle: "Miért válassz minket?",
-                val1Title: "Kreatív dizájn",
-                val1Text: "Minden játékunk egyedi vizuális stílussal rendelkezik, amelyet tapasztalt tervezőink álmodnak meg.",
-                val2Title: "Optimalizált teljesítmény",
-                val2Text: "A játékaink optimalizálva vannak, hogy minden eszközön simán fussanak.",
-                val3Title: "Közösségi fókusz",
-                val3Text: "Hallgatunk a közösségünkre! A visszajelzések alapján folyamatosan fejlesztjük a játékainkat.",
-                val4Title: "Egyedi fejlesztés",
-                val4Text: "Ha van egy ötleted, de nincs tapasztalatod a fejlesztésben, mi segítünk megvalósítani.",
-                val5Title: "Biztonság és megbízhatóság",
-                val5Text: "A játékaink biztonságosak és megbízhatóak. Folyamatosan figyeljük a játékélményt.",
-                val6Title: "Folyamatos fejlődés",
-                val6Text: "Sosem állunk meg. Rendszeres frissítésekkel és új tartalmakkal bővítjük a játékainkat.",
-                statsTitle: "Számokban",
+                heroText: "Roblox jĂˇtĂ©kfejlesztĂ©ssel foglalkozĂł stĂşdiĂł, ahol a kreativitĂˇs Ă©s a minĹ‘sĂ©g talĂˇlkozik.",
+                aboutTitle: "RĂłlunk",
+                about1: "A Fluxi Studio egy fiatal Ă©s szenvedĂ©lyes fejlesztĹ‘i csapat, akiket a Roblox jĂˇtĂ©kfejlesztĂ©s irĂˇnti szeretet hajt. HiszĂĽnk abban, hogy minden jĂˇtĂ©k mĂ¶gĂ¶tt egy tĂ¶rtĂ©net Ăˇll, Ă©s az a kĂĽldetĂ©sĂĽnk, hogy ezeket a tĂ¶rtĂ©neteket Ă©letre keltsĂĽk a Roblox vilĂˇgĂˇban. Csapatunk tapasztalt scriptelĹ‘k, UI/UX tervezĹ‘k Ă©s 3D modellezĹ‘k egyĂĽttmĹ±kĂ¶dĂ©sĂ©bĹ‘l Ăˇll, akik folyamatosan dolgoznak azon, hogy Ăşj Ă©s kreatĂ­v Ă©lmĂ©nyeket nyĂşjtsanak a jĂˇtĂ©kosoknak.",
+                about2: "Nem csak jĂˇtĂ©kokat fejlesztĂĽnk, hanem kĂ¶zĂ¶ssĂ©get Ă©pĂ­tĂĽnk. Minden projektĂĽnkbe beletesszĂĽk a szĂ­vĂĽnket-lelkĂĽnket, hogy a jĂˇtĂ©kosok ne csak szĂłrakozzanak, hanem igazi Ă©lmĂ©nyekkel gazdagodjanak. A Fluxi Studio cĂ©lja, hogy a Roblox egyik legismertebb Ă©s legmegbĂ­zhatĂłbb fejlesztĹ‘i stĂşdiĂłjĂˇvĂˇ vĂˇljon.",
+                about3: "Ha szeretnĂ©l te is rĂ©szese lenni ennek a kĂ¶zĂ¶ssĂ©gnek, akkor csatlakozz hozzĂˇnk, jĂˇtssz a jĂˇtĂ©kainkkal, Ă©s ha van egy jĂł Ă¶tleted, nyugodtan Ă­rj nekĂĽnk! A Fluxi Studio mindenki szĂˇmĂˇra nyitott, aki szeretne valami Ăşjat alkotni a Roblox vilĂˇgĂˇban.",
+                gameTitle: "JĂˇtĂ©kaink",
+                gameDesc: "A Medon egy egyedi Roblox jĂˇtĂ©kĂ©lmĂ©ny, ahol a stratĂ©gia Ă©s a gyorsasĂˇg talĂˇlkozik. MerĂĽlj el a Medon vilĂˇgĂˇban, ahol minden dĂ¶ntĂ©s szĂˇmĂ­t Ă©s minden mozdulat kĂ¶zelebb visz a gyĹ‘zelemhez. Fedezd fel a pĂˇlyĂˇkat, gyĹ±jts erĹ‘forrĂˇsokat, Ă©s bizonyĂ­tsd be, hogy te vagy a legjobb! A jĂˇtĂ©k folyamatosan fejlĹ‘dik, Ăşj frissĂ­tĂ©sekkel Ă©s tartalmakkal bĹ‘vĂĽl, Ă­gy sosem unatkozhatsz.",
+                tag1: "AkciĂł",
+                tag2: "StratĂ©gia",
+                tag3: "TĂ¶bbjĂˇtĂ©kos",
+                playBtn: "JĂˇtssz most",
+                valuesTitle: "MiĂ©rt vĂˇlassz minket?",
+                val1Title: "KreatĂ­v dizĂˇjn",
+                val1Text: "Minden jĂˇtĂ©kunk egyedi vizuĂˇlis stĂ­lussal rendelkezik, amelyet tapasztalt tervezĹ‘ink Ăˇlmodnak meg. A rĂ©szletekre valĂł odafigyelĂ©s garantĂˇlja a lenyĹ±gĂ¶zĹ‘ Ă©lmĂ©nyt.",
+                val2Title: "OptimalizĂˇlt teljesĂ­tmĂ©ny",
+                val2Text: "A jĂˇtĂ©kaink optimalizĂˇlva vannak, hogy minden eszkĂ¶zĂ¶n simĂˇn fussanak.",
+                val3Title: "KĂ¶zĂ¶ssĂ©gi fĂłkusz",
+                val3Text: "Hallgatunk a kĂ¶zĂ¶ssĂ©gĂĽnkre! A visszajelzĂ©sek alapjĂˇn folyamatosan fejlesztjĂĽk a jĂˇtĂ©kainkat.",
+                val4Title: "Egyedi fejlesztĂ©s",
+                val4Text: "Ha van egy Ă¶tleted, de nincs tapasztalatod a fejlesztĂ©sben, mi segĂ­tĂĽnk megvalĂłsĂ­tani.",
+                val5Title: "BiztonsĂˇg Ă©s megbĂ­zhatĂłsĂˇg",
+                val5Text: "A jĂˇtĂ©kaink biztonsĂˇgosak Ă©s megbĂ­zhatĂłak.",
+                val6Title: "Folyamatos fejlĹ‘dĂ©s",
+                val6Text: "Sosem Ăˇllunk meg. Rendszeres frissĂ­tĂ©sekkel bĹ‘vĂ­tjĂĽk a jĂˇtĂ©kainkat.",
+                statsTitle: "SzĂˇmokban",
                 stat1: "Projekt",
-                stat2: "Játékos",
-                stat3: "Támogatás"
+                stat2: "JĂˇtĂ©kos",
+                stat3: "TĂˇmogatĂˇs",
+                ctaText: "Van egy Ă¶tleted? Programozok neked rubuxĂ©rt!",
+                ctaBtn: "đź’° Rendelj most â†’"
             },
             en: {
                 heroText: "A Roblox game development studio where creativity meets quality.",
@@ -434,13 +422,15 @@
                 val4Title: "Custom development",
                 val4Text: "Have an idea but no experience? We'll help you bring it to life.",
                 val5Title: "Security & reliability",
-                val5Text: "Our games are safe and reliable. We monitor gameplay and respond quickly to any issues.",
+                val5Text: "Our games are safe and reliable.",
                 val6Title: "Continuous growth",
-                val6Text: "We never stop. Regular updates and new content keep things fresh.",
+                val6Text: "We never stop. Regular updates keep things fresh.",
                 statsTitle: "By the numbers",
                 stat1: "Projects",
                 stat2: "Players",
-                stat3: "Support"
+                stat3: "Support",
+                ctaText: "Got an idea? I'll program it for rubux!",
+                ctaBtn: "đź’° Order now â†’"
             }
         };
         let currentLang = localStorage.getItem('lang') || 'hu';
