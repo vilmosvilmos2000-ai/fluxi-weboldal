@@ -3,172 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vilmos Weboldala - Dark Edition</title>
+    <title>holle ai | KĂ¶zpont</title>
     <style>
-        /* Alapbeállítások - Sötét háttér, világos szöveg */
+        :root {
+            --primary: #007bff;
+            --secondary: #28a745;
+            --dark: #222;
+            --light: #f4f7f6;
+            --text: #333;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #121212; /* Nagyon sötét szürke, majdnem fekete */
-            color: #e0e0e0; /* Törtfehér szöveg, hogy ne bántsa a szemet */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--light);
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
         }
 
-        /* Fejléc - Fekete, narancs kerettel */
         header {
-            width: 100%;
-            padding: 2rem 0;
-            background-color: #000000;
-            color: #ff9800; /* Narancssárga cím */
+            background: var(--dark);
+            color: #fff;
+            padding: 4rem 1rem;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3); /* Narancssárga árnyék */
-            border-bottom: 3px solid #ff9800;
-            margin-bottom: 2rem;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
         }
 
         header h1 {
-            margin: 0 0 0.5rem 0;
-            text-transform: uppercase;
+            font-size: 3rem;
+            margin: 0;
             letter-spacing: 2px;
         }
 
         header p {
-            margin: 0;
-            font-style: italic;
-            color: #bbb;
+            opacity: 0.8;
+            font-size: 1.2rem;
         }
 
-        /* Tartalom tároló */
-        .container {
-            max-width: 800px;
-            width: 90%;
+        .hub-container {
+            max-width: 1100px;
+            margin: -50px auto 40px;
+            padding: 0 20px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding-bottom: 40px;
+            gap: 25px;
         }
 
-        /* Kártyák stílusa - Kicsit világosabb fekete */
         .card {
-            background-color: #1e1e1e;
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #333;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
             text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        /* Kiemelés, ha ráviszed az egeret */
         .card:hover {
-            transform: translateY(-5px);
-            border-color: #ff9800; /* Narancs keret hoverre */
-            box-shadow: 0 8px 15px rgba(255, 152, 0, 0.2);
+            transform: translateY(-10px);
         }
 
-        .card h3 {
-            color: #ff9800; /* Narancs alcímek */
+        .card h2 {
+            color: var(--dark);
             margin-top: 0;
-            margin-bottom: 1rem;
         }
 
-        /* Gombok alapstílusa */
+        .card p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
         .btn {
             display: inline-block;
-            padding: 12px 24px;
-            margin: 8px;
-            border: 2px solid #ff9800; /* Narancs keret */
-            border-radius: 6px;
-            color: #ff9800; /* Narancs szöveg */
+            padding: 12px 25px;
             text-decoration: none;
+            border-radius: 8px;
             font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            background-color: transparent;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            transition: opacity 0.3s;
         }
 
-        /* Gomb hover effekt - Feltöltődik naranccsal */
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-dark { background: var(--dark); color: white; }
+
         .btn:hover {
-            background-color: #ff9800;
-            color: #000000; /* Fekete szöveg a narancs háttéren */
-            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+            opacity: 0.9;
         }
 
-        /* Különleges gomb a pizzának, mert az megérdemli */
-        .btn-pizza {
-            border-color: #f4d136;
-            color: #f46536;
-        }
-        .btn-pizza:hover {
-            background-color: #f44f36;
-            color: white;
-            box-shadow: 0 0 10px rgba(244, 92, 54, 0.5);
-        }
- .btn-AI {
-            border-color: #f47c36;
-            color: #36f4a2;
-        }
-        .btn-AI:hover {
-            background-color: #36f43c;
-            color: rgb(0, 0, 0);
-            box-shadow: 0 0 10px rgba(101, 244, 54, 0.5);
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+            color: #888;
         }
 
+        .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Vilmos Hub</h1>
-    
+    <h1>holle ai</h1>
+    <p>A te sajĂˇt, privĂˇt mestersĂ©ges intelligenciĂˇd</p>
 </header>
 
-<div class="container">
+<div class="hub-container">
     
+   
+
+    <!-- KĂˇrtya 2: TelepĂ­tĂ©s -->
     <div class="card">
-        <h3>Gép Tesztelés</h3>
-        <p style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">GPU, RAM, CPU benchmarkok</p>
-        <a href="index.html" class="btn">Test</a>
+        <div>
+            <span class="icon">đź› ď¸Ź</span>
+            <h2>TelepĂ­tĂ©s</h2>
+            <p>LĂ©pĂ©srĹ‘l lĂ©pĂ©sre ĂştmutatĂł az Ollama Ă©s a modellek beĂˇllĂ­tĂˇsĂˇhoz Windowsra Ă©s Linuxra.</p>
+        </div>
+        <a href="holleaidowalrder.html" class="btn btn-primary">ĂštmutatĂł MegnyitĂˇsa</a>
     </div>
 
-    <div class="card">
-        <h3>Stílus</h3>
-        <a href="stilus.html" class="btn">Nike Webshop</a>
-    </div>
-
-    <div class="card">
-        <h3>Code Academy</h3>
-        <p style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Go to learn</p>
-        <a href="másik.html" class="btn">HTML, CSS, JS</a>
-    </div>
-
-    <div class="card">
-        <h3>Game Zone</h3>
-        <p style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Go to chill</p>
-        <a href="gamehub.html" class="btn">Game Hub</a>
-    </div>
-
-    <div class="card" style="grid-column: 1 / -1; max-width: 400px; justify-self: center;">
-        <h3>foods</h3>
-        <a href="fruits.html" class="btn btn-pizza">Healthy Food Time</a>
-    </div>
-
-    
-    <div class="card" style="grid-column: 1 / -1; max-width: 400px; justify-self: center;">
-        <h3>AI Hub [NEW]</h3>
-        <a href="ai.html" class="btn btn-AI">AI Chat</a>
-        <a href="aiplus.html" class="btn btn-AI">AI Plus</a>
-        <a href="aiprograming.html" class="btn btn-AI"> Programming AI</a>
-        <a href="hjuighuigz87.html" class="btn btn-AI"> programming ai példa kreálmány </a>
-    </div>
-
+  
 </div>
+
+<footer>
+    &copy; 2024 holle ai Project - Helyi futtatĂˇsĂş LLM interfĂ©sz
+</footer>
 
 </body>
 </html>
