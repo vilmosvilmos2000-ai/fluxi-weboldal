@@ -20,10 +20,30 @@
             width: 100%;
             max-width: 560px;
             animation: fadeIn 0.8s ease-out;
+            position: relative;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        .lang-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 10px 18px;
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        .lang-btn:hover {
+            border-color: #667eea;
+            color: #fff;
         }
         .back {
             display: inline-block;
@@ -148,36 +168,38 @@
     </style>
 </head>
 <body>
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+
     <div class="container">
-        <a href="/" class="back">← vissza</a>
-        <h1><span>studio</span></h1>
-        <p class="sub">rendelj egyedi programozást</p>
+        <a href="/" class="back" data-i18n="back">← vissza</a>
+        <h1><span data-i18n="title">studio</span></h1>
+        <p class="sub" data-i18n="sub">rendelj egyedi programozást</p>
 
         <div class="card">
             <div class="form" id="form">
                 <div class="field">
-                    <label>Mit szeretnél, hogy megprogramozzak?</label>
-                    <textarea id="project" placeholder="Írd le az ötleted..." required></textarea>
+                    <label data-i18n="label1">Mit szeretnél, hogy megprogramozzak?</label>
+                    <textarea id="project" data-i18n-placeholder="placeholder1" placeholder="Írd le az ötleted..." required></textarea>
                 </div>
                 <div class="field">
-                    <label>Mennyi rubuxt adsz érte?</label>
+                    <label data-i18n="label2">Mennyi rubuxt adsz érte?</label>
                     <div class="rubux-field">
                         <input type="number" id="rubux" placeholder="0" min="0" required>
                         <span class="rubux-suffix">R$</span>
                     </div>
                 </div>
                 <div class="field">
-                    <label>Email címed</label>
-                    <input type="email" id="email" placeholder="pelda@email.hu" required>
-                    <div class="error" id="emailError">Kérlek érvényes email címet adj meg</div>
+                    <label data-i18n="label3">Email címed</label>
+                    <input type="email" id="email" data-i18n-placeholder="placeholder3" placeholder="pelda@email.hu" required>
+                    <div class="error" id="emailError" data-i18n="emailError">Kérlek érvényes email címet adj meg</div>
                 </div>
-                <button class="btn" id="submitBtn" onclick="sendOrder()">Küldés</button>
+                <button class="btn" id="submitBtn" onclick="sendOrder()" data-i18n="submit">Küldés</button>
             </div>
 
             <div class="success" id="success">
-                <div class="success-icon">✅</div>
-                <h2>Köszönöm!</h2>
-                <p>Visszajelzek hamarosan az email címeden.</p>
+                <div class="success-icon">✓</div>
+                <h2 data-i18n="successTitle">Köszönöm!</h2>
+                <p data-i18n="successText">Visszajelzek hamarosan az email címeden.</p>
             </div>
         </div>
     </div>
@@ -187,6 +209,61 @@
         (function() {
             emailjs.init("I3zAazDdXnuEPYiBm");
         })();
+
+        const i18n = {
+            hu: {
+                back: "← vissza",
+                title: "studio",
+                sub: "rendelj egyedi programozást",
+                label1: "Mit szeretnél, hogy megprogramozzak?",
+                label2: "Mennyi rubuxt adsz érte?",
+                label3: "Email címed",
+                placeholder1: "Írd le az ötleted...",
+                placeholder3: "pelda@email.hu",
+                emailError: "Kérlek érvényes email címet adj meg",
+                submit: "Küldés",
+                submitting: "Küldés...",
+                successTitle: "Köszönöm!",
+                successText: "Visszajelzek hamarosan az email címeden."
+            },
+            en: {
+                back: "← back",
+                title: "studio",
+                sub: "order custom programming",
+                label1: "What would you like me to program?",
+                label2: "How many rubux will you pay?",
+                label3: "Your email",
+                placeholder1: "Describe your idea...",
+                placeholder3: "sample@email.com",
+                emailError: "Please enter a valid email address",
+                submit: "Send",
+                submitting: "Sending...",
+                successTitle: "Thank you!",
+                successText: "I will get back to you soon at your email."
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'hu';
+
+        function setLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (i18n[lang][key]) el.textContent = i18n[lang][key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.dataset.i18nPlaceholder;
+                if (i18n[lang][key]) el.placeholder = i18n[lang][key];
+            });
+            document.getElementById('langBtn').textContent = lang === 'hu' ? 'EN' : 'HU';
+        }
+
+        function toggleLang() {
+            setLang(currentLang === 'hu' ? 'en' : 'hu');
+        }
+
+        setLang(currentLang);
 
         function sendOrder() {
             const project = document.getElementById('project').value.trim();
@@ -205,7 +282,7 @@
             if (!project || !rubux || !email) return;
 
             btn.disabled = true;
-            btn.textContent = 'Küldés...';
+            btn.textContent = currentLang === 'hu' ? 'Küldés...' : 'Sending...';
 
             emailjs.send("service_i2ieznq", "template_6c90y9p", {
                 project: project,
@@ -215,9 +292,9 @@
                 document.getElementById('form').classList.add('hidden');
                 document.getElementById('success').classList.add('show');
             }).catch(() => {
-                alert('Hiba történt a küldés során. Próbáld újra.');
+                alert(currentLang === 'hu' ? 'Hiba történt a küldés során. Próbáld újra.' : 'An error occurred. Please try again.');
                 btn.disabled = false;
-                btn.textContent = 'Küldés';
+                btn.textContent = currentLang === 'hu' ? 'Küldés' : 'Send';
             });
         }
     </script>
