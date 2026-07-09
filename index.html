@@ -10,68 +10,17 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #0a0a0a;
             color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
+            line-height: 1.6;
         }
-        .container {
-            text-align: center;
-            animation: fadeIn 1.5s ease-out;
+        .bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(118, 75, 162, 0.08) 0%, transparent 50%);
+            z-index: 0;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .logo {
-            font-size: 4rem;
-            font-weight: 700;
-            letter-spacing: -2px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .sub {
-            font-size: 1.2rem;
-            color: #666;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 40px;
-        }
-        .loader {
-            display: inline-block;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid #1a1a1a;
-            border-top-color: #667eea;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 40px;
-        }
-        .dots span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #333;
-            animation: pulse 1.4s ease-in-out infinite;
-        }
-        .dots span:nth-child(2) { animation-delay: 0.2s; }
-        .dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes pulse {
-            0%, 100% { background: #333; }
-            50% { background: #667eea; }
-        }
-    .lang-btn {
+        .lang-btn {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -85,27 +34,152 @@
             cursor: pointer;
             transition: all 0.3s;
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
-        .lang-btn:hover {
-            border-color: #667eea;
+        .lang-btn:hover { border-color: #667eea; color: #fff; }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px 40px;
+        }
+        .hero {
+            text-align: center;
+            padding: 40px 0 60px;
+        }
+        .logo {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: #555;
+            font-size: 1.1rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 35px 30px;
+            text-decoration: none;
             color: #fff;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            border-color: #333;
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        .card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .card p {
+            color: #666;
+            font-size: 0.9rem;
+            flex: 1;
+        }
+        .card .badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            align-self: flex-start;
+        }
+        .badge-studio { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+        .badge-mc { background: rgba(0, 200, 100, 0.15); color: #00c864; }
+        .badge-roblox { background: rgba(255, 70, 85, 0.15); color: #ff4655; }
+        .footer {
+            text-align: center;
+            padding: 60px 0 30px;
+            color: #333;
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
+    <div class="bg"></div>
     <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+
     <div class="container">
-        <div class="logo">fluxi</div>
-        <div class="sub"><span data-i18n="sub">hamarosan kész</span></div>
-        <div class="loader"></div>
-        <div class="dots">
-            <span></span><span></span><span></span>
+        <div class="hero">
+            <div class="logo">fluxi</div>
+            <p data-i18n="tagline">Minden egy helyen.</p>
         </div>
+
+        <div class="grid">
+            <a href="/studio" class="card">
+                <div class="icon">💻</div>
+                <h3 data-i18n="studioTitle">Studio</h3>
+                <p data-i18n="studioDesc">Rendelj egyedi programozást Roblox játékaidhoz. Script, UI, 3D modellezés – rubuxért dolgozok.</p>
+                <span class="badge badge-studio" data-i18n="studioBadge">Megrendelés</span>
+            </a>
+
+            <a href="/roblox" class="card">
+                <div class="icon">🎮</div>
+                <h3 data-i18n="robloxTitle">Roblox</h3>
+                <p data-i18n="robloxDesc">Fluxi Studio – Roblox játékfejlesztés. Ismerd meg a játékainkat és a stúdiót.</p>
+                <span class="badge badge-roblox" data-i18n="robloxBadge">Játékok</span>
+            </a>
+
+            <a href="/comeniussmp" class="card">
+                <div class="icon">⛏️</div>
+                <h3 data-i18n="mcTitle">Comenius SMP</h3>
+                <p data-i18n="mcDesc">Minecraft Survival szerver. Cracked támogatással, exaroton hosztolással.</p>
+                <span class="badge badge-mc" data-i18n="mcBadge">Szerver</span>
+            </a>
+        </div>
+
+        <div class="footer">&copy; 2026 fluxi.hu</div>
     </div>
-<script>
+
+    <script>
         const i18n = {
-            hu: { sub: "hamarosan kész" },
-            en: { sub: "coming soon" }
+            hu: {
+                tagline: "Minden egy helyen.",
+                studioTitle: "Studio",
+                studioDesc: "Rendelj egyedi programozást Roblox játékaidhoz. Script, UI, 3D modellezés – rubuxért dolgozok.",
+                studioBadge: "Megrendelés",
+                robloxTitle: "Roblox",
+                robloxDesc: "Fluxi Studio – Roblox játékfejlesztés. Ismerd meg a játékainkat és a stúdiót.",
+                robloxBadge: "Játékok",
+                mcTitle: "Comenius SMP",
+                mcDesc: "Minecraft Survival szerver. Cracked támogatással, exaroton hosztolással.",
+                mcBadge: "Szerver"
+            },
+            en: {
+                tagline: "Everything in one place.",
+                studioTitle: "Studio",
+                studioDesc: "Order custom programming for your Roblox games. Scripting, UI, 3D modeling – I work for rubux.",
+                studioBadge: "Order",
+                robloxTitle: "Roblox",
+                robloxDesc: "Fluxi Studio – Roblox game development. Explore our games and the studio.",
+                robloxBadge: "Games",
+                mcTitle: "Comenius SMP",
+                mcDesc: "Minecraft Survival server. Cracked support, hosted on exaroton.",
+                mcBadge: "Server"
+            }
         };
         let currentLang = localStorage.getItem("lang") || "hu";
         function setLang(lang) {
