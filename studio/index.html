@@ -10,15 +10,21 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #0a0a0a;
             color: #fff;
-            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
         }
-        .bg {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background:
-                radial-gradient(ellipse at 20% 20%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(118, 75, 162, 0.08) 0%, transparent 50%);
-            z-index: 0;
+        .container {
+            width: 100%;
+            max-width: 560px;
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .lang-btn {
             position: fixed;
@@ -34,16 +40,8 @@
             cursor: pointer;
             transition: all 0.3s;
             z-index: 100;
-            backdrop-filter: blur(10px);
         }
         .lang-btn:hover { border-color: #667eea; color: #fff; }
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
         .back {
             display: inline-block;
             color: #444;
@@ -53,100 +51,20 @@
             transition: color 0.2s;
         }
         .back:hover { color: #888; }
-        .hero {
-            margin-bottom: 50px;
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
-        }
-        .hero h1 span {
+        h1 span {
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .hero p {
+        .sub {
             color: #555;
-            font-size: 1.1rem;
-            max-width: 500px;
-        }
-        .services {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 60px;
-        }
-        .service-card {
-            background: #111;
-            border: 1px solid #1a1a1a;
-            border-radius: 20px;
-            padding: 30px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-        .service-card:hover {
-            border-color: #333;
-            transform: translateX(4px);
-        }
-        .service-icon {
-            font-size: 2.2rem;
-            flex-shrink: 0;
-            width: 60px;
-            text-align: center;
-        }
-        .service-info {
-            flex: 1;
-        }
-        .service-info h3 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .service-info p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        .service-price {
-            flex-shrink: 0;
-            text-align: right;
-        }
-        .service-price .amount {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #667eea;
-        }
-        .service-price .unit {
-            color: #555;
-            font-size: 0.85rem;
-        }
-        .note {
-            background: rgba(102, 126, 234, 0.06);
-            border: 1px solid rgba(102, 126, 234, 0.15);
-            border-radius: 16px;
-            padding: 20px 25px;
-            margin-bottom: 50px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-        .note span { font-size: 1.3rem; flex-shrink: 0; }
-        .note p {
-            color: #888;
-            font-size: 0.9rem;
-        }
-        .note p strong { color: #ccc; }
-        .order-section h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .order-section .sub {
-            color: #555;
-            margin-bottom: 30px;
+            font-size: 1rem;
+            margin-bottom: 40px;
         }
         .card {
             background: #111;
@@ -216,112 +134,43 @@
         .form.hidden { display: none; }
         .error { color: #ff4444; font-size: 0.85rem; margin-top: 6px; display: none; }
         .error.show { display: block; }
-        .footer {
-            text-align: center;
-            padding: 40px 0 0;
-            color: #333;
-            font-size: 0.85rem;
-        }
     </style>
 </head>
 <body>
-    <div class="bg"></div>
     <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
 
     <div class="container">
         <a href="/" class="back" data-i18n="back">&larr; vissza</a>
+        <h1><span data-i18n="title">studio</span></h1>
+        <p class="sub" data-i18n="sub">rendelj egyedi programozást</p>
 
-        <div class="hero">
-            <h1><span data-i18n="title">Studio</span></h1>
-            <p data-i18n="sub">Egyedi Roblox fejlesztés, rubuxért.</p>
-        </div>
-
-        <div class="services" id="servicesList">
-            <div class="service-card">
-                <div class="service-icon">&#x1F4BB;</div>
-                <div class="service-info">
-                    <h3 data-i18n="s1Title">Scriptelés</h3>
-                    <p data-i18n="s1Desc">Lua scriptek – játékmechanikák, rendszerek, események, GUI működtetés.</p>
+        <div class="card">
+            <div class="form" id="form">
+                <div class="field">
+                    <label data-i18n="label1">Mit szeretnéd, hogy megprogramozzak?</label>
+                    <textarea id="project" data-i18n-placeholder="placeholder1" placeholder="Írd le az ötleted..." required></textarea>
                 </div>
-                <div class="service-price">
-                    <div class="amount" data-i18n="s1Price">200+</div>
-                    <div class="unit">R$</div>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">&#x1F3A8;</div>
-                <div class="service-info">
-                    <h3 data-i18n="s2Title">UI / UX Design</h3>
-                    <p data-i18n="s2Desc">Egyedi felületek, menük, HUD – modern dizájn, reszponzív kialakítás.</p>
-                </div>
-                <div class="service-price">
-                    <div class="amount" data-i18n="s2Price">150+</div>
-                    <div class="unit">R$</div>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">&#x1F3B5;</div>
-                <div class="service-info">
-                    <h3 data-i18n="s3Title">3D Modellezés</h3>
-                    <p data-i18n="s3Desc">Egyedi tárgyak, épületek, karakterek – bármi, ami kell a játékodhoz.</p>
-                </div>
-                <div class="service-price">
-                    <div class="amount" data-i18n="s3Price">300+</div>
-                    <div class="unit">R$</div>
-                </div>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">&#x2699;&#xFE0F;</div>
-                <div class="service-info">
-                    <h3 data-i18n="s4Title">Teljes játék</h3>
-                    <p data-i18n="s4Desc">A nullától a kész játékig – ötlet, mechanika, dizájn, publikálás.</p>
-                </div>
-                <div class="service-price">
-                    <div class="amount" data-i18n="s4Price">1000+</div>
-                    <div class="unit">R$</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="note">
-            <span>&#x1F4A1;</span>
-            <p data-i18n="noteText"><strong>Az árak tájékoztató jellegűek.</strong> A végleges ár függ a projekt komplexitásától és méretétől. Írj bátran, egyeztetünk!</p>
-        </div>
-
-        <div class="order-section">
-            <h2 data-i18n="orderTitle">Megrendelés</h2>
-            <p class="sub" data-i18n="orderSub">Töltsd ki az űrlapot, és hamarosan jelentkezem.</p>
-
-            <div class="card">
-                <div class="form" id="form">
-                    <div class="field">
-                        <label data-i18n="label1">Mit szeretnéd, hogy megprogramozzak?</label>
-                        <textarea id="project" data-i18n-placeholder="placeholder1" placeholder="Írd le az ötleted..." required></textarea>
+                <div class="field">
+                    <label data-i18n="label2">Mennyi rubuxt adsz érte?</label>
+                    <div class="rubux-field">
+                        <input type="number" id="rubux" placeholder="0" min="0" required>
+                        <span class="rubux-suffix">R$</span>
                     </div>
-                    <div class="field">
-                        <label data-i18n="label2">Mennyi rubuxt adsz érte?</label>
-                        <div class="rubux-field">
-                            <input type="number" id="rubux" placeholder="0" min="0" required>
-                            <span class="rubux-suffix">R$</span>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label data-i18n="label3">Email címed</label>
-                        <input type="email" id="email" data-i18n-placeholder="placeholder3" placeholder="pelda@email.hu" required>
-                        <div class="error" id="emailError" data-i18n="emailError">Kérlek érvényes email címet adj meg</div>
-                    </div>
-                    <button class="btn" id="submitBtn" onclick="sendOrder()" data-i18n="submit">Küldés</button>
                 </div>
+                <div class="field">
+                    <label data-i18n="label3">Email címed</label>
+                    <input type="email" id="email" data-i18n-placeholder="placeholder3" placeholder="pelda@email.hu" required>
+                    <div class="error" id="emailError" data-i18n="emailError">Kérlek érvényes email címet adj meg</div>
+                </div>
+                <button class="btn" id="submitBtn" onclick="sendOrder()" data-i18n="submit">Küldés</button>
+            </div>
 
-                <div class="success" id="success">
-                    <div class="success-icon">&#x2714;&#xFE0F;</div>
-                    <h2 data-i18n="successTitle">Köszönöm!</h2>
-                    <p data-i18n="successText">Visszajelzek hamarosan az email címeden.</p>
-                </div>
+            <div class="success" id="success">
+                <div class="success-icon">&#x2714;&#xFE0F;</div>
+                <h2 data-i18n="successTitle">Köszönöm!</h2>
+                <p data-i18n="successText">Visszajelzek hamarosan az email címeden.</p>
             </div>
         </div>
-
-        <div class="footer">&copy; 2026 fluxi.hu</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -331,23 +180,8 @@
         const i18n = {
             hu: {
                 back: "\u2190 vissza",
-                title: "Studio",
-                sub: "Egyedi Roblox fejleszt\u00e9s, rubux\u00e9rt.",
-                s1Title: "Scriptel\u00e9s",
-                s1Desc: "Lua scriptek \u2013 j\u00e1t\u00e9kmechanik\u00e1k, rendszerek, esem\u00e9nyek, GUI m\u0171k\u00f6dtet\u00e9s.",
-                s1Price: "200+",
-                s2Title: "UI / UX Design",
-                s2Desc: "Egyedi fel\u00fcletek, men\u00fck, HUD \u2013 modern diz\u00e1jn, reszponz\u00edv kialak\u00edt\u00e1s.",
-                s2Price: "150+",
-                s3Title: "3D Modellez\u00e9s",
-                s3Desc: "Egyedi t\u00e1rgyak, \u00e9p\u00fcletek, karakterek \u2013 b\u00e1rmi, ami kell a j\u00e1t\u00e9kodhoz.",
-                s3Price: "300+",
-                s4Title: "Teljes j\u00e1t\u00e9k",
-                s4Desc: "A null\u00e1t\u00f3l a k\u00e9sz j\u00e1t\u00e9kig \u2013 \u00f6tlet, mechanika, diz\u00e1jn, publik\u00e1l\u00e1s.",
-                s4Price: "1000+",
-                noteText: "Az \u00e1rak t\u00e1j\u00e9koztat\u00f3 jelleg\u0171ek. A v\u00e9gleges \u00e1r f\u00fcgg a projekt komplexit\u00e1s\u00e1t\u00f3l \u00e9s m\u00e9ret\u00e9t\u0151l. \u00cdrj b\u00e1tran, egyeztet\u00fcnk!",
-                orderTitle: "Megrendel\u00e9s",
-                orderSub: "T\u00f6ltsd ki az \u0171rlapot, \u00e9s hamarosan jelentkezem.",
+                title: "studio",
+                sub: "rendelj egyedi programoz\u00e1st",
                 label1: "Mit szeretn\u00e9d, hogy megprogramozzak?",
                 label2: "Mennyi rubuxt adsz \u00e9rte?",
                 label3: "Email c\u00edmed",
@@ -357,28 +191,12 @@
                 submit: "K\u00fcld\u00e9s",
                 submitting: "K\u00fcld\u00e9s...",
                 successTitle: "K\u00f6sz\u00f6n\u00f6m!",
-                successText: "Visszajelzek hamarosan az email c\u00edmeden.",
-                serviceTitle: "Szolg\u00e1ltat\u00e1sok"
+                successText: "Visszajelzek hamarosan az email c\u00edmeden."
             },
             en: {
                 back: "\u2190 back",
-                title: "Studio",
-                sub: "Custom Roblox development, for rubux.",
-                s1Title: "Scripting",
-                s1Desc: "Lua scripts \u2013 game mechanics, systems, events, GUI logic.",
-                s1Price: "200+",
-                s2Title: "UI / UX Design",
-                s2Desc: "Custom interfaces, menus, HUD \u2013 modern design, responsive layout.",
-                s2Price: "150+",
-                s3Title: "3D Modeling",
-                s3Desc: "Custom objects, buildings, characters \u2013 anything your game needs.",
-                s3Price: "300+",
-                s4Title: "Full Game",
-                s4Desc: "From scratch to a finished game \u2013 idea, mechanics, design, publish.",
-                s4Price: "1000+",
-                noteText: "Prices are indicative. The final price depends on project complexity and size. Feel free to reach out, we\u2019ll discuss it!",
-                orderTitle: "Order",
-                orderSub: "Fill out the form and I\u2019ll get back to you soon.",
+                title: "studio",
+                sub: "order custom programming",
                 label1: "What would you like me to program?",
                 label2: "How many rubux will you pay?",
                 label3: "Your email",
