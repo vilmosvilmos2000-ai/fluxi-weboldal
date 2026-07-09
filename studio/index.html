@@ -208,9 +208,11 @@
             btn.textContent = 'Küldés...';
 
             emailjs.send("service_i2ieznq", "template_6c90y9p", {
+                name: email,
                 project: project,
                 rubux: rubux,
                 email: email,
+                time: new Date().toLocaleString('hu-HU'),
             }).then(() => {
                 document.getElementById('form').classList.add('hidden');
                 document.getElementById('success').classList.add('show');
