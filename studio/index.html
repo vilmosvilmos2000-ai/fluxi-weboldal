@@ -185,7 +185,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
         (function() {
-            emailjs.init("YOUR_PUBLIC_KEY");
+            emailjs.init("I3zAazDdXnuEPYiBm");
         })();
 
         function sendOrder() {
@@ -207,7 +207,7 @@
             btn.disabled = true;
             btn.textContent = 'Küldés...';
 
-            emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+            emailjs.send("service_i2ieznq", "template_6c90y9p", {
                 project: project,
                 rubux: rubux,
                 email: email,
