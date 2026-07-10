@@ -249,7 +249,7 @@
     let rank = null;
     let userName = "";
     let currentChannel = "altalanos";
-    let meta = { announcement: "", topics: {}, locks: {}, pinned: null };
+    let meta = { announcement: "", topics: {}, locks: {}, pinned: null, _v: 0 };
 
     function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
     function fmtDate(ts) { const d = new Date(ts); return d.getFullYear() + "." + String(d.getMonth()+1).padStart(2,'0') + "." + String(d.getDate()).padStart(2,'0') + " " + String(d.getHours()).padStart(2,'0') + ":" + String(d.getMinutes()).padStart(2,'0'); }
@@ -351,6 +351,7 @@
 
     async function saveMessages() {
         saving = true;
+        meta._v = (meta._v || 0) + 1;
         const data = buildData();
         const content = utf8ToBase64(JSON.stringify(data));
         const body = { message: "update messages", content: content };
@@ -360,7 +361,7 @@
             const d = await res.json();
             if (d.content) currentSha = d.content.sha;
             return true;
-        } catch (e) { return false; }
+        } catch (e) { meta._v--; return false; }
         finally { saving = false; }
     }
 
@@ -395,14 +396,14 @@
                 const res = await fetch(ghUrl(), { headers: { Authorization: "Bearer " + GH_TOKEN } });
                 if (res.status === 404) return;
                 const data = await res.json();
-                if (data.sha === currentSha) return;
                 const raw = JSON.parse(base64ToUtf8(data.content));
-                if (!Array.isArray(raw)) return;
-                const oldMeta = JSON.stringify(meta);
+                if (!Array.isArray(raw) || raw.length === 0) return;
+                const remoteMeta = raw[0]._meta;
+                if (remoteMeta && remoteMeta._v !== undefined && remoteMeta._v <= meta._v) return;
+                if (data.sha === currentSha) return;
                 const freshMsgs = extractMeta(raw);
-                const newSha = data.sha;
                 messages = freshMsgs;
-                currentSha = newSha;
+                currentSha = data.sha;
                 renderMessages(); updateBanner();
                 const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak admin és owner" };
                 document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
