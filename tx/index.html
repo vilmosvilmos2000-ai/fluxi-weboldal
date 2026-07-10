@@ -13,15 +13,9 @@
             height: 100vh;
             overflow: hidden;
         }
-        #codeScreen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #0a0a0a;
-        }
-        #codeScreen.hidden { display: none; }
-        .code-box {
+        .screen { display: none; height: 100vh; }
+        .screen.show { display: flex; justify-content: center; align-items: center; }
+        .box {
             text-align: center;
             animation: fadeIn 0.8s ease-out;
         }
@@ -29,31 +23,36 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .code-box .lock { font-size: 3.5rem; margin-bottom: 15px; }
-        .code-box h2 {
+        .box .icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .box h2 {
             font-size: 1.5rem; font-weight: 700; margin-bottom: 6px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .code-box p { color: #555; font-size: 0.9rem; margin-bottom: 25px; }
-        .code-box input {
+        .box p { color: #555; font-size: 0.9rem; margin-bottom: 25px; }
+        .box input {
             background: #111; border: 1px solid #222; border-radius: 14px;
             padding: 16px 22px; color: #fff; font-size: 1.5rem;
             font-family: inherit; text-align: center; letter-spacing: 8px;
             width: 200px; outline: none; transition: border-color 0.3s;
         }
-        .code-box input:focus { border-color: #667eea; }
-        .code-box .code-err { color: #e74c3c; font-size: 0.85rem; margin-top: 12px; display: none; }
-        .code-box .code-err.show { display: block; }
-        .code-box .btn {
+        .box input:focus { border-color: #667eea; }
+        .box input.text-input {
+            font-size: 1.1rem; letter-spacing: 0; width: 280px;
+        }
+        .box .err { color: #e74c3c; font-size: 0.85rem; margin-top: 12px; display: none; }
+        .box .err.show { display: block; }
+        .box .btn {
             display: block; margin: 18px auto 0; padding: 14px 50px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none; border-radius: 12px; color: #fff;
             font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s;
         }
-        .code-box .btn:hover {
+        .box .btn:hover {
             transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102,126,234,0.3);
         }
+
+        /* Chat layout */
         #chatScreen { display: none; height: 100vh; }
         #chatScreen.show { display: flex; }
         .sidebar {
@@ -72,11 +71,9 @@
         .sidebar .channel {
             display: flex; align-items: center; gap: 10px;
             padding: 10px 14px; border-radius: 10px; color: #666;
-            font-size: 0.9rem; font-weight: 500; cursor: pointer;
-            transition: all 0.2s;
+            font-size: 0.9rem; font-weight: 500;
             background: rgba(102,126,234,0.1); color: #667eea;
         }
-        .sidebar .channel:hover { background: rgba(102,126,234,0.15); }
         .sidebar .channel .hash { color: #667eea; font-weight: 700; }
         .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
         .main .header {
@@ -95,6 +92,7 @@
         .msg {
             display: flex; gap: 14px; margin-bottom: 20px;
             animation: fadeIn 0.3s ease-out;
+            position: relative;
         }
         .msg .avatar {
             width: 40px; height: 40px; border-radius: 50%;
@@ -102,14 +100,37 @@
             display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
         }
+        .msg .avatar.admin {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
         .msg .body .name {
             font-size: 0.85rem; font-weight: 600; color: #667eea;
             display: flex; align-items: center; gap: 8px;
+        }
+        .msg .body .name .admin-badge {
+            font-size: 0.65rem; font-weight: 700; color: #e74c3c;
+            background: rgba(231,76,60,0.12);
+            padding: 2px 8px; border-radius: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            animation: glow 1.2s ease-in-out infinite alternate;
+            border: 1px solid rgba(231,76,60,0.25);
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 4px rgba(231,76,60,0.2); }
+            to { box-shadow: 0 0 12px rgba(231,76,60,0.6); }
         }
         .msg .body .name .time { color: #444; font-weight: 400; font-size: 0.75rem; }
         .msg .body .text {
             color: #ccc; font-size: 0.95rem; margin-top: 2px; word-break: break-word;
         }
+        .msg .del-btn {
+            position: absolute; right: 0; top: 0;
+            background: none; border: none; color: #333;
+            font-size: 0.85rem; cursor: pointer; padding: 4px 8px;
+            border-radius: 6px; transition: all 0.2s; display: none;
+        }
+        .msg .del-btn:hover { color: #e74c3c; background: rgba(231,76,60,0.1); }
+        .msg .del-btn.show { display: block; }
         .input-area { padding: 16px 24px 20px; border-top: 1px solid #141414; }
         .input-area .row { display: flex; gap: 12px; }
         .input-area input {
@@ -140,17 +161,31 @@
 </head>
 <body>
 
-<div id="codeScreen">
-    <div class="code-box">
+<!-- Code screen -->
+<div id="codeScreen" class="screen show">
+    <div class="box">
         <div class="lock">&#x1F512;</div>
         <h2>Access code required</h2>
         <p>Enter the code to view this page.</p>
         <input type="password" id="codeInput" maxlength="4" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Enter')checkCode()">
-        <div class="code-err" id="codeErr">Wrong code. Try again.</div>
+        <div class="err" id="codeErr">Wrong code. Try again.</div>
         <button class="btn" onclick="checkCode()">Unlock</button>
     </div>
 </div>
 
+<!-- Name screen -->
+<div id="nameScreen" class="screen">
+    <div class="box">
+        <div class="icon">&#x1F464;</div>
+        <h2>What is your name?</h2>
+        <p>This will be shown on your messages.</p>
+        <input type="text" id="nameInput" class="text-input" placeholder="Enter your name..." maxlength="20" onkeydown="if(event.key==='Enter')setName()">
+        <div class="err" id="nameErr">Please enter a name.</div>
+        <button class="btn" onclick="setName()">Continue</button>
+    </div>
+</div>
+
+<!-- Chat screen -->
 <div id="chatScreen">
     <div class="sidebar">
         <div class="title"><span>TX</span></div>
@@ -187,6 +222,8 @@
     let messages = [];
     let currentSha = null;
     let pollTimer = null;
+    let isAdmin = false;
+    let userName = "";
 
     function escapeHtml(s) {
         const d = document.createElement('div');
@@ -212,16 +249,22 @@
             return;
         }
         empty.style.display = 'none';
-        messages.forEach((msg) => {
+        messages.forEach((msg, idx) => {
             const div = document.createElement('div');
             div.className = 'msg';
             const name = msg.n || "Anonymous";
             const initial = name.charAt(0).toUpperCase();
-            div.innerHTML = '<div class="avatar">' + initial + '</div>'
+            const isMsgAdmin = msg.a === true;
+            const avatarClass = isMsgAdmin ? 'avatar admin' : 'avatar';
+            const adminBadge = isMsgAdmin ? '<span class="admin-badge">admin</span>' : '';
+            const delBtn = isAdmin ? '<button class="del-btn show" onclick="deleteMsg(' + idx + ')">&#x2716;</button>' : '';
+
+            div.innerHTML = '<div class="' + avatarClass + '">' + initial + '</div>'
                 + '<div class="body">'
-                + '<div class="name">' + escapeHtml(name) + ' <span class="time">' + fmtDate(msg.t) + '</span></div>'
+                + '<div class="name">' + escapeHtml(name) + adminBadge + ' <span class="time">' + fmtDate(msg.t) + '</span></div>'
                 + '<div class="text">' + escapeHtml(msg.m) + '</div>'
-                + '</div>';
+                + '</div>'
+                + delBtn;
             container.appendChild(div);
         });
         container.scrollTop = container.scrollHeight;
@@ -231,18 +274,14 @@
         const encoder = new TextEncoder();
         const bytes = encoder.encode(str);
         let binary = '';
-        for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
+        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
         return btoa(binary);
     }
 
     function base64ToUtf8(base64) {
         const binary = atob(base64);
         const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
         return new TextDecoder().decode(bytes);
     }
 
@@ -251,20 +290,14 @@
             const res = await fetch(GH_URL, {
                 headers: { Authorization: "Bearer " + GH_TOKEN }
             });
-            if (res.status === 404) {
-                messages = [];
-                renderMessages();
-                return;
-            }
+            if (res.status === 404) { messages = []; renderMessages(); return; }
             const data = await res.json();
             currentSha = data.sha;
             const raw = base64ToUtf8(data.content);
             messages = JSON.parse(raw);
             if (!Array.isArray(messages)) messages = [];
             renderMessages();
-        } catch (e) {
-            console.error("load error", e);
-        }
+        } catch (e) { console.error("load error", e); }
     }
 
     async function saveMessages() {
@@ -274,19 +307,13 @@
         try {
             const res = await fetch(GH_URL, {
                 method: "PUT",
-                headers: {
-                    Authorization: "Bearer " + GH_TOKEN,
-                    "Content-Type": "application/json"
-                },
+                headers: { Authorization: "Bearer " + GH_TOKEN, "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             });
             const data = await res.json();
             if (data.content) currentSha = data.content.sha;
             return true;
-        } catch (e) {
-            console.error("save error", e);
-            return false;
-        }
+        } catch (e) { console.error("save error", e); return false; }
     }
 
     async function sendMsg() {
@@ -294,19 +321,20 @@
         const btn = document.getElementById('sendBtn');
         const text = input.value.trim();
         if (!text) return;
-
         btn.disabled = true;
-        messages.push({ n: "Anonymous", m: text, t: Date.now() });
+        messages.push({ n: userName, m: text, t: Date.now(), a: isAdmin });
         renderMessages();
         input.value = '';
-
         const ok = await saveMessages();
-        if (!ok) {
-            alert("Hiba a mentes soran.");
-            messages.pop();
-            renderMessages();
-        }
+        if (!ok) { messages.pop(); renderMessages(); alert("Hiba a mentes soran."); }
         btn.disabled = false;
+    }
+
+    async function deleteMsg(index) {
+        if (!isAdmin) return;
+        messages.splice(index, 1);
+        renderMessages();
+        await saveMessages();
     }
 
     function startPolling() {
@@ -333,16 +361,39 @@
     function checkCode() {
         const input = document.getElementById('codeInput');
         const err = document.getElementById('codeErr');
-        if (input.value === '7308') {
-            document.getElementById('codeScreen').classList.add('hidden');
-            document.getElementById('chatScreen').classList.add('show');
-            loadMessages();
-            startPolling();
+        const code = input.value;
+        if (code === '7308' || code === '1967') {
+            isAdmin = (code === '1967');
+            const saved = localStorage.getItem('tx_name');
+            if (saved) {
+                userName = saved;
+                document.getElementById('codeScreen').classList.remove('show');
+                document.getElementById('chatScreen').classList.add('show');
+                loadMessages();
+                startPolling();
+            } else {
+                document.getElementById('codeScreen').classList.remove('show');
+                document.getElementById('nameScreen').classList.add('show');
+            }
         } else {
             err.classList.add('show');
             input.value = '';
             input.focus();
         }
+    }
+
+    function setName() {
+        const input = document.getElementById('nameInput');
+        const err = document.getElementById('nameErr');
+        const name = input.value.trim();
+        if (!name) { err.classList.add('show'); return; }
+        err.classList.remove('show');
+        userName = name;
+        localStorage.setItem('tx_name', name);
+        document.getElementById('nameScreen').classList.remove('show');
+        document.getElementById('chatScreen').classList.add('show');
+        loadMessages();
+        startPolling();
     }
 </script>
 </body>
