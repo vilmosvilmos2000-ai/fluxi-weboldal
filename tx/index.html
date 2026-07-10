@@ -54,6 +54,7 @@
         .msg .body .name .badge { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; animation: glow 1.2s ease-in-out infinite alternate; }
         .msg .body .name .badge.admin { color: #e74c3c; background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.25); }
         .msg .body .name .badge.owner { color: #f1c40f; background: rgba(241,196,15,0.12); border: 1px solid rgba(241,196,15,0.25); }
+        .msg .body .name .badge.remember { color: #888; background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); animation: none; }
         @keyframes glow { from { box-shadow: 0 0 4px rgba(231,76,60,0.1); } to { box-shadow: 0 0 12px rgba(231,76,60,0.5); } }
         .msg .body .name .badge.owner { animation-name: glowYellow; }
         @keyframes glowYellow { from { box-shadow: 0 0 4px rgba(241,196,15,0.1); } to { box-shadow: 0 0 12px rgba(241,196,15,0.5); } }
@@ -119,6 +120,10 @@
             <span>Ellens&eacute;gek</span>
             <span class="lock-icon">&#x1F512;</span>
         </div>
+        <div class="chnl" data-channel="dinok" onclick="switchChannel('dinok')">
+            <span class="hash">#</span>
+            <span>Din&oacute;k</span>
+        </div>
     </div>
     <div class="main">
         <div class="header">
@@ -145,7 +150,7 @@
     const GH_REPO = "fluxi-weboldal";
     const GH_PATH = "tx/messages.json";
     const GH_URL = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + GH_PATH;
-    const CHANNELS = { altalanos: "&Aacute;ltal&aacute;nos", asvanyok: "&Aacute;sv&aacute;nyok", ellensegek: "Ellens&eacute;gek" };
+    const CHANNELS = { altalanos: "&Aacute;ltal&aacute;nos", asvanyok: "&Aacute;sv&aacute;nyok", ellensegek: "Ellens&eacute;gek", dinok: "Din&oacute;k" };
     const LOCKED_CHANNELS = ["ellensegek"];
 
     let messages = [];
@@ -184,8 +189,8 @@
         currentChannel = ch;
         document.querySelectorAll('.chnl').forEach(el => el.classList.remove('active'));
         document.querySelector('.chnl[data-channel="' + ch + '"]').classList.add('active');
-        const names = { altalanos: "&Aacute;ltal&aacute;nos", asvanyok: "&Aacute;sv&aacute;nyok", ellensegek: "Ellens&eacute;gek" };
-        const topics = { altalanos: "Mindenki &iacute;rhat", asvanyok: "Mindenki &iacute;rhat", ellensegek: "Csak admin &eacute;s owner" };
+        const names = { altalanos: "&Aacute;ltal&aacute;nos", asvanyok: "&Aacute;sv&aacute;nyok", ellensegek: "Ellens&eacute;gek", dinok: "Din&oacute;k" };
+        const topics = { altalanos: "Mindenki &iacute;rhat", asvanyok: "Mindenki &iacute;rhat", ellensegek: "Csak admin &eacute;s owner", dinok: "Mindenki &iacute;rhat" };
         document.getElementById('channelTitle').innerHTML = names[ch];
         document.getElementById('channelTopic').innerHTML = topics[ch];
         updateInputArea();
@@ -195,6 +200,7 @@
     function getBadgeHtml(r) {
         if (r === "admin") return '<span class="badge admin">admin</span>';
         if (r === "owner") return '<span class="badge owner">owner</span>';
+        if (r === "remember") return '<span class="badge remember">remember</span>';
         return '';
     }
 
@@ -308,6 +314,7 @@
         if (code === '7308' || code === '0999' || code === '1967') {
             if (code === '1967') rank = "owner";
             else if (code === '0999') rank = "admin";
+            else if (code === '7308') rank = "remember";
             else rank = null;
             const saved = localStorage.getItem('tx_name');
             if (saved) {
