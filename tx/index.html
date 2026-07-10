@@ -330,9 +330,11 @@
         return [metaObj, ...messages];
     }
 
+    function ghUrl() { return GH_URL + "?_=" + Date.now(); }
+
     async function loadMessages() {
         try {
-            const res = await fetch(GH_URL, { headers: { Authorization: "Bearer " + GH_TOKEN } });
+            const res = await fetch(ghUrl(), { headers: { Authorization: "Bearer " + GH_TOKEN } });
             if (res.status === 404) { messages = []; renderMessages(); return; }
             const data = await res.json();
             currentSha = data.sha;
@@ -348,6 +350,7 @@
     }
 
     async function saveMessages() {
+        saving = true;
         const data = buildData();
         const content = utf8ToBase64(JSON.stringify(data));
         const body = { message: "update messages", content: content };
@@ -358,6 +361,7 @@
             if (d.content) currentSha = d.content.sha;
             return true;
         } catch (e) { return false; }
+        finally { saving = false; }
     }
 
     async function sendMsg() {
@@ -381,26 +385,28 @@
         renderMessages(); await saveMessages();
     }
 
+    let saving = false;
+
     function startPolling() {
         if (pollTimer) clearInterval(pollTimer);
         pollTimer = setInterval(async () => {
+            if (saving) return;
             try {
-                const res = await fetch(GH_URL, { headers: { Authorization: "Bearer " + GH_TOKEN } });
+                const res = await fetch(ghUrl(), { headers: { Authorization: "Bearer " + GH_TOKEN } });
                 if (res.status === 404) return;
                 const data = await res.json();
+                if (data.sha === currentSha) return;
                 const raw = JSON.parse(base64ToUtf8(data.content));
                 if (!Array.isArray(raw)) return;
                 const oldMeta = JSON.stringify(meta);
-                const oldMsgs = JSON.stringify(messages);
                 const freshMsgs = extractMeta(raw);
-                if (JSON.stringify(freshMsgs) !== oldMsgs || JSON.stringify(meta) !== oldMeta) {
-                    messages = freshMsgs;
-                    currentSha = data.sha;
-                    renderMessages(); updateBanner();
-                    const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak admin és owner" };
-                    document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
-                    updateInputArea();
-                }
+                const newSha = data.sha;
+                messages = freshMsgs;
+                currentSha = newSha;
+                renderMessages(); updateBanner();
+                const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak admin és owner" };
+                document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
+                updateInputArea();
             } catch (e) { /* ignore */ }
         }, 5000);
     }
