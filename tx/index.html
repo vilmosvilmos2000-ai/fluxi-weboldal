@@ -31,8 +31,12 @@
         #chatScreen { display: none; height: 100vh; }
         #chatScreen.show { display: flex; }
         .sidebar { width: 220px; background: #0d0d0d; border-right: 1px solid #141414; display: flex; flex-direction: column; padding: 20px 12px; flex-shrink: 0; }
-        .sidebar .title { font-size: 1.2rem; font-weight: 700; padding: 0 10px 20px; letter-spacing: -0.5px; }
+        .sidebar-top { display: flex; align-items: center; justify-content: space-between; padding: 0 10px 20px; }
+        .sidebar .title { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.5px; }
         .sidebar .title span { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar .owner-btn { background: none; border: none; color: #444; font-size: 1.1rem; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: all 0.2s; display: none; }
+        .sidebar .owner-btn:hover { color: #f1c40f; background: rgba(241,196,15,0.1); }
+        .sidebar .owner-btn.show { display: block; }
         .sidebar .chnl { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: #666; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; margin-bottom: 2px; }
         .sidebar .chnl:hover { background: rgba(255,255,255,0.03); color: #888; }
         .sidebar .chnl.active { background: rgba(102,126,234,0.1); color: #667eea; }
@@ -44,6 +48,9 @@
         .main .header .hash { color: #666; font-size: 1.3rem; font-weight: 700; }
         .main .header h3 { font-size: 1rem; font-weight: 600; }
         .main .header .topic { color: #555; font-size: 0.8rem; margin-left: 15px; }
+        .banner { padding: 12px 24px; background: rgba(241,196,15,0.08); border-bottom: 1px solid rgba(241,196,15,0.15); display: none; align-items: center; gap: 10px; font-size: 0.9rem; color: #f1c40f; }
+        .banner.show { display: flex; }
+        .banner .banner-close { background: none; border: none; color: #555; cursor: pointer; font-size: 0.9rem; margin-left: auto; }
         .messages { flex: 1; overflow-y: auto; padding: 20px 24px; }
         .messages .empty { text-align: center; color: #333; padding: 60px 0; font-size: 0.9rem; }
         .msg { display: flex; gap: 14px; margin-bottom: 20px; animation: fadeIn 0.3s ease-out; position: relative; }
@@ -53,31 +60,53 @@
         .msg .body .name { font-size: 0.85rem; font-weight: 600; color: #667eea; display: flex; align-items: center; gap: 8px; }
         .msg .body .name .badge { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; animation: glow 1.2s ease-in-out infinite alternate; }
         .msg .body .name .badge.admin { color: #e74c3c; background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.25); }
-        .msg .body .name .badge.owner { color: #f1c40f; background: rgba(241,196,15,0.12); border: 1px solid rgba(241,196,15,0.25); }
+        .msg .body .name .badge.owner { color: #f1c40f; background: rgba(241,196,15,0.12); border: 1px solid rgba(241,196,15,0.25); animation-name: glowYellow; }
         .msg .body .name .badge.remember { color: #888; background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); animation: none; }
         @keyframes glow { from { box-shadow: 0 0 4px rgba(231,76,60,0.1); } to { box-shadow: 0 0 12px rgba(231,76,60,0.5); } }
-        .msg .body .name .badge.owner { animation-name: glowYellow; }
         @keyframes glowYellow { from { box-shadow: 0 0 4px rgba(241,196,15,0.1); } to { box-shadow: 0 0 12px rgba(241,196,15,0.5); } }
         .msg .body .name .time { color: #444; font-weight: 400; font-size: 0.75rem; }
         .msg .body .text { color: #ccc; font-size: 0.95rem; margin-top: 2px; word-break: break-word; }
+        .msg .pinned-badge { font-size: 0.7rem; color: #f1c40f; margin-left: 8px; }
         .msg .del-btn { position: absolute; right: 0; top: 0; background: none; border: none; color: #333; font-size: 0.85rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; display: none; }
         .msg .del-btn:hover { color: #e74c3c; background: rgba(231,76,60,0.1); }
         .msg .del-btn.show { display: block; }
+        .msg .admin-actions { position: absolute; right: 30px; top: 0; display: none; gap: 4px; }
+        .msg .admin-actions.show { display: flex; }
+        .msg .admin-actions button { background: none; border: none; color: #444; font-size: 0.7rem; cursor: pointer; padding: 4px 6px; border-radius: 4px; transition: all 0.2s; }
+        .msg .admin-actions button:hover { color: #f1c40f; background: rgba(241,196,15,0.1); }
         .input-area { padding: 16px 24px 20px; border-top: 1px solid #141414; }
-        .input-area .input-locked {
-            text-align: center; color: #444; font-size: 0.85rem; padding: 14px;
-            background: #0d0d0d; border-radius: 12px; border: 1px solid #141414;
-        }
+        .input-area .input-locked { text-align: center; color: #444; font-size: 0.85rem; padding: 14px; background: #0d0d0d; border-radius: 12px; border: 1px solid #141414; }
         .input-area .row { display: flex; gap: 12px; }
         .input-area input { flex: 1; background: #111; border: 1px solid #222; border-radius: 12px; padding: 14px 18px; color: #fff; font-size: 0.95rem; font-family: inherit; outline: none; transition: border-color 0.3s; }
         .input-area input:focus { border-color: #667eea; }
         .input-area .send-btn { padding: 14px 24px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; flex-shrink: 0; }
         .input-area .send-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.25); }
         .input-area .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: center; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: #111; border: 1px solid #1a1a1a; border-radius: 20px; padding: 30px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; animation: fadeIn 0.3s ease-out; }
+        .modal h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; }
+        .modal h2 span { background: linear-gradient(135deg, #f1c40f, #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .modal .item { background: #0a0a0a; border: 1px solid #141414; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .modal .item .label { font-size: 0.9rem; color: #ccc; }
+        .modal .item .label small { display: block; color: #555; font-size: 0.75rem; margin-top: 2px; }
+        .modal .item .act { background: none; border: 1px solid #222; border-radius: 8px; color: #888; padding: 6px 14px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+        .modal .item .act:hover { border-color: #f1c40f; color: #f1c40f; }
+        .modal .item .act.danger:hover { border-color: #e74c3c; color: #e74c3c; }
+        .modal .item .act.primary:hover { border-color: #667eea; color: #667eea; }
+        .modal .item .val { color: #888; font-size: 0.85rem; text-align: right; }
+        .modal .item input, .modal .item select { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 0.85rem; font-family: inherit; outline: none; width: 140px; }
+        .modal .item input:focus { border-color: #f1c40f; }
+        .modal .close-btn { display: block; margin: 20px auto 0; background: none; border: 1px solid #222; border-radius: 10px; color: #666; padding: 10px 30px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .modal .close-btn:hover { border-color: #888; color: #fff; }
+        .modal .toast { color: #2ecc71; font-size: 0.8rem; text-align: center; margin-top: 10px; display: none; }
+        .modal .toast.show { display: block; }
+
         .messages::-webkit-scrollbar { width: 6px; }
         .messages::-webkit-scrollbar-track { background: transparent; }
         .messages::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
-        @media (max-width: 600px) { .sidebar { width: 60px; padding: 20px 8px; } .sidebar .title { display: none; } .sidebar .chnl span:not(.hash) { display: none; } .main .header .topic { display: none; } }
+        @media (max-width: 600px) { .sidebar { width: 60px; padding: 20px 8px; } .sidebar .title { display: none; } .sidebar .owner-btn { display: none !important; } .sidebar .chnl span:not(.hash) { display: none; } .main .header .topic { display: none; } }
     </style>
 </head>
 <body>
@@ -106,7 +135,10 @@
 
 <div id="chatScreen">
     <div class="sidebar">
-        <div class="title"><span>TX</span></div>
+        <div class="sidebar-top">
+            <div class="title"><span>TX</span></div>
+            <button class="owner-btn" id="ownerBtn" onclick="openOwnerPanel()">&#x2699;&#xFE0F;</button>
+        </div>
         <div class="chnl active" data-channel="altalanos" onclick="switchChannel('altalanos')">
             <span class="hash">#</span>
             <span>&Aacute;ltal&aacute;nos</span>
@@ -131,6 +163,10 @@
             <h3 id="channelTitle">&Aacute;ltal&aacute;nos</h3>
             <span class="topic" id="channelTopic">Mindenki &iacute;rhat</span>
         </div>
+        <div class="banner" id="banner">
+            <span id="bannerText"></span>
+            <button class="banner-close" onclick="closeBanner()">&#x2716;</button>
+        </div>
         <div class="messages" id="msgContainer">
             <div class="empty" id="emptyMsg">Nincsenek &uuml;zenetek.</div>
         </div>
@@ -144,66 +180,104 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="ownerPanel">
+    <div class="modal">
+        <h2><span>Owner Panel</span></h2>
+        <div class="item">
+            <div class="label">1. Hirdet&eacute;s <small>Szerver szintu banner</small></div>
+            <input type="text" id="announcementInput" placeholder="pl. Szerver karbantartas..." maxlength="80">
+            <button class="act primary" onclick="setAnnouncement()">Ment</button>
+        </div>
+        <div class="item">
+            <div class="label">2. Csatorna tema <small>Aktualis csatorna leirasa</small></div>
+            <input type="text" id="topicInput" placeholder="pl. Itt beszelgetunk..." maxlength="60">
+            <button class="act primary" onclick="setTopic()">Ment</button>
+        </div>
+        <div class="item">
+            <div class="label">3. Zarol&aacute;s <small>Ki irhat az aktualis csatornaba?</small></div>
+            <select id="lockSelect"><option value="">Mindenki</option><option value="locked">Csak admin/owner</option></select>
+            <button class="act primary" onclick="setLock()">Alkalmaz</button>
+        </div>
+        <div class="item">
+            <div class="label">4. &Ouml;sszes torlese <small>Minden uzenet torlese</small></div>
+            <button class="act danger" onclick="clearAll()">Torol</button>
+        </div>
+        <div class="item">
+            <div class="label">5. Export&aacute;l&aacute;s <small>Uzenetek letoltese JSON</small></div>
+            <button class="act primary" onclick="exportMessages()">Letoltes</button>
+        </div>
+        <div class="item">
+            <div class="label">6. Kit&uuml;z&ouml;tt uzenet <small>Kijelolt uzenet kiemelese</small></div>
+            <div class="val" id="pinStatus">Nincs kituzve</div>
+            <button class="act primary" onclick="clearPin()">Torol</button>
+        </div>
+        <div class="item">
+            <div class="label">7. Felhaszn&aacute;l&oacute;k <small>Osszes kuld&otilde;</small></div>
+            <div class="val" id="userCount">0</div>
+            <button class="act" onclick="listUsers()">Mutat</button>
+        </div>
+        <div class="item">
+            <div class="label">8. &Uuml;zenetek sz&aacute;ma <small>Csatornankent</small></div>
+            <div class="val" id="msgStats">0</div>
+            <button class="act" onclick="showStats()">Frissit</button>
+        </div>
+        <div class="item">
+            <div class="label">9. Felhaszn&aacute;l&oacute; uzeneteinek torlese <small>Nev alapjan</small></div>
+            <input type="text" id="deleteUserInput" placeholder="Felhasznalo neve..." maxlength="20">
+            <button class="act danger" onclick="deleteUserMsgs()">Torol</button>
+        </div>
+        <div class="item">
+            <div class="label">10. Adatok null&aacute;z&aacute;sa <small>Gyari beallitasok</small></div>
+            <button class="act danger" onclick="factoryReset()">Nullaz</button>
+        </div>
+        <div class="toast" id="ownerToast">Kesz!</div>
+        <button class="close-btn" onclick="closeOwnerPanel()">Bez&aacute;r</button>
+    </div>
+</div>
+
 <script>
     const GH_TOKEN = "ghp_" + "YnynRCsd5dUGIBhE7e8H4QBC7eFy3Q3Il0G1";
     const GH_OWNER = "vilmosvilmos2000-ai";
     const GH_REPO = "fluxi-weboldal";
     const GH_PATH = "tx/messages.json";
     const GH_URL = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + GH_PATH;
-    const CHANNELS = { altalanos: "&Aacute;ltal&aacute;nos", asvanyok: "&Aacute;sv&aacute;nyok", ellensegek: "Ellens&eacute;gek", dinok: "Din&oacute;k" };
     const LOCKED_CHANNELS = ["ellensegek"];
 
     let messages = [];
     let currentSha = null;
     let pollTimer = null;
-    let rank = null; // null = user, "admin", "owner"
+    let rank = null;
     let userName = "";
     let currentChannel = "altalanos";
+    let meta = { announcement: "", topics: {}, locks: {}, pinned: null };
 
-    function escapeHtml(s) {
-        const d = document.createElement('div');
-        d.textContent = s;
-        return d.innerHTML;
-    }
-
-    function fmtDate(ts) {
-        const d = new Date(ts);
-        return d.getFullYear() + "." + String(d.getMonth()+1).padStart(2,'0') + "." + String(d.getDate()).padStart(2,'0') + " " + String(d.getHours()).padStart(2,'0') + ":" + String(d.getMinutes()).padStart(2,'0');
-    }
-
-    function canWrite() { return !LOCKED_CHANNELS.includes(currentChannel) || rank === "admin" || rank === "owner"; }
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function fmtDate(ts) { const d = new Date(ts); return d.getFullYear() + "." + String(d.getMonth()+1).padStart(2,'0') + "." + String(d.getDate()).padStart(2,'0') + " " + String(d.getHours()).padStart(2,'0') + ":" + String(d.getMinutes()).padStart(2,'0'); }
+    function canWrite() { return !meta.locks[currentChannel] || rank === "admin" || rank === "owner"; }
 
     function updateInputArea() {
-        const row = document.getElementById('inputRow');
-        const locked = document.getElementById('inputLocked');
-        if (canWrite()) {
-            row.style.display = 'flex';
-            locked.style.display = 'none';
-        } else {
-            row.style.display = 'none';
-            locked.style.display = 'block';
-        }
+        document.getElementById('inputRow').style.display = canWrite() ? 'flex' : 'none';
+        document.getElementById('inputLocked').style.display = canWrite() ? 'none' : 'block';
     }
 
     function switchChannel(ch) {
         currentChannel = ch;
         document.querySelectorAll('.chnl').forEach(el => el.classList.remove('active'));
         document.querySelector('.chnl[data-channel="' + ch + '"]').classList.add('active');
-        const names = { altalanos: "&Aacute;ltal&aacute;nos", asvanyok: "&Aacute;sv&aacute;nyok", ellensegek: "Ellens&eacute;gek", dinok: "Din&oacute;k" };
-        const topics = { altalanos: "Mindenki &iacute;rhat", asvanyok: "Mindenki &iacute;rhat", ellensegek: "Csak admin &eacute;s owner", dinok: "Mindenki &iacute;rhat" };
-        document.getElementById('channelTitle').innerHTML = names[ch];
-        document.getElementById('channelTopic').innerHTML = topics[ch];
+        const names = { altalanos: "Általános", asvanyok: "Ásványok", dinok: "Dinók", ellensegek: "Ellenségek" };
+        const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak admin és owner" };
+        document.getElementById('channelTitle').textContent = names[ch];
+        document.getElementById('channelTopic').textContent = meta.topics[ch] || defTopics[ch];
         updateInputArea();
         renderMessages();
     }
 
     function getBadgeHtml(r) {
-        if (r === "admin") return '<span class="badge admin">admin</span>';
         if (r === "owner") return '<span class="badge owner">owner</span>';
+        if (r === "admin") return '<span class="badge admin">admin</span>';
         if (r === "remember") return '<span class="badge remember">remember</span>';
         return '';
     }
-
     function getAvatarClass(r) {
         if (r === "owner") return 'av owner';
         if (r === "admin") return 'av admin';
@@ -215,31 +289,46 @@
         const empty = document.getElementById('emptyMsg');
         container.querySelectorAll('.msg').forEach(el => el.remove());
         const filtered = messages.filter(m => (m.c || "altalanos") === currentChannel);
-        if (filtered.length === 0) {
-            empty.style.display = 'block';
-            return;
-        }
+        if (filtered.length === 0) { empty.style.display = 'block'; return; }
         empty.style.display = 'none';
-        filtered.forEach((msg, idx) => {
+        filtered.forEach((msg) => {
             const globalIdx = messages.indexOf(msg);
             const div = document.createElement('div');
             div.className = 'msg';
             const name = msg.n || "Anonymous";
             const initial = name.charAt(0).toUpperCase();
-            const canDel = rank === "admin" || rank === "owner";
+            const isOwner = rank === "owner";
+            const isPinned = meta.pinned === globalIdx;
             div.innerHTML = '<div class="' + getAvatarClass(msg.r) + '">' + initial + '</div>'
                 + '<div class="body">'
-                + '<div class="name">' + escapeHtml(name) + getBadgeHtml(msg.r) + ' <span class="time">' + fmtDate(msg.t) + '</span></div>'
+                + '<div class="name">' + escapeHtml(name) + getBadgeHtml(msg.r) + ' <span class="time">' + fmtDate(msg.t) + '</span>' + (isPinned ? '<span class="pinned-badge">&#x1F4CC; Kit&uuml;zve</span>' : '') + '</div>'
                 + '<div class="text">' + escapeHtml(msg.m) + '</div>'
                 + '</div>'
-                + (canDel ? '<button class="del-btn show" onclick="deleteMsg(' + globalIdx + ')">&#x2716;</button>' : '');
+                + (isOwner ? '<div class="admin-actions show"><button onclick="pinMsg(' + globalIdx + ')" title="Kitűzés">&#x1F4CC;</button></div>' : '')
+                + (isOwner ? '<button class="del-btn show" onclick="deleteMsg(' + globalIdx + ')">&#x2716;</button>' : '');
             container.appendChild(div);
         });
         container.scrollTop = container.scrollHeight;
     }
 
+    function updateBanner() {
+        const b = document.getElementById('banner');
+        if (meta.announcement) { b.classList.add('show'); document.getElementById('bannerText').textContent = meta.announcement; }
+        else { b.classList.remove('show'); }
+    }
+    function closeBanner() { meta.announcement = ''; updateBanner(); saveMessages(); }
+
     function utf8ToBase64(str) { const encoder = new TextEncoder(); const bytes = encoder.encode(str); let binary = ''; for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]); return btoa(binary); }
     function base64ToUtf8(base64) { const binary = atob(base64); const bytes = new Uint8Array(binary.length); for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i); return new TextDecoder().decode(bytes); }
+
+    function extractMeta(arr) {
+        if (arr.length > 0 && arr[0]._meta) { meta = { ...meta, ...arr[0]._meta }; return arr.slice(1); }
+        return arr;
+    }
+    function buildData() {
+        const metaObj = { _meta: meta };
+        return [metaObj, ...messages];
+    }
 
     async function loadMessages() {
         try {
@@ -247,20 +336,26 @@
             if (res.status === 404) { messages = []; renderMessages(); return; }
             const data = await res.json();
             currentSha = data.sha;
-            messages = JSON.parse(base64ToUtf8(data.content));
-            if (!Array.isArray(messages)) messages = [];
-            renderMessages();
+            const raw = JSON.parse(base64ToUtf8(data.content));
+            if (!Array.isArray(raw)) raw = [];
+            messages = extractMeta(raw);
+            renderMessages(); updateBanner();
+            if (rank === "owner") document.getElementById('ownerBtn').classList.add('show');
+            const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak admin és owner" };
+            document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
+            updateInputArea();
         } catch (e) { console.error("load error", e); }
     }
 
     async function saveMessages() {
-        const content = utf8ToBase64(JSON.stringify(messages));
+        const data = buildData();
+        const content = utf8ToBase64(JSON.stringify(data));
         const body = { message: "update messages", content: content };
         if (currentSha) body.sha = currentSha;
         try {
             const res = await fetch(GH_URL, { method: "PUT", headers: { Authorization: "Bearer " + GH_TOKEN, "Content-Type": "application/json" }, body: JSON.stringify(body) });
-            const data = await res.json();
-            if (data.content) currentSha = data.content.sha;
+            const d = await res.json();
+            if (d.content) currentSha = d.content.sha;
             return true;
         } catch (e) { return false; }
     }
@@ -275,18 +370,15 @@
         const msg = { n: userName, m: text, t: Date.now(), c: currentChannel };
         if (rank) msg.r = rank;
         messages.push(msg);
-        renderMessages();
-        input.value = '';
-        const ok = await saveMessages();
-        if (!ok) { messages.pop(); renderMessages(); alert("Hiba a mentes soran."); }
+        renderMessages(); input.value = '';
+        if (!(await saveMessages())) { messages.pop(); renderMessages(); alert("Hiba a mentes soran."); }
         btn.disabled = false;
     }
 
     async function deleteMsg(index) {
-        if (rank !== "admin" && rank !== "owner") return;
+        if (rank !== "owner") return;
         messages.splice(index, 1);
-        renderMessages();
-        await saveMessages();
+        renderMessages(); await saveMessages();
     }
 
     function startPolling() {
@@ -296,12 +388,18 @@
                 const res = await fetch(GH_URL, { headers: { Authorization: "Bearer " + GH_TOKEN } });
                 if (res.status === 404) return;
                 const data = await res.json();
-                const fresh = JSON.parse(base64ToUtf8(data.content));
-                if (!Array.isArray(fresh)) return;
-                if (JSON.stringify(fresh) !== JSON.stringify(messages)) {
-                    messages = fresh;
+                const raw = JSON.parse(base64ToUtf8(data.content));
+                if (!Array.isArray(raw)) return;
+                const oldMeta = JSON.stringify(meta);
+                const oldMsgs = JSON.stringify(messages);
+                const freshMsgs = extractMeta(raw);
+                if (JSON.stringify(freshMsgs) !== oldMsgs || JSON.stringify(meta) !== oldMeta) {
+                    messages = freshMsgs;
                     currentSha = data.sha;
-                    renderMessages();
+                    renderMessages(); updateBanner();
+                    const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak admin és owner" };
+                    document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
+                    updateInputArea();
                 }
             } catch (e) { /* ignore */ }
         }, 5000);
@@ -317,22 +415,9 @@
             else if (code === '7308') rank = "remember";
             else rank = null;
             const saved = localStorage.getItem('tx_name');
-            if (saved) {
-                userName = saved;
-                document.getElementById('codeScreen').classList.remove('show');
-                document.getElementById('chatScreen').classList.add('show');
-                loadMessages();
-                startPolling();
-                updateInputArea();
-            } else {
-                document.getElementById('codeScreen').classList.remove('show');
-                document.getElementById('nameScreen').classList.add('show');
-            }
-        } else {
-            err.classList.add('show');
-            input.value = '';
-            input.focus();
-        }
+            if (saved) { userName = saved; enterChat(); }
+            else { document.getElementById('codeScreen').classList.remove('show'); document.getElementById('nameScreen').classList.add('show'); }
+        } else { err.classList.add('show'); input.value = ''; input.focus(); }
     }
 
     function setName() {
@@ -340,14 +425,75 @@
         const err = document.getElementById('nameErr');
         const name = input.value.trim();
         if (!name) { err.classList.add('show'); return; }
-        err.classList.remove('show');
-        userName = name;
-        localStorage.setItem('tx_name', name);
+        err.classList.remove('show'); userName = name; localStorage.setItem('tx_name', name); enterChat();
+    }
+
+    function enterChat() {
+        document.getElementById('codeScreen').classList.remove('show');
         document.getElementById('nameScreen').classList.remove('show');
         document.getElementById('chatScreen').classList.add('show');
-        loadMessages();
-        startPolling();
-        updateInputArea();
+        if (rank === "owner") document.getElementById('ownerBtn').classList.add('show');
+        loadMessages(); startPolling(); updateInputArea();
+    }
+
+    /* Owner panel */
+    function openOwnerPanel() { document.getElementById('ownerPanel').classList.add('show'); document.getElementById('announcementInput').value = meta.announcement || ''; document.getElementById('topicInput').value = meta.topics[currentChannel] || ''; document.getElementById('lockSelect').value = meta.locks[currentChannel] ? 'locked' : ''; updatePinStatus(); }
+    function closeOwnerPanel() { document.getElementById('ownerPanel').classList.remove('show'); }
+    function showToast(m) { const t = document.getElementById('ownerToast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+
+    async function setAnnouncement() {
+        const v = document.getElementById('announcementInput').value.trim();
+        meta.announcement = v; updateBanner(); await saveMessages(); showToast("Hirdetés mentve!");
+    }
+    async function setTopic() {
+        const v = document.getElementById('topicInput').value.trim();
+        if (v) meta.topics[currentChannel] = v; else delete meta.topics[currentChannel];
+        const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak admin és owner" };
+        document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
+        await saveMessages(); showToast("Téma frissítve!");
+    }
+    async function setLock() {
+        const v = document.getElementById('lockSelect').value;
+        if (v === 'locked') meta.locks[currentChannel] = true; else delete meta.locks[currentChannel];
+        updateInputArea(); await saveMessages(); showToast("Zárolás frissítve!");
+    }
+    async function clearAll() {
+        if (!confirm("Biztosan torlod az osszes uzenetet?")) return;
+        messages = []; renderMessages(); await saveMessages(); showToast("Uzenetek torolve!");
+    }
+    function exportMessages() {
+        const data = buildData();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "tx_export.json"; a.click(); showToast("Export kesz!");
+    }
+    function updatePinStatus() { document.getElementById('pinStatus').textContent = meta.pinned !== null ? "Kitűzve" : "Nincs kitűzve"; }
+    async function pinMsg(idx) {
+        if (rank !== "owner") return;
+        meta.pinned = meta.pinned === idx ? null : idx;
+        renderMessages(); await saveMessages();
+    }
+    async function clearPin() { meta.pinned = null; renderMessages(); updatePinStatus(); await saveMessages(); showToast("Kitűzés eltávolítva!"); }
+    function listUsers() {
+        const users = [...new Set(messages.map(m => m.n || "Anonymous"))];
+        document.getElementById('userCount').textContent = users.length + " (" + users.join(", ") + ")";
+    }
+    function showStats() {
+        const total = messages.length;
+        const byChannel = {};
+        messages.forEach(m => { const c = m.c || "altalanos"; byChannel[c] = (byChannel[c] || 0) + 1; });
+        const parts = Object.entries(byChannel).map(([k,v]) => k + ": " + v);
+        document.getElementById('msgStats').textContent = total + " (" + parts.join(", ") + ")";
+    }
+    async function deleteUserMsgs() {
+        const name = document.getElementById('deleteUserInput').value.trim();
+        if (!name || !confirm("Biztosan torlod " + name + " osszes uzenetet?")) return;
+        messages = messages.filter(m => (m.n || "Anonymous") !== name);
+        renderMessages(); await saveMessages(); showToast(name + " uzenetei torolve!");
+    }
+    async function factoryReset() {
+        if (!confirm("Biztosan nullazod az osszes adatot?")) return;
+        meta = { announcement: "", topics: {}, locks: {}, pinned: null };
+        messages = []; renderMessages(); updateBanner(); updateInputArea(); await saveMessages(); showToast("Gyari beallitasok visszaallitva!");
     }
 </script>
 </body>
