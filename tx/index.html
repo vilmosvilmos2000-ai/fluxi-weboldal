@@ -127,7 +127,7 @@
         <div class="icon">&#x1F464;</div>
         <h2>What is your name?</h2>
         <p>This will be shown on your messages.</p>
-        <input type="text" id="nameInput" class="text-input" placeholder="Enter your name..." maxlength="20" onkeydown="if(event.key==='Enter')setName()">
+        <input type="text" id="nameInput" class="text-input" placeholder="Enter your name..." onkeydown="if(event.key==='Enter')setName()">
         <div class="err" id="nameErr">Please enter a name.</div>
         <button class="btn" onclick="setName()">Continue</button>
     </div>
@@ -185,12 +185,12 @@
         <h2><span>Owner Panel</span></h2>
         <div class="item">
             <div class="label">1. Hirdet&eacute;s <small>Szerver szintu banner</small></div>
-            <input type="text" id="announcementInput" placeholder="pl. Szerver karbantartas..." maxlength="80">
+            <input type="text" id="announcementInput" placeholder="pl. Szerver karbantartas...">
             <button class="act primary" onclick="setAnnouncement()">Ment</button>
         </div>
         <div class="item">
             <div class="label">2. Csatorna tema <small>Aktualis csatorna leirasa</small></div>
-            <input type="text" id="topicInput" placeholder="pl. Itt beszelgetunk..." maxlength="60">
+            <input type="text" id="topicInput" placeholder="pl. Itt beszelgetunk...">
             <button class="act primary" onclick="setTopic()">Ment</button>
         </div>
         <div class="item">
@@ -223,7 +223,7 @@
         </div>
         <div class="item">
             <div class="label">9. Felhaszn&aacute;l&oacute; uzeneteinek torlese <small>Nev alapjan</small></div>
-            <input type="text" id="deleteUserInput" placeholder="Felhasznalo neve..." maxlength="20">
+            <input type="text" id="deleteUserInput" placeholder="Felhasznalo neve...">
             <button class="act danger" onclick="deleteUserMsgs()">Torol</button>
         </div>
         <div class="item">
