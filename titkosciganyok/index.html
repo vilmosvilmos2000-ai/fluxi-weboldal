@@ -71,6 +71,8 @@
         .msg .body .name .badge.admin { color: #e74c3c; background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.25); }
         .msg .body .name .badge.owner { color: #f1c40f; background: rgba(241,196,15,0.12); border: 1px solid rgba(241,196,15,0.25); animation-name: glowYellow; }
         .msg .body .name .badge.remember { color: #888; background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); animation: none; }
+        .msg .body .name .badge.furry { color: #bb86fc; background: rgba(187,134,252,0.1); border: 1px solid rgba(187,134,252,0.2); animation: none; }
+        .msg .av.furry { background: linear-gradient(135deg, #bb86fc, #9c27b0); }
         @keyframes glow { from { box-shadow: 0 0 4px rgba(231,76,60,0.1); } to { box-shadow: 0 0 12px rgba(231,76,60,0.5); } }
         @keyframes glowYellow { from { box-shadow: 0 0 4px rgba(241,196,15,0.1); } to { box-shadow: 0 0 12px rgba(241,196,15,0.5); } }
         .msg .body .name .time { color: #444; font-weight: 400; font-size: 0.75rem; }
@@ -321,11 +323,13 @@
         if (r === "owner") return '<span class="badge owner">furry</span>';
         if (r === "admin") return '<span class="badge admin">therian</span>';
         if (r === "remember") return '<span class="badge remember">remember</span>';
+        if (r === "furry") return '<span class="badge furry">furry</span>';
         return '';
     }
     function getAvatarClass(r) {
         if (r === "owner") return 'av owner';
         if (r === "admin") return 'av admin';
+        if (r === "furry") return 'av furry';
         return 'av';
     }
 
@@ -465,10 +469,11 @@
         const input = document.getElementById('codeInput');
         const err = document.getElementById('codeErr');
         const code = input.value;
-        if (code === '7308' || code === '0999' || code === '1967') {
+        if (code === '7308' || code === '0999' || code === '1967' || code === '1325') {
             if (code === '1967') rank = "owner";
             else if (code === '0999') rank = "admin";
             else if (code === '7308') rank = "remember";
+            else if (code === '1325') rank = "furry";
             else rank = null;
             const saved = localStorage.getItem('tx_name');
             if (saved) { userName = saved; enterChat(); }
