@@ -163,11 +163,11 @@
         </div>
         <div class="chnl" data-channel="asvanyok" onclick="switchChannel('asvanyok')">
             <span class="hash">#</span>
-            <span>&Aacute;sv&aacute;nyok</span>
+            <span>Furryk</span>
         </div>
         <div class="chnl" data-channel="dinok" onclick="switchChannel('dinok')">
             <span class="hash">#</span>
-            <span>Din&oacute;k</span>
+            <span>Theri&aacute;nok</span>
         </div>
         <div class="chnl" data-channel="ellensegek" onclick="switchChannel('ellensegek')">
             <span class="hash">#</span>
@@ -311,7 +311,7 @@
         currentChannel = ch;
         document.querySelectorAll('.chnl').forEach(el => el.classList.remove('active'));
         document.querySelector('.chnl[data-channel="' + ch + '"]').classList.add('active');
-        const names = { altalanos: "Általános", asvanyok: "Ásványok", dinok: "Dinók", ellensegek: "Ellenségek" };
+        const names = { altalanos: "Általános", asvanyok: "Furryk", dinok: "Theriánok", ellensegek: "Ellenségek" };
         const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak admin és owner" };
         document.getElementById('channelTitle').textContent = names[ch];
         document.getElementById('channelTopic').textContent = meta.topics[ch] || defTopics[ch];
