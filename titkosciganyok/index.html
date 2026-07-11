@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>titkos cigányok - fluxi</title>
+    <style>
+        :root { --accent: #667eea; --accent2: #764ba2; --accent-rgb: 102,126,234; --accent2-rgb: 118,75,162; --bg-body: #0a0a0a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-body);
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #chatScreen { background: var(--bg-body); background-size: cover; background-position: center; background-attachment: fixed; }
+        .screen { display: none; height: 100vh; }
+        .screen.show { display: flex; justify-content: center; align-items: center; }
+        .box { text-align: center; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .box .icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .box p { color: #555; font-size: 0.9rem; margin-bottom: 25px; }
+        .box input { background: #111; border: 1px solid #222; border-radius: 14px; padding: 16px 22px; color: #fff; font-size: 1.5rem; font-family: inherit; text-align: center; letter-spacing: 8px; width: 200px; outline: none; transition: border-color 0.3s; }
+        .box input:focus { border-color: var(--accent); }
+        .box input.text-input { font-size: 1.1rem; letter-spacing: 0; width: 280px; }
+        .box .err { color: #e74c3c; font-size: 0.85rem; margin-top: 12px; display: none; }
+        .box .err.show { display: block; }
+        .box .btn { display: block; margin: 18px auto 0; padding: 14px 50px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .box .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(var(--accent-rgb),0.3); }
+
+        #chatScreen { display: none; height: 100vh; position: relative; }
+        #chatScreen.show { display: flex; }
+        #chatScreen::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.015) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+        .main, .sidebar { position: relative; z-index: 1; }
+        .sidebar { width: 220px; background: rgba(13,13,13,0.95); border-right: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; padding: 20px 12px; flex-shrink: 0; backdrop-filter: blur(10px); }
+        .sidebar-top { display: flex; align-items: center; justify-content: space-between; padding: 0 10px 20px; }
+        .sidebar .title { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar .title span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar .owner-btn { background: none; border: none; color: #444; font-size: 1.1rem; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: all 0.2s; display: none; }
+        .sidebar .owner-btn:hover { color: #f1c40f; background: rgba(241,196,15,0.1); }
+        .sidebar .owner-btn.show { display: block; }
+        .sidebar .chnl { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: #555; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.25s; margin-bottom: 2px; position: relative; }
+        .sidebar .chnl:hover { background: rgba(255,255,255,0.04); color: #999; }
+        .sidebar .chnl.active { background: rgba(var(--accent-rgb),0.08); color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+        .sidebar .chnl .hash { font-weight: 700; }
+        .sidebar .chnl.active .hash { color: var(--accent); }
+        .sidebar .chnl .lock-icon { font-size: 0.7rem; margin-left: auto; color: #444; }
+        .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .main .header { padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 10px; background: rgba(10,10,10,0.6); backdrop-filter: blur(10px); }
+        .main .header .hash { color: #666; font-size: 1.3rem; font-weight: 700; }
+        .main .header h3 { font-size: 1rem; font-weight: 600; }
+        .main .header .topic { color: #555; font-size: 0.8rem; margin-left: 15px; }
+        .banner { padding: 12px 24px; background: rgba(241,196,15,0.06); border-bottom: 1px solid rgba(241,196,15,0.12); display: none; align-items: center; gap: 10px; font-size: 0.9rem; color: #f1c40f; backdrop-filter: blur(4px); }
+        .banner.show { display: flex; }
+        .banner .banner-close { background: none; border: none; color: #555; cursor: pointer; font-size: 0.9rem; margin-left: auto; }
+        .banner .banner-close:hover { color: #f1c40f; }
+        .countdown { padding: 10px 24px; background: rgba(var(--accent-rgb),0.06); border-bottom: 1px solid rgba(var(--accent-rgb),0.12); display: none; align-items: center; justify-content: space-between; font-size: 0.85rem; backdrop-filter: blur(4px); }
+        .countdown.show { display: flex; }
+        .countdown #countdownTimer { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; text-shadow: 0 0 20px rgba(var(--accent-rgb),0.3); }
+        .messages { flex: 1; overflow-y: auto; padding: 20px 24px; }
+        .messages .empty { text-align: center; color: #333; padding: 60px 0; font-size: 0.9rem; }
+        .msg { display: flex; gap: 14px; margin-bottom: 16px; animation: fadeIn 0.3s ease-out; position: relative; padding: 10px 14px; border-radius: 12px; transition: background 0.2s; }
+        .msg:hover { background: rgba(255,255,255,0.02); }
+        .msg .av { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+        .msg .av.admin { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .msg .av.owner { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+        .msg .body .name { font-size: 0.85rem; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+        .msg .body .name .badge { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; animation: glow 1.2s ease-in-out infinite alternate; }
+        .msg .body .name .badge.admin { color: #e74c3c; background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.25); }
+        .msg .body .name .badge.owner { color: #f1c40f; background: rgba(241,196,15,0.12); border: 1px solid rgba(241,196,15,0.25); animation-name: glowYellow; }
+        .msg .body .name .badge.remember { color: #888; background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); animation: none; }
+        @keyframes glow { from { box-shadow: 0 0 4px rgba(231,76,60,0.1); } to { box-shadow: 0 0 12px rgba(231,76,60,0.5); } }
+        @keyframes glowYellow { from { box-shadow: 0 0 4px rgba(241,196,15,0.1); } to { box-shadow: 0 0 12px rgba(241,196,15,0.5); } }
+        .msg .body .name .time { color: #444; font-weight: 400; font-size: 0.75rem; }
+        .msg .body .text { color: #ccc; font-size: 0.95rem; margin-top: 2px; word-break: break-word; }
+        .msg .pinned-badge { font-size: 0.7rem; color: #f1c40f; margin-left: 8px; }
+        .msg .del-btn { position: absolute; right: 0; top: 0; background: none; border: none; color: #333; font-size: 0.85rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; display: none; }
+        .msg .del-btn:hover { color: #e74c3c; background: rgba(231,76,60,0.1); }
+        .msg .del-btn.show { display: block; }
+        .msg .admin-actions { position: absolute; right: 30px; top: 0; display: none; gap: 4px; }
+        .msg .admin-actions.show { display: flex; }
+        .msg .admin-actions button { background: none; border: none; color: #444; font-size: 0.7rem; cursor: pointer; padding: 4px 6px; border-radius: 4px; transition: all 0.2s; }
+        .msg .admin-actions button:hover { color: #f1c40f; background: rgba(241,196,15,0.1); }
+        .input-area { padding: 16px 24px 20px; border-top: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .input-area::before { content: ''; position: absolute; top: -1px; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: inputGlow 3s ease-in-out infinite; }
+        @keyframes inputGlow { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .input-area .input-locked { text-align: center; color: #444; font-size: 0.85rem; padding: 14px; background: #0d0d0d; border-radius: 12px; border: 1px solid #141414; }
+        .input-area .row { display: flex; gap: 12px; position: relative; }
+        .input-area .input-wrap { flex: 1; position: relative; border-radius: 14px; padding: 2px; background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); transition: all 0.4s; }
+        .input-area .input-wrap:focus-within { background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05)); box-shadow: 0 0 20px rgba(255,255,255,0.08), inset 0 0 20px rgba(255,255,255,0.02); }
+        .input-area .input-wrap input { display: block; width: 100%; background: #0a0a0a; border: none; border-radius: 12px; padding: 14px 18px; color: #fff; font-size: 0.95rem; font-family: inherit; outline: none; }
+        .input-area .input-wrap input::placeholder { color: #333; }
+        .input-area .send-btn { padding: 14px 24px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; flex-shrink: 0; position: relative; overflow: hidden; }
+        .input-area .send-btn::after { content: ''; position: absolute; inset: 0; border-radius: 12px; background: linear-gradient(135deg, transparent, rgba(255,255,255,0.15)); opacity: 0; transition: opacity 0.3s; }
+        .input-area .send-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(var(--accent-rgb),0.3); }
+        .input-area .send-btn:hover::after { opacity: 1; }
+        .input-area .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 200; justify-content: center; align-items: center; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: rgba(17,17,17,0.95); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 30px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; animation: fadeIn 0.3s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .modal h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; }
+        .modal h2 span { background: linear-gradient(135deg, #f1c40f, #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .modal .item { background: #0a0a0a; border: 1px solid #141414; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .modal .item .label { font-size: 0.9rem; color: #ccc; }
+        .modal .item .label small { display: block; color: #555; font-size: 0.75rem; margin-top: 2px; }
+        .modal .item .act { background: none; border: 1px solid #222; border-radius: 8px; color: #888; padding: 6px 14px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+        .modal .item .act:hover { border-color: #f1c40f; color: #f1c40f; }
+        .modal .item .act.danger:hover { border-color: #e74c3c; color: #e74c3c; }
+        .modal .item .act.primary:hover { border-color: var(--accent); color: var(--accent); }
+        .modal .item .val { color: #888; font-size: 0.85rem; text-align: right; }
+        .modal .item input, .modal .item select { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 0.85rem; font-family: inherit; outline: none; width: 140px; }
+        .modal .item input:focus { border-color: #f1c40f; }
+        .modal .close-btn { display: block; margin: 20px auto 0; background: none; border: 1px solid #222; border-radius: 10px; color: #666; padding: 10px 30px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .modal .close-btn:hover { border-color: #888; color: #fff; }
+        .modal .section-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #555; padding: 8px 0 4px; margin: 10px 0 0; border-top: 1px solid #141414; }
+        .modal .toast { color: #2ecc71; font-size: 0.8rem; text-align: center; margin-top: 10px; display: none; }
+        .modal .toast.show { display: block; }
+
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+        @media (max-width: 600px) { .sidebar { width: 56px; padding: 16px 6px; } .sidebar .title { display: none; } .sidebar .owner-btn { display: none !important; } .sidebar .chnl { justify-content: center; padding: 10px 0; } .sidebar .chnl span:not(.hash) { display: none; } .sidebar .chnl .lock-icon { display: none; } .main .header .topic { display: none; } .input-area { padding: 12px 12px 16px; } .input-area .send-btn { padding: 14px 16px; font-size: 0.85rem; } }
+    </style>
+</head>
+<body>
+
+<div id="codeScreen" class="screen show">
+    <div class="box">
+        <div class="lock">&#x1F512;</div>
+        <h2>Kód szükséges</h2>
+        <p>Írd be a kódot a belépéshez.</p>
+        <input type="password" id="codeInput" maxlength="4" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Enter')checkCode()">
+        <div class="err" id="codeErr">Hibás kód. Próbáld újra.</div>
+        <button class="btn" onclick="checkCode()">Belépés</button>
+    </div>
+</div>
+
+<div id="nameScreen" class="screen">
+    <div class="box">
+        <div class="icon">&#x1F464;</div>
+        <h2>Mi a neved?</h2>
+        <p>Ez fog megjelenni az üzeneteidnél.</p>
+        <input type="text" id="nameInput" class="text-input" placeholder="Add meg a neved..." onkeydown="if(event.key==='Enter')setName()">
+        <div class="err" id="nameErr">Kérlek adj meg egy nevet.</div>
+        <button class="btn" onclick="setName()">Folytatás</button>
+    </div>
+</div>
+
+<div id="chatScreen">
+    <div class="sidebar">
+        <div class="sidebar-top">
+            <div class="title"><span>TC</span></div>
+            <button class="owner-btn" id="ownerBtn" onclick="openOwnerPanel()">&#x2699;&#xFE0F;</button>
+        </div>
+        <div class="chnl active" data-channel="altalanos" onclick="switchChannel('altalanos')">
+            <span class="hash">#</span>
+            <span>&Aacute;ltal&aacute;nos</span>
+        </div>
+        <div class="chnl" data-channel="asvanyok" onclick="switchChannel('asvanyok')">
+            <span class="hash">#</span>
+            <span>&Aacute;sv&aacute;nyok</span>
+        </div>
+        <div class="chnl" data-channel="dinok" onclick="switchChannel('dinok')">
+            <span class="hash">#</span>
+            <span>Din&oacute;k</span>
+        </div>
+        <div class="chnl" data-channel="ellensegek" onclick="switchChannel('ellensegek')">
+            <span class="hash">#</span>
+            <span>Ellens&eacute;gek</span>
+            <span class="lock-icon">&#x1F512;</span>
+        </div>
+    </div>
+    <div class="main">
+        <div class="header">
+            <span class="hash">#</span>
+            <h3 id="channelTitle">&Aacute;ltal&aacute;nos</h3>
+            <span class="topic" id="channelTopic">Mindenki &iacute;rhat</span>
+        </div>
+        <div class="banner" id="banner">
+            <span id="bannerText"></span>
+            <button class="banner-close" onclick="closeBanner()">&#x2716;</button>
+        </div>
+        <div class="countdown" id="countdownBar" style="display:none">
+            <span id="countdownLabel"></span>
+            <span id="countdownTimer"></span>
+        </div>
+        <div class="messages" id="msgContainer">
+            <div class="empty" id="emptyMsg">Nincsenek üzenetek.</div>
+        </div>
+        <div class="input-area" id="inputArea">
+            <div class="row" id="inputRow">
+                <div class="input-wrap"><input type="text" id="msgInput" placeholder="Írj üzenetet..." onkeydown="if(event.key==='Enter')sendMsg()"></div>
+                <button class="send-btn" id="sendBtn" onclick="sendMsg()">Küldés</button>
+            </div>
+            <div class="input-locked" id="inputLocked" style="display:none">Csak furry és therian írhat ide.</div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="ownerPanel">
+    <div class="modal">
+        <h2><span>Furry Panel</span></h2>
+        <div class="item">
+            <div class="label">1. Hirdet&eacute;s <small>Szerver szintu banner</small></div>
+            <input type="text" id="announcementInput" placeholder="pl. Szerver karbantartas...">
+            <button class="act primary" onclick="setAnnouncement()">Ment</button>
+        </div>
+        <div class="item">
+            <div class="label">2. Csatorna tema <small>Aktualis csatorna leirasa</small></div>
+            <input type="text" id="topicInput" placeholder="pl. Itt beszelgetunk...">
+            <button class="act primary" onclick="setTopic()">Ment</button>
+        </div>
+        <div class="item">
+            <div class="label">3. Zarol&aacute;s <small>Ki irhat az aktualis csatornaba?</small></div>
+            <select id="lockSelect"><option value="">Mindenki</option><option value="locked">Csak furry/therian</option></select>
+            <button class="act primary" onclick="setLock()">Alkalmaz</button>
+        </div>
+        <div class="item">
+            <div class="label">4. &Ouml;sszes torlese <small>Minden uzenet torlese</small></div>
+            <button class="act danger" onclick="clearAll()">Torol</button>
+        </div>
+        <div class="item">
+            <div class="label">5. Export&aacute;l&aacute;s <small>Uzenetek letoltese JSON</small></div>
+            <button class="act primary" onclick="exportMessages()">Letoltes</button>
+        </div>
+        <div class="item">
+            <div class="label">6. Kit&uuml;z&ouml;tt uzenet <small>Kijelolt uzenet kiemelese</small></div>
+            <div class="val" id="pinStatus">Nincs kituzve</div>
+            <button class="act primary" onclick="clearPin()">Torol</button>
+        </div>
+        <div class="item">
+            <div class="label">7. Felhaszn&aacute;l&oacute;k <small>Osszes kuld&otilde;</small></div>
+            <div class="val" id="userCount">0</div>
+            <button class="act" onclick="listUsers()">Mutat</button>
+        </div>
+        <div class="item">
+            <div class="label">8. &Uuml;zenetek sz&aacute;ma <small>Csatornankent</small></div>
+            <div class="val" id="msgStats">0</div>
+            <button class="act" onclick="showStats()">Frissit</button>
+        </div>
+        <div class="item">
+            <div class="label">9. Felhaszn&aacute;l&oacute; uzeneteinek torlese <small>Nev alapjan</small></div>
+            <input type="text" id="deleteUserInput" placeholder="Felhasznalo neve...">
+            <button class="act danger" onclick="deleteUserMsgs()">Torol</button>
+        </div>
+        <div class="item">
+            <div class="label">10. Adatok null&aacute;z&aacute;sa <small>Gyari beallitasok</small></div>
+            <button class="act danger" onclick="factoryReset()">Nullaz</button>
+        </div>
+        <div class="section-title">Dizájn</div>
+        <div class="item">
+            <div class="label">11. Akcentus sz&iacute;n <small>Fo szin megvaltoztatasa</small></div>
+            <input type="color" id="accentInput" value="#667eea" onchange="setAccent(this.value)" style="width:50px;height:36px;padding:2px;border-radius:8px;background:transparent;border:1px solid #222;cursor:pointer">
+        </div>
+        <div class="item">
+            <div class="label">12. H&aacute;tt&eacute;rk&eacute;p <small>URL a chat m&ouml;g&ouml;</small></div>
+            <input type="text" id="bgInput" placeholder="https://..." style="width:140px" value="">
+            <button class="act primary" onclick="setBgImage()">Be&aacute;ll&iacute;t</button>
+        </div>
+        <div class="section-title">Események</div>
+        <div class="item">
+            <div class="label">13. Lass&uacute; m&oacute;d <small>Varakozas masodpercben (0 = ki)</small></div>
+            <input type="number" id="slowModeInput" min="0" max="300" value="0" style="width:60px">
+            <button class="act primary" onclick="setSlowMode()">Be&aacute;ll&iacute;t</button>
+        </div>
+        <div class="item">
+            <div class="label">14. Esem&eacute;ny sz&aacute;ml&aacute;l&oacute; <small>Datum/idopont visszaszamlalo</small></div>
+            <input type="text" id="eventLabelInput" placeholder="Cimke" style="width:60px" value="">
+            <input type="datetime-local" id="eventTimeInput" style="width:140px">
+            <button class="act primary" onclick="setEvent()">Be&aacute;ll&iacute;t</button>
+            <button class="act danger" onclick="clearEvent()">Torol</button>
+        </div>
+        <div class="toast" id="ownerToast">Kesz!</div>
+        <button class="close-btn" onclick="closeOwnerPanel()">Bez&aacute;r</button>
+    </div>
+</div>
+
+<script>
+    const GH_TOKEN = "ghp_" + "YnynRCsd5dUGIBhE7e8H4QBC7eFy3Q3Il0G1";
+    const GH_OWNER = "vilmosvilmos2000-ai";
+    const GH_REPO = "fluxi-weboldal";
+    const GH_PATH = "titkosciganyok/messages.json";
+    const GH_URL = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + GH_PATH;
+    const LOCKED_CHANNELS = ["ellensegek"];
+
+    let messages = [];
+    let currentSha = null;
+    let pollTimer = null;
+    let countdownTimer = null;
+    let lastMsgTime = 0;
+    let rank = null;
+    let userName = "";
+    let currentChannel = "altalanos";
+    let meta = { announcement: "", topics: {}, locks: {}, pinned: null, _v: 0, accent: "#667eea", bgImage: "", slowMode: 0, eventTime: 0, eventLabel: "" };
+
+    function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function fmtDate(ts) { const d = new Date(ts); return d.getFullYear() + "." + String(d.getMonth()+1).padStart(2,'0') + "." + String(d.getDate()).padStart(2,'0') + " " + String(d.getHours()).padStart(2,'0') + ":" + String(d.getMinutes()).padStart(2,'0'); }
+    function canWrite() { return !meta.locks[currentChannel] || rank === "admin" || rank === "owner"; }
+
+    function updateInputArea() {
+        document.getElementById('inputRow').style.display = canWrite() ? 'flex' : 'none';
+        document.getElementById('inputLocked').style.display = canWrite() ? 'none' : 'block';
+    }
+
+    function switchChannel(ch) {
+        currentChannel = ch;
+        document.querySelectorAll('.chnl').forEach(el => el.classList.remove('active'));
+        document.querySelector('.chnl[data-channel="' + ch + '"]').classList.add('active');
+        const names = { altalanos: "Általános", asvanyok: "Ásványok", dinok: "Dinók", ellensegek: "Ellenségek" };
+        const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak furry és therian" };
+        document.getElementById('channelTitle').textContent = names[ch];
+        document.getElementById('channelTopic').textContent = meta.topics[ch] || defTopics[ch];
+        updateInputArea();
+        renderMessages();
+    }
+
+    function getBadgeHtml(r) {
+        if (r === "owner") return '<span class="badge owner">furry</span>';
+        if (r === "admin") return '<span class="badge admin">therian</span>';
+        if (r === "remember") return '<span class="badge remember">remember</span>';
+        return '';
+    }
+    function getAvatarClass(r) {
+        if (r === "owner") return 'av owner';
+        if (r === "admin") return 'av admin';
+        return 'av';
+    }
+
+    function renderMessages() {
+        const container = document.getElementById('msgContainer');
+        const empty = document.getElementById('emptyMsg');
+        container.querySelectorAll('.msg').forEach(el => el.remove());
+        const filtered = messages.filter(m => (m.c || "altalanos") === currentChannel);
+        if (filtered.length === 0) { empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+        filtered.forEach((msg) => {
+            const globalIdx = messages.indexOf(msg);
+            const div = document.createElement('div');
+            div.className = 'msg';
+            const name = msg.n || "Anonymous";
+            const initial = name.charAt(0).toUpperCase();
+            const isOwner = rank === "owner";
+            const isPinned = meta.pinned === globalIdx;
+            div.innerHTML = '<div class="' + getAvatarClass(msg.r) + '">' + initial + '</div>'
+                + '<div class="body">'
+                + '<div class="name">' + escapeHtml(name) + getBadgeHtml(msg.r) + ' <span class="time">' + fmtDate(msg.t) + '</span>' + (isPinned ? '<span class="pinned-badge">&#x1F4CC; Kit&uuml;zve</span>' : '') + '</div>'
+                + '<div class="text">' + escapeHtml(msg.m) + '</div>'
+                + '</div>'
+                + (isOwner ? '<div class="admin-actions show"><button onclick="pinMsg(' + globalIdx + ')" title="Kitűzés">&#x1F4CC;</button></div>' : '')
+                + (isOwner ? '<button class="del-btn show" onclick="deleteMsg(' + globalIdx + ')">&#x2716;</button>' : '');
+            container.appendChild(div);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function updateBanner() {
+        const b = document.getElementById('banner');
+        if (meta.announcement) { b.classList.add('show'); document.getElementById('bannerText').textContent = meta.announcement; }
+        else { b.classList.remove('show'); }
+    }
+    function closeBanner() { meta.announcement = ''; updateBanner(); saveMessages(); }
+
+    function utf8ToBase64(str) { const encoder = new TextEncoder(); const bytes = encoder.encode(str); let binary = ''; for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]); return btoa(binary); }
+    function base64ToUtf8(base64) { const binary = atob(base64); const bytes = new Uint8Array(binary.length); for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i); return new TextDecoder().decode(bytes); }
+
+    function extractMeta(arr) {
+        if (arr.length > 0 && arr[0]._meta) { meta = { ...meta, ...arr[0]._meta }; return arr.slice(1); }
+        return arr;
+    }
+    function buildData() {
+        const metaObj = { _meta: meta };
+        return [metaObj, ...messages];
+    }
+
+    function ghUrl() { return GH_URL + "?_=" + Date.now(); }
+
+    async function loadMessages() {
+        try {
+            const res = await fetch(ghUrl(), { headers: { Authorization: "Bearer " + GH_TOKEN } });
+            if (res.status === 404) { messages = []; renderMessages(); return; }
+            const data = await res.json();
+            currentSha = data.sha;
+            const raw = JSON.parse(base64ToUtf8(data.content));
+            if (!Array.isArray(raw)) raw = [];
+            messages = extractMeta(raw);
+            renderMessages(); updateBanner();
+            if (rank === "owner") document.getElementById('ownerBtn').classList.add('show');
+            const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak furry és therian" };
+            document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
+            updateInputArea();
+        } catch (e) { console.error("load error", e); }
+    }
+
+    async function saveMessages() {
+        saving = true;
+        meta._v = (meta._v || 0) + 1;
+        const data = buildData();
+        const content = utf8ToBase64(JSON.stringify(data));
+        const body = { message: "update messages", content: content };
+        if (currentSha) body.sha = currentSha;
+        try {
+            const res = await fetch(GH_URL, { method: "PUT", headers: { Authorization: "Bearer " + GH_TOKEN, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            const d = await res.json();
+            if (d.content) currentSha = d.content.sha;
+            return true;
+        } catch (e) { meta._v--; return false; }
+        finally { saving = false; }
+    }
+
+    async function sendMsg() {
+        if (!canWrite()) return;
+        if (meta.slowMode > 0 && rank !== "owner" && rank !== "admin") {
+            const elapsed = (Date.now() - lastMsgTime) / 1000;
+            if (elapsed < meta.slowMode) { showToast("Varj " + Math.ceil(meta.slowMode - elapsed) + " masodpercet!"); return; }
+        }
+        const input = document.getElementById('msgInput');
+        const btn = document.getElementById('sendBtn');
+        const text = input.value.trim();
+        if (!text) return;
+        btn.disabled = true;
+        const msg = { n: userName, m: text, t: Date.now(), c: currentChannel };
+        if (rank) msg.r = rank;
+        messages.push(msg);
+        renderMessages(); input.value = ''; lastMsgTime = Date.now();
+        if (!(await saveMessages())) { messages.pop(); renderMessages(); alert("Hiba a mentes soran."); }
+        btn.disabled = false;
+    }
+
+    async function deleteMsg(index) {
+        if (rank !== "owner") return;
+        messages.splice(index, 1);
+        renderMessages(); await saveMessages();
+    }
+
+    let saving = false;
+
+    function startPolling() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = setInterval(async () => {
+            if (saving) return;
+            try {
+                const res = await fetch(ghUrl(), { headers: { Authorization: "Bearer " + GH_TOKEN } });
+                if (res.status === 404) return;
+                const data = await res.json();
+                const raw = JSON.parse(base64ToUtf8(data.content));
+                if (!Array.isArray(raw) || raw.length === 0) return;
+                const remoteMeta = raw[0]._meta;
+                if (remoteMeta && remoteMeta._v !== undefined && remoteMeta._v <= meta._v) return;
+                if (data.sha === currentSha) return;
+                const freshMsgs = extractMeta(raw);
+            messages = freshMsgs;
+            currentSha = data.sha;
+            renderMessages(); updateBanner(); applyTheme();
+            const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak furry és therian" };
+            document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
+            updateInputArea();
+            } catch (e) { /* ignore */ }
+        }, 5000);
+    }
+
+    function checkCode() {
+        const input = document.getElementById('codeInput');
+        const err = document.getElementById('codeErr');
+        const code = input.value;
+        if (code === '7308' || code === '0999' || code === '1967') {
+            if (code === '1967') rank = "owner";
+            else if (code === '0999') rank = "admin";
+            else if (code === '7308') rank = "remember";
+            else rank = null;
+            const saved = localStorage.getItem('tx_name');
+            if (saved) { userName = saved; enterChat(); }
+            else { document.getElementById('codeScreen').classList.remove('show'); document.getElementById('nameScreen').classList.add('show'); }
+        } else { err.classList.add('show'); input.value = ''; input.focus(); }
+    }
+
+    function setName() {
+        const input = document.getElementById('nameInput');
+        const err = document.getElementById('nameErr');
+        const name = input.value.trim();
+        if (!name) { err.classList.add('show'); return; }
+        err.classList.remove('show'); userName = name; localStorage.setItem('tx_name', name); enterChat();
+    }
+
+    function enterChat() {
+        document.getElementById('codeScreen').classList.remove('show');
+        document.getElementById('nameScreen').classList.remove('show');
+        document.getElementById('chatScreen').classList.add('show');
+        if (rank === "owner") document.getElementById('ownerBtn').classList.add('show');
+        loadMessages(); startPolling(); updateInputArea(); applyTheme();
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(updateCountdown, 1000);
+    }
+
+    /* Owner panel */
+    function openOwnerPanel() {
+        document.getElementById('ownerPanel').classList.add('show');
+        document.getElementById('announcementInput').value = meta.announcement || '';
+        document.getElementById('topicInput').value = meta.topics[currentChannel] || '';
+        document.getElementById('lockSelect').value = meta.locks[currentChannel] ? 'locked' : '';
+        document.getElementById('accentInput').value = meta.accent || '#667eea';
+        document.getElementById('bgInput').value = meta.bgImage || '';
+        document.getElementById('slowModeInput').value = meta.slowMode || 0;
+        document.getElementById('eventLabelInput').value = meta.eventLabel || '';
+        if (meta.eventTime) {
+            const d = new Date(meta.eventTime);
+            const pad = n => String(n).padStart(2,'0');
+            document.getElementById('eventTimeInput').value = d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+        }
+        updatePinStatus();
+    }
+    function closeOwnerPanel() { document.getElementById('ownerPanel').classList.remove('show'); }
+    function showToast(m) { const t = document.getElementById('ownerToast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+
+    async function setAnnouncement() {
+        const v = document.getElementById('announcementInput').value.trim();
+        meta.announcement = v; updateBanner(); await saveMessages(); showToast("Hirdetés mentve!");
+    }
+    async function setTopic() {
+        const v = document.getElementById('topicInput').value.trim();
+        if (v) meta.topics[currentChannel] = v; else delete meta.topics[currentChannel];
+            const defTopics = { altalanos: "Mindenki írhat", asvanyok: "Mindenki írhat", dinok: "Mindenki írhat", ellensegek: "Csak furry és therian" };
+            document.getElementById('channelTopic').textContent = meta.topics[currentChannel] || defTopics[currentChannel];
+        await saveMessages(); showToast("Téma frissítve!");
+    }
+    async function setLock() {
+        const v = document.getElementById('lockSelect').value;
+        if (v === 'locked') meta.locks[currentChannel] = true; else delete meta.locks[currentChannel];
+        updateInputArea(); await saveMessages(); showToast("Zárolás frissítve!");
+    }
+    async function clearAll() {
+        if (!confirm("Biztosan torlod az osszes uzenetet?")) return;
+        messages = []; renderMessages(); await saveMessages(); showToast("Uzenetek torolve!");
+    }
+    function exportMessages() {
+        const data = buildData();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "tx_export.json"; a.click(); showToast("Export kesz!");
+    }
+    function updatePinStatus() { document.getElementById('pinStatus').textContent = meta.pinned !== null ? "Kitűzve" : "Nincs kitűzve"; }
+    async function pinMsg(idx) {
+        if (rank !== "owner") return;
+        meta.pinned = meta.pinned === idx ? null : idx;
+        renderMessages(); await saveMessages();
+    }
+    async function clearPin() { meta.pinned = null; renderMessages(); updatePinStatus(); await saveMessages(); showToast("Kitűzés eltávolítva!"); }
+    function listUsers() {
+        const users = [...new Set(messages.map(m => m.n || "Anonymous"))];
+        document.getElementById('userCount').textContent = users.length + " (" + users.join(", ") + ")";
+    }
+    function showStats() {
+        const total = messages.length;
+        const byChannel = {};
+        messages.forEach(m => { const c = m.c || "altalanos"; byChannel[c] = (byChannel[c] || 0) + 1; });
+        const parts = Object.entries(byChannel).map(([k,v]) => k + ": " + v);
+        document.getElementById('msgStats').textContent = total + " (" + parts.join(", ") + ")";
+    }
+    async function deleteUserMsgs() {
+        const name = document.getElementById('deleteUserInput').value.trim();
+        if (!name || !confirm("Biztosan torlod " + name + " osszes uzenetet?")) return;
+        messages = messages.filter(m => (m.n || "Anonymous") !== name);
+        renderMessages(); await saveMessages(); showToast(name + " uzenetei torolve!");
+    }
+    async function factoryReset() {
+        if (!confirm("Biztosan nullazod az osszes adatot?")) return;
+        meta = { announcement: "", topics: {}, locks: {}, pinned: null, _v: 0, accent: "#667eea", bgImage: "", slowMode: 0, eventTime: 0, eventLabel: "" };
+        messages = []; renderMessages(); updateBanner(); updateInputArea(); await saveMessages(); showToast("Gyari beallitasok visszaallitva!");
+    }
+
+    /* New design & event features */
+    function applyTheme() {
+        const root = document.documentElement;
+        root.style.setProperty('--accent', meta.accent || "#667eea");
+        root.style.setProperty('--accent2', meta.accent || "#667eea");
+        const accentEl = document.getElementById('accentInput');
+        if (accentEl) accentEl.value = meta.accent || "#667eea";
+        const r = parseInt(meta.accent.slice(1,3), 16) || 102;
+        const g = parseInt(meta.accent.slice(3,5), 16) || 126;
+        const b = parseInt(meta.accent.slice(5,7), 16) || 234;
+        root.style.setProperty('--accent-rgb', r+','+g+','+b);
+        root.style.setProperty('--accent2-rgb', r+','+g+','+b);
+        if (meta.bgImage) { root.style.setProperty('--bg-body', 'url(' + meta.bgImage + ')'); document.getElementById('chatScreen').style.background = 'var(--bg-body)'; }
+        else { root.style.setProperty('--bg-body', '#0a0a0a'); document.getElementById('chatScreen').style.background = ''; }
+        document.getElementById('bgInput').value = meta.bgImage || '';
+    }
+    function setAccent(color) {
+        if (rank !== "owner") return;
+        meta.accent = color; applyTheme(); saveMessages(); showToast("Akcentus szin frissitve!");
+    }
+    function setBgImage() {
+        if (rank !== "owner") return;
+        meta.bgImage = document.getElementById('bgInput').value.trim();
+        applyTheme(); saveMessages(); showToast("Hatterkep frissitve!");
+    }
+    function setSlowMode() {
+        if (rank !== "owner") return;
+        const v = parseInt(document.getElementById('slowModeInput').value) || 0;
+        meta.slowMode = Math.max(0, v); saveMessages(); showToast("Lassu mod: " + meta.slowMode + "s");
+    }
+    function setEvent() {
+        if (rank !== "owner") return;
+        const label = document.getElementById('eventLabelInput').value.trim();
+        const time = document.getElementById('eventTimeInput').value;
+        if (!label || !time) { showToast("Add meg a cimket es az idopontot!"); return; }
+        meta.eventLabel = label; meta.eventTime = new Date(time).getTime();
+        saveMessages(); updateCountdown(); showToast("Esemeny beallitva!");
+    }
+    function clearEvent() {
+        if (rank !== "owner") return;
+        meta.eventLabel = ""; meta.eventTime = 0;
+        document.getElementById('eventLabelInput').value = '';
+        document.getElementById('eventTimeInput').value = '';
+        document.getElementById('countdownBar').classList.remove('show');
+        saveMessages(); showToast("Esemeny torolve!");
+    }
+    function updateCountdown() {
+        const bar = document.getElementById('countdownBar');
+        const label = document.getElementById('countdownLabel');
+        const timer = document.getElementById('countdownTimer');
+        if (!meta.eventTime || meta.eventTime <= Date.now()) {
+            if (meta.eventTime && meta.eventTime <= Date.now()) { meta.eventTime = 0; meta.eventLabel = ""; }
+            bar.classList.remove('show'); return;
+        }
+        bar.classList.add('show');
+        const diff = meta.eventTime - Date.now();
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        label.textContent = meta.eventLabel + ": ";
+        timer.textContent = (d > 0 ? d + "d " : "") + String(h).padStart(2,'0') + ":" + String(m).padStart(2,'0') + ":" + String(s).padStart(2,'0');
+    }
+</script>
+</body>
+</html>
