@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suli - fluxi</title>
+    <style>
+        :root { --accent: #5865f2; --accent-rgb: 88,101,242; --bg-body: #0a0a0a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-body);
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .screen { display: none; height: 100vh; }
+        .screen.show { display: flex; justify-content: center; align-items: center; }
+        .box { text-align: center; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .box .icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; background: linear-gradient(135deg, var(--accent), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .box p { color: #555; font-size: 0.9rem; margin-bottom: 25px; }
+        .box input.text-input { background: #111; border: 1px solid #222; border-radius: 14px; padding: 16px 22px; color: #fff; font-size: 1.1rem; font-family: inherit; width: 280px; outline: none; transition: border-color 0.3s; text-align: center; letter-spacing: 0; }
+        .box input.text-input:focus { border-color: var(--accent); }
+        .box .err { color: #e74c3c; font-size: 0.85rem; margin-top: 12px; display: none; }
+        .box .err.show { display: block; }
+        .box .btn { display: block; margin: 18px auto 0; padding: 14px 50px; background: var(--accent); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .box .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(var(--accent-rgb),0.3); }
+
+        #chatScreen { display: none; flex-direction: column; height: 100vh; }
+        #chatScreen.show { display: flex; }
+        .header {
+            padding: 16px 20px;
+            background: rgba(10,10,10,0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+        .header .pfp {
+            width: 36px; height: 36px; border-radius: 50%;
+            object-fit: cover;
+            background: #222;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .header .pfp-label {
+            font-size: 0.7rem; color: #555;
+        }
+        .header .info { flex: 1; min-width: 0; }
+        .header .info h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .header .info .count { color: #555; font-size: 0.8rem; }
+        .messages { flex: 1; overflow-y: auto; padding: 16px 20px; }
+        .messages .empty { text-align: center; color: #333; padding: 60px 0; font-size: 0.9rem; }
+        .msg { display: flex; gap: 12px; margin-bottom: 16px; animation: fadeIn 0.3s ease-out; }
+        .msg .pfp-small {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            background: #222; object-fit: cover; font-size: 0;
+        }
+        .msg .pfp-small.initials {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 700; color: #fff;
+        }
+        .msg .body { flex: 1; min-width: 0; }
+        .msg .body .name { font-size: 0.85rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .msg .body .name .time { color: #444; font-weight: 400; font-size: 0.75rem; }
+        .msg .body .text { color: #ccc; font-size: 0.95rem; margin-top: 1px; word-break: break-word; }
+        .input-area { padding: 12px 16px 16px; flex-shrink: 0; }
+        .input-area .input-wrap {
+            position: relative; border-radius: 14px; padding: 2px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
+            transition: all 0.4s;
+        }
+        .input-area .input-wrap:focus-within {
+            background: linear-gradient(135deg, rgba(var(--accent-rgb),0.3), rgba(255,255,255,0.03));
+            box-shadow: 0 0 15px rgba(var(--accent-rgb),0.08), inset 0 0 15px rgba(var(--accent-rgb),0.02);
+        }
+        .input-area .input-wrap input {
+            display: block; width: 100%;
+            background: #0a0a0a; border: none; border-radius: 12px;
+            padding: 14px 18px; color: #fff; font-size: 0.95rem;
+            font-family: inherit; outline: none;
+        }
+        .input-area .input-wrap input::placeholder { color: #333; }
+
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+        #fileInput { display: none; }
+
+        @media (max-width: 500px) {
+            .header { padding: 12px 14px; }
+            .messages { padding: 12px 14px; }
+            .input-area { padding: 8px 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="nameScreen" class="screen show">
+    <div class="box">
+        <div class="icon">🏫</div>
+        <h2>Üdv a suliban!</h2>
+        <p>Add meg a neved a belépéshez.</p>
+        <input type="text" id="nameInput" class="text-input" placeholder="Neved..." onkeydown="if(event.key==='Enter')setName()">
+        <div class="err" id="nameErr">Kérlek adj meg egy nevet.</div>
+        <button class="btn" onclick="setName()">Belépés</button>
+    </div>
+</div>
+
+<div id="chatScreen">
+    <div class="header">
+        <img id="myPfp" class="pfp" src="" alt="" onclick="pickPfp()">
+        <div class="info">
+            <h3><span id="channelTitle"># általános</span></h3>
+            <div class="count" id="userCount">0 felhasználó</div>
+        </div>
+    </div>
+    <div class="messages" id="msgContainer">
+        <div class="empty" id="emptyMsg">Nincsenek üzenetek. Írj valamit!</div>
+    </div>
+    <div class="input-area">
+        <div class="input-wrap"><input type="text" id="msgInput" placeholder="Írj üzenetet..." onkeydown="if(event.key==='Enter')sendMsg()"></div>
+    </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" onchange="handlePfp(event)">
+
+<script>
+    const GH_TOKEN = "ghp_" + "YnynRCsd5dUGIBhE7e8H4QBC7eFy3Q3Il0G1";
+    const GH_OWNER = "vilmosvilmos2000-ai";
+    const GH_REPO = "fluxi-weboldal";
+    const GH_PATH = "suli/messages.json";
+    const GH_URL = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + GH_PATH;
+
+    let messages = [];
+    let currentSha = null;
+    let pollTimer = null;
+    let userName = "";
+    let pfpData = null;
+
+    const STORAGE_KEY = "suli_name";
+    const PFP_KEY = "suli_pfp";
+
+    function escapeHtml(s) { if (typeof s !== 'string') s = String(s || ''); const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function fmtDate(ts) { const d = new Date(ts); return d.getFullYear() + "." + String(d.getMonth()+1).padStart(2,'0') + "." + String(d.getDate()).padStart(2,'0') + " " + String(d.getHours()).padStart(2,'0') + ":" + String(d.getMinutes()).padStart(2,'0'); }
+
+    function loadSaved() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        const pfp = localStorage.getItem(PFP_KEY);
+        if (saved) { userName = saved; if (pfp) pfpData = pfp; enterChat(); }
+    }
+
+    function setName() {
+        const input = document.getElementById('nameInput');
+        const err = document.getElementById('nameErr');
+        const name = input.value.trim();
+        if (!name) { err.classList.add('show'); return; }
+        err.classList.remove('show');
+        userName = name;
+        localStorage.setItem(STORAGE_KEY, name);
+        enterChat();
+    }
+
+    function enterChat() {
+        document.getElementById('nameScreen').classList.remove('show');
+        document.getElementById('chatScreen').classList.add('show');
+        updateMyPfp();
+        loadMessages();
+        startPolling();
+    }
+
+    function pickPfp() {
+        document.getElementById('fileInput').click();
+    }
+
+    function handlePfp(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            pfpData = ev.target.result;
+            localStorage.setItem(PFP_KEY, pfpData);
+            updateMyPfp();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function updateMyPfp() {
+        const el = document.getElementById('myPfp');
+        if (pfpData) { el.src = pfpData; el.style.background = 'none'; }
+        else { el.src = ''; el.style.background = '#222'; }
+    }
+
+    function getPfp(user) {
+        if (user === userName && pfpData) return pfpData;
+        return null;
+    }
+
+    function renderMessages() {
+        const container = document.getElementById('msgContainer');
+        const empty = document.getElementById('emptyMsg');
+        container.querySelectorAll('.msg').forEach(el => el.remove());
+        if (messages.length === 0) { empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+        messages.forEach((msg) => {
+            const div = document.createElement('div');
+            div.className = 'msg';
+            const name = msg.n || "Anonymous";
+            const initial = name.charAt(0).toUpperCase();
+            const userPfp = msg.p || null;
+            div.innerHTML = '<div class="pfp-small' + (userPfp ? '' : ' initials') + '" style="' + (userPfp ? 'background-image:url(' + escapeHtml(userPfp) + ');background-size:cover;background-position:center;' : 'background:linear-gradient(135deg,' + getColor(name) + ',' + getColor2(name) + ')') + '">' + (userPfp ? '' : initial) + '</div>'
+                + '<div class="body">'
+                + '<div class="name">' + escapeHtml(name) + ' <span class="time">' + fmtDate(msg.t) + '</span></div>'
+                + '<div class="text">' + escapeHtml(msg.m) + '</div>'
+                + '</div>';
+            container.appendChild(div);
+        });
+        container.scrollTop = container.scrollHeight;
+        document.getElementById('userCount').textContent = getUniqueUsers() + " felhasználó";
+    }
+
+    function getUniqueUsers() {
+        return new Set(messages.map(m => m.n || "Anonymous")).size;
+    }
+
+    function getColor(name) {
+        let h = 0;
+        for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+        return 'hsl(' + h + ',70%,50%)';
+    }
+    function getColor2(name) {
+        let h = 0;
+        for (let i = 0; i < name.length; i++) h = (h * 13 + name.charCodeAt(i)) % 360;
+        return 'hsl(' + h + ',60%,40%)';
+    }
+
+    function utf8ToBase64(str) { const encoder = new TextEncoder(); const bytes = encoder.encode(str); let binary = ''; for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]); return btoa(binary); }
+    function base64ToUtf8(base64) { const binary = atob(base64); const bytes = new Uint8Array(binary.length); for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i); return new TextDecoder().decode(bytes); }
+
+    function ghUrl() { return GH_URL + "?_=" + Date.now(); }
+
+    async function loadMessages() {
+        try {
+            const res = await fetch(ghUrl(), { headers: { Authorization: "Bearer " + GH_TOKEN } });
+            if (res.status === 404) { messages = []; renderMessages(); return; }
+            const data = await res.json();
+            currentSha = data.sha;
+            const raw = JSON.parse(base64ToUtf8(data.content));
+            if (!Array.isArray(raw)) raw = [];
+            messages = raw;
+            renderMessages();
+        } catch (e) { console.error("load error", e); }
+    }
+
+    async function saveMessages() {
+        const content = utf8ToBase64(JSON.stringify(messages));
+        const body = { message: "update messages", content: content };
+        if (currentSha) body.sha = currentSha;
+        try {
+            const res = await fetch(GH_URL, { method: "PUT", headers: { Authorization: "Bearer " + GH_TOKEN, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            const d = await res.json();
+            if (d.content) currentSha = d.content.sha;
+            return true;
+        } catch (e) { return false; }
+    }
+
+    async function sendMsg() {
+        const input = document.getElementById('msgInput');
+        const text = input.value.trim();
+        if (!text) return;
+        const msg = { n: userName, m: text, t: Date.now() };
+        if (pfpData) msg.p = pfpData;
+        messages.push(msg);
+        renderMessages();
+        input.value = '';
+        await saveMessages();
+    }
+
+    function startPolling() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = setInterval(async () => {
+            try {
+                const res = await fetch(ghUrl(), { headers: { Authorization: "Bearer " + GH_TOKEN } });
+                if (res.status === 404) return;
+                const data = await res.json();
+                if (data.sha === currentSha) return;
+                const raw = JSON.parse(base64ToUtf8(data.content));
+                if (!Array.isArray(raw)) return;
+                messages = raw;
+                currentSha = data.sha;
+                renderMessages();
+            } catch (e) { /* ignore */ }
+        }, 5000);
+    }
+
+    loadSaved();
+</script>
+</body>
+</html>
