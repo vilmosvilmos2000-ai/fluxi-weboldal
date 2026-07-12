@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Hub</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1e1e2f;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Vissza a Hub-ba gomb stílusa (Bal felső sarok) */
+        .back-to-hub {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            z-index: 100; /* Hogy a konfetti mögötte menjen el */
+        }
+
+        .back-to-hub:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* A fő gomb stílusai */
+        .game-button {
+            background-color: rgb(4, 147, 176);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 15px;
+            padding: 10px 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .game-button h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .game-button:hover {
+            transform: scale(1.1) rotate(2deg);
+            background-color: rgb(5, 170, 200);
+        }
+
+        .game-button:active {
+            transform: scale(0.95);
+        }
+
+        p {
+            color: #aaaaaa;
+            font-style: italic;
+            margin: 0;
+        }
+
+        /* Konfetti animáció */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: fall 3s linear forwards;
+            z-index: -1;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="learn.html" class="back-to-hub">← Go to Hub</a>
+
+    <div class="container">
+        <p>Click to enter</p>
+        <a href="idk.html" class="game-button" onclick="createConfetti()">
+            <h2>Shout Learn [BETA]</h2>
+        </a>
+    </div>
+
+    <div class="container">
+        <p>Click to enter</p>
+        <a href="jázék2.html" class="game-button" onclick="createConfetti()">
+            <h2>természeti tulélö</h2>
+        </a>
+    </div>
+
+    <div class="container">
+        <p>Click to enter</p>
+        <a href="index.html" class="game-button" onclick="createConfetti()">
+            <h2>mini gamek</h2>
+        </a>
+    </div>
+
+    <script>
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                document.body.appendChild(confetti);
+                
+                // Takarítás: töröljük a konfettit, miután leesett
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+    </script>
+
+</body>
+</html>
