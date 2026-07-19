@@ -66,7 +66,29 @@
             position: fixed; inset: 0; background: #000; z-index: 1000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-
+        #loader h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            font-style: italic;
+            background: linear-gradient(90deg, #ff2e63, #ff9d00, #72cc50, #4e34e1, #ff2e63);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+            margin-bottom: 10px;
+        }
+        #loader .subtitle {
+            color: #555;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
         .progress-bar { width: 200px; height: 2px; background: #333; margin-top: 20px; position: relative; }
         .progress-fill { width: 0%; height: 100%; background: #ff2e63; transition: width 0.5s; }
     </style>
@@ -74,9 +96,9 @@
 <body>
 
     <div id="loader">
-        <h1 style="font-style: italic;">       Fruits<br>
-             Made by Fluxi Studios</h1>
+        <h1>Fruits</h1>
         <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+        <div class="subtitle">Made by Fluxi Studio</div>
     </div>
 
     <canvas id="bg"></canvas>
