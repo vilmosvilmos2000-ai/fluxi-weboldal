@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Próbavizsga - Interaktív Teszt</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --correct-color: #27ae60;
+            --incorrect-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            background-color: #f0f8ff;
+            border-color: var(--accent-color);
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .correct {
+            background-color: #d4edda !important;
+            border-color: var(--correct-color) !important;
+            color: #155724;
+        }
+
+        .incorrect {
+            background-color: #f8d7da !important;
+            border-color: var(--incorrect-color) !important;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Általános Műveltségi Próbavizsga</h1>
+        <p>Válaszolj az alábbi kérdésekre, majd kattints a kiértékelésre!</p>
+    </header>
+
+    <div id="quiz-form">
+        <!-- Question 1 -->
+        <div class="question-card" data-correct="2">
+            <div class="question-text">1. Ki írta a "Himnusz"-t?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q1" value="1"> Petőfi Sándor</label>
+                <label class="option-label"><input type="radio" name="q1" value="2"> Kölcsey Ferenc</label>
+                <label class="option-label"><input type="radio" name="q1" value="3"> Vörösmarty Mihály</label>
+                <label class="option-label"><input type="radio" name="q1" value="4"> Arany János</label>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question-card" data-correct="1">
+            <div class="question-text">2. Melyik bolygó a Naprendszer legnagyobb bolygója?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q2" value="1"> Jupiter</label>
+                <label class="option-label"><input type="radio" name="q2" value="2"> Szaturnusz</label>
+                <label class="option-label"><input type="radio" name="q2" value="3"> Mars</label>
+                <label class="option-label"><input type="radio" name="q2" value="4"> Neptunusz</label>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question-card" data-correct="3">
+            <div class="question-text">3. Melyik évben volt a magyar forradalom és szabadságharc?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q3" value="1"> 1956</label>
+                <label class="option-label"><input type="radio" name="q3" value="2"> 1867</label>
+                <label class="option-label"><input type="radio" name="q3" value="3"> 1848</label>
+                <label class="option-label"><input type="radio" name="q3" value="4"> 1703</label>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question-card" data-correct="4">
+            <div class="question-text">4. Mi a víz kémiai jele?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q4" value="1"> HO2</label>
+                <label class="option-label"><input type="radio" name="q4" value="2"> O2H</label>
+                <label class="option-label"><input type="radio" name="q4" value="3"> H2O2</label>
+                <label class="option-label"><input type="radio" name="q4" value="4"> H2O</label>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question-card" data-correct="2">
+            <div class="question-text">5. Hány megyéből áll Magyarország?</div>
+            <div class="options">
+                <label class="option-label"><input type="radio" name="q5" value="1"> 18</label>
+                <label class="option-label"><input type="radio" name="q5" value="2"> 19</label>
+                <label class="option-label"><input type="radio" name="q5" value="3"> 20</label>
+                <label class="option-label"><input type="radio" name="q5" value="4"> 21</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="evaluateQuiz()">Vizsga Befejezése</button>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function evaluateQuiz() {
+        const cards = document.querySelectorAll('.question-card');
+        let score = 0;
+        let total = cards.length;
+
+        cards.forEach((card, index) => {
+            const correctAnswer = card.getAttribute('data-correct');
+            const selected = card.querySelector('input[type="radio"]:checked');
+            const labels = card.querySelectorAll('.option-label');
+
+            // Reset styles
+            labels.forEach(l => l.classList.remove('correct', 'incorrect'));
+
+            if (selected) {
+                if (selected.value === correctAnswer) {
+                    score++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    // Show the correct one too
+                    labels[correctAnswer - 1].classList.add('correct');
+                }
+            } else {
+                // If nothing selected, just show the correct one
+                labels[correctAnswer - 1].classList.add('correct');
+            }
+        });
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        const percentage = (score / total) * 100;
+        
+        resultDiv.innerHTML = `Eredmény: ${score} / ${total} (${percentage}%).<br>`;
+        
+        if (percentage >= 80) {
+            resultDiv.style.color = '#27ae60';
+            resultDiv.innerHTML += "Gratulálunk, kiváló teljesítmény!";
+        } else if (percentage >= 50) {
+            resultDiv.style.color = '#f39c12';
+            resultDiv.innerHTML += "Szép munka, de van még hova fejlődni.";
+        } else {
+            resultDiv.style.color = '#e74c3c';
+            resultDiv.innerHTML += "Sajnos ez most nem sikerült, próbáld újra!";
+        }
+        
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>

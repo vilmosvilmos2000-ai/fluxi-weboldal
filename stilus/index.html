@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prémium 3D Scroll Élmény</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #00f2ff; }
+        body { 
+            margin: 0; background: #050505; color: white; 
+            font-family: 'Inter', sans-serif; overflow-x: hidden; 
+        }
+        
+        /* A háttérben lévő 3D vászon */
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; outline: none; }
+
+        /* Tartalom elrendezése */
+        main { position: relative; z-index: 2; }
+
+        section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 10%;
+            pointer-events: none; /* Átengedjük az egeret a 3D-hez */
+        }
+
+        section:nth-child(even) { align-items: flex-end; text-align: right; }
+
+        h1 { font-size: clamp(3rem, 8vw, 6rem); margin: 0; line-height: 1; text-transform: uppercase; }
+        p { font-size: 1.2rem; color: #888; max-width: 400px; }
+        .highlight { color: var(--accent); }
+
+        /* Töltőképernyő */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100; display: flex; justify-content: center; align-items: center;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader"><h1>LOADING...</h1></div>
+
+    <canvas id="bg"></canvas>
+
+    <main>
+        <section>
+            <h1>A Jövő <br><span class="highlight">Formája</span></h1>
+            <p>Fedezd fel a 3D és a web találkozását egyetlen görgetéssel.</p>
+        </section>
+
+        <section>
+            <h1>Precíziós <br><span class="highlight">Dizájn</span></h1>
+            <p>Minden pixel és él matematikailag tökéletesre van csiszolva.</p>
+        </section>
+
+        <section>
+            <h1>Fények <br><span class="highlight">Játéka</span></h1>
+            <p>A dinamikus megvilágítás életre kelti a fémfelületeket.</p>
+        </section>
+
+        <section>
+            <h1>Vedd fel <br><span class="highlight">Kapcsolatot</span></h1>
+            <p>Készen állsz a következő szintre lépni?</p>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // 1. JELENET BEÁLLÍTÁSA
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#bg'),
+            antialias: true,
+            alpha: true
+        });
+
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.setZ(30);
+
+        // 2. TÁRGY ÉS ANYAG (Fémes hatás)
+        const geometry = new THREE.IcosahedronGeometry(10, 0); // Geometrikus forma
+        const material = new THREE.MeshStandardMaterial({ 
+            color: 0xffffff,
+            metalness: 0.9,
+            roughness: 0.1,
+            wireframe: false
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // Drótváz réteg a mélységért
+        const wireMaterial = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0.2 });
+        const wireframe = new THREE.Mesh(geometry, wireMaterial);
+        wireframe.scale.set(1.05, 1.05, 1.05);
+        mesh.add(wireframe);
+
+        // 3. FÉNYEK
+        const pointLight = new THREE.PointLight(0x00f2ff, 2);
+        pointLight.position.set(20, 20, 20);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(pointLight, ambientLight);
+
+        // 4. GSAP ANIMÁCIÓ (A varázslat)
+        gsap.registerPlugin(ScrollTrigger);
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 2, // Lassabb, selymesebb követés
+            }
+        });
+
+        // Az animáció fázisai
+        tl.to(mesh.rotation, { x: 2, y: 1.5 })
+          .to(mesh.position, { x: 15, z: -10 }, 0) // Mozgás jobbra
+          .to(mesh.rotation, { y: Math.PI * 2, x: Math.PI }, 1)
+          .to(mesh.position, { x: -15, z: 5 }, 1) // Mozgás balra
+          .to(mesh.scale, { x: 1.5, y: 1.5, z: 1.5 }, 2) // Nagyítás
+          .to(mesh.position, { x: 0, y: 0, z: 10 }, 2);
+
+        // 5. RENDER CIKLUS ÉS EGÉR MOZGÁS (Parallaxis)
+        let mouseX = 0;
+        let mouseY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 5;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 5;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Finom lebegés és egérkövetés
+            mesh.rotation.y += 0.005;
+            mesh.position.x += (mouseX - mesh.position.x) * 0.05;
+            mesh.position.y += (-mouseY - mesh.position.y) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+
+        // Ablak átméretezés
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Betöltés után eltüntetjük a loadert
+        window.addEventListener('load', () => {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => document.getElementById('loader').remove(), 1000);
+            animate();
+        });
+    </script>
+</body>
+</html>
