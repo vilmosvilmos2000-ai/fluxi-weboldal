@@ -146,48 +146,318 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
-        // 1. SCENE SETUP
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ 
-            canvas: document.querySelector('#bg'), 
-            antialias: true, 
-            alpha: true 
-        });
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#bg'), antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.toneMapping = THREE.ReinhardToneMapping;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        renderer.outputEncoding = THREE.sRGBEncoding;
 
-        // 2. THE FRUIT (High-End Physical Material)
-        // Olyan geometriát választunk, ami lassan alakul át (szinte folyékonyan)
-        const geometry = new THREE.SphereGeometry(10, 64, 64);
-        const material = new THREE.MeshPhysicalMaterial({ 
-            color: 0xff2e63,
-            metalness: 0.1,
-            roughness: 0.2,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.1,
-            transmission: 0, // Kicsit átlátszó lehetne, de most maradjunk a tömörnél
-            reflectivity: 1
-        });
-        const fruit = new THREE.Mesh(geometry, material);
-        scene.add(fruit);
+        const fruitGroup = new THREE.Group();
+        scene.add(fruitGroup);
 
-        // 3. LIGHTING (Product Photography Style)
-        const mainLight = new THREE.SpotLight(0xffffff, 2);
-        mainLight.position.set(20, 20, 20);
+        function createStrawberry() {
+            const g = new THREE.Group();
+            // Body - elongated shape using LatheGeometry
+            const pts = [];
+            for (let i = 0; i <= 20; i++) {
+                const t = i / 20;
+                const r = Math.sin(t * Math.PI) * (1 - t * 0.3) * 2.2;
+                const y = (t - 0.5) * 5;
+                pts.push(new THREE.Vector2(r, y));
+            }
+            const bodyGeo = new THREE.LatheGeometry(pts, 32);
+            const bodyMat = new THREE.MeshPhysicalMaterial({
+                color: 0xcc1133,
+                roughness: 0.35,
+                clearcoat: 0.8,
+                clearcoatRoughness: 0.15,
+                metalness: 0.0
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            g.add(body);
+
+            // Seeds scattered on surface
+            const seedGeo = new THREE.SphereGeometry(0.06, 4, 4);
+            const seedMat = new THREE.MeshStandardMaterial({ color: 0xf5e050, roughness: 0.6, metalness: 0.2 });
+            for (let i = 0; i < 120; i++) {
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI * 0.85 + 0.1;
+                const rr = 2.15;
+                const x = rr * Math.sin(phi) * Math.cos(theta);
+                const y = rr * Math.cos(phi) - 0.3;
+                const z = rr * Math.sin(phi) * Math.sin(theta);
+                if (y < 2 && y > -2.2) {
+                    const seed = new THREE.Mesh(seedGeo, seedMat);
+                    seed.position.set(x, y, z);
+                    seed.lookAt(0, y, 0);
+                    g.add(seed);
+                }
+            }
+
+            // Green leaves on top
+            const leafMat = new THREE.MeshStandardMaterial({ color: 0x2d8a2d, roughness: 0.6, side: THREE.DoubleSide });
+            for (let i = 0; i < 5; i++) {
+                const leafGeo = new THREE.PlaneGeometry(0.6, 1.2);
+                const leaf = new THREE.Mesh(leafGeo, leafMat);
+                const angle = (i / 5) * Math.PI * 2;
+                leaf.position.set(Math.cos(angle) * 0.8, 2.4, Math.sin(angle) * 0.8);
+                leaf.rotation.set(-0.4, angle, 0);
+                g.add(leaf);
+            }
+            // Stem
+            const stemGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.6, 8);
+            const stemMat = new THREE.MeshStandardMaterial({ color: 0x3a5a2a, roughness: 0.8 });
+            const stem = new THREE.Mesh(stemGeo, stemMat);
+            stem.position.y = 2.6;
+            g.add(stem);
+
+            g.scale.set(1.1, 1.1, 1.1);
+            return g;
+        }
+
+        function createOrange() {
+            const g = new THREE.Group();
+            // Main body - slightly oblate sphere
+            const bodyGeo = new THREE.SphereGeometry(2.2, 64, 64);
+            // Deform to make it slightly oblate
+            const pos = bodyGeo.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                const y = pos.getY(i);
+                pos.setY(i, y * 0.9);
+            }
+            bodyGeo.computeVertexNormals();
+            const bodyMat = new THREE.MeshPhysicalMaterial({
+                color: 0xf5881f,
+                roughness: 0.65,
+                clearcoat: 0.3,
+                clearcoatRoughness: 0.4,
+                metalness: 0.0,
+                bumpScale: 0.02
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            g.add(body);
+
+            // Dimpled texture using small bumps
+            const dimpleGeo = new THREE.SphereGeometry(0.04, 4, 4);
+            const dimpleMat = new THREE.MeshStandardMaterial({ color: 0xd97710, roughness: 0.9 });
+            for (let i = 0; i < 300; i++) {
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+                const rr = 2.22;
+                const x = rr * Math.sin(phi) * Math.cos(theta);
+                const y = rr * Math.cos(phi) * 0.9;
+                const z = rr * Math.sin(phi) * Math.sin(theta);
+                const d = new THREE.Mesh(dimpleGeo, dimpleMat);
+                d.position.set(x, y, z);
+                d.lookAt(0, 0, 0);
+                g.add(d);
+            }
+
+            // Navel/calyx on top
+            const calyxGeo = new THREE.CylinderGeometry(0.3, 0.15, 0.2, 8);
+            const calyxMat = new THREE.MeshStandardMaterial({ color: 0x5a7a30, roughness: 0.7 });
+            const calyx = new THREE.Mesh(calyxGeo, calyxMat);
+            calyx.position.y = 2.0;
+            g.add(calyx);
+
+            // Tiny star-shaped leaves at calyx
+            const leafMat = new THREE.MeshStandardMaterial({ color: 0x4a6a25, roughness: 0.7, side: THREE.DoubleSide });
+            for (let i = 0; i < 5; i++) {
+                const leafGeo = new THREE.PlaneGeometry(0.3, 0.5);
+                const leaf = new THREE.Mesh(leafGeo, leafMat);
+                const a = (i / 5) * Math.PI * 2;
+                leaf.position.set(Math.cos(a) * 0.25, 2.15, Math.sin(a) * 0.25);
+                leaf.rotation.set(-0.3, a, 0);
+                g.add(leaf);
+            }
+
+            return g;
+        }
+
+        function createApple() {
+            const g = new THREE.Group();
+            // Apple body - slightly indented sphere
+            const bodyGeo = new THREE.SphereGeometry(2.2, 64, 64);
+            const pos = bodyGeo.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                let x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+                // Make it more apple-shaped: slight indent on top and bottom, wider in middle
+                const factor = 1 + 0.1 * Math.cos(y / 2.2 * Math.PI);
+                pos.setX(i, x * factor);
+                pos.setZ(i, z * factor);
+                // Indent top and bottom
+                const topDist = Math.abs(y - 2.2);
+                const botDist = Math.abs(y + 2.2);
+                if (topDist < 0.6) {
+                    const indent = (0.6 - topDist) * 0.3;
+                    const rr = Math.sqrt(x * x + z * z);
+                    if (rr > 0) {
+                        pos.setX(i, x - (x / rr) * indent);
+                        pos.setZ(i, z - (z / rr) * indent);
+                    }
+                }
+                if (botDist < 0.4) {
+                    const indent = (0.4 - botDist) * 0.15;
+                    const rr = Math.sqrt(x * x + z * z);
+                    if (rr > 0) {
+                        pos.setX(i, x - (x / rr) * indent);
+                        pos.setZ(i, z - (z / rr) * indent);
+                    }
+                }
+            }
+            bodyGeo.computeVertexNormals();
+
+            const bodyMat = new THREE.MeshPhysicalMaterial({
+                color: 0xb81525,
+                roughness: 0.25,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.08,
+                metalness: 0.0,
+                reflectivity: 1
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            g.add(body);
+
+            // Yellow/green blush spots
+            const blushGeo = new THREE.SphereGeometry(0.5, 8, 8);
+            const blushMat = new THREE.MeshStandardMaterial({ color: 0xd4a020, roughness: 0.3, transparent: true, opacity: 0.3 });
+            const blush = new THREE.Mesh(blushGeo, blushMat);
+            blush.position.set(1.5, 0.5, 1.0);
+            blush.scale.set(1, 0.8, 0.6);
+            g.add(blush);
+
+            // Stem
+            const stemGeo = new THREE.CylinderGeometry(0.05, 0.07, 0.8, 8);
+            const stemMat = new THREE.MeshStandardMaterial({ color: 0x4a3020, roughness: 0.9, metalness: 0.1 });
+            const stem = new THREE.Mesh(stemGeo, stemMat);
+            stem.position.y = 2.5;
+            stem.rotation.z = 0.15;
+            g.add(stem);
+
+            // Leaf
+            const leafShape = new THREE.Shape();
+            leafShape.moveTo(0, 0);
+            leafShape.quadraticCurveTo(0.4, 0.3, 0.8, 0);
+            leafShape.quadraticCurveTo(0.4, -0.15, 0, 0);
+            const leafGeo = new THREE.ShapeGeometry(leafShape);
+            const leafMat = new THREE.MeshStandardMaterial({ color: 0x3a7a2a, roughness: 0.5, side: THREE.DoubleSide });
+            const leaf = new THREE.Mesh(leafGeo, leafMat);
+            leaf.position.set(0.3, 2.7, 0);
+            leaf.rotation.set(0.3, 0.5, 0.2);
+            leaf.scale.set(1.2, 1.2, 1.2);
+            g.add(leaf);
+
+            return g;
+        }
+
+        function createBlueberry() {
+            const g = new THREE.Group();
+            // Main body
+            const bodyGeo = new THREE.SphereGeometry(1.8, 64, 64);
+            const pos = bodyGeo.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                const y = pos.getY(i);
+                pos.setY(i, y * 0.88);
+            }
+            bodyGeo.computeVertexNormals();
+
+            const bodyMat = new THREE.MeshPhysicalMaterial({
+                color: 0x2839a0,
+                roughness: 0.3,
+                clearcoat: 0.6,
+                clearcoatRoughness: 0.2,
+                metalness: 0.05
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            g.add(body);
+
+            // Frost/bloom layer (light waxy coating)
+            const frostGeo = new THREE.SphereGeometry(1.82, 32, 32);
+            const frostMat = new THREE.MeshPhysicalMaterial({
+                color: 0x6070c0,
+                roughness: 0.9,
+                transparent: true,
+                opacity: 0.15,
+                clearcoat: 0.0
+            });
+            const frost = new THREE.Mesh(frostGeo, frostMat);
+            frost.scale.y = 0.88;
+            g.add(frost);
+
+            // Crown/calyx on top (the distinctive star-shaped crown)
+            const crownMat = new THREE.MeshStandardMaterial({ color: 0x3a2a1a, roughness: 0.8 });
+            for (let i = 0; i < 5; i++) {
+                const petalGeo = new THREE.BoxGeometry(0.15, 0.08, 0.35);
+                const petal = new THREE.Mesh(petalGeo, crownMat);
+                const a = (i / 5) * Math.PI * 2;
+                petal.position.set(Math.cos(a) * 0.3, 1.58, Math.sin(a) * 0.3);
+                petal.rotation.y = a;
+                petal.rotation.x = -0.3;
+                g.add(petal);
+            }
+            // Center dot
+            const dotGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 8);
+            const dot = new THREE.Mesh(dotGeo, crownMat);
+            dot.position.y = 1.6;
+            g.add(dot);
+
+            // Subtle darker patches
+            const patchGeo = new THREE.SphereGeometry(0.3, 8, 8);
+            const patchMat = new THREE.MeshStandardMaterial({ color: 0x1a2570, roughness: 0.4, transparent: true, opacity: 0.25 });
+            for (let i = 0; i < 4; i++) {
+                const patch = new THREE.Mesh(patchGeo, patchMat);
+                const a = Math.random() * Math.PI * 2;
+                const b = Math.random() * Math.PI * 0.6 + 0.3;
+                patch.position.set(1.5 * Math.sin(b) * Math.cos(a), 1.5 * Math.cos(b) * 0.88, 1.5 * Math.sin(b) * Math.sin(a));
+                g.add(patch);
+            }
+
+            g.scale.set(1.3, 1.3, 1.3);
+            return g;
+        }
+
+        // Create all fruits
+        const strawberry = createStrawberry();
+        const orange = createOrange();
+        const apple = createApple();
+        const blueberry = createBlueberry();
+
+        // Start with strawberry visible
+        strawberry.visible = true;
+        orange.visible = false;
+        apple.visible = false;
+        blueberry.visible = false;
+
+        fruitGroup.add(strawberry);
+        fruitGroup.add(orange);
+        fruitGroup.add(apple);
+        fruitGroup.add(blueberry);
+
+        // LIGHTING (Product Photography)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xfff5e0, 2.5);
+        mainLight.position.set(10, 15, 10);
         scene.add(mainLight);
 
-        const fillLight = new THREE.PointLight(0xff2e63, 1);
-        fillLight.position.set(-20, -10, -10);
-        scene.add(fillLight);
+        const rimLight = new THREE.DirectionalLight(0xaaccff, 1.2);
+        rimLight.position.set(-8, 5, -10);
+        scene.add(rimLight);
 
-        const mouseLight = new THREE.PointLight(0xffffff, 1);
+        const bottomLight = new THREE.PointLight(0xff8844, 0.8, 50);
+        bottomLight.position.set(0, -10, 5);
+        scene.add(bottomLight);
+
+        const mouseLight = new THREE.PointLight(0xffffff, 0.8, 40);
         scene.add(mouseLight);
 
-        camera.position.z = 30;
+        camera.position.z = 8;
 
-        // 4. ANIMATION LOGIC
+        // GSAP scroll animation
         gsap.registerPlugin(ScrollTrigger);
         const tl = gsap.timeline({
             scrollTrigger: {
@@ -198,44 +468,40 @@
             }
         });
 
-        // Step-by-step transitions
-        // ORANGE
-        tl.to(fruit.material, { color: new THREE.Color(0xff9d00), roughness: 0.5 }, 0.5)
-          .to(fruit.position, { x: 12, y: 0, z: -5 }, 0.5)
+        // Strawberry → Orange
+        tl.call(() => { strawberry.visible = false; orange.visible = true; }, null, 0.5)
+          .to(orange.position, { x: 3, y: 0, z: -2 }, 0.5)
           .to(document.body, { backgroundColor: "#1a1200" }, 0.5);
 
-        // APPLE
-        tl.to(fruit.material, { color: new THREE.Color(0x72cc50), roughness: 0.1, clearcoat: 1 }, 1.5)
-          .to(fruit.position, { x: -12, y: 0, z: 0 }, 1.5)
+        // Orange → Apple
+        tl.call(() => { orange.visible = false; apple.visible = true; }, null, 1.5)
+          .to(apple.position, { x: -3, y: 0, z: 0 }, 1.5)
           .to(document.body, { backgroundColor: "#0b1a00" }, 1.5);
 
-        // BLUEBERRY
-        tl.to(fruit.material, { color: new THREE.Color(0x2d1b6b), roughness: 0.8, clearcoat: 0 }, 2.5)
-          .to(fruit.position, { x: 0, y: 0, z: 10 }, 2.5)
+        // Apple → Blueberry
+        tl.call(() => { apple.visible = false; blueberry.visible = true; }, null, 2.5)
+          .to(blueberry.position, { x: 0, y: 0, z: 2 }, 2.5)
           .to(document.body, { backgroundColor: "#05001a" }, 2.5);
 
-        // 5. INTERACTION & RENDERING
+        // Mouse interaction
         window.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth - 0.5) * 40;
-            const y = -(e.clientY / window.innerHeight - 0.5) * 40;
-            mouseLight.position.set(x, y, 15);
-            
-            // Hover parallax for cards
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = -(e.clientY / window.innerHeight - 0.5) * 20;
+            mouseLight.position.set(x, y, 10);
             gsap.to(".content-card", {
-                rotateY: (e.clientX / window.innerWidth - 0.5) * 10,
-                rotateX: -(e.clientY / window.innerHeight - 0.5) * 10,
-                duration: 1
+                rotateY: (e.clientX / window.innerWidth - 0.5) * 8,
+                rotateX: -(e.clientY / window.innerHeight - 0.5) * 8,
+                duration: 0.8
             });
         });
 
         function animate() {
             requestAnimationFrame(animate);
-            fruit.rotation.y += 0.002;
-            fruit.rotation.x += 0.001;
+            fruitGroup.rotation.y += 0.005;
+            fruitGroup.children.forEach(f => { if (f.visible) f.rotation.y += 0.003; });
             renderer.render(scene, camera);
         }
 
-        // LOAD HANDLING
         window.addEventListener('load', () => {
             document.getElementById('fill').style.width = '100%';
             setTimeout(() => {
