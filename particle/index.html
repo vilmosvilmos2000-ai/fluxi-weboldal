@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Quantum Flux - Generative Lab</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Orbitron', sans-serif; color: #fff; }
+        
+        /* Sci-fi vezérlőpult */
+        #ui {
+            position: absolute; left: 30px; top: 30px; width: 300px;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 150, 0.3); border-radius: 20px;
+            padding: 25px; pointer-events: auto; z-index: 10;
+        }
+
+        h1 { font-size: 1rem; letter-spacing: 4px; color: #00ff96; margin: 0 0 20px; text-transform: uppercase; }
+        .control { margin-bottom: 20px; }
+        label { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 10px; opacity: 0.8; }
+        
+        input[type=range] { width: 100%; -webkit-appearance: none; background: #1a1a1a; height: 2px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #00ff96; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px #00ff96; }
+
+        .btn-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { 
+            background: transparent; border: 1px solid #00ff96; color: #00ff96; padding: 10px; 
+            font-size: 10px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        button:hover { background: #00ff96; color: #000; font-weight: bold; }
+        
+        canvas { filter: contrast(1.2) brightness(1.1); }
+    </style>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+</head>
+<body>
+
+    <div id="ui">
+        <h1>Flux Reactor</h1>
+        
+        <div class="control">
+            <label>Turbulencia <span>(Chaos)</span></label>
+            <input type="range" id="chaos" min="1" max="100" value="30">
+        </div>
+
+        <div class="control">
+            <label>Energia szín <span>(Hue)</span></label>
+            <input type="range" id="hue" min="0" max="360" value="160">
+        </div>
+
+        <div class="control">
+            <label>Élethossz <span>(Fading)</span></label>
+            <input type="range" id="fade" min="1" max="50" value="10">
+        </div>
+
+        <div class="btn-box">
+            <button onclick="clearCanvas()">Tisztítás</button>
+            <button onclick="randomize()">Random</button>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null };
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        window.dispatchEvent(new Event('resize'));
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.color = '';
+            }
+            update() {
+                let chaos = document.getElementById('chaos').value / 10;
+                let hue = document.getElementById('hue').value;
+                
+                // Egér vonzás/taszítás
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 200) {
+                        this.x += dx / 20;
+                        this.y += dy / 20;
+                    }
+                }
+
+                this.x += this.speedX * chaos;
+                this.y += this.speedY * chaos;
+                
+                this.color = `hsla(${hue}, 100%, 50%, 0.8)`;
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < 150; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            let fade = document.getElementById('fade').value / 100;
+            ctx.fillStyle = `rgba(0, 0, 0, ${fade})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function randomize() {
+            document.getElementById('hue').value = Math.random() * 360;
+            document.getElementById('chaos').value = Math.random() * 100;
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+</html>

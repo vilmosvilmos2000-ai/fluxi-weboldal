@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Knife Case Opener HTML5</title>
+    <style>
+        :root {
+            --common: #b0c3d9;
+            --rare: #4b69ff;
+            --mythical: #8847ff;
+            --legendary: #d32ee6;
+            --ancient: #eb4b4b;
+            --gold: #ffae00;
+            --bg: #0f0f13;
+            --panel: #1a1a23;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Felső sáv: Egyenleg */
+        .header {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            background: var(--panel);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border-bottom: 3px solid var(--gold);
+            font-size: 24px;
+        }
+
+        /* A LÁDA */
+        .case-preview {
+            margin-bottom: 30px;
+            transition: transform 0.3s;
+        }
+        .case-preview:hover { transform: scale(1.05); }
+
+        /* A PÖRGETŐ KONÉNER */
+        .spinner-viewport {
+            width: 800px;
+            height: 160px;
+            background: var(--panel);
+            position: relative;
+            border: 2px solid #333;
+            border-radius: 5px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        /* Középső jelzővonal */
+        .spinner-viewport::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gold);
+            z-index: 10;
+            box-shadow: 0 0 15px var(--gold);
+            transform: translateX(-50%);
+        }
+
+        .spinner-track {
+            display: flex;
+            position: absolute;
+            left: 0;
+            transition: transform 5s cubic-bezier(0.1, 0, 0.1, 1);
+            will-change: transform;
+        }
+
+        .item {
+            min-width: 150px;
+            height: 140px;
+            margin: 0 5px;
+            background: #252530;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 5px solid gray;
+            border-radius: 4px;
+        }
+
+        .item svg { width: 100px; height: 60px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
+        .item-name { font-size: 10px; margin-top: 10px; text-transform: uppercase; text-align: center; }
+
+        /* Gombok */
+        .controls { margin-top: 40px; }
+        .btn-open {
+            background: linear-gradient(180deg, #ffae00, #d69200);
+            border: none;
+            padding: 20px 50px;
+            color: black;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 5px 0 #8a5e00;
+        }
+        .btn-open:active { transform: translateY(3px); box-shadow: 0 2px 0 #8a5e00; }
+        .btn-open:disabled { filter: grayscale(1); cursor: not-allowed; }
+
+        /* Ritkaság színek */
+        .common { border-color: var(--common); }
+        .rare { border-color: var(--rare); }
+        .mythical { border-color: var(--mythical); }
+        .legendary { border-color: var(--legendary); }
+        .ancient { border-color: var(--ancient); }
+        .gold { border-color: var(--gold); background: radial-gradient(circle, #4d3d14, #252530); }
+    </style>
+</head>
+<body>
+
+    <div class="header">💰 <span id="balance">2500</span>€</div>
+
+    <div class="case-preview" id="case-icon">
+        <svg width="200" height="150" viewBox="0 0 200 150">
+            <rect x="20" y="40" width="160" height="90" fill="#3d3d4d" stroke="#111" stroke-width="4"/>
+            <rect x="20" y="40" width="160" height="25" fill="#4d4d5d" stroke="#111" stroke-width="2"/>
+            <path d="M90 65 L110 65 L105 85 L95 85 Z" fill="#ffae00"/>
+            <rect x="40" y="80" width="120" height="5" fill="#222" opacity="0.3"/>
+        </svg>
+    </div>
+
+    <div class="spinner-viewport">
+        <div class="spinner-track" id="track">
+            </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-open" id="open-btn" onclick="startSpin()">Láda Nyitása (250€)</button>
+    </div>
+
+    <script>
+        let balance = 2500;
+        const casePrice = 250;
+        const track = document.getElementById('track');
+        const balanceDisplay = document.getElementById('balance');
+        const openBtn = document.getElementById('open-btn');
+
+        // Kés típusok és grafikák (SVG Path-ek)
+        const knifeData = [
+            { id: 'common', name: 'Alap Kés', val: 50, color: 'common', chance: 50, path: "M20,50 L80,50 L70,30 L30,30 Z" },
+            { id: 'rare', name: 'Bowie Kés', val: 180, color: 'rare', chance: 30, path: "M10,60 L90,40 L85,20 L15,50 Z" },
+            { id: 'myth', name: 'Pillangó', val: 450, color: 'mythical', chance: 12, path: "M30,40 Q50,10 70,40 T110,40" },
+            { id: 'legend', name: 'M9 Bajonett', val: 900, color: 'legendary', chance: 6, path: "M10,55 L90,55 L95,45 L15,45 Z" },
+            { id: 'gold', name: 'KARAMBIT', val: 5000, color: 'gold', chance: 2, path: "M20,60 Q50,60 80,20 Q40,40 20,60" }
+        ];
+
+        // Egy kés SVG generálása
+        function getKnifeSVG(color, path) {
+            let hex = getComputedStyle(document.documentElement).getPropertyValue('--' + color);
+            return `
+            <svg viewBox="0 0 120 80">
+                <defs>
+                    <linearGradient id="grad-${color}" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#555;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:${hex};stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="${path}" fill="url(#grad-${color})" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+                <rect x="5" y="48" width="25" height="8" rx="2" fill="#222" transform="rotate(-5)"/>
+            </svg>`;
+        }
+
+        // Kezdő kinézet
+        function initTrack() {
+            track.innerHTML = '';
+            for(let i=0; i<10; i++) {
+                addRandomItemToTrack();
+            }
+        }
+
+        function addRandomItemToTrack() {
+            const item = rollItem();
+            const div = document.createElement('div');
+            div.className = `item ${item.color}`;
+            div.innerHTML = `${getKnifeSVG(item.color, item.path)}<div class="item-name">${item.name}</div>`;
+            track.appendChild(div);
+            return item;
+        }
+
+        function rollItem() {
+            const r = Math.random() * 100;
+            let total = 0;
+            for (let k of knifeData) {
+                total += k.chance;
+                if (r <= total) return k;
+            }
+            return knifeData[0];
+        }
+
+        function startSpin() {
+            if (balance < casePrice) return alert("Nincs elég pénzed!");
+
+            balance -= casePrice;
+            balanceDisplay.innerText = balance;
+            openBtn.disabled = true;
+
+            // Pálya törlése és újrahúzása
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+            track.innerHTML = '';
+
+            const spinCount = 60; // Hány elem fusson át
+            let winnerItem;
+
+            for(let i=0; i < spinCount; i++) {
+                let it = addRandomItemToTrack();
+                if(i === 55) winnerItem = it; // Az 55. lesz a nyertes
+            }
+
+            // Animáció indítása
+            setTimeout(() => {
+                track.style.transition = 'transform 5s cubic-bezier(0.1, 0, 0.1, 1)';
+                // 160px széles egy elem (150 + 5+5 margin)
+                const moveAmount = (55 * 160) - (400 - 80); 
+                track.style.transform = `translateX(-${moveAmount}px)`;
+            }, 50);
+
+            // Eredmény kihirdetése
+            setTimeout(() => {
+                balance += winnerItem.val;
+                balanceDisplay.innerText = balance;
+                openBtn.disabled = false;
+                
+                // Egy kis vizuális visszajelzés
+                const allItems = document.querySelectorAll('.item');
+                allItems[55].style.background = '#444';
+            }, 5500);
+        }
+
+        initTrack();
+    </script>
+</body>
+</html>

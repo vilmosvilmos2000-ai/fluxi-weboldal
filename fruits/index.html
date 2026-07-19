@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Masterclass 3D</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,900&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0c0c0c;
+        }
+
+        body { 
+            margin: 0; background-color: var(--bg-color); color: white; 
+            font-family: 'Inter', sans-serif; overflow-x: hidden; 
+            transition: background 1s ease;
+        }
+        
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; outline: none; }
+
+        main { position: relative; z-index: 2; }
+
+        section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            perspective: 1000px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 500px;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        section:nth-child(even) { justify-content: flex-end; }
+        section:nth-child(even) .content-card { text-align: right; border-right: 4px solid var(--accent, #ff2e63); }
+        section:nth-child(odd) .content-card { border-left: 4px solid var(--accent, #ff2e63); }
+
+        h1 { 
+            font-family: 'Playfair Display', serif; 
+            font-size: clamp(2.5rem, 5vw, 4rem); 
+            margin: 0 0 1rem 0; line-height: 1.1;
+        }
+        
+        p { font-size: 1.1rem; color: #ccc; line-height: 1.7; margin-bottom: 2rem; }
+
+        .tag {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 1000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        .progress-bar { width: 200px; height: 2px; background: #333; margin-top: 20px; position: relative; }
+        .progress-fill { width: 0%; height: 100%; background: #ff2e63; transition: width 0.5s; }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <h1 style="font-style: italic;">Savor the Quality</h1>
+        <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+    </div>
+
+    <canvas id="bg"></canvas>
+
+    <main>
+        <section id="strawberry">
+            <div class="content-card">
+                <span class="tag" style="color: #ff2e63;">Prémium Selection</span>
+                <h1>Kerti Szamóca</h1>
+                <p>Kézzel válogatott, napérlelte szemek. A textúra és az édesség tökéletes egyensúlya minden egyes harapásnál.</p>
+                <small>01 / 04</small>
+            </div>
+        </section>
+
+        <section id="orange">
+            <div class="content-card">
+                <span class="tag" style="color: #ff9d00;">Citrus Fresh</span>
+                <h1>Valencia Narancs</h1>
+                <p>A mediterrán nap ereje egyetlen gyümölcsbe zárva. Intenzív illóolajok és frissítő savasság.</p>
+                <small>02 / 04</small>
+            </div>
+        </section>
+
+        <section id="apple">
+            <div class="content-card">
+                <span class="tag" style="color: #72cc50;">Organic Gold</span>
+                <h1>Granny Smith</h1>
+                <p>Roppanós héj, lédús belső. Az alma, amely a tiszta energiát és a természetes egyensúlyt jelképezi.</p>
+                <small>03 / 04</small>
+            </div>
+        </section>
+
+        <section id="blueberry">
+            <div class="content-card">
+                <span class="tag" style="color: #4e34e1;">Superfood</span>
+                <h1>Vadon Termett Áfonya</h1>
+                <p>Mélykék elegancia és antioxidáns erő. Az erdő legféltettebb kincse, modern tálalásban.</p>
+                <small>04 / 04</small>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // 1. SCENE SETUP
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.querySelector('#bg'), 
+            antialias: true, 
+            alpha: true 
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.toneMapping = THREE.ReinhardToneMapping;
+
+        // 2. THE FRUIT (High-End Physical Material)
+        // Olyan geometriát választunk, ami lassan alakul át (szinte folyékonyan)
+        const geometry = new THREE.SphereGeometry(10, 64, 64);
+        const material = new THREE.MeshPhysicalMaterial({ 
+            color: 0xff2e63,
+            metalness: 0.1,
+            roughness: 0.2,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.1,
+            transmission: 0, // Kicsit átlátszó lehetne, de most maradjunk a tömörnél
+            reflectivity: 1
+        });
+        const fruit = new THREE.Mesh(geometry, material);
+        scene.add(fruit);
+
+        // 3. LIGHTING (Product Photography Style)
+        const mainLight = new THREE.SpotLight(0xffffff, 2);
+        mainLight.position.set(20, 20, 20);
+        scene.add(mainLight);
+
+        const fillLight = new THREE.PointLight(0xff2e63, 1);
+        fillLight.position.set(-20, -10, -10);
+        scene.add(fillLight);
+
+        const mouseLight = new THREE.PointLight(0xffffff, 1);
+        scene.add(mouseLight);
+
+        camera.position.z = 30;
+
+        // 4. ANIMATION LOGIC
+        gsap.registerPlugin(ScrollTrigger);
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5
+            }
+        });
+
+        // Step-by-step transitions
+        // ORANGE
+        tl.to(fruit.material, { color: new THREE.Color(0xff9d00), roughness: 0.5 }, 0.5)
+          .to(fruit.position, { x: 12, y: 0, z: -5 }, 0.5)
+          .to(document.body, { backgroundColor: "#1a1200" }, 0.5);
+
+        // APPLE
+        tl.to(fruit.material, { color: new THREE.Color(0x72cc50), roughness: 0.1, clearcoat: 1 }, 1.5)
+          .to(fruit.position, { x: -12, y: 0, z: 0 }, 1.5)
+          .to(document.body, { backgroundColor: "#0b1a00" }, 1.5);
+
+        // BLUEBERRY
+        tl.to(fruit.material, { color: new THREE.Color(0x2d1b6b), roughness: 0.8, clearcoat: 0 }, 2.5)
+          .to(fruit.position, { x: 0, y: 0, z: 10 }, 2.5)
+          .to(document.body, { backgroundColor: "#05001a" }, 2.5);
+
+        // 5. INTERACTION & RENDERING
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 40;
+            const y = -(e.clientY / window.innerHeight - 0.5) * 40;
+            mouseLight.position.set(x, y, 15);
+            
+            // Hover parallax for cards
+            gsap.to(".content-card", {
+                rotateY: (e.clientX / window.innerWidth - 0.5) * 10,
+                rotateX: -(e.clientY / window.innerHeight - 0.5) * 10,
+                duration: 1
+            });
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            fruit.rotation.y += 0.002;
+            fruit.rotation.x += 0.001;
+            renderer.render(scene, camera);
+        }
+
+        // LOAD HANDLING
+        window.addEventListener('load', () => {
+            document.getElementById('fill').style.width = '100%';
+            setTimeout(() => {
+                gsap.to("#loader", { opacity: 0, duration: 1, onComplete: () => {
+                    document.getElementById('loader').remove();
+                    animate();
+                }});
+            }, 600);
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

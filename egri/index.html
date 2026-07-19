@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egri Csillagok IV. - A Végső Tanulósegéd</title>
+    <style>
+        :root {
+            --castle-grey: #4a4a4a;
+            --blood-red: #8b0000;
+            --gold: #d4a017;
+            --parchment: #fdf5e6;
+        }
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: #e8e2d6;
+            color: #2c2c2c;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--parchment);
+            box-shadow: 0 0 30px rgba(0,0,0,0.2);
+            padding: 40px;
+        }
+        nav {
+            position: sticky;
+            top: 0;
+            background: var(--castle-grey);
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+        }
+        nav a { color: white; text-decoration: none; font-weight: bold; font-size: 0.9em; }
+        nav a:hover { color: var(--gold); }
+
+        header {
+            text-align: center;
+            border-bottom: 4px double var(--castle-grey);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+        h1 { font-variant: small-caps; color: var(--blood-red); font-size: 2.5em; }
+        
+        .content-box {
+            background: white;
+            border: 1px solid #d3c7b1;
+            padding: 25px;
+            margin-bottom: 40px;
+            border-radius: 5px;
+        }
+        h2 { color: var(--castle-grey); border-bottom: 2px solid var(--gold); }
+
+        /* Szójegyzék táblázat */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background: #eee; }
+
+        /* Kvíz */
+        .quiz-item { margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px; }
+        .quiz-item p { font-weight: bold; margin-top: 0; }
+        .options label { display: block; margin: 5px 0; cursor: pointer; }
+        
+        button {
+            background: var(--blood-red);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+        button:hover { background: #5a0000; }
+        
+        #result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            border: 3px solid var(--gold);
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="#summary">ÖSSZEFOGLALÓ</a>
+    <a href="#characters">SZEREPLŐK</a>
+    <a href="#history">TÖRTÉNELEM</a>
+    <a href="#glossary">SZÓJEGYZÉK</a>
+    <a href="#quiz">MEGA-KVÍZ</a>
+</nav>
+
+<div class="container">
+    <header>
+        <h1>Egri Csillagok - IV. rész</h1>
+        <h2>"Eger veszedelme"</h2>
+    </header>
+
+    <section id="summary" class="content-box">
+        <h2>Részletes Cselekményvázlat</h2>
+        <p>A negyedik rész a felkészülés és a feszültség fokozódásának könyve. A főbb események:</p>
+        <ul>
+            <li><strong>A fenyegetés:</strong> A török sereg (Ahmed és Ali pasák vezetésével) sorra veszi be a magyar várakat. Dobó István látja, hogy Eger következik.</li>
+            <li><strong>Gergely visszatérése:</strong> Bornemissza Gergely hadnagyként érkezik a várba. Nemcsak katona, hanem mérnök is: tűzkerekeket, robbanóanyagokat fejleszt.</li>
+            <li><strong>Az egri eskü:</strong> Dobó a vár népe előtt mondja el híres beszédét. Megfogadják, hogy a várat halálukig védik, nem adnak helyet az árulásnak.</li>
+            <li><strong>Éva útja:</strong> Cecey Éva felfedezi, hogy kisfiát elrabolták. Miklós deákkal indul el Eger felé, férfi álruhában, keresztülvágva a török táboron.</li>
+            <li><strong>A vár állapota:</strong> A falak romosak, a segítség (a királyi sereg) nem érkezik meg, így a védők (kb. 2000 fő) magukra maradnak a 30-40-szeres túlerővel szemben.</li>
+        </ul>
+    </section>
+
+    <section id="characters" class="content-box">
+        <h2>Karakteranalízis</h2>
+        <p><strong>Dobó István:</strong> A rendíthetetlen szikla. Stratégiai zseni, aki tudja, hogy a falaknál fontosabb a katonák lelke.</p>
+        <p><strong>Bornemissza Gergely:</strong> A modern hős. Ő képviseli az észt és az innovációt a nyers erővel szemben.</p>
+        <p><strong>Jumurdzsák:</strong> A sorsszerű ellenség. A gyűrűje megszállottja, ami a vesztét is okozza. A 4. részben a gonosz árnyékaként van jelen.</p>
+        <p><strong>Vicze (Miklós deák):</strong> Éva hűséges segítője, aki tanúja a nő bátorságának.</p>
+    </section>
+
+    <section id="history" class="content-box">
+        <h2>Történelmi Háttér (1552)</h2>
+        <p>Eger ostroma az Oszmán Birodalom 1552-es hadjáratának végpontja volt. Miután Temesvár, Drégely és Szolnok elesett, Eger maradt az utolsó gát a Felvidék bányavárosai felé. A regény hűen követi a valóságot abban, hogy a védők valóban esélytelennek tűntek, mégis győztek.</p>
+    </section>
+
+    <section id="glossary" class="content-box">
+        <h2>Vitézi Szótár</h2>
+        <table>
+            <tr><th>Kifejezés</th><th>Jelentése</th></tr>
+            <tr><td>Janicsár</td><td>A szultán elit gyalogos katonája.</td></tr>
+            <tr><td>Szpáhi</td><td>Török könnyűlovas.</td></tr>
+            <tr><td>Bástya</td><td>A várfal kiugró, megerősített része.</td></tr>
+            <tr><td>Galgonya</td><td>Ostromlétra (népies/archaikus).</td></tr>
+            <tr><td>Félhold</td><td>A török birodalom és az iszlám jelképe.</td></tr>
+        </table>
+    </section>
+
+    <section id="quiz" class="content-box">
+        <h2>Mega-Kvíz (20 kérdés)</h2>
+        <div id="quiz-questions">
+            </div>
+        <button onclick="checkMasterQuiz()">Kardot ki! (Ellenőrzés)</button>
+        <div id="result-box"></div>
+    </section>
+</div>
+
+<script>
+    const questions = [
+        { q: "Melyik évben játszódik az ostrom?", a: "1552", o: ["1526", "1552", "1566"] },
+        { q: "Ki Eger várkapitánya?", a: "Dobó István", o: ["Bornemissza Gergely", "Dobó István", "Zrínyi Miklós"] },
+        { q: "Hányadik rész címe az 'Eger veszedelme'?", a: "IV.", o: ["III.", "IV.", "V."] },
+        { q: "Kit rabolt el Jumurdzsák?", a: "Gergely fiát", o: ["Gergely fiát", "Cecey Évát", "Dobó lányát"] },
+        { q: "Milyen állat szerepel a törökök jelvényén?", a: "Lófő vagy félhold", o: ["Sas", "Lófő vagy félhold", "Oroszlán"] },
+        { q: "Ki Gergely segédje a bombák készítésénél?", a: "Sárközi", o: ["Sárközi", "Mekcsey", "Miklós deák"] },
+        { q: "Miért akarja Jumurdzsák a gyűrűjét?", a: "Mert szerencsét hoz neki", o: ["Mert aranyból van", "Mert térkép van benne", "Mert szerencsét hoz neki"] },
+        { q: "Milyen ruhában utazik Éva Egerbe?", a: "Férfiruhában", o: ["Férfiruhában", "Apácaruhában", "Parasztruhában"] },
+        { q: "Ki az áruló hadnagy?", a: "Hegedűs István", o: ["Mekcsey István", "Hegedűs István", "Bolyky Tamás"] },
+        { q: "Hány török sereg egyesül Eger alatt?", a: "Kettő (Ali és Ahmed)", o: ["Egy", "Kettő (Ali és Ahmed)", "Három"] },
+        { q: "Milyen esküt tesznek a védők?", a: "Halálig tartót", o: ["Halálig tartót", "Háromnaposat", "Pénzbeli esküt"] },
+        { q: "Milyen híres eszközt fejlesztett Gergely?", a: "Tűzkerék", o: ["Katapult", "Tűzkerék", "Páncélozott szekér"] },
+        { q: "Ki írta a regényt?", a: "Gárdonyi Géza", o: ["Jókai Mór", "Gárdonyi Géza", "Arany János"] },
+        { q: "Hogy hívják Gergely és Éva fiát?", a: "Jancsi", o: ["Peti", "Jancsi", "Gergő"] },
+        { q: "Hol raboskodik Török Bálint?", a: "Héttorony", o: ["Héttorony", "Budai vár", "Bécs"] },
+        { q: "Milyen nyelven beszél Gergely a törökökkel néha?", a: "Törökül", o: ["Németül", "Törökül", "Latinul"] },
+        { q: "Mi a neve a börtönnek Konstantinápolyban?", a: "Yedikule", o: ["Topkapi", "Yedikule", "Galata"] },
+        { q: "Ki Dobó helyettese?", a: "Mekcsey István", o: ["Mekcsey István", "Bornemissza", "Sárközi"] },
+        { q: "Mit jelent a 'janicsár' szó?", a: "Új sereg", o: ["Öreg harcos", "Új sereg", "Lovas katona"] },
+        { q: "Sikerül Évának bejutnia a várba?", a: "Igen", o: ["Igen", "Nem", "Csak az ostrom után"] }
+    ];
+
+    function loadQuiz() {
+        const container = document.getElementById('quiz-questions');
+        questions.forEach((item, index) => {
+            let html = `<div class="quiz-item"><p>${index + 1}. ${item.q}</p><div class="options">`;
+            item.o.forEach(opt => {
+                html += `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>`;
+            });
+            html += `</div></div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    function checkMasterQuiz() {
+        let score = 0;
+        questions.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (selected && selected.value === item.a) {
+                score++;
+            }
+        });
+        
+        const resultBox = document.getElementById('result-box');
+        resultBox.style.display = "block";
+        resultBox.innerHTML = `Eredmény: ${score} / ${questions.length}<br>`;
+        
+        if (score === 20) resultBox.innerHTML += "Tökéletes! Te vagy az egri vár lángelméje! 🔥⚔️";
+        else if (score > 15) resultBox.innerHTML += "Kiváló vitéz vagy! 🏰";
+        else resultBox.innerHTML += "Még gyakorolnod kell a falakon! 📖";
+        
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>
