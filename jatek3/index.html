@@ -21,6 +21,7 @@
         .card:hover { transform: translateY(-5px); border-color: var(--p); box-shadow: 0 0 20px rgba(255,62,62,0.2); }
         .card .icon { font-size: 50px; margin-bottom: 10px; }
         .badge { position: absolute; top: 10px; right: 10px; background: var(--p); font-size: 10px; padding: 3px 7px; border-radius: 5px; }
+        .badge-link { background: #4CAF50; } /* Zöld badge a külső linkekhez */
 
         /* GAME OVERLAY */
         #game-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; }
@@ -44,6 +45,22 @@
     </div>
 
     <div id="main">
+        <!-- ÚJ RÉSZ: Külső Játékok -->
+        <h1>Játékok</h1>
+        <div class="grid" style="margin-bottom: 40px;">
+            <div class="card" onclick="window.open('https://fluxi.hu/jatek1', '_blank')">
+                <span class="badge badge-link">LINK</span>
+                <div class="icon">🌍</div>
+                <strong>Fluxi Játék 1</strong>
+            </div>
+            <div class="card" onclick="window.open('https://fluxi.hu/jatek2', '_blank')">
+                <span class="badge badge-link">LINK</span>
+                <div class="icon">🎮</div>
+                <strong>Fluxi Játék 2</strong>
+            </div>
+        </div>
+
+        <!-- EREDETI RÉSZ: Belső Mini Játékok -->
         <h1>mini Játékok <small style="font-size: 0.5em; color: #666;">v3.0.0 BETA</small></h1>
         <div class="grid" id="game-list"></div>
     </div>
