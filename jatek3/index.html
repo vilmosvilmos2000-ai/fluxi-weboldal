@@ -46,10 +46,6 @@
     <div id="main">
         <h1>mini Játékok <small style="font-size: 0.5em; color: #666;">v3.0.0 BETA</small></h1>
         <div class="grid" id="game-list"></div>
-
-        <!-- ÚJ JÁTÉKOK RÉSZ HOZZÁADVA -->
-        <h1 style="margin-top: 40px;">Játékok <small style="font-size: 0.5em; color: #666;">Külső szerver</small></h1>
-        <div class="grid" id="external-game-list"></div>
     </div>
 
     <div id="game-view">
@@ -94,12 +90,6 @@
         { id: 'aim', title: "Aim Trainer", icon: "🎯", type: "2D" }
     ];
 
-    // --- KÜLSŐ JÁTÉK LISTA (FLUXI) ---
-    const externalGames = [
-        { title: "Fluxi Játék 1", icon: "🎮", url: "https://fluxi.hu/jatek1" },
-        { title: "Fluxi Játék 2", icon: "🕹️", url: "https://fluxi.hu/jatek2" }
-    ];
-
     function init() {
         load();
         const container = document.getElementById('game-list');
@@ -114,23 +104,9 @@
             `;
             container.appendChild(el);
         });
-
-        // Külső játékok generálása
-        const extContainer = document.getElementById('external-game-list');
-        externalGames.forEach(g => {
-            const el = document.createElement('div');
-            el.className = 'card';
-            el.onclick = () => launchExternal(g.url, g.title);
-            el.innerHTML = `
-                <span class="badge" style="background: #007bff;">WEB</span>
-                <div class="icon">${g.icon}</div>
-                <strong>${g.title}</strong>
-            `;
-            extContainer.appendChild(el);
-        });
     }
 
-    // --- JÁTÉK INDÍTÓ (MINI JÁTÉKOK) ---
+    // --- JÁTÉK INDÍTÓ ---
     function launch(id) {
         document.getElementById('game-view').style.display = 'flex';
         document.getElementById('game-title').innerText = id.toUpperCase();
@@ -151,16 +127,6 @@
             case 'dice': startDice(container); break;
             case 'aim': startAim(container); break;
         }
-    }
-
-    // --- JÁTÉK INDÍTÓ (KÜLSŐ JÁTÉKOK) ---
-    function launchExternal(url, title) {
-        document.getElementById('game-view').style.display = 'flex';
-        document.getElementById('game-title').innerText = title.toUpperCase();
-        const container = document.getElementById('canvas-container');
-        
-        // Iframe használata a külső weblap beágyazásához
-        container.innerHTML = `<iframe src="${url}" style="width: 100%; height: 100%; border: none;"></iframe>`;
     }
 
     function exitGame() { 
