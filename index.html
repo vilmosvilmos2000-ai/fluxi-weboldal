@@ -9,15 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent: #3b82f6;
-            --accent2: #2563eb;
-            --accent-light: #60a5fa;
-            --accent-rgb: 59, 130, 246;
-            --bg: #070b14;
-            --card: rgba(15, 23, 42, 0.75);
-            --border: rgba(148, 163, 184, 0.08);
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
+            --accent: #2563eb;
+            --accent2: #1d4ed8;
+            --accent-light: #3b82f6;
+            --accent-rgb: 37, 99, 235;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: rgba(15, 23, 42, 0.08);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
         }
 
         * {
@@ -29,7 +30,7 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
-            color: #f1f5f9;
+            color: var(--text);
             line-height: 1.5;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
@@ -39,9 +40,9 @@
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(ellipse 90% 60% at 15% -15%, rgba(59, 130, 246, 0.18) 0%, transparent 55%),
-                radial-gradient(ellipse 70% 50% at 90% 100%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 40% at 50% 40%, rgba(96, 165, 250, 0.04) 0%, transparent 60%);
+                radial-gradient(ellipse 90% 60% at 10% -10%, rgba(37, 99, 235, 0.08) 0%, transparent 55%),
+                radial-gradient(ellipse 70% 50% at 95% 100%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse 40% 30% at 50% 50%, rgba(147, 197, 253, 0.04) 0%, transparent 60%);
             z-index: 0;
             pointer-events: none;
         }
@@ -64,7 +65,7 @@
             font-weight: 800;
             letter-spacing: -2.5px;
             margin-bottom: 12px;
-            background: linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 45%, #1e40af 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -86,7 +87,7 @@
             color: var(--text-dim);
             margin: 48px 0 18px;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+            border-bottom: 1px solid rgba(15, 23, 42, 0.06);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -96,7 +97,7 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, rgba(148,163,184,0.12), transparent);
+            background: linear-gradient(90deg, rgba(15,23,42,0.08), transparent);
         }
 
         .grid {
@@ -111,33 +112,32 @@
             border-radius: 18px;
             padding: 22px 20px;
             text-decoration: none;
-            color: #f1f5f9;
+            color: var(--text);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
         }
 
         .card::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), transparent 60%);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), transparent 60%);
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
         }
 
         .card:hover {
-            border-color: rgba(59, 130, 246, 0.45);
+            border-color: rgba(37, 99, 235, 0.3);
             transform: translateY(-4px);
             box-shadow:
-                0 12px 40px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(59, 130, 246, 0.15),
-                0 0 30px rgba(59, 130, 246, 0.12);
+                0 12px 32px rgba(15, 23, 42, 0.08),
+                0 0 0 1px rgba(37, 99, 235, 0.1),
+                0 4px 20px rgba(37, 99, 235, 0.08);
         }
 
         .card:hover::before {
@@ -172,7 +172,7 @@
         .footer {
             text-align: center;
             padding: 70px 0 24px;
-            color: #334155;
+            color: #cbd5e1;
             font-size: 0.78rem;
             font-weight: 500;
             letter-spacing: 0.3px;
