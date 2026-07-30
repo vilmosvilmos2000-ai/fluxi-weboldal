@@ -8,76 +8,239 @@
     :root {
       color-scheme: dark;
       --bg: #030712;
-      --panel: #0f172a;
+      --panel: rgba(15, 23, 42, 0.85);
+      --panel-solid: #0f172a;
       --panel-2: #111827;
       --accent: #38bdf8;
       --accent-2: #8b5cf6;
       --text: #f8fafc;
       --muted: #94a3b8;
       --user: #2563eb;
-      --bot: #1f2937;
+      --bot: #1e293b;
       --good: #34d399;
-      --warn: #fbbf24;
+      --border: rgba(255, 255, 255, 0.1);
+      --glass: rgba(15, 23, 42, 0.72);
     }
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: "Segoe UI", system-ui, Arial, sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 25%),
-        linear-gradient(135deg, #020617, #111827 55%, #0f172a);
+        radial-gradient(ellipse at 15% 10%, rgba(56, 189, 248, 0.18), transparent 40%),
+        radial-gradient(ellipse at 85% 90%, rgba(139, 92, 246, 0.14), transparent 40%),
+        linear-gradient(160deg, #020617 0%, #0f172a 50%, #020617 100%);
       color: var(--text);
-      display: flex;
-      justify-content: center;
-      padding: 18px;
     }
 
     .app {
-      width: min(980px, 100%);
-      background: rgba(2, 6, 23, 0.9);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+      display: grid;
+      grid-template-columns: 280px 1fr 300px;
+      grid-template-rows: 56px 1fr;
+      height: 100vh;
+      width: 100vw;
+      gap: 0;
     }
 
     .header {
-      padding: 22px 24px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      color: white;
+      grid-column: 1 / -1;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.95), rgba(139, 92, 246, 0.95));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 10;
     }
 
-    .header h1 { margin: 0 0 5px; font-size: 24px; }
-    .header p { margin: 0; color: rgba(255,255,255,0.92); }
-    .badge {
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.22);
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .header-sub {
       font-size: 13px;
+      opacity: 0.9;
+      display: none;
+    }
+
+    @media (min-width: 900px) {
+      .header-sub { display: block; }
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 12px;
       font-weight: 700;
       white-space: nowrap;
     }
 
-    .chat {
-      height: 600px;
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-actions button {
+      border: none;
+      background: rgba(255, 255, 255, 0.18);
+      color: white;
+      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-size: 16px;
+      display: grid;
+      place-items: center;
+      transition: background 0.15s;
+    }
+
+    .header-actions button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .sidebar-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-right: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(16px);
       overflow-y: auto;
-      padding: 18px 18px 8px;
-      background: linear-gradient(180deg, rgba(15,23,42,0.96), rgba(2,6,23,0.98));
+      min-height: 0;
+    }
+
+    .panel-section {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-section:last-child {
+      border-bottom: none;
+      flex: 1;
+    }
+
+    .panel-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .mode-switch {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mode-switch button {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .mode-switch button:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .mode-switch button.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(139, 92, 246, 0.25));
+      border-color: rgba(56, 189, 248, 0.5);
+      color: #e0f2fe;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #d1fae5;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--good);
+      box-shadow: 0 0 8px var(--good);
+    }
+
+    .mentor-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mentor-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+
+    .main-chat {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+      background: rgba(2, 6, 23, 0.45);
+    }
+
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scroll-behavior: smooth;
     }
 
     .message {
       display: flex;
-      margin-bottom: 12px;
-      gap: 8px;
+      gap: 10px;
       align-items: flex-end;
+      max-width: 100%;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .message.user { justify-content: flex-end; }
+
     .avatar {
       width: 34px;
       height: 34px;
@@ -85,209 +248,176 @@
       display: grid;
       place-items: center;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 12px;
       flex-shrink: 0;
     }
-    .message.bot .avatar { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
-    .message.user .avatar { background: linear-gradient(135deg, #2563eb, #4f46e5); }
+
+    .message.bot .avatar {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .message.user .avatar {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+    }
+
+    .message.system .avatar {
+      background: rgba(52, 211, 153, 0.3);
+      color: #a7f3d0;
+    }
+
     .bubble {
-      max-width: 78%;
-      padding: 12px 14px;
+      max-width: min(640px, 78%);
+      padding: 12px 16px;
       border-radius: 16px;
       line-height: 1.55;
       word-wrap: break-word;
       white-space: pre-wrap;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+      font-size: 14.5px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
+
     .message.bot .bubble {
       background: var(--bot);
-      border-bottom-left-radius: 6px;
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
       color: var(--text);
     }
+
     .message.user .bubble {
       background: linear-gradient(135deg, var(--user), #4f46e5);
       color: white;
-      border-bottom-right-radius: 6px;
+      border-bottom-right-radius: 4px;
     }
+
     .message.system .bubble {
-      background: rgba(52, 211, 153, 0.14);
+      background: rgba(52, 211, 153, 0.1);
       color: #dcfce7;
-      border: 1px solid rgba(52, 211, 153, 0.18);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      max-width: min(520px, 90%);
     }
+
     .message.typing .bubble {
       color: var(--muted);
       font-style: italic;
-      background: rgba(148,163,184,0.14);
+      background: rgba(148, 163, 184, 0.1);
+      border: 1px solid var(--border);
+    }
+
+    .composer-wrap {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
     }
 
     .composer {
       display: flex;
       gap: 10px;
-      padding: 14px 16px 16px;
-      background: var(--panel-2);
-      border-top: 1px solid rgba(255,255,255,0.08);
+      align-items: center;
     }
+
     .composer input {
       flex: 1;
-      padding: 12px 14px;
-      border: none;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
       border-radius: 999px;
       outline: none;
       font-size: 15px;
-      background: #f8fafc;
+      background: rgba(248, 250, 252, 0.95);
       color: #0f172a;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
+
+    .composer input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+    }
+
     .composer button {
       border: none;
       border-radius: 999px;
-      padding: 10px 16px;
+      padding: 12px 20px;
       font-weight: 700;
+      font-size: 14px;
       cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .composer button:active { transform: scale(0.97); }
+
+    #send {
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
       color: white;
     }
-    .composer button.secondary { background: #475569; }
 
-    .quick-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 0 16px 12px;
-      background: var(--panel-2);
+    #send:hover { opacity: 0.92; }
+
+    #reset {
+      background: rgba(71, 85, 105, 0.8);
+      color: white;
     }
-    .quick-actions button {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 7px 10px;
-      cursor: pointer;
-    }
+
+    #reset:hover { background: rgba(71, 85, 105, 1); }
 
     .hint {
       color: var(--muted);
-      font-size: 13px;
-      padding: 0 16px 14px;
-      background: var(--panel-2);
-    }
-
-    .footer-note {
-      padding: 8px 16px 14px;
-      color: var(--muted);
       font-size: 12px;
-      background: var(--panel-2);
+      margin-top: 8px;
+      text-align: center;
     }
 
-    .workspace {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 14px;
-      padding: 16px;
-      background: var(--panel-2);
-    }
-
-    .sidebar, .main-stack {
+    .sidebar-right {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      border-left: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      overflow-y: auto;
+      min-height: 0;
     }
 
-    .card {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-    }
-
-    .card h3 {
-      margin: 0 0 10px;
-      font-size: 15px;
-      color: #e2e8f0;
-    }
-
-    .card-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .card-title-row button,
-    .card-actions button,
-    .import-btn {
-      border: none;
-      color: white;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      border-radius: 999px;
-      padding: 7px 10px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .mode-switch {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .mode-switch button {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 7px 10px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .mode-switch button.active {
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      border-color: transparent;
-    }
-
-    .status-pill {
-      display: inline-block;
-      font-size: 12px;
-      color: #d1fae5;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(52, 211, 153, 0.14);
-      border: 1px solid rgba(52, 211, 153, 0.18);
-    }
-
-    .mentor-list,
-    .memory-list,
     .prompt-bank {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-    }
-
-    .mentor-item,
-    .memory-item,
-    .prompt-item {
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 12px;
-      padding: 8px 10px;
-      background: rgba(255,255,255,0.04);
-      font-size: 13px;
-      line-height: 1.45;
+      gap: 6px;
+      max-height: 50vh;
+      overflow-y: auto;
     }
 
     .prompt-item button {
       display: block;
       width: 100%;
-      border: none;
-      background: transparent;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
       color: var(--text);
       text-align: left;
       cursor: pointer;
-      padding: 0;
-      font: inherit;
+      padding: 9px 11px;
+      border-radius: 11px;
+      font-size: 12.5px;
+      line-height: 1.4;
+      transition: all 0.15s;
+    }
+
+    .prompt-item button:hover {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .memory-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .memory-item {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 9px 11px;
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: #cbd5e1;
     }
 
     .card-actions {
@@ -295,6 +425,18 @@
       gap: 8px;
       margin-top: 10px;
       flex-wrap: wrap;
+    }
+
+    .card-actions button,
+    .import-btn {
+      border: none;
+      color: white;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 999px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
     }
 
     .import-btn {
@@ -312,120 +454,189 @@
       cursor: pointer;
     }
 
-    .card-chat {
-      padding: 0;
-      overflow: hidden;
+    .mobile-tabs {
+      display: none;
+      grid-column: 1 / -1;
+      background: var(--panel-solid);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 10px;
+      gap: 6px;
     }
 
-    .card-chat .chat {
-      height: 560px;
-      border-radius: 18px;
-    }
-
-    .mini-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .mini-card {
-      padding: 10px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-      font-size: 13px;
+    .mobile-tabs button {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
       color: var(--muted);
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
     }
 
-    .mini-card strong {
-      display: block;
+    .mobile-tabs button.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(139, 92, 246, 0.2));
       color: var(--text);
-      margin-bottom: 4px;
+      border-color: rgba(56, 189, 248, 0.4);
     }
 
-    @media (max-width: 980px) {
-      .workspace { grid-template-columns: 1fr; }
+    @media (max-width: 960px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 56px auto 1fr;
+      }
+
+      .mobile-tabs {
+        display: flex;
+      }
+
+      .sidebar-left,
+      .sidebar-right {
+        display: none;
+        position: absolute;
+        top: 56px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+        border: none;
+        max-height: none;
+      }
+
+      .sidebar-left.visible,
+      .sidebar-right.visible {
+        display: flex;
+      }
+
+      .main-chat {
+        min-height: 0;
+      }
+
+      .bubble {
+        max-width: 88%;
+      }
     }
 
-    @media (max-width: 700px) {
-      body { padding: 8px; }
-      .chat { height: 500px; }
-      .bubble { max-width: 92%; }
-      .header { flex-direction: column; align-items: flex-start; }
-      .mini-grid { grid-template-columns: 1fr; }
+    html.light {
+      color-scheme: light;
+      --bg: #f1f5f9;
+      --panel: rgba(255, 255, 255, 0.9);
+      --panel-solid: #ffffff;
+      --panel-2: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --bot: #ffffff;
+      --border: rgba(15, 23, 42, 0.1);
+      --glass: rgba(255, 255, 255, 0.85);
+    }
+
+    html.light body {
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(56, 189, 248, 0.12), transparent 40%),
+        radial-gradient(ellipse at 85% 90%, rgba(139, 92, 246, 0.1), transparent 40%),
+        linear-gradient(160deg, #e2e8f0 0%, #f8fafc 50%, #e2e8f0 100%);
+    }
+
+    html.light .message.bot .bubble {
+      background: #fff;
+      border-color: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    html.light .composer input {
+      background: #fff;
+      border-color: rgba(15, 23, 42, 0.12);
+    }
+
+    html.light .main-chat {
+      background: rgba(248, 250, 252, 0.6);
+    }
+
+    html.light .prompt-item button,
+    html.light .mentor-item,
+    html.light .memory-item,
+    html.light .mode-switch button {
+      background: rgba(15, 23, 42, 0.03);
+      color: #0f172a;
+    }
+
+    html.light .mode-switch button.active {
+      color: #0c4a6e;
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="header">
-      <div>
+    <header class="header">
+      <div class="header-left">
         <h1>VilmosGPT</h1>
-        <p>Egy igazán okos, személyesebb AI, ami cseveg, tanul és interneten is utánanéz.</p>
+        <span class="header-sub">Személyes AI · tanul · keres</span>
       </div>
-      <div class="badge">Online · tanul · keres</div>
+      <div class="header-actions">
+        <span class="badge">Online</span>
+        <button id="theme-toggle" title="Téma">☀️</button>
+      </div>
+    </header>
+
+    <div class="mobile-tabs" id="mobile-tabs">
+      <button data-panel="left" class="active">Módok</button>
+      <button data-panel="chat">Chat</button>
+      <button data-panel="right">Kérdések</button>
     </div>
 
-    <div class="workspace">
-      <div class="sidebar">
-        <div class="card">
-          <div class="card-title-row">
-            <h3>AI módok</h3>
-            <button id="theme-toggle">☀️</button>
-          </div>
-          <div class="mode-switch" id="mode-switch">
-            <button class="mode active" data-mode="learn">Tanulás</button>
-            <button class="mode" data-mode="research">Kutatás</button>
-            <button class="mode" data-mode="practice">Gyakorlás</button>
-            <button class="mode" data-mode="creative">Kreatív</button>
-          </div>
-          <div class="status-pill">Aktív mód: <span id="mode-label">Tanulás</span></div>
+    <aside class="sidebar-left" id="sidebar-left">
+      <div class="panel-section">
+        <div class="panel-title">AI módok</div>
+        <div class="mode-switch" id="mode-switch">
+          <button class="mode active" data-mode="learn">📚 Tanulás</button>
+          <button class="mode" data-mode="research">🔍 Kutatás</button>
+          <button class="mode" data-mode="practice">✏️ Gyakorlás</button>
+          <button class="mode" data-mode="creative">✨ Kreatív</button>
         </div>
-
-        <div class="card">
-          <h3>Mentor tippek</h3>
-          <div id="mentor-list" class="mentor-list"></div>
-        </div>
-
-        <div class="card">
-          <h3>Mentett ismeretek</h3>
-          <div id="memory-list" class="memory-list"></div>
-          <div class="card-actions">
-            <button id="export-memory">Mentés</button>
-            <label class="import-btn">
-              <input type="file" id="import-memory" accept="application/json" />
-              Betöltés
-            </label>
-          </div>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          Aktív: <span id="mode-label">Tanulás</span>
         </div>
       </div>
 
-      <div class="main-stack">
-        <div class="card">
-          <h3>Gyors kérdések</h3>
-          <div id="prompt-bank" class="prompt-bank"></div>
-        </div>
+      <div class="panel-section">
+        <div class="panel-title">Mentor tippek</div>
+        <div id="mentor-list" class="mentor-list"></div>
+      </div>
+    </aside>
 
-        <div class="card card-chat">
-          <div class="chat" id="chat"></div>
+    <main class="main-chat" id="main-chat">
+      <div class="chat" id="chat"></div>
+      <div class="composer-wrap">
+        <div class="composer">
+          <input id="input" type="text" placeholder="Írd be a kérdésed..." autocomplete="off" />
+          <button id="send">Küldés</button>
+          <button id="reset">Töröl</button>
+        </div>
+        <div class="hint">Kérdezz bármit — a bot tanul, emlékezik és az interneten is utánanéz.</div>
+      </div>
+    </main>
+
+    <aside class="sidebar-right" id="sidebar-right">
+      <div class="panel-section">
+        <div class="panel-title">Gyors kérdések</div>
+        <div id="prompt-bank" class="prompt-bank"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">Mentett ismeretek</div>
+        <div id="memory-list" class="memory-list"></div>
+        <div class="card-actions">
+          <button id="export-memory">Mentés</button>
+          <label class="import-btn">
+            <input type="file" id="import-memory" accept="application/json" />
+            Betöltés
+          </label>
         </div>
       </div>
-    </div>
-
-    <div class="quick-actions">
-      <button data-prompt="Mi a neved?">Mi a neved?</button>
-      <button data-prompt="Mondj egy viccet">Mondj egy viccet</button>
-      <button data-prompt="Mennyi 1+1?">Mennyi 1+1?</button>
-      <button data-prompt="Jegyezz meg, hogy szeretek tanulni">Jegyezz meg egy dolgot</button>
-    </div>
-
-    <div class="composer">
-      <input id="input" type="text" placeholder="Írd be a kérdésed..." />
-      <button id="send">Küldés</button>
-      <button id="reset" class="secondary">Töröl</button>
-    </div>
-    <div class="hint">Tippek: kérdezz bármit, és a bot megpróbálja a lehető legjobb választ adni, beleértve az internetes keresést is.</div>
-    <div class="footer-note">A memória a böngészőben tárolódik, így a chat egy kicsit emlékezik rád.</div>
+    </aside>
   </div>
 
   <script>
@@ -434,13 +645,15 @@
     const sendBtn = document.getElementById('send');
     const resetBtn = document.getElementById('reset');
     const themeToggle = document.getElementById('theme-toggle');
-    const modeSwitch = document.getElementById('mode-switch');
     const modeLabel = document.getElementById('mode-label');
     const promptBank = document.getElementById('prompt-bank');
     const mentorList = document.getElementById('mentor-list');
     const memoryList = document.getElementById('memory-list');
     const exportMemoryBtn = document.getElementById('export-memory');
     const importMemoryInput = document.getElementById('import-memory');
+    const sidebarLeft = document.getElementById('sidebar-left');
+    const sidebarRight = document.getElementById('sidebar-right');
+    const mainChat = document.getElementById('main-chat');
     const storageKey = 'vilmosgpt-memory-v2';
     let knowledge = loadKnowledge();
     let currentMode = 'learn';
@@ -465,105 +678,34 @@
       'Adj öt kérdést, amivel gyakorolhatom a matematikát.',
       'Mit érdemes tenni, ha elfárad a figyelem?',
       'Javasolj egy jó kezdő programozási nyelvet.',
-      'Milyen szavak segítenek gyorsabban megjegyezni dolgokat?',
       'Írj egy rövid, motiváló üzenetet a tanuláshoz.',
       'Magyarázd el, miért fontos a rendszeres ismétlés.',
-      'Adj egy példát a problémamegoldás lépéseire.',
       'Hogyan lehet jobban koncentrálni 25 perc alatt?',
-      'Milyen kérdéseket érdemes feltenni egy új témáról?',
       'Mi a különbség a tudás és a tapasztalat között?',
       'Adj 10 hasznos tanulási tippet kezdőknek.',
-      'Mutass egy rövid példát egy jó kérdésfeltevésre.',
       'Mi az a metakogníció? Magyarázd el egyszerűen.',
       'Segíts összeállítani egy 7 napos tanulási tervet.',
       'Milyen technikák segítik a hosszú távú emlékezést?',
-      'Mondd el, hogyan tudok jobban szervezni a napomat.',
-      'Adj öt jó kérdést a tudományos módszerhez.',
       'Mit jelent a „gyakorlat tesz mestert”?',
       'Hogyan lehet egyszerűen megérteni a fizikát?',
       'Írj egy rövid történetet egy okos robotról.',
-      'Mit jelent a „problémamegoldó gondolkodás”?',
-      'Adj egy példát egy tanulási cél kitűzésére.',
-      'Hogyan lehet hatékonyan tanulni csoportban?',
-      'Mit érdemes csinálni, ha elakadok egy feladatnál?',
-      'Írj két különböző választ egy kérdésre a rövid és a hosszú magyarázathoz.',
-      'Mi a különbség a könyv és a videó tanulás között?',
-      'Adj öt motivációs mondatot a tanuláshoz.',
-      'Hogyan lehet gyorsan összefoglalni egy hosszú szöveget?',
-      'Mi a különbség az információ és a tudás között?',
-      'Milyen kérdéseket érdemes feltenni egy új barátnak?',
-      'Mondd el röviden, hogyan működik a memória.',
-      'Adj egy példát az analógiák használatára.',
-      'Mit jelent a célorientált tanulás?',
-      'Készíts egy rövid tanulási checklistot.',
-      'Hogyan lehet jobban megérteni egy nehéz fogalmat?',
-      'Mit tanulhatok a hibákból?',
-      'Adj öt ötletet egy napi rutinhoz.',
-      'Magyarázd el, miért fontos a visszajelzés.',
-      'Milyen kérdések segítenek önreflexióban?',
-      'Írj egy rövid, barátságos üzenetet egy kezdő tanulónak.',
-      'Hogyan lehet javítani a szövegértést?',
-      'Adj egy rövid példát a problémák felosztására.',
-      'Mit jelent a „folyamatos fejlesztés”?',
-      'Hogyan lehet hasznosítani a szabadidőt tanulásra?',
-      'Mondd el, miért fontos a kérdezés.',
-      'Adj öt egyszerű gyakorlati feladatot a nyelvtanuláshoz.',
-      'Hogyan lehet egy nehéz témát egyszerűvé tenni?',
-      'Milyen könyveket érdemes olvasni a fejlődéshez?',
-      'Mit jelent a „tanulás mint szokás”?',
-      'Írj egy rövid magyarázatot a motivációról.',
-      'Mit jelent a „gondolkodásmód” röviden?',
-      'Adj öt tanulási stratégiát a rövid távú emlékezethez.',
-      'Milyen módon lehet a tanulást szórakoztatóbbá tenni?',
-      'Hogyan lehet ellenőrizni, hogy tényleg megértettem-e egy témát?',
-      'Készíts egy rövid listát a sikeres tanulás kulcsaiból.',
-      'Magyarázd el, hogyan lehet hatékonyan jegyzetelni.',
-      'Adj öt ötletet egy tanulási szobához.',
-      'Mi a különbség a megértés és a felidézés között?',
-      'Hogyan lehet növelni a kitartást?',
-      'Adj egy rövid példát egy logikai következtetésre.',
-      'Mit jelent a „kreatív gondolkodás”?',
-      'Hogyan lehet egyszerűen tanulni egy új fogalmat?',
-      'Adj öt jó szokást a napi rutinhoz.',
-      'Mit jelent a „tudásépítés”?',
-      'Hogyan lehet segíteni magadnak, ha unalmas a tanulás?',
-      'Mondd el a tanulás három legfontosabb elemét.',
-      'Adj egy rövid példát a „szemléltetés” módszerére.',
-      'Milyen kérdések segítenek mélyebben gondolkodni?',
-      'Hogyan lehet egyszerűen megjegyezni hosszú listákat?',
-      'Adj öt ötletet a figyelem fenntartására.',
-      'Mit üzenne egy jó mentor a kezdő tanulónak?',
-      'Mit jelent a „szabályozott tanulás”?',
-      'Segíts megfogalmazni egy célkitűzést a következő hónapra.',
-      'Magyarázd el, miért fontos a pihenés a tanulásban.',
-      'Adj egy rövid példát egy jó visszajelzésre.',
-      'Készíts egy listát a leggyakoribb tanulási hibákról.',
-      'Hogyan lehet gyorsan tanulni egy idegen nyelvet?',
-      'Mit jelent a „sok kis lépés” módszer?',
-      'Adj öt ötletet a motiváció fenntartására.',
-      'Hogyan lehet egyszerűen összefoglalni egy témát?',
-      'Mit ajánlasz egy kezdőnek a tanuláshoz?',
-      'Mondd el röviden, hogyan működik a figyelem.',
-      'Adj öt példát a gyakorlás fontosságára.',
-      'Mit jelent a „kreatív probléma megoldás”?'
+      'Mit érdemes csinálni, ha elakadok egy feladatnál?'
     ];
 
     const mentorTips = [
-      'Kérdezz bátran, ha valami nem érthető: a jó kérdés gyakran többértékű megoldáshoz vezet.',
+      'Kérdezz bátran, ha valami nem érthető: a jó kérdés gyakran jobb megoldáshoz vezet.',
       'A rövid, világos kérdések gyakran jobb válaszokat hoznak, mint a túl bonyolultak.',
-      'A tanulás hatékonyabb, ha egyszerre magyarázol, gyakorolsz és összefoglalod a lényeges részeket.',
-      'A memóriad erősödik, ha a tanult dolgokat rendszeresen visszahívod.',
+      'A tanulás hatékonyabb, ha magyarázol, gyakorolsz és összefoglalod a lényeget.',
+      'A memória erősödik, ha a tanult dolgokat rendszeresen visszahívod.',
       'Próbáld meg mindig megkérdezni: „Mi a legfontosabb ötlet ebben?”',
-      'A jó válaszokhoz gyakran elég egy alapvető, világos kérdés is.',
-      'Képzeld el a tanult dolgokat, és ez segít a hosszú távú emlékezetben.',
       'Ha nehéz egy témát megérteni, bontsd kisebb részekre.',
       'A hibákból tanulni ugyanúgy fontos, mint a sikerekből.',
-      'Ha tanulsz, mindig tarts egy kis szünetet, hogy jobban feldolgozd az információt.'
+      'Ha tanulsz, tarts kis szüneteket, hogy jobban feldolgozd az információt.'
     ];
 
     function renderPromptBank() {
       promptBank.innerHTML = '';
-      promptLibrary.slice(0, 24).forEach(item => {
+      promptLibrary.forEach(item => {
         const div = document.createElement('div');
         div.className = 'prompt-item';
         const button = document.createElement('button');
@@ -571,6 +713,7 @@
         button.addEventListener('click', () => {
           input.value = item;
           input.focus();
+          if (window.innerWidth <= 960) showPanel('chat');
         });
         div.appendChild(button);
         promptBank.appendChild(div);
@@ -592,11 +735,11 @@
       if (!knowledge.length) {
         const empty = document.createElement('div');
         empty.className = 'memory-item';
-        empty.textContent = 'Még nincs mentett memória. Kérj egy megjegyzést, és itt megjelenik.';
+        empty.textContent = 'Még nincs mentett memória. Írd: „jegyezz meg, hogy ...”';
         memoryList.appendChild(empty);
         return;
       }
-      knowledge.slice(-8).reverse().forEach(item => {
+      knowledge.slice(-10).reverse().forEach(item => {
         const div = document.createElement('div');
         div.className = 'memory-item';
         div.textContent = item;
@@ -609,32 +752,14 @@
       document.querySelectorAll('.mode').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
       });
-      modeLabel.textContent = mode === 'learn' ? 'Tanulás' : mode === 'research' ? 'Kutatás' : mode === 'practice' ? 'Gyakorlás' : 'Kreatív';
-      themeToggle.textContent = currentMode === 'creative' ? '✨' : '☀️';
+      const labels = { learn: 'Tanulás', research: 'Kutatás', practice: 'Gyakorlás', creative: 'Kreatív' };
+      modeLabel.textContent = labels[mode] || 'Tanulás';
     }
 
     function toggleTheme() {
-      const root = document.documentElement;
-      const dark = root.style.getPropertyValue('--bg') === '#030712';
-      if (dark) {
-        root.style.setProperty('--bg', '#f8fafc');
-        root.style.setProperty('--panel', '#f8fafc');
-        root.style.setProperty('--panel-2', '#eef2ff');
-        root.style.setProperty('--text', '#0f172a');
-        root.style.setProperty('--muted', '#475569');
-        root.style.setProperty('--bot', '#ffffff');
-        root.style.setProperty('--user', '#4f46e5');
-        themeToggle.textContent = '🌙';
-      } else {
-        root.style.setProperty('--bg', '#030712');
-        root.style.setProperty('--panel', '#0f172a');
-        root.style.setProperty('--panel-2', '#111827');
-        root.style.setProperty('--text', '#f8fafc');
-        root.style.setProperty('--muted', '#94a3b8');
-        root.style.setProperty('--bot', '#1f2937');
-        root.style.setProperty('--user', '#2563eb');
-        themeToggle.textContent = '☀️';
-      }
+      document.documentElement.classList.toggle('light');
+      const isLight = document.documentElement.classList.contains('light');
+      themeToggle.textContent = isLight ? '🌙' : '☀️';
     }
 
     function exportMemory() {
@@ -692,12 +817,17 @@
       msg.className = `message ${role}`;
       const avatar = document.createElement('div');
       avatar.className = 'avatar';
-      avatar.textContent = role === 'user' ? 'Te' : 'AI';
+      avatar.textContent = role === 'user' ? 'Te' : role === 'system' ? '✓' : 'AI';
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
       bubble.textContent = text;
-      msg.appendChild(avatar);
-      msg.appendChild(bubble);
+      if (role === 'user') {
+        msg.appendChild(bubble);
+        msg.appendChild(avatar);
+      } else {
+        msg.appendChild(avatar);
+        msg.appendChild(bubble);
+      }
       chat.appendChild(msg);
       chat.scrollTop = chat.scrollHeight;
     }
@@ -710,7 +840,7 @@
       avatar.textContent = 'AI';
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      bubble.textContent = 'Gondolkodom, ellenőrzöm az információkat és összeállítok egy jó választ...';
+      bubble.textContent = 'Gondolkodom...';
       msg.appendChild(avatar);
       msg.appendChild(bubble);
       chat.appendChild(msg);
@@ -764,9 +894,15 @@
 
     function clonePromptFromHistory(text) {
       const lower = text.toLowerCase();
-      if (lower.includes('mi a neved') || lower.includes('ki vagy')) return 'A nevem VilmosGPT. Egy személyes, tanuló AI vagyok, és szeretném segíteni a kérdéseidben.';
-      if (lower.includes('vicc') || lower.includes('nevetés')) return 'Persze! Miért nem mondja a számítógép a viccet? Mert a billentyűzeten van egy kis “enter” problémája.';
-      if (lower.includes('köszönöm') || lower.includes('koszonom')) return 'Szívesen! Ha szeretnéd, kérdezz bármit, és megpróbálok a lehető legjobb választ adni.';
+      if (lower.includes('mi a neved') || lower.includes('ki vagy')) {
+        return 'A nevem VilmosGPT. Egy személyes, tanuló AI vagyok, és szeretném segíteni a kérdéseidben.';
+      }
+      if (lower.includes('vicc') || lower.includes('nevetés')) {
+        return 'Persze! Miért nem mondja a számítógép a viccet? Mert a billentyűzeten van egy kis „enter” problémája.';
+      }
+      if (lower.includes('köszönöm') || lower.includes('koszonom')) {
+        return 'Szívesen! Ha szeretnéd, kérdezz bármit, és megpróbálok a lehető legjobb választ adni.';
+      }
       return null;
     }
 
@@ -788,7 +924,6 @@
         `https://r.jina.ai/http://https://duckduckgo.com/html/?q=${encodeURIComponent(question)}`,
         `https://r.jina.ai/http://https://www.bing.com/search?q=${encodeURIComponent(question)}`
       ];
-
       for (const url of sources) {
         try {
           const response = await fetch(url, { headers: { Accept: 'text/plain' } });
@@ -796,9 +931,7 @@
           const raw = await response.text();
           const marker = raw.includes('Markdown Content:') ? raw.split('Markdown Content:')[1] : raw;
           const cleaned = sanitizeText(marker).slice(0, 900);
-          if (cleaned.length > 40) {
-            return cleaned;
-          }
+          if (cleaned.length > 40) return cleaned;
         } catch {}
       }
       return null;
@@ -809,13 +942,12 @@
       if (cleaned) {
         return `Röviden: ${cleaned}\n\nHa akarod, meg tudom ezt részletesebben is kibontani, példákkal vagy egyszerűbb magyarázattal.`;
       }
-      return 'Megpróbáltam utánanézni az interneten, de most nem tudtam elég megbízható forrást találni. Lehetséges, hogy a kérdés túl specifikus vagy a keresés ideiglenesen nem működött. Próbáld újra egy kicsit egyszerűbben.';
+      return 'Megpróbáltam utánanézni az interneten, de most nem tudtam elég megbízható forrást találni. Próbáld újra egy kicsit egyszerűbben.';
     }
 
     async function answerUser(text) {
       const msg = text.trim();
       const lower = msg.toLowerCase();
-
       if (!msg) return 'Írj valamit, hogy tudjak válaszolni.';
 
       const quick = clonePromptFromHistory(msg);
@@ -832,14 +964,10 @@
       }
 
       const known = knowledge.find(item => lower.includes(item.toLowerCase()));
-      if (known) {
-        return `A korábbi emlékeim szerint: ${known}`;
-      }
+      if (known) return `A korábbi emlékeim szerint: ${known}`;
 
       const mathAnswer = tryEvaluateMath(msg);
-      if (mathAnswer) {
-        return mathAnswer;
-      }
+      if (mathAnswer) return mathAnswer;
 
       if (isGreeting(msg)) {
         return 'Szia! Nagyon örülök, hogy itt vagy. Mit szeretnél ma megkérdezni, és hogyan tudok neked a legjobban segíteni?';
@@ -873,25 +1001,34 @@
       addMessage(reply, 'bot');
     }
 
-    document.querySelectorAll('[data-prompt]').forEach(button => {
-      button.addEventListener('click', () => {
-        input.value = button.getAttribute('data-prompt');
-        input.focus();
+    function showPanel(panel) {
+      sidebarLeft.classList.remove('visible');
+      sidebarRight.classList.remove('visible');
+      mainChat.style.display = '';
+      document.querySelectorAll('.mobile-tabs button').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-panel') === panel);
       });
-    });
+      if (panel === 'left') {
+        sidebarLeft.classList.add('visible');
+        mainChat.style.display = 'none';
+      } else if (panel === 'right') {
+        sidebarRight.classList.add('visible');
+        mainChat.style.display = 'none';
+      }
+    }
 
     document.querySelectorAll('.mode').forEach(button => {
       button.addEventListener('click', () => setMode(button.getAttribute('data-mode')));
     });
 
-    themeToggle.addEventListener('click', toggleTheme);
+    document.querySelectorAll('.mobile-tabs button').forEach(btn => {
+      btn.addEventListener('click', () => showPanel(btn.getAttribute('data-panel')));
+    });
 
+    themeToggle.addEventListener('click', toggleTheme);
     exportMemoryBtn.addEventListener('click', exportMemory);
     importMemoryInput.addEventListener('change', importMemory);
-
-    sendBtn.addEventListener('click', () => {
-      sendMessage();
-    });
+    sendBtn.addEventListener('click', sendMessage);
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
         event.preventDefault();
@@ -904,7 +1041,7 @@
       saveKnowledge();
       renderMemoryList();
       chat.innerHTML = '';
-      addMessage('A memória törölve lett. Kezdhetjük újra, és most még jobb segítséget tudok adni.', 'system');
+      addMessage('A memória törölve lett. Kezdhetjük újra!', 'system');
     });
 
     renderPromptBank();
@@ -912,7 +1049,7 @@
     renderMemoryList();
     setMode(currentMode);
 
-    addMessage('Szia! Én vagyok a VilmosGPT. Beszélgessünk, és megpróbálok neked a lehető legjobb válaszokat adni – akár az interneten is utánanézek.', 'bot');
+    addMessage('Szia! Én vagyok a VilmosGPT. Beszélgessünk — megpróbálok a lehető legjobb válaszokat adni, akár az interneten is utánanézek.', 'bot');
     addMessage('Példák: „mi a neved?”, „mennyi 1+1?”, „mondj egy viccet”, vagy „jegyezz meg, hogy szeretek tanulni”.', 'system');
   </script>
 </body>
