@@ -11,23 +11,18 @@
         :root {
             --accent: #3b82f6;
             --accent2: #2563eb;
-            --accent-light: #60a5fa;
             --accent-rgb: 59, 130, 246;
-            --bg: #070b14;
-            --card: rgba(15, 23, 42, 0.75);
-            --border: rgba(148, 163, 184, 0.08);
+            --bg: #050810;
+            --card: rgba(12, 18, 35, 0.7);
+            --border: rgba(148, 163, 184, 0.1);
             --text-muted: #94a3b8;
             --text-dim: #64748b;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             background: var(--bg);
             color: #f1f5f9;
             line-height: 1.5;
@@ -36,21 +31,28 @@
             overflow-x: hidden;
         }
 
-        .bg {
+        /* Canvas particles */
+        #particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-glow {
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(ellipse 90% 60% at 15% -15%, rgba(59, 130, 246, 0.18) 0%, transparent 55%),
-                radial-gradient(ellipse 70% 50% at 90% 100%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 40% at 50% 40%, rgba(96, 165, 250, 0.04) 0%, transparent 60%);
+                radial-gradient(ellipse 80% 50% at 20% 0%, rgba(59,130,246,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 85% 90%, rgba(37,99,235,0.1) 0%, transparent 50%);
             z-index: 0;
             pointer-events: none;
-            animation: bgPulse 12s ease-in-out infinite alternate;
+            animation: glowShift 14s ease-in-out infinite alternate;
         }
 
-        @keyframes bgPulse {
-            0% { opacity: 0.85; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.03); }
+        @keyframes glowShift {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
 
         .container {
@@ -61,67 +63,70 @@
             padding: 60px 24px 50px;
         }
 
+        /* Hero */
         .hero {
             text-align: center;
-            padding: 20px 0 56px;
+            padding: 30px 0 60px;
             opacity: 0;
-            transform: translateY(24px);
-            animation: fadeUp 0.8s ease forwards 0.1s;
+            transform: translateY(30px);
+            animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.15s;
         }
 
         @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .logo {
-            font-size: 3.6rem;
+            font-size: 4rem;
             font-weight: 800;
-            letter-spacing: -2.5px;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #1d4ed8 100%);
+            letter-spacing: -3px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #bfdbfe, #3b82f6 45%, #1d4ed8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            line-height: 1.1;
-            animation: logoGlow 3s ease-in-out infinite alternate;
+            animation: logoPulse 4s ease-in-out infinite;
         }
 
-        @keyframes logoGlow {
-            0% { filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.2)); }
-            100% { filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.45)); }
+        @keyframes logoPulse {
+            0%, 100% { filter: drop-shadow(0 0 12px rgba(59,130,246,0.3)); }
+            50% { filter: drop-shadow(0 0 28px rgba(59,130,246,0.55)); }
         }
 
         .hero p {
             color: var(--text-muted);
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 500;
-            letter-spacing: -0.2px;
         }
 
+        /* Sections */
         .section-title {
             font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1.8px;
             color: var(--text-dim);
-            margin: 48px 0 18px;
+            margin: 52px 0 18px;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+            border-bottom: 1px solid rgba(148,163,184,0.08);
             display: flex;
             align-items: center;
             gap: 10px;
             opacity: 0;
-            animation: fadeUp 0.6s ease forwards;
+            transform: translateY(16px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .section-title.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .section-title::after {
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, rgba(148,163,184,0.12), transparent);
+            background: linear-gradient(90deg, rgba(148,163,184,0.15), transparent);
         }
 
         .grid {
@@ -137,166 +142,119 @@
             padding: 22px 20px;
             text-decoration: none;
             color: #f1f5f9;
-            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
             position: relative;
             overflow: hidden;
             opacity: 0;
-            transform: translateY(20px) scale(0.97);
-            animation: cardIn 0.55s ease forwards;
+            transform: translateY(28px) scale(0.96);
+            transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1),
+                        transform 0.55s cubic-bezier(0.16,1,0.3,1),
+                        border-color 0.3s, box-shadow 0.3s;
         }
 
-        .card:nth-child(1) { animation-delay: 0.15s; }
-        .card:nth-child(2) { animation-delay: 0.22s; }
-        .card:nth-child(3) { animation-delay: 0.29s; }
-        .card:nth-child(4) { animation-delay: 0.36s; }
-        .card:nth-child(5) { animation-delay: 0.43s; }
-        .card:nth-child(6) { animation-delay: 0.50s; }
-        .card:nth-child(7) { animation-delay: 0.57s; }
-
-        @keyframes cardIn {
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
         .card::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), transparent 60%);
+            background: linear-gradient(145deg, rgba(59,130,246,0.15), transparent 55%);
             opacity: 0;
-            transition: opacity 0.35s ease;
+            transition: opacity 0.35s;
             pointer-events: none;
         }
 
         .card::after {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 40%,
-                rgba(255, 255, 255, 0.03) 50%,
-                transparent 60%
-            );
-            transform: translateX(-100%) rotate(25deg);
-            transition: transform 0.6s ease;
+            top: -40%;
+            left: -60%;
+            width: 50%;
+            height: 180%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.55s ease;
             pointer-events: none;
         }
 
         .card:hover {
-            border-color: rgba(59, 130, 246, 0.5);
-            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(59,130,246,0.55);
+            transform: translateY(-8px) scale(1.03);
             box-shadow:
-                0 16px 48px rgba(0, 0, 0, 0.45),
-                0 0 0 1px rgba(59, 130, 246, 0.2),
-                0 0 40px rgba(59, 130, 246, 0.18);
+                0 20px 50px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(59,130,246,0.25),
+                0 0 50px rgba(59,130,246,0.2);
         }
 
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card:hover::after {
-            transform: translateX(100%) rotate(25deg);
-        }
+        .card:hover::before { opacity: 1; }
+        .card:hover::after { left: 130%; }
 
         .card .icon {
-            font-size: 1.85rem;
+            font-size: 1.9rem;
             margin-bottom: 12px;
-            line-height: 1;
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
         }
 
         .card:hover .icon {
-            transform: scale(1.15) rotate(-6deg);
+            transform: scale(1.2) rotate(-8deg);
         }
 
         .card h3 {
             font-size: 0.98rem;
             font-weight: 650;
             margin-bottom: 5px;
-            letter-spacing: -0.2px;
             transition: color 0.25s;
         }
 
-        .card:hover h3 {
-            color: #93c5fd;
-        }
+        .card:hover h3 { color: #93c5fd; }
 
         .card p {
             color: var(--text-muted);
             font-size: 0.8rem;
             flex: 1;
-            line-height: 1.4;
         }
 
         .footer {
             text-align: center;
-            padding: 70px 0 24px;
+            padding: 80px 0 30px;
             color: #334155;
             font-size: 0.78rem;
-            font-weight: 500;
-            letter-spacing: 0.3px;
             opacity: 0;
-            animation: fadeUp 0.7s ease forwards 0.8s;
+            transition: opacity 0.7s ease;
         }
 
-        /* Section title delays */
-        .section-title:nth-of-type(1) { animation-delay: 0.2s; }
-        .section-title:nth-of-type(2) { animation-delay: 0.35s; }
-        .section-title:nth-of-type(3) { animation-delay: 0.5s; }
-        .section-title:nth-of-type(4) { animation-delay: 0.65s; }
+        .footer.visible { opacity: 1; }
 
         @media (max-width: 540px) {
-            .container {
-                padding: 40px 16px 40px;
-            }
-            .logo {
-                font-size: 2.7rem;
-            }
-            .hero {
-                padding-bottom: 40px;
-            }
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 11px;
-            }
-            .card {
-                padding: 18px 15px;
-                border-radius: 14px;
-            }
-            .card .icon {
-                font-size: 1.5rem;
-                margin-bottom: 10px;
-            }
-            .card h3 {
-                font-size: 0.9rem;
-            }
-            .section-title {
-                margin: 36px 0 14px;
-            }
+            .container { padding: 40px 16px; }
+            .logo { font-size: 2.8rem; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 11px; }
+            .card { padding: 18px 15px; border-radius: 14px; }
+            .card .icon { font-size: 1.5rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
+                animation: none !important;
                 transition-duration: 0.01ms !important;
+            }
+            .card, .section-title, .hero, .footer {
+                opacity: 1 !important;
+                transform: none !important;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg"></div>
+    <canvas id="particles"></canvas>
+    <div class="bg-glow"></div>
+
     <div class="container">
         <div class="hero">
             <div class="logo">fluxi</div>
@@ -305,106 +263,106 @@
 
         <div class="section-title">Játékok</div>
         <div class="grid">
-            <a href="/jatek1" class="card">
-                <div class="icon">🎮</div>
-                <h3>shout learn</h3>
-                <p>FPS játék</p>
-            </a>
-            <a href="/jatek2" class="card">
-                <div class="icon">🎮</div>
-                <h3>TERMÉSZETI TÚLÉLŐ</h3>
-                <p>természetben FPS játék</p>
-            </a>
-            <a href="/jatek3" class="card">
-                <div class="icon">🕹️</div>
-                <h3>game hub</h3>
-                <p>minden játék egy helyen</p>
-            </a>
+            <a href="/jatek1" class="card"><div class="icon">🎮</div><h3>shout learn</h3><p>FPS játék</p></a>
+            <a href="/jatek2" class="card"><div class="icon">🎮</div><h3>TERMÉSZETI TÚLÉLŐ</h3><p>természetben FPS játék</p></a>
+            <a href="/jatek3" class="card"><div class="icon">🕹️</div><h3>game hub</h3><p>minden játék egy helyen</p></a>
         </div>
 
         <div class="section-title">Hamarosan AI & Technológia</div>
         <div class="grid">
-            <a href="/ai" class="card">
-                <div class="icon">🤖</div>
-                <h3>AI Chat</h3>
-                <p>ai.html</p>
-            </a>
-            <a href="/aiplus" class="card">
-                <div class="icon">🧠</div>
-                <h3>AI Plus</h3>
-                <p>aiplus.html</p>
-            </a>
-            <a href="/aiprograming" class="card">
-                <div class="icon">💻</div>
-                <h3>AI Programming</h3>
-                <p>aiprograming.html</p>
-            </a>
-            <a href="/hjuighuigz87" class="card">
-                <div class="icon">⚡</div>
-                <h3>AI Példa</h3>
-                <p>programozás AI példa</p>
-            </a>
-            <a href="/okos" class="card">
-                <div class="icon">📚</div>
-                <h3>Okos</h3>
-                <p>HTML, CSS, JS kódok</p>
-            </a>
-            <a href="/marketing" class="card">
-                <div class="icon">📊</div>
-                <h3>Marketing</h3>
-                <p>marketing.html</p>
-            </a>
-            <a href="/shop" class="card">
-                <div class="icon">🛒</div>
-                <h3>Shop</h3>
-                <p>shop.html</p>
-            </a>
+            <a href="/ai" class="card"><div class="icon">🤖</div><h3>AI Chat</h3><p>ai.html</p></a>
+            <a href="/aiplus" class="card"><div class="icon">🧠</div><h3>AI Plus</h3><p>aiplus.html</p></a>
+            <a href="/aiprograming" class="card"><div class="icon">💻</div><h3>AI Programming</h3><p>aiprograming.html</p></a>
+            <a href="/hjuighuigz87" class="card"><div class="icon">⚡</div><h3>AI Példa</h3><p>programozás AI példa</p></a>
+            <a href="/okos" class="card"><div class="icon">📚</div><h3>Okos</h3><p>HTML, CSS, JS kódok</p></a>
+            <a href="/marketing" class="card"><div class="icon">📊</div><h3>Marketing</h3><p>marketing.html</p></a>
+            <a href="/shop" class="card"><div class="icon">🛒</div><h3>Shop</h3><p>shop.html</p></a>
         </div>
 
         <div class="section-title">Tanulás</div>
         <div class="grid">
-            <a href="/egri/" class="card">
-                <div class="icon">🍐</div>
-                <h3>Egri</h3>
-                <p>egricsillagok tanulás</p>
-            </a>
-            <a href="/probavizsga/" class="card">
-                <div class="icon">📝</div>
-                <h3>Próba vizsga</h3>
-                <p>probavizsga</p>
-            </a>
+            <a href="/egri/" class="card"><div class="icon">🍐</div><h3>Egri</h3><p>egricsillagok tanulás</p></a>
+            <a href="/probavizsga/" class="card"><div class="icon">📝</div><h3>Próba vizsga</h3><p>probavizsga</p></a>
         </div>
 
         <div class="section-title">Egyéb</div>
         <div class="grid">
-            <a href="/stilus/" class="card">
-                <div class="icon">🎨</div>
-                <h3>Stílus</h3>
-                <p>3d</p>
-            </a>
-            <a href="/particle/" class="card">
-                <div class="icon">✨</div>
-                <h3>Particle</h3>
-                <p>interaktív particle</p>
-            </a>
-            <a href="/kocka/" class="card">
-                <div class="icon">🧊</div>
-                <h3>Kocka</h3>
-                <p>tesztelheted a géped</p>
-            </a>
-            <a href="/case/" class="card">
-                <div class="icon">📁</div>
-                <h3>Case</h3>
-                <p>ládanyitogatás</p>
-            </a>
-            <a href="/fruits/" class="card">
-                <div class="icon">🍎</div>
-                <h3>Fruits</h3>
-                <p>gyümölcsök</p>
-            </a>
+            <a href="/stilus/" class="card"><div class="icon">🎨</div><h3>Stílus</h3><p>3d</p></a>
+            <a href="/particle/" class="card"><div class="icon">✨</div><h3>Particle</h3><p>interaktív particle</p></a>
+            <a href="/kocka/" class="card"><div class="icon">🧊</div><h3>Kocka</h3><p>tesztelheted a géped</p></a>
+            <a href="/case/" class="card"><div class="icon">📁</div><h3>Case</h3><p>ládanyitogatás</p></a>
+            <a href="/fruits/" class="card"><div class="icon">🍎</div><h3>Fruits</h3><p>gyümölcsök</p></a>
         </div>
 
         <div class="footer">&copy; 2026 fluxi.hu</div>
     </div>
+
+    <script>
+        // Particles
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let w, h;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset(true);
+            }
+            reset(init) {
+                this.x = Math.random() * w;
+                this.y = init ? Math.random() * h : h + 10;
+                this.size = Math.random() * 1.8 + 0.4;
+                this.speedY = Math.random() * 0.35 + 0.08;
+                this.speedX = (Math.random() - 0.5) * 0.25;
+                this.opacity = Math.random() * 0.4 + 0.1;
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -10) this.reset(false);
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(147, 197, 253, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 55; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, w, h);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    if (el.classList.contains('card')) {
+                        const cards = [...el.parentElement.children];
+                        const idx = cards.indexOf(el);
+                        setTimeout(() => el.classList.add('visible'), idx * 70);
+                    } else {
+                        el.classList.add('visible');
+                    }
+                    observer.unobserve(el);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.section-title, .card, .footer').forEach(el => observer.observe(el));
+    </script>
 </body>
 </html>
