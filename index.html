@@ -33,6 +33,7 @@
             line-height: 1.5;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
         .bg {
@@ -44,6 +45,12 @@
                 radial-gradient(ellipse 50% 40% at 50% 40%, rgba(96, 165, 250, 0.04) 0%, transparent 60%);
             z-index: 0;
             pointer-events: none;
+            animation: bgPulse 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgPulse {
+            0% { opacity: 0.85; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.03); }
         }
 
         .container {
@@ -57,6 +64,16 @@
         .hero {
             text-align: center;
             padding: 20px 0 56px;
+            opacity: 0;
+            transform: translateY(24px);
+            animation: fadeUp 0.8s ease forwards 0.1s;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .logo {
@@ -69,6 +86,12 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1.1;
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.2)); }
+            100% { filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.45)); }
         }
 
         .hero p {
@@ -90,6 +113,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
         }
 
         .section-title::after {
@@ -112,47 +137,87 @@
             padding: 22px 20px;
             text-decoration: none;
             color: #f1f5f9;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px) scale(0.97);
+            animation: cardIn 0.55s ease forwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.15s; }
+        .card:nth-child(2) { animation-delay: 0.22s; }
+        .card:nth-child(3) { animation-delay: 0.29s; }
+        .card:nth-child(4) { animation-delay: 0.36s; }
+        .card:nth-child(5) { animation-delay: 0.43s; }
+        .card:nth-child(6) { animation-delay: 0.50s; }
+        .card:nth-child(7) { animation-delay: 0.57s; }
+
+        @keyframes cardIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .card::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), transparent 60%);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), transparent 60%);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.03) 50%,
+                transparent 60%
+            );
+            transform: translateX(-100%) rotate(25deg);
+            transition: transform 0.6s ease;
             pointer-events: none;
         }
 
         .card:hover {
-            border-color: rgba(59, 130, 246, 0.45);
-            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.5);
+            transform: translateY(-6px) scale(1.02);
             box-shadow:
-                0 12px 40px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(59, 130, 246, 0.15),
-                0 0 30px rgba(59, 130, 246, 0.12);
+                0 16px 48px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(59, 130, 246, 0.2),
+                0 0 40px rgba(59, 130, 246, 0.18);
         }
 
         .card:hover::before {
             opacity: 1;
         }
 
+        .card:hover::after {
+            transform: translateX(100%) rotate(25deg);
+        }
+
         .card .icon {
             font-size: 1.85rem;
             margin-bottom: 12px;
             line-height: 1;
-            transition: transform 0.3s ease;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .card:hover .icon {
-            transform: scale(1.08);
+            transform: scale(1.15) rotate(-6deg);
         }
 
         .card h3 {
@@ -160,6 +225,11 @@
             font-weight: 650;
             margin-bottom: 5px;
             letter-spacing: -0.2px;
+            transition: color 0.25s;
+        }
+
+        .card:hover h3 {
+            color: #93c5fd;
         }
 
         .card p {
@@ -176,7 +246,15 @@
             font-size: 0.78rem;
             font-weight: 500;
             letter-spacing: 0.3px;
+            opacity: 0;
+            animation: fadeUp 0.7s ease forwards 0.8s;
         }
+
+        /* Section title delays */
+        .section-title:nth-of-type(1) { animation-delay: 0.2s; }
+        .section-title:nth-of-type(2) { animation-delay: 0.35s; }
+        .section-title:nth-of-type(3) { animation-delay: 0.5s; }
+        .section-title:nth-of-type(4) { animation-delay: 0.65s; }
 
         @media (max-width: 540px) {
             .container {
@@ -205,6 +283,14 @@
             }
             .section-title {
                 margin: 36px 0 14px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
