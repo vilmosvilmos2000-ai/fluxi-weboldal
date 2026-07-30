@@ -1,1 +1,509 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VilmosGPT – Rendes AI</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #030712;
+      --panel: rgba(15, 23, 42, 0.85);
+      --panel-solid: #0f172a;
+      --panel-2: #111827;
+      --accent: #38bdf8;
+      --accent-2: #8b5cf6;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --user: #2563eb;
+      --bot: #1e293b;
+      --good: #34d399;
+      --border: rgba(255, 255, 255, 0.1);
+      --glass: rgba(15, 23, 42, 0.72);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%; width: 100%; overflow: hidden;
+      font-family: "Segoe UI", system-ui, Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(56, 189, 248, 0.18), transparent 40%),
+        radial-gradient(ellipse at 85% 90%, rgba(139, 92, 246, 0.14), transparent 40%),
+        linear-gradient(160deg, #020617 0%, #0f172a 50%, #020617 100%);
+      color: var(--text);
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr 300px;
+      grid-template-rows: 56px 1fr;
+      height: 100vh; width: 100vw; gap: 0;
+    }
+    .header {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.95), rgba(139, 92, 246, 0.95));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 10;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+    .header-sub { font-size: 13px; opacity: 0.9; display: none; }
+    @media (min-width: 900px) { .header-sub { display: block; } }
+    .badge {
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 12px; font-weight: 700; white-space: nowrap;
+    }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-actions > button#theme-toggle {
+      border: none; background: rgba(255, 255, 255, 0.18); color: white;
+      border-radius: 10px; width: 36px; height: 36px; cursor: pointer;
+      font-size: 16px; display: grid; place-items: center;
+    }
+    .header-actions > button#theme-toggle:hover { background: rgba(255, 255, 255, 0.3); }
+    .btn-google {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: none; background: #fff; color: #3c4043;
+      border-radius: 999px; padding: 7px 14px 7px 10px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      white-space: nowrap; transition: box-shadow 0.15s;
+    }
+    .btn-google:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.28); }
+    .btn-google svg { flex-shrink: 0; }
+    .user-chip {
+      display: none; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.2); border-radius: 999px;
+      padding: 4px 8px 4px 4px; font-size: 13px; font-weight: 600; color: white;
+    }
+    .user-chip.visible { display: inline-flex; }
+    .user-chip .user-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, #4285f4, #34a853);
+      display: grid; place-items: center; font-size: 12px; font-weight: 700;
+      overflow: hidden;
+    }
+    .user-chip .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-chip .logout-btn {
+      border: none; background: rgba(0,0,0,0.22); color: white;
+      border-radius: 999px; padding: 4px 9px; font-size: 11px;
+      cursor: pointer; font-weight: 600;
+    }
+    .user-chip .logout-btn:hover { background: rgba(0,0,0,0.38); }
+    .auth-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(2, 6, 23, 0.75); backdrop-filter: blur(8px);
+      z-index: 100; align-items: center; justify-content: center; padding: 16px;
+    }
+    .auth-overlay.open { display: flex; }
+    .auth-modal-wrap { position: relative; width: min(400px, 100%); }
+    .auth-modal {
+      background: #0f172a; border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px; padding: 28px 24px 22px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5); color: #f8fafc;
+    }
+    .auth-modal h2 { font-size: 20px; margin-bottom: 6px; }
+    .auth-modal > p { color: #94a3b8; font-size: 13px; line-height: 1.5; margin-bottom: 18px; }
+    .auth-close {
+      position: absolute; top: 10px; right: 12px; border: none;
+      background: transparent; color: #94a3b8; font-size: 22px; cursor: pointer;
+    }
+    #google-btn-slot { display: flex; justify-content: center; margin-bottom: 8px; min-height: 44px; }
+    .auth-divider {
+      display: flex; align-items: center; gap: 10px;
+      color: #64748b; font-size: 12px; margin: 14px 0;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1);
+    }
+    .auth-modal input {
+      width: 100%; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06); color: #f8fafc;
+      font-size: 14px; outline: none; margin-bottom: 10px;
+    }
+    .auth-modal input:focus { border-color: #38bdf8; }
+    .auth-actions { display: flex; gap: 8px; margin-top: 4px; }
+    .auth-actions button {
+      flex: 1; border: none; border-radius: 12px; padding: 11px;
+      font-weight: 700; cursor: pointer; font-size: 14px;
+    }
+    .auth-primary { background: linear-gradient(90deg, #38bdf8, #8b5cf6); color: white; }
+    .auth-secondary { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+    .auth-note { font-size: 11px; color: #64748b; margin-top: 12px; line-height: 1.4; }
+    .sidebar-left {
+      display: flex; flex-direction: column; border-right: 1px solid var(--border);
+      background: var(--glass); backdrop-filter: blur(16px); overflow-y: auto; min-height: 0;
+    }
+    .panel-section { padding: 16px; border-bottom: 1px solid var(--border); }
+    .panel-section:last-child { border-bottom: none; flex: 1; }
+    .panel-title {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--muted); margin-bottom: 12px;
+    }
+    .mode-switch { display: flex; flex-direction: column; gap: 6px; }
+    .mode-switch button {
+      border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+      color: var(--text); border-radius: 12px; padding: 10px 12px;
+      cursor: pointer; font-size: 13px; font-weight: 600; text-align: left;
+    }
+    .mode-switch button:hover { background: rgba(255,255,255,0.08); border-color: rgba(56,189,248,0.35); }
+    .mode-switch button.active {
+      background: linear-gradient(135deg, rgba(56,189,248,0.25), rgba(139,92,246,0.25));
+      border-color: rgba(56,189,248,0.5); color: #e0f2fe;
+    }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+      font-size: 12px; color: #d1fae5; padding: 7px 11px; border-radius: 999px;
+      background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.2);
+    }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--good);
+      box-shadow: 0 0 8px var(--good);
+    }
+    .mentor-list { display: flex; flex-direction: column; gap: 8px; }
+    .mentor-item {
+      border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px;
+      background: rgba(255,255,255,0.03); font-size: 12.5px; line-height: 1.5; color: #cbd5e1;
+    }
+    .main-chat {
+      display: flex; flex-direction: column; min-height: 0; min-width: 0;
+      background: rgba(2,6,23,0.45);
+    }
+    .chat {
+      flex: 1; overflow-y: auto; padding: 20px 24px;
+      display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
+    }
+    .message { display: flex; gap: 10px; align-items: flex-end; max-width: 100%; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .message.user { justify-content: flex-end; }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+      font-weight: 700; font-size: 12px; flex-shrink: 0;
+    }
+    .message.bot .avatar { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    .message.user .avatar { background: linear-gradient(135deg, #2563eb, #4f46e5); }
+    .message.system .avatar { background: rgba(52,211,153,0.3); color: #a7f3d0; }
+    .bubble {
+      max-width: min(640px, 78%); padding: 12px 16px; border-radius: 16px;
+      line-height: 1.55; word-wrap: break-word; white-space: pre-wrap;
+      font-size: 14.5px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .message.bot .bubble { background: var(--bot); border: 1px solid var(--border); border-bottom-left-radius: 4px; color: var(--text); }
+    .message.user .bubble { background: linear-gradient(135deg, var(--user), #4f46e5); color: white; border-bottom-right-radius: 4px; }
+    .message.system .bubble { background: rgba(52,211,153,0.1); color: #dcfce7; border: 1px solid rgba(52,211,153,0.2); max-width: min(520px, 90%); }
+    .message.typing .bubble { color: var(--muted); font-style: italic; background: rgba(148,163,184,0.1); border: 1px solid var(--border); }
+    .composer-wrap {
+      padding: 14px 20px 18px; border-top: 1px solid var(--border);
+      background: rgba(15,23,42,0.7); backdrop-filter: blur(12px);
+    }
+    .composer { display: flex; gap: 10px; align-items: center; }
+    .composer input {
+      flex: 1; padding: 14px 18px; border: 1px solid var(--border); border-radius: 999px;
+      outline: none; font-size: 15px; background: rgba(248,250,252,0.95); color: #0f172a;
+    }
+    .composer input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56,189,248,0.25); }
+    .composer button {
+      border: none; border-radius: 999px; padding: 12px 20px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    #send { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: white; }
+    #reset { background: rgba(71,85,105,0.8); color: white; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 8px; text-align: center; }
+    .sidebar-right {
+      display: flex; flex-direction: column; border-left: 1px solid var(--border);
+      background: var(--glass); backdrop-filter: blur(16px); overflow-y: auto; min-height: 0;
+    }
+    .prompt-bank { display: flex; flex-direction: column; gap: 6px; max-height: 50vh; overflow-y: auto; }
+    .prompt-item button {
+      display: block; width: 100%; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04); color: var(--text); text-align: left;
+      cursor: pointer; padding: 9px 11px; border-radius: 11px; font-size: 12.5px; line-height: 1.4;
+    }
+    .prompt-item button:hover { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.35); }
+    .memory-list { display: flex; flex-direction: column; gap: 6px; }
+    .memory-item {
+      border: 1px solid var(--border); border-radius: 11px; padding: 9px 11px;
+      background: rgba(255,255,255,0.03); font-size: 12.5px; line-height: 1.4; color: #cbd5e1;
+    }
+    .card-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .card-actions button, .import-btn {
+      border: none; color: white; background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 999px; padding: 7px 12px; cursor: pointer; font-size: 12px; font-weight: 700;
+    }
+    .import-btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; }
+    .import-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .mobile-tabs {
+      display: none; grid-column: 1 / -1; background: var(--panel-solid);
+      border-bottom: 1px solid var(--border); padding: 6px 10px; gap: 6px;
+    }
+    .mobile-tabs button {
+      flex: 1; border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+      color: var(--muted); border-radius: 10px; padding: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .mobile-tabs button.active {
+      background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(139,92,246,0.2));
+      color: var(--text); border-color: rgba(56,189,248,0.4);
+    }
+    @media (max-width: 960px) {
+      .app { grid-template-columns: 1fr; grid-template-rows: 56px auto 1fr; }
+      .mobile-tabs { display: flex; }
+      .sidebar-left, .sidebar-right {
+        display: none; position: absolute; top: 56px; left: 0; right: 0; bottom: 0;
+        z-index: 20; border: none;
+      }
+      .sidebar-left.visible, .sidebar-right.visible { display: flex; }
+      .bubble { max-width: 88%; }
+      .btn-google span.label { display: none; }
+      .btn-google { padding: 8px; }
+    }
+    html.light {
+      color-scheme: light; --bg: #f1f5f9; --panel: rgba(255,255,255,0.9);
+      --panel-solid: #fff; --text: #0f172a; --muted: #64748b; --bot: #fff;
+      --border: rgba(15,23,42,0.1); --glass: rgba(255,255,255,0.85);
+    }
+    html.light body {
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(56,189,248,0.12), transparent 40%),
+        radial-gradient(ellipse at 85% 90%, rgba(139,92,246,0.1), transparent 40%),
+        linear-gradient(160deg, #e2e8f0 0%, #f8fafc 50%, #e2e8f0 100%);
+    }
+    html.light .message.bot .bubble { background: #fff; border-color: rgba(15,23,42,0.08); color: #0f172a; }
+    html.light .composer input { background: #fff; }
+    html.light .main-chat { background: rgba(248,250,252,0.6); }
+    html.light .prompt-item button, html.light .mentor-item, html.light .memory-item, html.light .mode-switch button {
+      background: rgba(15,23,42,0.03); color: #0f172a;
+    }
+    html.light .auth-modal { background: #fff; color: #0f172a; border-color: rgba(15,23,42,0.1); }
+    html.light .auth-modal input { background: #f1f5f9; color: #0f172a; border-color: rgba(15,23,42,0.12); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-left">
+        <h1>VilmosGPT</h1>
+        <span class="header-sub">Személyes AI · tanul · keres</span>
+      </div>
+      <div class="header-actions">
+        <span class="badge">Online</span>
+        <div class="user-chip" id="user-chip">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <span id="user-name">Felhasználó</span>
+          <button class="logout-btn" id="logout-btn" type="button">Kilépés</button>
+        </div>
+        <button class="btn-google" id="login-btn" type="button" title="Bejelentkezés / Regisztráció">
+          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
+          <span class="label">Bejelentkezés</span>
+        </button>
+        <button id="theme-toggle" title="Téma">☀️</button>
+      </div>
+    </header>
+
+    <div class="mobile-tabs" id="mobile-tabs">
+      <button data-panel="left" class="active">Módok</button>
+      <button data-panel="chat">Chat</button>
+      <button data-panel="right">Kérdések</button>
+    </div>
+
+    <aside class="sidebar-left" id="sidebar-left">
+      <div class="panel-section">
+        <div class="panel-title">AI módok</div>
+        <div class="mode-switch" id="mode-switch">
+          <button class="mode active" data-mode="learn">📚 Tanulás</button>
+          <button class="mode" data-mode="research">🔍 Kutatás</button>
+          <button class="mode" data-mode="practice">✏️ Gyakorlás</button>
+          <button class="mode" data-mode="creative">✨ Kreatív</button>
+        </div>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          Aktív: <span id="mode-label">Tanulás</span>
+        </div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-title">Mentor tippek</div>
+        <div id="mentor-list" class="mentor-list"></div>
+      </div>
+    </aside>
+
+    <main class="main-chat" id="main-chat">
+      <div class="chat" id="chat"></div>
+      <div class="composer-wrap">
+        <div class="composer">
+          <input id="input" type="text" placeholder="Írd be a kérdésed..." autocomplete="off" />
+          <button id="send">Küldés</button>
+          <button id="reset">Töröl</button>
+        </div>
+        <div class="hint">Kérdezz bármit — a bot tanul, emlékezik és az interneten is utánanéz.</div>
+      </div>
+    </main>
+
+    <aside class="sidebar-right" id="sidebar-right">
+      <div class="panel-section">
+        <div class="panel-title">Gyors kérdések</div>
+        <div id="prompt-bank" class="prompt-bank"></div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-title">Mentett ismeretek</div>
+        <div id="memory-list" class="memory-list"></div>
+        <div class="card-actions">
+          <button id="export-memory">Mentés</button>
+          <label class="import-btn">
+            <input type="file" id="import-memory" accept="application/json" />
+            Betöltés
+          </label>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="auth-overlay" id="auth-overlay" role="dialog" aria-modal="true">
+    <div class="auth-modal-wrap">
+      <button class="auth-close" id="auth-close" type="button" aria-label="Bezárás">×</button>
+      <div class="auth-modal">
+        <h2>Bejelentkezés / Regisztráció</h2>
+        <p>Jelentkezz be Google-fiókkal, vagy adj meg egy nevet a helyi fiókhoz.</p>
+        <div id="google-btn-slot"></div>
+        <button class="btn-google" id="google-fallback-btn" type="button" style="width:100%;justify-content:center;margin-bottom:4px;">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          Folytatás Google-lel
+        </button>
+        <div class="auth-divider">vagy névvel</div>
+        <input id="auth-name" type="text" placeholder="A neved" maxlength="40" autocomplete="name" />
+        <input id="auth-email" type="email" placeholder="Email (opcionális)" maxlength="80" autocomplete="email" />
+        <div class="auth-actions">
+          <button class="auth-secondary" id="auth-cancel" type="button">Mégse</button>
+          <button class="auth-primary" id="auth-local" type="button">Belépés</button>
+        </div>
+        <p class="auth-note">A Google bejelentkezéshez a tulajdonosnak be kell állítania a Google Client ID-t. Addig a névvel történő belépés a böngészőben mentődik.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GOOGLE_CLIENT_ID = '';
+    const AUTH_KEY = 'vilmosgpt-user-v1';
+
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem(AUTH_KEY) || 'null'); } catch { return null; }
+    }
+    function setUser(user) {
+      if (user) localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+      else localStorage.removeItem(AUTH_KEY);
+      renderAuthUI();
+    }
+    function renderAuthUI() {
+      const user = getUser();
+      const chip = document.getElementById('user-chip');
+      const loginBtn = document.getElementById('login-btn');
+      const nameEl = document.getElementById('user-name');
+      const av = document.getElementById('user-avatar');
+      if (user && user.name) {
+        chip.classList.add('visible');
+        loginBtn.style.display = 'none';
+        nameEl.textContent = user.name.split(' ')[0];
+        if (user.picture) {
+          av.innerHTML = '<img src="' + user.picture + '" alt="" />';
+        } else {
+          av.textContent = (user.name[0] || '?').toUpperCase();
+        }
+      } else {
+        chip.classList.remove('visible');
+        loginBtn.style.display = '';
+      }
+    }
+    function openAuth() {
+      document.getElementById('auth-overlay').classList.add('open');
+      initGoogleButton();
+    }
+    function closeAuth() {
+      document.getElementById('auth-overlay').classList.remove('open');
+    }
+    function parseJwt(token) {
+      try {
+        const base = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(decodeURIComponent(atob(base).split('').map(c =>
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join('')));
+      } catch { return null; }
+    }
+    function handleGoogleCredential(response) {
+      const data = parseJwt(response.credential);
+      if (!data) return;
+      setUser({
+        name: data.name || data.email || 'Google felhasználó',
+        email: data.email || '',
+        picture: data.picture || '',
+        provider: 'google',
+        sub: data.sub || ''
+      });
+      closeAuth();
+      if (typeof addMessage === 'function') {
+        addMessage('Szia, ' + (data.name || 'felhasználó') + '! Sikeresen bejelentkeztél Google-lel.', 'system');
+      }
+    }
+    function initGoogleButton() {
+      const slot = document.getElementById('google-btn-slot');
+      if (!GOOGLE_CLIENT_ID) {
+        slot.innerHTML = '';
+        return;
+      }
+      if (!window.google || !google.accounts) return;
+      slot.innerHTML = '';
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredential,
+        auto_select: false
+      });
+      google.accounts.id.renderButton(slot, {
+        theme: 'outline',
+        size: 'large',
+        shape: 'pill',
+        text: 'continue_with',
+        width: 320
+      });
+    }
+    window.addEventListener('load', () => {
+      renderAuthUI();
+      if (GOOGLE_CLIENT_ID && window.google) initGoogleButton();
+    });
+    document.getElementById('login-btn').addEventListener('click', openAuth);
+    document.getElementById('auth-close').addEventListener('click', closeAuth);
+    document.getElementById('auth-cancel').addEventListener('click', closeAuth);
+    document.getElementById('auth-overlay').addEventListener('click', (e) => {
+      if (e.target.id === 'auth-overlay') closeAuth();
+    });
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      setUser(null);
+      if (typeof addMessage === 'function') addMessage('Kijelentkeztél.', 'system');
+    });
+    document.getElementById('auth-local').addEventListener('click', () => {
+      const name = document.getElementById('auth-name').value.trim();
+      const email = document.getElementById('auth-email').value.trim();
+      if (!name) {
+        document.getElementById('auth-name').focus();
+        return;
+      }
+      setUser({ name, email, picture: '', provider: 'local' });
+      closeAuth();
+      if (typeof addMessage === 'function') {
+        addMessage('Szia, ' + name + '! Beléptél. A fiókod a böngészőben van mentve.', 'system');
+      }
+    });
+    document.getElementById('google-fallback-btn').addEventListener('click', () => {
+      if (GOOGLE_CLIENT_ID && window.google && google.accounts) {
+        google.accounts.id.prompt();
+      } else {
+        alert('A valódi Google bejelentkezéshez a tulajdonosnak be kell állítania a GOOGLE_CLIENT_ID-t a kódban (Google Cloud Console → OAuth 2.0 Client ID).\n\nAddig használd a névvel történő belépést.');
+      }
+    });
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
