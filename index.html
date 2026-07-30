@@ -6,20 +6,8 @@
     <title>fluxi.hu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --accent: #3b82f6;
-            --accent2: #2563eb;
-            --accent-light: #60a5fa;
-            --accent-rgb: 59, 130, 246;
-            --bg: #070b14;
-            --card: rgba(15, 23, 42, 0.75);
-            --border: rgba(148, 163, 184, 0.08);
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -27,298 +15,273 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: #f1f5f9;
-            line-height: 1.5;
+            font-family: 'DM Sans', system-ui, sans-serif;
+            background: #0c0f1a;
+            color: #e2e8f0;
+            line-height: 1.55;
             min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
         }
 
-        .bg {
-            position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(ellipse 90% 60% at 15% -15%, rgba(59, 130, 246, 0.18) 0%, transparent 55%),
-                radial-gradient(ellipse 70% 50% at 90% 100%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 40% at 50% 40%, rgba(96, 165, 250, 0.04) 0%, transparent 60%);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 960px;
+        .wrap {
+            max-width: 880px;
             margin: 0 auto;
-            padding: 60px 24px 50px;
+            padding: 48px 20px 40px;
         }
 
-        .hero {
-            text-align: center;
-            padding: 20px 0 56px;
+        header {
+            margin-bottom: 48px;
         }
 
-        .logo {
-            font-size: 3.6rem;
-            font-weight: 800;
-            letter-spacing: -2.5px;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #93c5fd 0%, #3b82f6 40%, #1d4ed8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.1;
+        header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #60a5fa;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
         }
 
-        .hero p {
-            color: var(--text-muted);
-            font-size: 1.15rem;
-            font-weight: 500;
-            letter-spacing: -0.2px;
+        header p {
+            color: #64748b;
+            font-size: 1rem;
         }
 
-        .section-title {
-            font-size: 0.7rem;
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1.8px;
-            color: var(--text-dim);
-            margin: 48px 0 18px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.08);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            letter-spacing: 1.2px;
+            color: #475569;
+            margin-bottom: 14px;
+            padding-left: 2px;
         }
 
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(148,163,184,0.12), transparent);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 14px;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 22px 20px;
-            text-decoration: none;
-            color: #f1f5f9;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        .list {
             display: flex;
             flex-direction: column;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            position: relative;
-            overflow: hidden;
+            gap: 6px;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: inherit;
+            background: transparent;
+            border: 1px solid transparent;
+            transition: background 0.15s, border-color 0.15s;
         }
 
-        .card:hover {
-            border-color: rgba(59, 130, 246, 0.45);
-            transform: translateY(-4px);
-            box-shadow:
-                0 12px 40px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(59, 130, 246, 0.15),
-                0 0 30px rgba(59, 130, 246, 0.12);
+        .item:hover {
+            background: rgba(59, 130, 246, 0.07);
+            border-color: rgba(59, 130, 246, 0.15);
         }
 
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card .icon {
-            font-size: 1.85rem;
-            margin-bottom: 12px;
-            line-height: 1;
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover .icon {
-            transform: scale(1.08);
-        }
-
-        .card h3 {
-            font-size: 0.98rem;
-            font-weight: 650;
-            margin-bottom: 5px;
-            letter-spacing: -0.2px;
-        }
-
-        .card p {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            flex: 1;
-            line-height: 1.4;
-        }
-
-        .footer {
+        .item .emoji {
+            font-size: 1.35rem;
+            width: 28px;
             text-align: center;
-            padding: 70px 0 24px;
-            color: #334155;
-            font-size: 0.78rem;
-            font-weight: 500;
-            letter-spacing: 0.3px;
+            flex-shrink: 0;
         }
 
-        @media (max-width: 540px) {
-            .container {
-                padding: 40px 16px 40px;
+        .item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item .info strong {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 1px;
+        }
+
+        .item .info span {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        footer {
+            margin-top: 56px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        @media (max-width: 500px) {
+            .wrap {
+                padding: 36px 16px 32px;
             }
-            .logo {
-                font-size: 2.7rem;
+            header h1 {
+                font-size: 2rem;
             }
-            .hero {
-                padding-bottom: 40px;
-            }
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 11px;
-            }
-            .card {
-                padding: 18px 15px;
-                border-radius: 14px;
-            }
-            .card .icon {
-                font-size: 1.5rem;
-                margin-bottom: 10px;
-            }
-            .card h3 {
-                font-size: 0.9rem;
-            }
-            .section-title {
-                margin: 36px 0 14px;
+            .item {
+                padding: 12px 12px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg"></div>
-    <div class="container">
-        <div class="hero">
-            <div class="logo">fluxi</div>
+    <div class="wrap">
+        <header>
+            <h1>fluxi</h1>
             <p>Minden egy helyen.</p>
+        </header>
+
+        <div class="section">
+            <h2>Játékok</h2>
+            <div class="list">
+                <a href="/jatek1" class="item">
+                    <div class="emoji">🎮</div>
+                    <div class="info">
+                        <strong>shout learn</strong>
+                        <span>FPS játék</span>
+                    </div>
+                </a>
+                <a href="/jatek2" class="item">
+                    <div class="emoji">🎮</div>
+                    <div class="info">
+                        <strong>TERMÉSZETI TÚLÉLŐ</strong>
+                        <span>természetben FPS játék</span>
+                    </div>
+                </a>
+                <a href="/jatek3" class="item">
+                    <div class="emoji">🕹️</div>
+                    <div class="info">
+                        <strong>game hub</strong>
+                        <span>minden játék egy helyen</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
-        <div class="section-title">Játékok</div>
-        <div class="grid">
-            <a href="/jatek1" class="card">
-                <div class="icon">🎮</div>
-                <h3>shout learn</h3>
-                <p>FPS játék</p>
-            </a>
-            <a href="/jatek2" class="card">
-                <div class="icon">🎮</div>
-                <h3>TERMÉSZETI TÚLÉLŐ</h3>
-                <p>természetben FPS játék</p>
-            </a>
-            <a href="/jatek3" class="card">
-                <div class="icon">🕹️</div>
-                <h3>game hub</h3>
-                <p>minden játék egy helyen</p>
-            </a>
+        <div class="section">
+            <h2>Hamarosan AI & Technológia</h2>
+            <div class="list">
+                <a href="/ai" class="item">
+                    <div class="emoji">🤖</div>
+                    <div class="info">
+                        <strong>AI Chat</strong>
+                        <span>ai.html</span>
+                    </div>
+                </a>
+                <a href="/aiplus" class="item">
+                    <div class="emoji">🧠</div>
+                    <div class="info">
+                        <strong>AI Plus</strong>
+                        <span>aiplus.html</span>
+                    </div>
+                </a>
+                <a href="/aiprograming" class="item">
+                    <div class="emoji">💻</div>
+                    <div class="info">
+                        <strong>AI Programming</strong>
+                        <span>aiprograming.html</span>
+                    </div>
+                </a>
+                <a href="/hjuighuigz87" class="item">
+                    <div class="emoji">⚡</div>
+                    <div class="info">
+                        <strong>AI Példa</strong>
+                        <span>programozás AI példa</span>
+                    </div>
+                </a>
+                <a href="/okos" class="item">
+                    <div class="emoji">📚</div>
+                    <div class="info">
+                        <strong>Okos</strong>
+                        <span>HTML, CSS, JS kódok</span>
+                    </div>
+                </a>
+                <a href="/marketing" class="item">
+                    <div class="emoji">📊</div>
+                    <div class="info">
+                        <strong>Marketing</strong>
+                        <span>marketing.html</span>
+                    </div>
+                </a>
+                <a href="/shop" class="item">
+                    <div class="emoji">🛒</div>
+                    <div class="info">
+                        <strong>Shop</strong>
+                        <span>shop.html</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
-        <div class="section-title">Hamarosan AI & Technológia</div>
-        <div class="grid">
-            <a href="/ai" class="card">
-                <div class="icon">🤖</div>
-                <h3>AI Chat</h3>
-                <p>ai.html</p>
-            </a>
-            <a href="/aiplus" class="card">
-                <div class="icon">🧠</div>
-                <h3>AI Plus</h3>
-                <p>aiplus.html</p>
-            </a>
-            <a href="/aiprograming" class="card">
-                <div class="icon">💻</div>
-                <h3>AI Programming</h3>
-                <p>aiprograming.html</p>
-            </a>
-            <a href="/hjuighuigz87" class="card">
-                <div class="icon">⚡</div>
-                <h3>AI Példa</h3>
-                <p>programozás AI példa</p>
-            </a>
-            <a href="/okos" class="card">
-                <div class="icon">📚</div>
-                <h3>Okos</h3>
-                <p>HTML, CSS, JS kódok</p>
-            </a>
-            <a href="/marketing" class="card">
-                <div class="icon">📊</div>
-                <h3>Marketing</h3>
-                <p>marketing.html</p>
-            </a>
-            <a href="/shop" class="card">
-                <div class="icon">🛒</div>
-                <h3>Shop</h3>
-                <p>shop.html</p>
-            </a>
+        <div class="section">
+            <h2>Tanulás</h2>
+            <div class="list">
+                <a href="/egri/" class="item">
+                    <div class="emoji">🍐</div>
+                    <div class="info">
+                        <strong>Egri</strong>
+                        <span>egricsillagok tanulás</span>
+                    </div>
+                </a>
+                <a href="/probavizsga/" class="item">
+                    <div class="emoji">📝</div>
+                    <div class="info">
+                        <strong>Próba vizsga</strong>
+                        <span>probavizsga</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
-        <div class="section-title">Tanulás</div>
-        <div class="grid">
-            <a href="/egri/" class="card">
-                <div class="icon">🍐</div>
-                <h3>Egri</h3>
-                <p>egricsillagok tanulás</p>
-            </a>
-            <a href="/probavizsga/" class="card">
-                <div class="icon">📝</div>
-                <h3>Próba vizsga</h3>
-                <p>probavizsga</p>
-            </a>
+        <div class="section">
+            <h2>Egyéb</h2>
+            <div class="list">
+                <a href="/stilus/" class="item">
+                    <div class="emoji">🎨</div>
+                    <div class="info">
+                        <strong>Stílus</strong>
+                        <span>3d</span>
+                    </div>
+                </a>
+                <a href="/particle/" class="item">
+                    <div class="emoji">✨</div>
+                    <div class="info">
+                        <strong>Particle</strong>
+                        <span>interaktív particle</span>
+                    </div>
+                </a>
+                <a href="/kocka/" class="item">
+                    <div class="emoji">🧊</div>
+                    <div class="info">
+                        <strong>Kocka</strong>
+                        <span>tesztelheted a géped</span>
+                    </div>
+                </a>
+                <a href="/case/" class="item">
+                    <div class="emoji">📁</div>
+                    <div class="info">
+                        <strong>Case</strong>
+                        <span>ládanyitogatás</span>
+                    </div>
+                </a>
+                <a href="/fruits/" class="item">
+                    <div class="emoji">🍎</div>
+                    <div class="info">
+                        <strong>Fruits</strong>
+                        <span>gyümölcsök</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
-        <div class="section-title">Egyéb</div>
-        <div class="grid">
-            <a href="/stilus/" class="card">
-                <div class="icon">🎨</div>
-                <h3>Stílus</h3>
-                <p>3d</p>
-            </a>
-            <a href="/particle/" class="card">
-                <div class="icon">✨</div>
-                <h3>Particle</h3>
-                <p>interaktív particle</p>
-            </a>
-            <a href="/kocka/" class="card">
-                <div class="icon">🧊</div>
-                <h3>Kocka</h3>
-                <p>tesztelheted a géped</p>
-            </a>
-            <a href="/case/" class="card">
-                <div class="icon">📁</div>
-                <h3>Case</h3>
-                <p>ládanyitogatás</p>
-            </a>
-            <a href="/fruits/" class="card">
-                <div class="icon">🍎</div>
-                <h3>Fruits</h3>
-                <p>gyümölcsök</p>
-            </a>
-        </div>
-
-        <div class="footer">&copy; 2026 fluxi.hu</div>
+        <footer>
+            &copy; 2026 fluxi.hu
+        </footer>
     </div>
 </body>
 </html>
