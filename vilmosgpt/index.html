@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VilmosGPT – Rendes AI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #030712;
+      --panel: #0f172a;
+      --panel-2: #111827;
+      --accent: #38bdf8;
+      --accent-2: #8b5cf6;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --user: #2563eb;
+      --bot: #1f2937;
+      --good: #34d399;
+      --warn: #fbbf24;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 25%),
+        linear-gradient(135deg, #020617, #111827 55%, #0f172a);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .app {
+      width: min(980px, 100%);
+      background: rgba(2, 6, 23, 0.9);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+    }
+
+    .header {
+      padding: 22px 24px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header h1 { margin: 0 0 5px; font-size: 24px; }
+    .header p { margin: 0; color: rgba(255,255,255,0.92); }
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.22);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .chat {
+      height: 600px;
+      overflow-y: auto;
+      padding: 18px 18px 8px;
+      background: linear-gradient(180deg, rgba(15,23,42,0.96), rgba(2,6,23,0.98));
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 12px;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .message.user { justify-content: flex-end; }
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .message.bot .avatar { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    .message.user .avatar { background: linear-gradient(135deg, #2563eb, #4f46e5); }
+    .bubble {
+      max-width: 78%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      line-height: 1.55;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+    }
+    .message.bot .bubble {
+      background: var(--bot);
+      border-bottom-left-radius: 6px;
+      color: var(--text);
+    }
+    .message.user .bubble {
+      background: linear-gradient(135deg, var(--user), #4f46e5);
+      color: white;
+      border-bottom-right-radius: 6px;
+    }
+    .message.system .bubble {
+      background: rgba(52, 211, 153, 0.14);
+      color: #dcfce7;
+      border: 1px solid rgba(52, 211, 153, 0.18);
+    }
+    .message.typing .bubble {
+      color: var(--muted);
+      font-style: italic;
+      background: rgba(148,163,184,0.14);
+    }
+
+    .composer {
+      display: flex;
+      gap: 10px;
+      padding: 14px 16px 16px;
+      background: var(--panel-2);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .composer input {
+      flex: 1;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 999px;
+      outline: none;
+      font-size: 15px;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .composer button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: white;
+    }
+    .composer button.secondary { background: #475569; }
+
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 16px 12px;
+      background: var(--panel-2);
+    }
+    .quick-actions button {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 0 16px 14px;
+      background: var(--panel-2);
+    }
+
+    .footer-note {
+      padding: 8px 16px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      background: var(--panel-2);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 14px;
+      padding: 16px;
+      background: var(--panel-2);
+    }
+
+    .sidebar, .main-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      color: #e2e8f0;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-title-row button,
+    .card-actions button,
+    .import-btn {
+      border: none;
+      color: white;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 999px;
+      padding: 7px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .mode-switch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .mode-switch button {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 7px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .mode-switch button.active {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-color: transparent;
+    }
+
+    .status-pill {
+      display: inline-block;
+      font-size: 12px;
+      color: #d1fae5;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(52, 211, 153, 0.14);
+      border: 1px solid rgba(52, 211, 153, 0.18);
+    }
+
+    .mentor-list,
+    .memory-list,
+    .prompt-bank {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mentor-item,
+    .memory-item,
+    .prompt-item {
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.04);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .prompt-item button {
+      display: block;
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      padding: 0;
+      font: inherit;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .import-btn {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .import-btn input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .card-chat {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .card-chat .chat {
+      height: 560px;
+      border-radius: 18px;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .mini-card {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .mini-card strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 980px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 8px; }
+      .chat { height: 500px; }
+      .bubble { max-width: 92%; }
+      .header { flex-direction: column; align-items: flex-start; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div>
+        <h1>VilmosGPT</h1>
+        <p>Egy igazán okos, személyesebb AI, ami cseveg, tanul és interneten is utánanéz.</p>
+      </div>
+      <div class="badge">Online · tanul · keres</div>
+    </div>
+
+    <div class="workspace">
+      <div class="sidebar">
+        <div class="card">
+          <div class="card-title-row">
+            <h3>AI módok</h3>
+            <button id="theme-toggle">☀️</button>
+          </div>
+          <div class="mode-switch" id="mode-switch">
+            <button class="mode active" data-mode="learn">Tanulás</button>
+            <button class="mode" data-mode="research">Kutatás</button>
+            <button class="mode" data-mode="practice">Gyakorlás</button>
+            <button class="mode" data-mode="creative">Kreatív</button>
+          </div>
+          <div class="status-pill">Aktív mód: <span id="mode-label">Tanulás</span></div>
+        </div>
+
+        <div class="card">
+          <h3>Mentor tippek</h3>
+          <div id="mentor-list" class="mentor-list"></div>
+        </div>
+
+        <div class="card">
+          <h3>Mentett ismeretek</h3>
+          <div id="memory-list" class="memory-list"></div>
+          <div class="card-actions">
+            <button id="export-memory">Mentés</button>
+            <label class="import-btn">
+              <input type="file" id="import-memory" accept="application/json" />
+              Betöltés
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-stack">
+        <div class="card">
+          <h3>Gyors kérdések</h3>
+          <div id="prompt-bank" class="prompt-bank"></div>
+        </div>
+
+        <div class="card card-chat">
+          <div class="chat" id="chat"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <button data-prompt="Mi a neved?">Mi a neved?</button>
+      <button data-prompt="Mondj egy viccet">Mondj egy viccet</button>
+      <button data-prompt="Mennyi 1+1?">Mennyi 1+1?</button>
+      <button data-prompt="Jegyezz meg, hogy szeretek tanulni">Jegyezz meg egy dolgot</button>
+    </div>
+
+    <div class="composer">
+      <input id="input" type="text" placeholder="Írd be a kérdésed..." />
+      <button id="send">Küldés</button>
+      <button id="reset" class="secondary">Töröl</button>
+    </div>
+    <div class="hint">Tippek: kérdezz bármit, és a bot megpróbálja a lehető legjobb választ adni, beleértve az internetes keresést is.</div>
+    <div class="footer-note">A memória a böngészőben tárolódik, így a chat egy kicsit emlékezik rád.</div>
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('send');
+    const resetBtn = document.getElementById('reset');
+    const themeToggle = document.getElementById('theme-toggle');
+    const modeSwitch = document.getElementById('mode-switch');
+    const modeLabel = document.getElementById('mode-label');
+    const promptBank = document.getElementById('prompt-bank');
+    const mentorList = document.getElementById('mentor-list');
+    const memoryList = document.getElementById('memory-list');
+    const exportMemoryBtn = document.getElementById('export-memory');
+    const importMemoryInput = document.getElementById('import-memory');
+    const storageKey = 'vilmosgpt-memory-v2';
+    let knowledge = loadKnowledge();
+    let currentMode = 'learn';
+
+    const modeHints = {
+      learn: 'Tanulás mód: világosan és lépésről lépésre magyarázok.',
+      research: 'Kutatás mód: röviden, de pontosan összegzem a fontos információkat.',
+      practice: 'Gyakorlás mód: kérdéseket, feladatokat és példákat adok.',
+      creative: 'Kreatív mód: ötleteket, forgatókönyveket és új megközelítéseket kínálok.'
+    };
+
+    const promptLibrary = [
+      'Magyarázd el egyszerűen, hogyan működik a természetes nyelvfeldolgozás.',
+      'Adj meg öt ötletet egy kreatív projekt megvalósítására.',
+      'Mondd el, mi a különbség a tanulás és a memorizálás között.',
+      'Írj egy rövid, szép esszét a napfény szerepéről.',
+      'Segíts megérteni a különbséget a CPU és a RAM között.',
+      'Mit jelent a „kritikus gondolkodás” röviden?',
+      'Adj egy 5 pontos tanulási tervet a magyar nyelvhez.',
+      'Magyarázd el, hogyan lehet gyorsan tanulni egy új témát.',
+      'Mondd el a legfontosabb 3 szabályt a hatékony jegyzeteléshez.',
+      'Adj öt kérdést, amivel gyakorolhatom a matematikát.',
+      'Mit érdemes tenni, ha elfárad a figyelem?',
+      'Javasolj egy jó kezdő programozási nyelvet.',
+      'Milyen szavak segítenek gyorsabban megjegyezni dolgokat?',
+      'Írj egy rövid, motiváló üzenetet a tanuláshoz.',
+      'Magyarázd el, miért fontos a rendszeres ismétlés.',
+      'Adj egy példát a problémamegoldás lépéseire.',
+      'Hogyan lehet jobban koncentrálni 25 perc alatt?',
+      'Milyen kérdéseket érdemes feltenni egy új témáról?',
+      'Mi a különbség a tudás és a tapasztalat között?',
+      'Adj 10 hasznos tanulási tippet kezdőknek.',
+      'Mutass egy rövid példát egy jó kérdésfeltevésre.',
+      'Mi az a metakogníció? Magyarázd el egyszerűen.',
+      'Segíts összeállítani egy 7 napos tanulási tervet.',
+      'Milyen technikák segítik a hosszú távú emlékezést?',
+      'Mondd el, hogyan tudok jobban szervezni a napomat.',
+      'Adj öt jó kérdést a tudományos módszerhez.',
+      'Mit jelent a „gyakorlat tesz mestert”?',
+      'Hogyan lehet egyszerűen megérteni a fizikát?',
+      'Írj egy rövid történetet egy okos robotról.',
+      'Mit jelent a „problémamegoldó gondolkodás”?',
+      'Adj egy példát egy tanulási cél kitűzésére.',
+      'Hogyan lehet hatékonyan tanulni csoportban?',
+      'Mit érdemes csinálni, ha elakadok egy feladatnál?',
+      'Írj két különböző választ egy kérdésre a rövid és a hosszú magyarázathoz.',
+      'Mi a különbség a könyv és a videó tanulás között?',
+      'Adj öt motivációs mondatot a tanuláshoz.',
+      'Hogyan lehet gyorsan összefoglalni egy hosszú szöveget?',
+      'Mi a különbség az információ és a tudás között?',
+      'Milyen kérdéseket érdemes feltenni egy új barátnak?',
+      'Mondd el röviden, hogyan működik a memória.',
+      'Adj egy példát az analógiák használatára.',
+      'Mit jelent a célorientált tanulás?',
+      'Készíts egy rövid tanulási checklistot.',
+      'Hogyan lehet jobban megérteni egy nehéz fogalmat?',
+      'Mit tanulhatok a hibákból?',
+      'Adj öt ötletet egy napi rutinhoz.',
+      'Magyarázd el, miért fontos a visszajelzés.',
+      'Milyen kérdések segítenek önreflexióban?',
+      'Írj egy rövid, barátságos üzenetet egy kezdő tanulónak.',
+      'Hogyan lehet javítani a szövegértést?',
+      'Adj egy rövid példát a problémák felosztására.',
+      'Mit jelent a „folyamatos fejlesztés”?',
+      'Hogyan lehet hasznosítani a szabadidőt tanulásra?',
+      'Mondd el, miért fontos a kérdezés.',
+      'Adj öt egyszerű gyakorlati feladatot a nyelvtanuláshoz.',
+      'Hogyan lehet egy nehéz témát egyszerűvé tenni?',
+      'Milyen könyveket érdemes olvasni a fejlődéshez?',
+      'Mit jelent a „tanulás mint szokás”?',
+      'Írj egy rövid magyarázatot a motivációról.',
+      'Mit jelent a „gondolkodásmód” röviden?',
+      'Adj öt tanulási stratégiát a rövid távú emlékezethez.',
+      'Milyen módon lehet a tanulást szórakoztatóbbá tenni?',
+      'Hogyan lehet ellenőrizni, hogy tényleg megértettem-e egy témát?',
+      'Készíts egy rövid listát a sikeres tanulás kulcsaiból.',
+      'Magyarázd el, hogyan lehet hatékonyan jegyzetelni.',
+      'Adj öt ötletet egy tanulási szobához.',
+      'Mi a különbség a megértés és a felidézés között?',
+      'Hogyan lehet növelni a kitartást?',
+      'Adj egy rövid példát egy logikai következtetésre.',
+      'Mit jelent a „kreatív gondolkodás”?',
+      'Hogyan lehet egyszerűen tanulni egy új fogalmat?',
+      'Adj öt jó szokást a napi rutinhoz.',
+      'Mit jelent a „tudásépítés”?',
+      'Hogyan lehet segíteni magadnak, ha unalmas a tanulás?',
+      'Mondd el a tanulás három legfontosabb elemét.',
+      'Adj egy rövid példát a „szemléltetés” módszerére.',
+      'Milyen kérdések segítenek mélyebben gondolkodni?',
+      'Hogyan lehet egyszerűen megjegyezni hosszú listákat?',
+      'Adj öt ötletet a figyelem fenntartására.',
+      'Mit üzenne egy jó mentor a kezdő tanulónak?',
+      'Mit jelent a „szabályozott tanulás”?',
+      'Segíts megfogalmazni egy célkitűzést a következő hónapra.',
+      'Magyarázd el, miért fontos a pihenés a tanulásban.',
+      'Adj egy rövid példát egy jó visszajelzésre.',
+      'Készíts egy listát a leggyakoribb tanulási hibákról.',
+      'Hogyan lehet gyorsan tanulni egy idegen nyelvet?',
+      'Mit jelent a „sok kis lépés” módszer?',
+      'Adj öt ötletet a motiváció fenntartására.',
+      'Hogyan lehet egyszerűen összefoglalni egy témát?',
+      'Mit ajánlasz egy kezdőnek a tanuláshoz?',
+      'Mondd el röviden, hogyan működik a figyelem.',
+      'Adj öt példát a gyakorlás fontosságára.',
+      'Mit jelent a „kreatív probléma megoldás”?'
+    ];
+
+    const mentorTips = [
+      'Kérdezz bátran, ha valami nem érthető: a jó kérdés gyakran többértékű megoldáshoz vezet.',
+      'A rövid, világos kérdések gyakran jobb válaszokat hoznak, mint a túl bonyolultak.',
+      'A tanulás hatékonyabb, ha egyszerre magyarázol, gyakorolsz és összefoglalod a lényeges részeket.',
+      'A memóriad erősödik, ha a tanult dolgokat rendszeresen visszahívod.',
+      'Próbáld meg mindig megkérdezni: „Mi a legfontosabb ötlet ebben?”',
+      'A jó válaszokhoz gyakran elég egy alapvető, világos kérdés is.',
+      'Képzeld el a tanult dolgokat, és ez segít a hosszú távú emlékezetben.',
+      'Ha nehéz egy témát megérteni, bontsd kisebb részekre.',
+      'A hibákból tanulni ugyanúgy fontos, mint a sikerekből.',
+      'Ha tanulsz, mindig tarts egy kis szünetet, hogy jobban feldolgozd az információt.'
+    ];
+
+    function renderPromptBank() {
+      promptBank.innerHTML = '';
+      promptLibrary.slice(0, 24).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'prompt-item';
+        const button = document.createElement('button');
+        button.textContent = item;
+        button.addEventListener('click', () => {
+          input.value = item;
+          input.focus();
+        });
+        div.appendChild(button);
+        promptBank.appendChild(div);
+      });
+    }
+
+    function renderMentorTips() {
+      mentorList.innerHTML = '';
+      mentorTips.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'mentor-item';
+        div.textContent = item;
+        mentorList.appendChild(div);
+      });
+    }
+
+    function renderMemoryList() {
+      memoryList.innerHTML = '';
+      if (!knowledge.length) {
+        const empty = document.createElement('div');
+        empty.className = 'memory-item';
+        empty.textContent = 'Még nincs mentett memória. Kérj egy megjegyzést, és itt megjelenik.';
+        memoryList.appendChild(empty);
+        return;
+      }
+      knowledge.slice(-8).reverse().forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'memory-item';
+        div.textContent = item;
+        memoryList.appendChild(div);
+      });
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
+      });
+      modeLabel.textContent = mode === 'learn' ? 'Tanulás' : mode === 'research' ? 'Kutatás' : mode === 'practice' ? 'Gyakorlás' : 'Kreatív';
+      themeToggle.textContent = currentMode === 'creative' ? '✨' : '☀️';
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const dark = root.style.getPropertyValue('--bg') === '#030712';
+      if (dark) {
+        root.style.setProperty('--bg', '#f8fafc');
+        root.style.setProperty('--panel', '#f8fafc');
+        root.style.setProperty('--panel-2', '#eef2ff');
+        root.style.setProperty('--text', '#0f172a');
+        root.style.setProperty('--muted', '#475569');
+        root.style.setProperty('--bot', '#ffffff');
+        root.style.setProperty('--user', '#4f46e5');
+        themeToggle.textContent = '🌙';
+      } else {
+        root.style.setProperty('--bg', '#030712');
+        root.style.setProperty('--panel', '#0f172a');
+        root.style.setProperty('--panel-2', '#111827');
+        root.style.setProperty('--text', '#f8fafc');
+        root.style.setProperty('--muted', '#94a3b8');
+        root.style.setProperty('--bot', '#1f2937');
+        root.style.setProperty('--user', '#2563eb');
+        themeToggle.textContent = '☀️';
+      }
+    }
+
+    function exportMemory() {
+      const blob = new Blob([JSON.stringify(knowledge, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'vilmosgpt-memory.json';
+      anchor.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importMemory(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (Array.isArray(parsed)) {
+            knowledge = parsed;
+            saveKnowledge();
+            renderMemoryList();
+            addMessage('A memória sikeresen betöltődött.', 'system');
+          }
+        } catch {
+          addMessage('A fájl nem volt olvasható JSON formátumban.', 'system');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function personalizeReply(message, reply, mode) {
+      const base = sanitizeText(reply || '');
+      if (!base) return 'Próbálom megadni a lehető legjobb választ.';
+      const suffix = modeHints[mode] || modeHints.learn;
+      return `${base}\n\n${suffix}`;
+    }
+
+    function loadKnowledge() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey) || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function saveKnowledge() {
+      localStorage.setItem(storageKey, JSON.stringify(knowledge));
+    }
+
+    function addMessage(text, role = 'bot') {
+      const msg = document.createElement('div');
+      msg.className = `message ${role}`;
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = role === 'user' ? 'Te' : 'AI';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      msg.appendChild(avatar);
+      msg.appendChild(bubble);
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addTypingMessage() {
+      const msg = document.createElement('div');
+      msg.className = 'message typing';
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = 'AI';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = 'Gondolkodom, ellenőrzöm az információkat és összeállítok egy jó választ...';
+      msg.appendChild(avatar);
+      msg.appendChild(bubble);
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+      return msg;
+    }
+
+    function removeLastMessageIfTyping() {
+      const last = chat.lastElementChild;
+      if (last && last.classList.contains('typing')) {
+        chat.removeChild(last);
+      }
+    }
+
+    function rememberFact(text) {
+      const cleaned = text.trim();
+      if (!cleaned) return false;
+      if (!knowledge.includes(cleaned)) {
+        knowledge.push(cleaned);
+        saveKnowledge();
+      }
+      return true;
+    }
+
+    function sanitizeText(text) {
+      return String(text || '')
+        .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+        .replace(/[#>*_`]/g, '')
+        .replace(/\s+/g, ' ')
+        .replace(/\u00a0/g, ' ')
+        .trim();
+    }
+
+    function tryEvaluateMath(text) {
+      const match = text.match(/-?\d+(?:\s*[-+*/^]\s*-?\d+)+/);
+      if (!match) return null;
+      const expression = match[0].replace(/\s+/g, '');
+      try {
+        const result = Function(`"use strict"; return (${expression})`)();
+        if (Number.isFinite(result)) {
+          return `A számítás eredménye: ${result}`;
+        }
+      } catch {}
+      return null;
+    }
+
+    function isGreeting(text) {
+      const lower = text.toLowerCase();
+      return lower.includes('szia') || lower.includes('hello') || lower.includes('hey') || lower.includes('jó napot');
+    }
+
+    function clonePromptFromHistory(text) {
+      const lower = text.toLowerCase();
+      if (lower.includes('mi a neved') || lower.includes('ki vagy')) return 'A nevem VilmosGPT. Egy személyes, tanuló AI vagyok, és szeretném segíteni a kérdéseidben.';
+      if (lower.includes('vicc') || lower.includes('nevetés')) return 'Persze! Miért nem mondja a számítógép a viccet? Mert a billentyűzeten van egy kis “enter” problémája.';
+      if (lower.includes('köszönöm') || lower.includes('koszonom')) return 'Szívesen! Ha szeretnéd, kérdezz bármit, és megpróbálok a lehető legjobb választ adni.';
+      return null;
+    }
+
+    function shouldSearchWeb(text) {
+      const lower = text.toLowerCase();
+      if (!lower) return false;
+      if (isGreeting(lower)) return false;
+      if (lower.includes('mi a neved') || lower.includes('ki vagy')) return false;
+      if (lower.includes('vicc') || lower.includes('nevetés')) return false;
+      if (lower.includes('jegyezz meg') || lower.includes('tanulj meg') || lower.includes('emlékezz')) return false;
+      if (lower.includes('segíts') || lower.includes('help')) return false;
+      if (lower.includes('tanul') || lower.includes('tanulni')) return false;
+      if (lower.includes('köszönöm') || lower.includes('koszonom')) return false;
+      return true;
+    }
+
+    async function fetchWebAnswer(question) {
+      const sources = [
+        `https://r.jina.ai/http://https://duckduckgo.com/html/?q=${encodeURIComponent(question)}`,
+        `https://r.jina.ai/http://https://www.bing.com/search?q=${encodeURIComponent(question)}`
+      ];
+
+      for (const url of sources) {
+        try {
+          const response = await fetch(url, { headers: { Accept: 'text/plain' } });
+          if (!response.ok) continue;
+          const raw = await response.text();
+          const marker = raw.includes('Markdown Content:') ? raw.split('Markdown Content:')[1] : raw;
+          const cleaned = sanitizeText(marker).slice(0, 900);
+          if (cleaned.length > 40) {
+            return cleaned;
+          }
+        } catch {}
+      }
+      return null;
+    }
+
+    function buildFriendlyReply(question, webText) {
+      const cleaned = sanitizeText(webText || '').replace(/\s+/g, ' ').slice(0, 900);
+      if (cleaned) {
+        return `Röviden: ${cleaned}\n\nHa akarod, meg tudom ezt részletesebben is kibontani, példákkal vagy egyszerűbb magyarázattal.`;
+      }
+      return 'Megpróbáltam utánanézni az interneten, de most nem tudtam elég megbízható forrást találni. Lehetséges, hogy a kérdés túl specifikus vagy a keresés ideiglenesen nem működött. Próbáld újra egy kicsit egyszerűbben.';
+    }
+
+    async function answerUser(text) {
+      const msg = text.trim();
+      const lower = msg.toLowerCase();
+
+      if (!msg) return 'Írj valamit, hogy tudjak válaszolni.';
+
+      const quick = clonePromptFromHistory(msg);
+      if (quick) return quick;
+
+      if (lower.includes('jegyezz meg') || lower.includes('tanulj meg') || lower.includes('emlékezz')) {
+        const fact = msg.replace(/^(jegyezz meg|tanulj meg|emlékezz|emlékezz meg)[^\p{L}]* /iu, '').replace(/^hogy\s+/i, '');
+        if (fact) {
+          rememberFact(fact);
+          renderMemoryList();
+          return `Rendben, megjegyeztem: ${fact}`;
+        }
+        return 'Rendben, megjegyeztem a megadott információt.';
+      }
+
+      const known = knowledge.find(item => lower.includes(item.toLowerCase()));
+      if (known) {
+        return `A korábbi emlékeim szerint: ${known}`;
+      }
+
+      const mathAnswer = tryEvaluateMath(msg);
+      if (mathAnswer) {
+        return mathAnswer;
+      }
+
+      if (isGreeting(msg)) {
+        return 'Szia! Nagyon örülök, hogy itt vagy. Mit szeretnél ma megkérdezni, és hogyan tudok neked a legjobban segíteni?';
+      }
+
+      if (lower.includes('segíts') || lower.includes('help')) {
+        return 'Persze. Segítek megérteni dolgokat, válaszolni kérdésekre, tanulni, emlékezni és akár internetes információkat is összeszedni. Mondd csak, mire van szükséged.';
+      }
+
+      if (lower.includes('tanul') || lower.includes('tanulni')) {
+        return 'Szeretem tanulni. Ha szeretnéd, mondj egy témát, és megpróbálom egyszerűen, világosan és hasznosan elmagyarázni.';
+      }
+
+      if (shouldSearchWeb(msg)) {
+        const webText = await fetchWebAnswer(msg);
+        const baseReply = buildFriendlyReply(msg, webText);
+        return personalizeReply(msg, baseReply, currentMode);
+      }
+
+      return 'A saját AI-d vagyok, és most tanulok tőled. Ha szeretnéd, írd meg, hogy „jegyezz meg, hogy ...”, és megjegyzem a fontos információkat.';
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      input.value = '';
+      const typing = addTypingMessage();
+      const reply = await answerUser(text);
+      removeLastMessageIfTyping();
+      addMessage(reply, 'bot');
+    }
+
+    document.querySelectorAll('[data-prompt]').forEach(button => {
+      button.addEventListener('click', () => {
+        input.value = button.getAttribute('data-prompt');
+        input.focus();
+      });
+    });
+
+    document.querySelectorAll('.mode').forEach(button => {
+      button.addEventListener('click', () => setMode(button.getAttribute('data-mode')));
+    });
+
+    themeToggle.addEventListener('click', toggleTheme);
+
+    exportMemoryBtn.addEventListener('click', exportMemory);
+    importMemoryInput.addEventListener('change', importMemory);
+
+    sendBtn.addEventListener('click', () => {
+      sendMessage();
+    });
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      knowledge = [];
+      saveKnowledge();
+      renderMemoryList();
+      chat.innerHTML = '';
+      addMessage('A memória törölve lett. Kezdhetjük újra, és most még jobb segítséget tudok adni.', 'system');
+    });
+
+    renderPromptBank();
+    renderMentorTips();
+    renderMemoryList();
+    setMode(currentMode);
+
+    addMessage('Szia! Én vagyok a VilmosGPT. Beszélgessünk, és megpróbálok neked a lehető legjobb válaszokat adni – akár az interneten is utánanézek.', 'bot');
+    addMessage('Példák: „mi a neved?”, „mennyi 1+1?”, „mondj egy viccet”, vagy „jegyezz meg, hogy szeretek tanulni”.', 'system');
+  </script>
+</body>
+</html>
