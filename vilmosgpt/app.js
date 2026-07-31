@@ -1,3 +1,5 @@
+(function(){var s=document.createElement('script');s.src='logo-inject.js';document.head.appendChild(s);})();
+
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
 const sendBtn = document.getElementById('send');
