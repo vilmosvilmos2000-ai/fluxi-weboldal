@@ -50,6 +50,40 @@ const mentorTips = [
   'A hibákból tanulni ugyanúgy fontos, mint a sikerekből.'
 ];
 
+const simpleDefinitions = {
+  vonat: 'A vonat egy vasúti jármű, amely általában egy mozdonyból és a hozzá kapcsolt kocsikból áll. Személyeket vagy árut szállít síneken. Modern vonatok elektromos vagy dízel meghajtásúak, és a közlekedés egyik legfontosabb formája.',
+  autó: 'Az autó (személygépkocsi) egy kerekeken közlekedő, motorral hajtott jármű, amelyet általában 2–5 ember szállítására terveztek. Közúton közlekedik, és a mindennapi közlekedés egyik leggyakoribb eszköze.',
+  számítógép: 'A számítógép olyan elektronikus eszköz, amely adatokat dolgoz fel: programokat futtat, számol, tárol és kommunikál. Részei például a processzor (CPU), a memória (RAM) és a merevlemez.',
+  internet: 'Az internet a világ számítógépeinek és hálózatainak összekapcsolt rendszere. Rajta keresztül böngészhetsz, üzeneteket küldhetsz, videót nézhetsz és rengeteg információhoz juthatsz.',
+  ai: 'Az AI (mesterséges intelligencia) olyan számítógépes rendszerek gyűjtőneve, amelyek képesek tanulni, felismerni mintákat, dönteni vagy emberihez hasonlóan válaszolni. Például a chatbotok is AI-t használnak.',
+  'mesterséges intelligencia': 'Az AI (mesterséges intelligencia) olyan számítógépes rendszerek gyűjtőneve, amelyek képesek tanulni, felismerni mintákat, dönteni vagy emberihez hasonlóan válaszolni. Például a chatbotok is AI-t használnak.',
+  robot: 'A robot olyan gép, amely programozható feladatok elvégzésére. Lehet ipari (gyárban), háztartási (porszívó), vagy akár emberszerű humanoid is.',
+  nap: 'A Nap a Naprendszer központi csillaga. Fényt és hőt ad a Földnek, és a földi élet energiaforrása. Körülötte keringenek a bolygók, köztük a Föld is.',
+  hold: 'A Hold a Föld természetes műholdja. Körülöttünk kering, és hatással van a dagályra. Felszíne kráteres, és nincs légköre.',
+  föld: 'A Föld a Naprendszer harmadik bolygója a Naptól. Ezen élünk: van légköre, óceánjai és szárazföldjei, és jelenleg az egyetlen ismert bolygó, ahol élet van.',
+  víz: 'A víz (H₂O) a legfontosabb folyadék a Földön. Az élet alapja: az emberek, állatok és növények is függnek tőle. Folyékony, szilárd (jég) és gáz (gőz) állapotban is előfordul.',
+  oxigén: 'Az oxigén egy kémiai elem (O). A levegő körülbelül 21%-át teszi ki, és az emberek, állatok légzéséhez elengedhetetlen.',
+  gravitáció: 'A gravitáció az a vonzóerő, amellyel a testek egymást vonzzák. A Föld gravitációja tart a földön, és ez okozza, hogy a tárgyak leesnek.',
+  energia: 'Az energia a munka végzésére való képesség. Formái: mozgási, hő, fény, elektromos, kémiai stb. Nem vész el, csak átalakul egyik formából a másikba.',
+  atom: 'Az atom a kémiai elemek legkisebb részecskéje, amely még megtartja az elem tulajdonságait. Magja protonokból és neutronokból áll, körülötte elektronok keringenek.',
+  sejt: 'A sejt az élőlények alapvető építőegysége. Minden élő szervezet sejtekből áll. Van sejtmagja, membránja, és benne zajlanak az életfolyamatok.',
+  dna: 'A DNS (dezoxiribonukleinsav) az a molekula, amely az élőlények örökítőanyagát tárolja. Benne van a genetikai információ, ami meghatározza a tulajdonságainkat.',
+  dns: 'A DNS (dezoxiribonukleinsav) az a molekula, amely az élőlények örökítőanyagát tárolja. Benne van a genetikai információ, ami meghatározza a tulajdonságainkat.',
+  programozás: 'A programozás az a tevékenység, amikor utasításokat (kódot) írsz egy számítógépnek, hogy elvégezzen feladatokat. Nyelvek pl.: Python, JavaScript, Java.',
+  algoritmus: 'Az algoritmus egy lépésről lépésre leírt megoldási módszer egy feladatra. A számítógépes programok algoritmusokra épülnek.',
+  wifi: 'A Wi-Fi vezeték nélküli hálózati technológia, amellyel eszközök (telefon, laptop) csatlakozhatnak az internethez rádióhullámokon keresztül.',
+  bluetooth: 'A Bluetooth rövid hatótávolságú vezeték nélküli kapcsolat eszközök között (pl. fülhallgató, egér, telefon).',
+  okostelefon: 'Az okostelefon olyan mobiltelefon, amely számítógépszerű funkciókat is tud: alkalmazások, internet, kamera, GPS. Android vagy iOS rendszeren fut.',
+  google: 'A Google egy nagy tech cég, legismertebb a keresőmotorjáról. Emellett van Gmail, YouTube, Maps, Android és sok más szolgáltatásuk is.',
+  youtube: 'A YouTube a világ legnagyobb videómegosztó oldala. Videókat nézhetsz, tölthetsz fel, és csatornákat követhetsz.',
+  facebook: 'A Facebook (Meta) egy közösségi oldal, ahol profilt készíthetsz, barátokkal kapcsolódhatsz, posztolhatsz és üzeneteket küldhetsz.',
+  instagram: 'Az Instagram egy fénykép- és videómegosztó közösségi alkalmazás, ahol történeteket és posztokat oszthatsz meg.',
+  tiktok: 'A TikTok rövid videók megosztására szolgáló közösségi alkalmazás. Zenés, táncos és humoros tartalmakról ismert.',
+  minecraft: 'A Minecraft egy sandbox játék, ahol kockákból építhetsz világot, túlélhetsz, bányászhatsz és kreatívan alkothatsz. Egyjátékos és többjátékos módban is játszható.',
+  roblox: 'A Roblox egy online platform, ahol játékokat játszhatsz és magad is készíthetsz. Sokféle felhasználók által készített játék van benne.',
+  squishmallow: 'A Squishmallow puha, kitömött plüssfigura márka. Különböző állat- és karakterformákban kapható, gyűjtők körében népszerű.'
+};
+
 function renderPromptBank() {
   promptBank.innerHTML = '';
   promptLibrary.forEach(item => {
@@ -142,8 +176,8 @@ function importMemory(event) {
 function personalizeReply(reply, mode) {
   const base = String(reply || '').trim();
   if (!base) return 'Próbálom megadni a lehető legjobb választ.';
-  if (base.length > 180) return base;
-  return base + '\n\n' + (modeHints[mode] || modeHints.learn);
+  if (base.length > 220) return base;
+  return base + '\n\nHa szeretnéd, részletesebben is elmagyarázom, vagy példát adok.';
 }
 
 function loadKnowledge() {
@@ -206,32 +240,56 @@ function rememberFact(text) {
 }
 
 function sanitizeText(text) {
-  return String(text || '')
-    .replace(/!Image\s*\d*/gi, ' ')
-    .replace(/https?:\/\/\S+/gi, ' ')
-    .replace(/www\.\S+/gi, ' ')
-    .replace(/\S+\.(com|hu|io|org|net|edu)\/\S*/gi, ' ')
-    .replace(/\d{4}-\d{2}-\d{2}T[\d:.]+/g, ' ')
-    .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
-    .replace(/[#>*_`|]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  let t = String(text || '');
+  t = t.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ');
+  t = t.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
+  t = t.replace(/https?:\/\/\S+/gi, ' ');
+  t = t.replace(/www\.\S+/gi, ' ');
+  t = t.replace(/\S+\.(com|hu|io|org|net|edu|me)\/\S*/gi, ' ');
+  t = t.replace(/\d{4}-\d{2}-\d{2}T[\d:.Z+-]+/g, ' ');
+  t = t.replace(/!Image\s*\d*/gi, ' ');
+  t = t.replace(/\(\s*[A-ZÁÉÍÓÖŐÚÜŰ][a-záéíóöőúüű]+\s+[A-ZÁÉÍÓÖŐÚÜŰ][a-záéíóöőúüű]+\s*\)/g, ' ');
+  t = t.replace(/\[\s*\]/g, ' ');
+  t = t.replace(/[#!>*_`|~\[\](){}]/g, ' ');
+  t = t.replace(/\s*[·•▪◦]+\s*/g, ' ');
+  t = t.replace(/\s{2,}/g, ' ');
+  return t.trim();
 }
 
-function extractUsefulSentences(raw, maxLen = 420) {
+function isGarbageSentence(s) {
+  if (!s || s.length < 25) return true;
+  if (s.length > 280) return true;
+  const lower = s.toLowerCase();
+  const bad = [
+    'cookie', 'accept', 'privacy', 'sign in', 'log in', 'facebook',
+    'markdown content', 'skip to', 'image', 'wikipédia', 'wikipedia',
+    'felolvastatá', 'vezényszóra', 'beléjük lövet', 'vas gereben',
+    'tolnai lajos', 'oszlop; kocsisor', 'állati vontatású'
+  ];
+  if (bad.some(b => lower.includes(b))) return true;
+  if ((s.match(/[a-záéíóöőúüűA-ZÁÉÍÓÖŐÚÜŰ]/g) || []).length < 18) return true;
+  if ((s.match(/[.!?]/g) || []).length > 4 && s.length < 100) return true;
+  return false;
+}
+
+function extractUsefulSentences(raw, maxLen = 400) {
   let t = sanitizeText(raw)
-    .replace(/\b(Image|Markdown Content|Skip to|Cookie|Accept|Privacy|Sign in|Log in|Facebook)\b/gi, ' ')
+    .replace(/\b(Image|Markdown Content|Skip to|Cookie|Accept|Privacy|Sign in|Log in|Facebook|Wikipédia|Wikipedia)\b/gi, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+
   const parts = t.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
   const good = [];
   for (const s of parts) {
-    if (s.length < 35 || s.length > 220) continue;
-    if ((s.match(/[a-záéíóöőúüű]/gi) || []).length < 20) continue;
+    if (isGarbageSentence(s)) continue;
     good.push(s);
     if (good.join(' ').length >= maxLen) break;
   }
-  return good.length ? good.join(' ').slice(0, maxLen) : t.slice(0, maxLen);
+  if (good.length) return good.join(' ').slice(0, maxLen);
+
+  const cleaned = t.slice(0, maxLen).trim();
+  if (cleaned.length > 50 && !isGarbageSentence(cleaned)) return cleaned;
+  return '';
 }
 
 function tryEvaluateMath(text) {
@@ -282,8 +340,18 @@ function getLastUserTopic() {
   return null;
 }
 
+function extractDefinitionKey(text) {
+  const lower = text.toLowerCase().trim();
+  let m = lower.match(/^(?:mi\s+az\s+a|mi\s+az|mi\s+a|mit\s+jelent\s+a|mit\s+jelent)\s+(.+?)\s*[?.!]*$/i);
+  if (m) return m[1].replace(/[?.!]/g, '').trim();
+  m = lower.match(/^(?:mi\s+ez\s+a|mi\s+ez)\s+(.+?)\s*[?.!]*$/i);
+  if (m) return m[1].replace(/[?.!]/g, '').trim();
+  return null;
+}
+
 function localSmartAnswer(text) {
-  const lower = text.toLowerCase();
+  const lower = text.toLowerCase().trim();
+
   if (lower.includes('mi a neved') || lower.includes('ki vagy')) {
     return 'A nevem VilmosGPT. Egy személyes, tanuló AI vagyok: segítek magyarázni, gyakorolni, emlékezni, és ha kell, utánanézek dolgoknak.';
   }
@@ -293,6 +361,21 @@ function localSmartAnswer(text) {
   if (lower.includes('köszönöm') || lower.includes('koszonom')) {
     return 'Szívesen! Ha van még kérdésed, csak írd meg.';
   }
+
+  const defKey = extractDefinitionKey(text);
+  if (defKey) {
+    for (const [key, val] of Object.entries(simpleDefinitions)) {
+      if (defKey === key || defKey.includes(key) || key.includes(defKey)) {
+        return val;
+      }
+    }
+  }
+  for (const [key, val] of Object.entries(simpleDefinitions)) {
+    if (lower === key || lower === 'mi az a ' + key || lower === 'mi a ' + key || lower === 'mi az ' + key) {
+      return val;
+    }
+  }
+
   if ((lower.includes('fizik')) && (lower.includes('megért') || lower.includes('tanul') || lower.includes('egyszerű') || lower.includes('hogyan'))) {
     return 'A fizika akkor lesz egyszerű, ha nem memorizálsz, hanem megérted a „miért”-et.\n\n1. Kezdj a mindennapi példákkal (esés, súrlódás, fény, hang).\n2. Egy fogalmat egyszerre tanulj: pl. erő → gyorsulás → energia.\n3. Rajzolj: nyilak, diagramok sokat segítenek.\n4. Oldj meg kis példákat, ne csak olvasd a képletet.\n5. Magyarázd el hangosan, mintha egy barátodnak mondanád.\n\nTipp: a „F = m·a” azt mondja: minél nagyobb a tömeg, annál nehezebb felgyorsítani.\n\nMondj egy konkrét témát, és lépésről lépésre elmagyarázom.';
   }
@@ -322,7 +405,7 @@ function localSmartAnswer(text) {
 
 function shouldSearchWeb(text) {
   const lower = text.toLowerCase();
-  if (!lower || lower.length < 8) return false;
+  if (!lower || lower.length < 3) return false;
   if (isGreeting(lower) || isAboutHistory(lower)) return false;
   if (lower.includes('mi a neved') || lower.includes('ki vagy')) return false;
   if (lower.includes('vicc') || lower.includes('jegyezz meg') || lower.includes('emlékezz')) return false;
@@ -332,9 +415,11 @@ function shouldSearchWeb(text) {
 }
 
 async function fetchWebAnswer(question) {
+  const q = question.trim();
   const sources = [
-    'https://r.jina.ai/http://https://duckduckgo.com/html/?q=' + encodeURIComponent(question + ' magyarázat'),
-    'https://r.jina.ai/http://https://www.bing.com/search?q=' + encodeURIComponent(question)
+    'https://r.jina.ai/http://https://hu.wikipedia.org/wiki/' + encodeURIComponent(q.replace(/^(mi az a|mi a|mi az|mit jelent)\s+/i, '').trim()),
+    'https://r.jina.ai/http://https://duckduckgo.com/html/?q=' + encodeURIComponent(q + ' site:hu.wikipedia.org'),
+    'https://r.jina.ai/http://https://duckduckgo.com/html/?q=' + encodeURIComponent(q)
   ];
   for (const url of sources) {
     try {
@@ -342,17 +427,17 @@ async function fetchWebAnswer(question) {
       if (!response.ok) continue;
       const raw = await response.text();
       const marker = raw.includes('Markdown Content:') ? raw.split('Markdown Content:')[1] : raw;
-      const useful = extractUsefulSentences(marker, 450);
-      if (useful && useful.length > 60) return useful;
+      const useful = extractUsefulSentences(marker, 420);
+      if (useful && useful.length > 55) return useful;
     } catch {}
   }
   return null;
 }
 
 function buildFriendlyReply(webText) {
-  const cleaned = extractUsefulSentences(webText || '', 450);
-  if (cleaned && cleaned.length > 50) {
-    return cleaned + '\n\nHa szeretnéd, részletesebben is elmagyarázom, vagy példát adok.';
+  const cleaned = extractUsefulSentences(webText || '', 420);
+  if (cleaned && cleaned.length > 45) {
+    return cleaned;
   }
   return null;
 }
