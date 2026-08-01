@@ -1,22 +1,12 @@
 /* === Logo + favicon + auth modal logo + version === */
 (function injectLogo() {
   try {
-    // Version 0.2
-    document.querySelectorAll('.header-left h1, .header-sub, title').forEach(function(el) {
-      if (el.tagName === 'TITLE') {
-        if (el.textContent.indexOf('0.1') !== -1) el.textContent = el.textContent.replace(/0\.1/g, '0.2');
-      } else if (el.textContent && el.textContent.indexOf('0.1') !== -1) {
-        el.textContent = el.textContent.replace(/0\.1/g, '0.2');
-      }
-    });
+    // Version 3.0
     var h1 = document.querySelector('.header-left h1');
-    if (h1 && h1.textContent.indexOf('0.2') === -1 && h1.textContent.indexOf('VilmosGPT') !== -1) {
-      h1.textContent = 'VilmosGPT 0.2';
-    }
+    if (h1) h1.textContent = 'VilmosGPT 3.0';
     var sub = document.querySelector('.header-sub');
-    if (sub) {
-      sub.textContent = 'Személyes AI · tanul · keres [ALPHA] version 0.2 first beta at 1.0';
-    }
+    if (sub) sub.textContent = 'Személyes AI · tanul · keres · 20+ forrás [ALPHA] version 3.0';
+    if (document.title) document.title = 'VilmosGPT 3.0';
 
     if (!document.querySelector('link[rel="icon"]')) {
       const link = document.createElement('link');
