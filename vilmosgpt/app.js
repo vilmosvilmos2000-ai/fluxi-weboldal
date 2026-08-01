@@ -1,10 +1,10 @@
-/* app loader v5 */
+/* app loader v6 */
 (async function(){
   try {
-    const parts = ['app-part1.js', 'app-part2.js'];
+    const parts = ['app-part1.js', 'app-part2a.js', 'app-part2b.js'];
     let code = '';
     for (const p of parts) {
-      const r = await fetch(p + '?v=clean5');
+      const r = await fetch(p + '?v=clean6');
       if (!r.ok) throw new Error('load ' + p);
       code += await r.text();
     }
