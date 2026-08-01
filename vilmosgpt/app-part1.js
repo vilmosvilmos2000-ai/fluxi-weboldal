@@ -1,4 +1,4 @@
-(function(){var s=document.createElement('script');s.src='logo-inject.js?v=m3';document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='logo-inject.js?v=m4';document.head.appendChild(s);})();
 
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
@@ -52,6 +52,13 @@ const mentorTips = [
 
 const simpleDefinitions = {
   kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrador, német juhász, yorkshire).',
+  csivava: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű. Hosszú és rövid szőrű változata is van.',
+  chihuahua: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű.',
+  labrador: 'A labrador (labrador retriever) barátságos, okos kutyafajta. Gyakori családi és segítő kutya; szeret apportírozni és vízben úszni.',
+  'német juhász': 'A német juhász okos, hűséges munkakutya. Gyakran őrző, rendőrségi vagy vakvezető kutya.',
+  yorkshire: 'A yorkshire terrier (yorkie) kis termetű, hosszú szőrű kutyafajta. Élénk, bátor, kedvelt társállat.',
+  pudli: 'A pudli okos, fürge kutyafajta. Több méretben létezik; kevésbé vedlik.',
+  husky: 'A szibériai husky erős, energikus kutyafajta. Eredetileg szánhúzó.',
   macska: 'A macska (Felis catus) kis termetű háziállat. Önálló, ügyes vadász, sokan tartják társállatként. Éjszakai látása kiváló, és jellegzetesen dorombol.',
   teknős: 'A teknős (vagy teknősbéka) páncélos hüllő. A háta és hasa kemény teknővel védett. Van szárazföldi és vízi faja is; lassú mozgású, tojással szaporodik.',
   teknos: 'A teknős (vagy teknősbéka) páncélos hüllő. A háta és hasa kemény teknővel védett. Van szárazföldi és vízi faja is; lassú mozgású, tojással szaporodik.',
