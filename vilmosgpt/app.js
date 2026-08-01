@@ -1,17 +1,15 @@
-/* app loader v7 */
+/* loader v8 */
 (async function(){
   try {
-    const parts = ['app-part1.js', 'app-part2.js'];
-    let code = '';
-    for (const p of parts) {
-      const r = await fetch(p + '?v=clean7');
-      if (!r.ok) throw new Error('load ' + p);
+    var parts = ['app-part1.js','app-part2a.js','app-part2b.js'];
+    var code = '';
+    for (var i=0;i<parts.length;i++) {
+      var r = await fetch(parts[i]+'?v=c8');
+      if (!r.ok) throw new Error(parts[i]);
       code += await r.text();
     }
-    const s = document.createElement('script');
+    var s = document.createElement('script');
     s.textContent = code;
     document.body.appendChild(s);
-  } catch (e) {
-    console.error('VilmosGPT load error', e);
-  }
+  } catch(e) { console.error(e); }
 })();
