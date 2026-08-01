@@ -1,3 +1,6 @@
+function isMobileView() {
+  return window.innerWidth <= 960;
+}
 function renderPromptBank() {
   promptBank.innerHTML = '';
   promptLibrary.forEach(item => {
@@ -7,8 +10,13 @@ function renderPromptBank() {
     button.textContent = item;
     button.addEventListener('click', () => {
       input.value = item;
-      input.focus();
-      if (window.innerWidth <= 960) showPanel('chat');
+      if (isMobileView()) {
+        showPanel('chat');
+        // Automatikusan elküldi a gyors kérdést mobilon
+        setTimeout(function(){ sendMessage(); }, 80);
+      } else {
+        input.focus();
+      }
     });
     div.appendChild(button);
     promptBank.appendChild(div);
@@ -343,14 +351,26 @@ function showPanel(panel) {
   sidebarLeft.classList.remove('visible');
   sidebarRight.classList.remove('visible');
   mainChat.style.display = '';
+  mainChat.style.visibility = 'visible';
   document.querySelectorAll('.mobile-tabs button').forEach(function(b){
     b.classList.toggle('active', b.getAttribute('data-panel') === panel);
   });
-  if (panel === 'left') { sidebarLeft.classList.add('visible'); mainChat.style.display = 'none'; }
-  else if (panel === 'right') { sidebarRight.classList.add('visible'); mainChat.style.display = 'none'; }
+  if (panel === 'left') {
+    sidebarLeft.classList.add('visible');
+    mainChat.style.display = 'none';
+  } else if (panel === 'right') {
+    sidebarRight.classList.add('visible');
+    mainChat.style.display = 'none';
+  } else {
+    mainChat.style.display = '';
+    try { input.focus(); } catch (e) {}
+  }
 }
 document.querySelectorAll('.mode').forEach(function(button){
-  button.addEventListener('click', function(){ setMode(button.getAttribute('data-mode')); });
+  button.addEventListener('click', function(){
+    setMode(button.getAttribute('data-mode'));
+    if (isMobileView()) showPanel('chat');
+  });
 });
 document.querySelectorAll('.mobile-tabs button').forEach(function(btn){
   btn.addEventListener('click', function(){ showPanel(btn.getAttribute('data-panel')); });
