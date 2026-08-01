@@ -2,10 +2,19 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VilmosGPT 3.0</title>
-  <link rel="icon" type="image/svg+xml" href="logo.svg?v=4" />
-  <link rel="apple-touch-icon" href="logo.svg?v=4" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>VilmosGPT</title>
+  <meta name="description" content="VilmosGPT – személyes AI, tanul, emlékezik, keres" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VilmosGPT" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg?v=5" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.svg?v=5" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.svg?v=5" />
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.svg?v=5" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
@@ -39,11 +48,13 @@
       grid-template-columns: 280px 1fr 300px;
       grid-template-rows: 56px 1fr;
       height: 100vh; width: 100vw; gap: 0;
+      height: 100dvh;
     }
     .header {
       grid-column: 1 / -1;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 20px;
+      padding-top: env(safe-area-inset-top, 0);
       background: linear-gradient(90deg, rgba(56, 189, 248, 0.95), rgba(139, 92, 246, 0.95));
       border-bottom: 1px solid rgba(255, 255, 255, 0.15);
       z-index: 10;
@@ -211,6 +222,7 @@
     .composer-wrap {
       padding: 14px 20px 18px; border-top: 1px solid var(--border);
       background: rgba(15,23,42,0.7); backdrop-filter: blur(12px);
+      padding-bottom: max(18px, env(safe-area-inset-bottom, 18px));
     }
     .composer { display: flex; gap: 10px; align-items: center; }
     .composer input {
@@ -297,9 +309,9 @@
   <div class="app">
     <header class="header">
       <div class="header-left">
-        <img class="header-logo" src="logo.svg?v=4" alt="VilmosGPT" width="40" height="40" />
-        <h1>VilmosGPT 3.0</h1>
-        <span class="header-sub">Személyes AI · tanul · keres · 20+ forrás [ALPHA] version 3.0</span>
+        <img class="header-logo" src="logo.svg?v=5" alt="VilmosGPT" width="40" height="40" />
+        <h1>VilmosGPT 0.3</h1>
+        <span class="header-sub">Személyes AI · tanul · keres · 20+ forrás</span>
       </div>
       <div class="header-actions">
         <span class="badge">Online</span>
@@ -322,8 +334,8 @@
     </header>
 
     <div class="mobile-tabs" id="mobile-tabs">
-      <button data-panel="left" class="active">Módok</button>
-      <button data-panel="chat">Chat</button>
+      <button data-panel="left">Módok</button>
+      <button data-panel="chat" class="active">Chat</button>
       <button data-panel="right">Kérdések</button>
     </div>
 
@@ -383,7 +395,7 @@
       <button class="auth-close" id="auth-close" type="button" aria-label="Bezárás">×</button>
       <div class="auth-modal">
         <div class="auth-logo-wrap">
-          <img class="auth-logo" src="logo.svg?v=4" alt="VilmosGPT" width="72" height="72" />
+          <img class="auth-logo" src="logo.svg?v=5" alt="VilmosGPT" width="72" height="72" />
         </div>
         <h2>Bejelentkezés / Regisztráció</h2>
         <p>Jelentkezz be Google-fiókkal, vagy adj meg egy nevet a helyi fiókhoz.</p>
@@ -518,11 +530,11 @@
       if (GOOGLE_CLIENT_ID && window.google && google.accounts) {
         google.accounts.id.prompt();
       } else {
-        alert('A valódi Google bejelentkezéshez a tulajdonosnak be kell állítania a GOOGLE_CLIENT_ID-t a kódban (Google Cloud Console → OAuth 2.0 Client ID).\\n\\nAddig használd a névvel történő belépést.');
+        alert('A valódi Google bejelentkezéshez a tulajdonosnak be kell állítania a GOOGLE_CLIENT_ID-t.');
       }
     });
   </script>
   <script src="app.js"></script>
-  <script src="logo-inject.js?v=4"></script>
+  <script src="logo-inject.js?v=5"></script>
 </body>
 </html>
