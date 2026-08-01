@@ -14,6 +14,16 @@
   <link rel="apple-touch-icon" sizes="180x180" href="https://i.imgur.com/kzTgIsW.png" />
   <link rel="icon" type="image/svg+xml" href="logo.svg?v=7" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    /* Facebook App ID: developers.facebook.com → Új app → Facebook Login → Domain: fluxi.hu */
+    window.VILMOS_FB_APP_ID = '';
+    window.fbAsyncInit = function() {
+      if (window.VILMOS_FB_APP_ID) {
+        FB.init({ appId: window.VILMOS_FB_APP_ID, cookie: true, xfbml: false, version: 'v21.0' });
+      }
+    };
+  </script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/hu_HU/sdk.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -191,7 +201,15 @@
     .auth-modal h2 { font-size: 18px; text-align: center; margin-bottom: 6px; }
     .auth-modal > p { color: #94a3b8; font-size: 13px; text-align: center; margin-bottom: 16px; }
     .auth-close { position: absolute; top: 10px; right: 12px; border: none; background: transparent; color: #94a3b8; font-size: 22px; cursor: pointer; }
-    #google-btn-slot { display: flex; justify-content: center; min-height: 40px; margin-bottom: 4px; }
+    #google-btn-slot { display: flex; justify-content: center; min-height: 40px; margin-bottom: 8px; }
+    .btn-facebook {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; border: none; border-radius: 999px; padding: 12px 16px;
+      background: #1877f2; color: #fff; font-size: 15px; font-weight: 600;
+      cursor: pointer; margin-bottom: 4px;
+    }
+    .btn-facebook:hover { background: #166fe5; }
+    .btn-facebook svg { flex-shrink: 0; }
     .auth-divider { display: flex; align-items: center; gap: 10px; color: #64748b; font-size: 12px; margin: 12px 0; }
     .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
     .auth-modal input {
@@ -237,7 +255,7 @@
           <button class="logout-btn" id="logout-btn" type="button">Kilépés</button>
         </div>
         <button class="btn-google" id="login-btn" type="button" title="Bejelentkezés">
-          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 10.78l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
           <span class="label">Bejelentkezés</span>
         </button>
         <button id="theme-toggle" title="Téma">☀️</button>
@@ -296,8 +314,12 @@
       <div class="auth-modal">
         <div class="auth-logo-wrap"><img class="auth-logo" src="logo.svg?v=7" alt="VilmosGPT" width="72" height="72" /></div>
         <h2>Bejelentkezés</h2>
-        <p>Google-lel vagy névvel.</p>
+        <p>Google-lel, Facebookkal vagy névvel.</p>
         <div id="google-btn-slot"></div>
+        <button class="btn-facebook" id="facebook-login-btn" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+          Folytatás Facebookkal
+        </button>
         <div class="auth-divider">vagy</div>
         <input id="auth-name" type="text" placeholder="A neved" maxlength="40" />
         <input id="auth-email" type="email" placeholder="Email (opcionális)" maxlength="80" />
@@ -310,6 +332,7 @@
   </div>
   <script>
     const GOOGLE_CLIENT_ID = '906956499349-fuqvjroddnh5fsi6tt6s9e21vd9qfq93.apps.googleusercontent.com';
+    const FB_APP_ID = window.VILMOS_FB_APP_ID || '';
     const AUTH_KEY = 'vilmosgpt-user-v1';
     function getUser(){ try{ return JSON.parse(localStorage.getItem(AUTH_KEY)||'null'); }catch{ return null; } }
     function setUser(u){ if(u) localStorage.setItem(AUTH_KEY, JSON.stringify(u)); else localStorage.removeItem(AUTH_KEY); renderAuthUI(); }
@@ -320,7 +343,7 @@
         if(user.picture) av.innerHTML='<img src="'+user.picture+'" alt="" />'; else av.textContent=(user.name[0]||'?').toUpperCase();
       } else { chip.classList.remove('visible'); loginBtn.style.display=''; }
     }
-    function openAuth(){ document.getElementById('auth-overlay').classList.add('open'); initGoogleButton(); }
+    function openAuth(){ document.getElementById('auth-overlay').classList.add('open'); initGoogleButton(); initFacebook(); }
     function closeAuth(){ document.getElementById('auth-overlay').classList.remove('open'); }
     function parseJwt(t){ try{ const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+(('00'+c.charCodeAt(0).toString(16)).slice(-2))).join(''))); }catch{ return null; } }
     function handleGoogleCredential(r){
@@ -336,7 +359,41 @@
       google.accounts.id.initialize({ client_id:GOOGLE_CLIENT_ID, callback:handleGoogleCredential, auto_select:false });
       google.accounts.id.renderButton(slot, { theme:'outline', size:'large', shape:'pill', text:'continue_with', width:300 });
     }
-    window.addEventListener('load', ()=>{ renderAuthUI(); if(GOOGLE_CLIENT_ID&&window.google) initGoogleButton(); });
+    function initFacebook() {
+      if (!FB_APP_ID || !window.FB) return;
+      try { FB.init({ appId: FB_APP_ID, cookie: true, xfbml: false, version: 'v21.0' }); } catch (e) {}
+    }
+    function handleFacebookLogin() {
+      if (!FB_APP_ID) {
+        alert('A Facebook bejelentkezéshez be kell állítani a Facebook App ID-t (developers.facebook.com).');
+        return;
+      }
+      if (!window.FB) {
+        alert('A Facebook SDK még nem töltődött be. Próbáld újra pár másodperc múlva.');
+        return;
+      }
+      FB.login(function(response) {
+        if (!response.authResponse) return;
+        FB.api('/me', { fields: 'id,name,email,picture.type(large)' }, function(me) {
+          if (!me || me.error) return;
+          var pic = '';
+          try { pic = me.picture && me.picture.data && me.picture.data.url ? me.picture.data.url : ''; } catch(e) {}
+          setUser({
+            name: me.name || 'Facebook felhasználó',
+            email: me.email || '',
+            picture: pic,
+            provider: 'facebook',
+            sub: me.id || ''
+          });
+          closeAuth();
+          if (typeof addMessage === 'function') {
+            addMessage('Szia, ' + (me.name || '') + '! Bejelentkeztél Facebookkal.', 'system');
+          }
+        });
+      }, { scope: 'public_profile,email' });
+    }
+    window.addEventListener('load', ()=>{ renderAuthUI(); if(GOOGLE_CLIENT_ID&&window.google) initGoogleButton(); initFacebook(); });
+    document.getElementById('facebook-login-btn').addEventListener('click', handleFacebookLogin);
     document.getElementById('login-btn').addEventListener('click', openAuth);
     document.getElementById('auth-close').addEventListener('click', closeAuth);
     document.getElementById('auth-cancel').addEventListener('click', closeAuth);
