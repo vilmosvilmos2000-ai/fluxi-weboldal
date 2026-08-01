@@ -1,116 +1,88 @@
-/* Multi-source web search – SZIGORÚ tisztítás, releváns válasz */
-
-function boostCleanText(text) {
-  let t = String(text || '');
-  if (t.includes('Markdown Content:')) t = t.split('Markdown Content:').slice(1).join(' ');
-  t = t.replace(/^Title:[^\n]*\n?/gim, '');
-  t = t.replace(/^URL Source:[^\n]*\n?/gim, '');
-  t = t.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ');
-  t = t.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
-  t = t.replace(/https?:\/\/\S+/gi, ' ');
-  t = t.replace(/www\.\S+/gi, ' ');
-  t = t.replace(/\S*\.(org|com|hu|net|edu)\/\S*/gi, ' ');
-  t = t.replace(/\d{4}-\d{2}-\d{2}T[\d:.Z+-]+/g, ' ');
-  t = t.replace(/!Image\s*\d*/gi, ' ');
-  // Wiki szekciószámok: "1 ", "8 ", "9 A", "10 0"
-  t = t.replace(/(?:^|\s)\d{1,3}(?=\s+[A-ZÁÉÍÓÖŐÚÜŰa-záéíóöőúüű])/g, ' ');
-  t = t.replace(/[#>*_`|~\[\]{}]/g, ' ');
-  t = t.replace(/\s{2,}/g, ' ');
-  return t.trim();
-}
+/* Web search: Wikipedia REST summary = tiszta szöveg */
 
 function boostIsGarbage(s) {
-  if (!s || s.length < 35) return true;
-  if (s.length > 300) return true;
-  const lower = s.toLowerCase();
-  const bad = [
-    'cookie', 'accept all', 'privacy', 'sign in', 'log in',
-    'markdown content', 'skip to', 'page contents not supported',
-    'color automatic', 'light dark', 'this page is always',
-    'please search for', 'create an account', 'szócikk', 'vitalap',
-    'létrehozás', 'eszközök', 'áthelyezés', 'oldalsávba', 'műveletek',
-    'mi hivatkozik', 'színek béta', 'edit source', 'view history',
-    'navigation menu', 'jump to', 'related searches', 'advertisement',
-    'all rights reserved', 'feast of jordan', 'funeral feast',
-    'orthodox christians', 'christmas–feast', 'descriptor is also used',
-    'consumed by both', 'eves of christma', 'wiki/kutya',
-    'disambiguation', 'may refer to', 'see also'
+  if (!s || s.length < 40) return true;
+  var lower = s.toLowerCase();
+  var bad = [
+    'cookie', 'sign in', 'log in', 'markdown content', 'skip to',
+    'page contents not supported', 'wikimédia commons', 'wikimedia commons',
+    'article wizard', 'submit a draft', 'request a new article',
+    'search for', 'look for pages', 'other reasons this message',
+    'szócikk', 'vitalap', 'létrehozás', 'eszközök', 'áthelyezés',
+    'osztály rendszertan', 'rend rendszertan', 'médiaállomány',
+    'alternatively, you can', 'disambiguation', 'may refer to',
+    'edit source', 'view history', 'navigation menu',
+    'feast of jordan', 'funeral feast', 'create an account'
   ];
-  if (bad.some(function(b){ return lower.indexOf(b) >= 0; })) return true;
-  // Csak számok / töredék
-  if (/^[\d\s.]+$/.test(s)) return true;
-  if (/\b\d{1,2}\s+\d{1,2}\s*$/.test(s)) return true;
-  const words = s.split(/\s+/).filter(Boolean);
-  if (words.length < 7) return true;
-  const letters = (s.match(/[a-záéíóöőúüűA-ZÁÉÍÓÖŐÚÜŰ]/g) || []).length;
-  if (letters < 28) return true;
+  for (var i = 0; i < bad.length; i++) {
+    if (lower.indexOf(bad[i]) >= 0) return true;
+  }
+  // Túl sok angol segédszó
+  var en = (lower.match(/\b(the|and|is|are|of|to|for|with|that|this|you|can|use)\b/g) || []).length;
+  if (en >= 6) return true;
   return false;
 }
 
-function boostScoreSentence(s, topic) {
-  if (boostIsGarbage(s)) return -1;
-  var score = 0;
-  var lower = s.toLowerCase();
-  var t = (topic || '').toLowerCase();
-  // Téma szó benne van
-  if (t && lower.indexOf(t) >= 0) score += 5;
-  // Magyar ékezet / tipikus szavak
-  if (/[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/.test(s)) score += 3;
-  if (/\b(egy|és|vagy|amely|amelyet|olyan|ez|az|van|volt|lehet)\b/i.test(s)) score += 2;
-  // Definíció-szerű kezdet
-  if (/^(a|az|egy)\s+/i.test(s.trim())) score += 2;
-  // Angol túlsúly büntetés (ha van téma magyar)
-  var enWords = (lower.match(/\b(the|and|is|are|of|to|for|with|that|this|from|by)\b/g) || []).length;
-  if (enWords >= 4) score -= 4;
-  // Hossz: közepes a legjobb
-  if (s.length >= 60 && s.length <= 220) score += 2;
-  return score;
+function boostClean(s) {
+  var t = String(s || '');
+  t = t.replace(/https?:\/\/\S+/gi, ' ');
+  t = t.replace(/\s{2,}/g, ' ').trim();
+  return t;
 }
 
-function boostExtract(raw, maxLen, topic) {
-  var t = boostCleanText(raw)
-    .replace(/\b(Image|Markdown Content|Skip to|Cookie|Accept|Privacy|Sign in|Log in|Facebook|Wikipédia|Wikipedia|Title|URL Source)\b/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  var parts = t.split(/(?<=[.!?])\s+|\n+/).map(function(s){ return s.trim(); }).filter(Boolean);
-  var scored = [];
-  var seen = {};
+function parseWikiSummary(raw) {
+  // Jina szövegből vagy JSON-ból extract
+  var t = String(raw || '');
+  // JSON extract mező
+  var m = t.match(/"extract"\s*:\s*"((?:\\.|[^"\\])*)"/);
+  if (m) {
+    try {
+      var extracted = JSON.parse('"' + m[1] + '"');
+      if (extracted && extracted.length > 40) return boostClean(extracted);
+    } catch (e) {}
+  }
+  // description mező
+  m = t.match(/"description"\s*:\s*"((?:\\.|[^"\\])*)"/);
+  if (m) {
+    try {
+      var d = JSON.parse('"' + m[1] + '"');
+      if (d && d.length > 20 && !boostIsGarbage(d)) return boostClean(d);
+    } catch (e2) {}
+  }
+  // Plain: első értelmes bekezdés
+  if (t.indexOf('Markdown Content:') >= 0) t = t.split('Markdown Content:').slice(1).join(' ');
+  t = boostClean(t.replace(/[#>*_`|\[\]{}]/g, ' '));
+  var parts = t.split(/(?<=[.!?])\s+/);
+  var out = [];
   for (var i = 0; i < parts.length; i++) {
-    var s = parts[i];
-    // Vágd le a vezető számokat
-    s = s.replace(/^\d{1,3}\s+/, '').trim();
-    if (boostIsGarbage(s)) continue;
-    var key = s.slice(0, 45).toLowerCase();
-    if (seen[key]) continue;
-    seen[key] = true;
-    var sc = boostScoreSentence(s, topic);
-    if (sc < 1) continue;
-    scored.push({ s: s, sc: sc });
+    var p = parts[i].trim();
+    if (p.length < 40 || boostIsGarbage(p)) continue;
+    out.push(p);
+    if (out.join(' ').length > 350) break;
   }
-  scored.sort(function(a, b){ return b.sc - a.sc; });
-
-  var good = [];
-  var total = 0;
-  for (var j = 0; j < scored.length; j++) {
-    good.push(scored[j].s);
-    total += scored[j].s.length;
-    if (total >= maxLen || good.length >= 3) break;
-  }
-  if (good.length) return good.join(' ').slice(0, maxLen).trim();
-  return '';
+  return out.length ? out.join(' ') : '';
 }
 
 const TOPIC_MAP = {
   'tv': 'Televízió', 'tévé': 'Televízió', 'teve': 'Televízió',
-  'televizio': 'Televízió', 'televízió': 'Televízió',
-  'kutya': 'Kutya', 'macska': 'Macska', 'ló': 'Ló',
-  'pc': 'Személyi_számítógép', 'ai': 'Mesterséges_intelligencia',
-  'wifi': 'Wi-Fi', 'cpu': 'Processzor', 'gpu': 'Grafikus_processzor',
-  'ram': 'Memória_(számítástechnika)', 'python': 'Python_(programozási_nyelv)',
-  'javascript': 'JavaScript', 'android': 'Android_(operációs_rendszer)',
-  'internet': 'Internet', 'bitcoin': 'Bitcoin'
+  'kutya': 'Kutya', 'macska': 'Macska', 'teknős': 'Teknős',
+  'teknos': 'Teknős', 'ló': 'Ló', 'madár': 'Madarak',
+  'internet': 'Internet', 'ai': 'Mesterséges_intelligencia',
+  'wifi': 'Wi-Fi', 'python': 'Python_(programozási_nyelv)'
 };
+
+async function fetchOne(url, timeoutMs) {
+  try {
+    var controller = new AbortController();
+    var timer = setTimeout(function(){ controller.abort(); }, timeoutMs || 5000);
+    var response = await fetch(url, { headers: { Accept: 'text/plain' }, signal: controller.signal });
+    clearTimeout(timer);
+    if (!response.ok) return null;
+    return await response.text();
+  } catch (e) {
+    return null;
+  }
+}
 
 async function fetchWebAnswer(question) {
   var q = question.trim();
@@ -120,91 +92,47 @@ async function fetchWebAnswer(question) {
     .trim() || q;
 
   var topicKey = topic.toLowerCase().replace(/\s+/g, ' ');
-  var wikiTopic = TOPIC_MAP[topicKey] || topic.replace(/\s+/g, '_');
-
+  var wikiTopic = TOPIC_MAP[topicKey] || topic;
   var deep = (typeof currentMode !== 'undefined' && (currentMode === 'research' || currentMode === 'kutatás'));
   var j = function(url){ return 'https://r.jina.ai/' + url; };
 
-  // Magyar wiki ELŐRE, angol csak állat/tech témánál dog stb.
-  var baseSources = [
+  // 1) Wikipedia REST summary – ez a legtisztább
+  var summaryUrls = [
+    j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(wikiTopic)),
+    j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
+    j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(wikiTopic))
+  ];
+
+  for (var i = 0; i < summaryUrls.length; i++) {
+    var raw = await fetchOne(summaryUrls[i], 4500);
+    if (!raw) continue;
+    var extract = parseWikiSummary(raw);
+    if (extract && extract.length > 50 && !boostIsGarbage(extract)) {
+      var ans = extract.slice(0, deep ? 700 : 450);
+      var lastDot = Math.max(ans.lastIndexOf('.'), ans.lastIndexOf('!'), ans.lastIndexOf('?'));
+      if (lastDot > 60) ans = ans.slice(0, lastDot + 1);
+      return ans;
+    }
+  }
+
+  // 2) Tartalék: magyar wiki oldal, de csak ha nem szemét
+  var pageUrls = [
     j('https://hu.wikipedia.org/wiki/' + encodeURIComponent(wikiTopic)),
-    j('https://hu.wikipedia.org/wiki/' + encodeURIComponent(topic)),
-    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definíció site:hu.wikipedia.org')),
-    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' jelentése magyarul')),
-    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(q + ' magyarázat')),
-    j('https://hu.wiktionary.org/wiki/' + encodeURIComponent(topic))
+    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definíció site:hu.wikipedia.org'))
   ];
-
-  // Angol wiki csak ha nem egyértelmű magyar szó / research
-  if (deep || topicKey.length > 12) {
-    baseSources.push(j('https://en.wikipedia.org/wiki/' + encodeURIComponent(wikiTopic)));
-    baseSources.push(j('https://simple.wikipedia.org/wiki/' + encodeURIComponent(wikiTopic)));
+  if (deep) {
+    pageUrls.push(j('https://duckduckgo.com/html/?q=' + encodeURIComponent(q + ' magyarázat')));
+    pageUrls.push(j('https://duckduckgo.com/html/?q=' + encodeURIComponent(q + ' site:telex.hu')));
   }
 
-  var researchSources = [
-    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(q + ' site:index.hu')),
-    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(q + ' site:telex.hu')),
-    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' magyarázat egyszerűen')),
-    j('https://www.bing.com/search?q=' + encodeURIComponent(q + ' magyar')),
-    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(q + ' összefoglaló'))
-  ];
-
-  var sources = deep ? baseSources.concat(researchSources) : baseSources;
-  var timeoutMs = deep ? 7000 : 5000;
-  var maxLen = deep ? 800 : 420;
-  var perSourceLen = 240;
-
-  var fetches = sources.map(async function(url) {
-    try {
-      var controller = new AbortController();
-      var timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
-      var response = await fetch(url, { headers: { Accept: 'text/plain' }, signal: controller.signal });
-      clearTimeout(timer);
-      if (!response.ok) return null;
-      var raw = await response.text();
-      var useful = boostExtract(raw, perSourceLen, topic);
-      if (useful && useful.length > 55) return useful;
-    } catch (e) {}
-    return null;
-  });
-
-  var settled = await Promise.allSettled(fetches);
-  var results = [];
-  for (var i = 0; i < settled.length; i++) {
-    if (settled[i].status === 'fulfilled' && settled[i].value) results.push(settled[i].value);
+  for (var k = 0; k < pageUrls.length; k++) {
+    var raw2 = await fetchOne(pageUrls[k], 5000);
+    if (!raw2) continue;
+    var extract2 = parseWikiSummary(raw2);
+    if (extract2 && extract2.length > 50 && !boostIsGarbage(extract2)) {
+      return extract2.slice(0, deep ? 700 : 420);
+    }
   }
-  if (!results.length) return null;
 
-  // Relevancia szerint újra pontoz
-  var scored = results.map(function(r){
-    return { r: r, sc: boostScoreSentence(r.slice(0, 120), topic) };
-  }).filter(function(x){ return x.sc >= 1; });
-  scored.sort(function(a,b){ return b.sc - a.sc; });
-
-  var combined = [];
-  var seen = {};
-  var total = 0;
-  for (var k = 0; k < scored.length; k++) {
-    var r = scored[k].r;
-    var key = r.slice(0, 50).toLowerCase().replace(/\s+/g, ' ');
-    if (seen[key]) continue;
-    seen[key] = true;
-    combined.push(r);
-    total += r.length;
-    if (total >= maxLen || combined.length >= 3) break;
-  }
-  if (!combined.length) return null;
-
-  var answer = combined.join(' ').replace(/\s{2,}/g, ' ').slice(0, maxLen).trim();
-  var lastDot = Math.max(answer.lastIndexOf('.'), answer.lastIndexOf('!'), answer.lastIndexOf('?'));
-  if (lastDot > 70) answer = answer.slice(0, lastDot + 1);
-
-  // Végső szemétellenőrzés
-  if (boostIsGarbage(answer.slice(0, 100))) return null;
-  if (/feast of jordan|orthodox christians|funeral feast/i.test(answer)) return null;
-
-  if (deep && results.length) {
-    answer = answer + '\n\n(Összefoglalva ' + results.length + ' forrásból.)';
-  }
-  return answer;
+  return null;
 }
