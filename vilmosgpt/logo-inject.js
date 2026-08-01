@@ -1,12 +1,12 @@
 /* === Logo + favicon + auth modal logo + version + black glass theme === */
 (function injectLogo() {
   try {
-    // Version 3.0
+    // Version 0.3
     var h1 = document.querySelector('.header-left h1');
-    if (h1) h1.textContent = 'VilmosGPT 3.0';
+    if (h1) h1.textContent = 'VilmosGPT 0.3';
     var sub = document.querySelector('.header-sub');
-    if (sub) sub.textContent = 'Személyes AI · tanul · keres · 20+ forrás [ALPHA] version 3.0';
-    if (document.title) document.title = 'VilmosGPT 3.0';
+    if (sub) sub.textContent = 'Személyes AI · tanul · keres · 20+ forrás [ALPHA] version 0.3';
+    if (document.title) document.title = 'VilmosGPT 0.3';
 
     // Black transparent glass theme
     if (!document.getElementById('black-glass-theme')) {
@@ -81,11 +81,11 @@ html, body {
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/svg+xml';
-      link.href = 'logo.svg?v=3';
+      link.href = 'logo.svg?v=4';
       document.head.appendChild(link);
       const apple = document.createElement('link');
       apple.rel = 'apple-touch-icon';
-      apple.href = 'logo.svg?v=3';
+      apple.href = 'logo.svg?v=4';
       document.head.appendChild(apple);
     }
     if (!document.getElementById('header-logo-style')) {
@@ -104,7 +104,7 @@ html, body {
     if (left && !left.querySelector('.header-logo')) {
       const img = document.createElement('img');
       img.className = 'header-logo';
-      img.src = 'logo.svg?v=3';
+      img.src = 'logo.svg?v=4';
       img.alt = 'VilmosGPT';
       img.width = 40;
       img.height = 40;
@@ -117,7 +117,7 @@ html, body {
       wrap.className = 'auth-logo-wrap';
       const img = document.createElement('img');
       img.className = 'auth-logo';
-      img.src = 'logo.svg?v=3';
+      img.src = 'logo.svg?v=4';
       img.alt = 'VilmosGPT';
       img.width = 72;
       img.height = 72;
