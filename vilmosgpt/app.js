@@ -1,10 +1,10 @@
-/* app loader – mobil optim */
+/* app loader */
 (async function(){
   try {
     const parts = ['app-part1.js', 'app-part2.js'];
     let code = '';
     for (const p of parts) {
-      const r = await fetch(p + '?v=mobile3');
+      const r = await fetch(p + '?v=clean4');
       if (!r.ok) throw new Error('load ' + p);
       code += await r.text();
     }
