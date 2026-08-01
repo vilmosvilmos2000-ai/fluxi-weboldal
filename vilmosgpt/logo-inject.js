@@ -72,3 +72,5 @@
     if (loginBtn) loginBtn.addEventListener('click', function(){ setTimeout(addAuthLogo, 50); });
   } catch (e) {}
 })();
+
+(function(){var s=document.createElement('script');s.src='search-boost.js';document.head.appendChild(s);})();
