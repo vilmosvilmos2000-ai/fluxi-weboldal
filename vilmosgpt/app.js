@@ -1,5 +1,5 @@
 (function(){
-  var scripts = ['logo-inject.js', 'app-main.js', 'search-boost.js'];
+  var scripts = ['logo-inject.js', 'app-main-a.js', 'app-main-b.js', 'search-boost.js'];
   var i = 0;
   function next() {
     if (i >= scripts.length) return;
