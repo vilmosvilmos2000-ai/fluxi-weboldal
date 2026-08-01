@@ -1,12 +1,81 @@
-/* === Logo + favicon + auth modal logo + version === */
+/* === Logo + favicon + auth modal logo + version + black glass theme === */
 (function injectLogo() {
   try {
     // Version 3.0
     var h1 = document.querySelector('.header-left h1');
-    if (h1) h1.textContent = 'VilmosGPT 0.3';
+    if (h1) h1.textContent = 'VilmosGPT 3.0';
     var sub = document.querySelector('.header-sub');
-    if (sub) sub.textContent = 'Személyes AI · tanul · keres · [ALPHA] version 0.3 elsö [BÉTA] 1.0';
+    if (sub) sub.textContent = 'Személyes AI · tanul · keres · 20+ forrás [ALPHA] version 3.0';
     if (document.title) document.title = 'VilmosGPT 3.0';
+
+    // Black transparent glass theme
+    if (!document.getElementById('black-glass-theme')) {
+      var stTheme = document.createElement('style');
+      stTheme.id = 'black-glass-theme';
+      stTheme.textContent = `
+/* Black transparent glass theme */
+html, body {
+  background: #000000 !important;
+  background-image:
+    radial-gradient(ellipse at 20% 15%, rgba(56, 189, 248, 0.08), transparent 45%),
+    radial-gradient(ellipse at 80% 85%, rgba(139, 92, 246, 0.07), transparent 45%) !important;
+}
+.header {
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.sidebar-left, .sidebar-right {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+.main-chat {
+  background: rgba(0, 0, 0, 0.25) !important;
+}
+.composer-wrap {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(16px) !important;
+}
+.message.bot .bubble {
+  background: rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+.message.user .bubble {
+  background: rgba(30, 58, 95, 0.85) !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+}
+.message.system .bubble {
+  background: rgba(52, 211, 153, 0.1) !important;
+}
+.mode-switch button, .prompt-item button, .mentor-item, .memory-item {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+.mode-switch button.active {
+  background: linear-gradient(135deg, rgba(56,189,248,0.25), rgba(139,92,246,0.25)) !important;
+}
+.auth-modal {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+}
+.auth-overlay {
+  background: rgba(0, 0, 0, 0.75) !important;
+}
+.mobile-tabs {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(12px) !important;
+}
+.panel-section {
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+#reset {
+  background: rgba(40, 40, 40, 0.9) !important;
+}
+`;
+      document.head.appendChild(stTheme);
+    }
 
     if (!document.querySelector('link[rel="icon"]')) {
       const link = document.createElement('link');
