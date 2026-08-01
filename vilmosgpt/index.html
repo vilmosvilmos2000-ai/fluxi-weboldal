@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VilmosGPT</title>
+  <title>VilmosGPT 3.0</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg?v=4" />
+  <link rel="apple-touch-icon" href="logo.svg?v=4" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
@@ -47,6 +49,12 @@
       z-index: 10;
     }
     .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-logo {
+      width: 40px; height: 40px; border-radius: 50%;
+      object-fit: cover; image-rendering: pixelated;
+      background: #000; flex-shrink: 0;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+    }
     .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
     .header-sub { font-size: 13px; opacity: 0.9; display: none; }
     @media (min-width: 900px) { .header-sub { display: block; } }
@@ -103,8 +111,14 @@
       border-radius: 20px; padding: 28px 24px 22px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.5); color: #f8fafc;
     }
-    .auth-modal h2 { font-size: 20px; margin-bottom: 6px; }
-    .auth-modal > p { color: #94a3b8; font-size: 13px; line-height: 1.5; margin-bottom: 18px; }
+    .auth-logo-wrap { display: flex; justify-content: center; margin-bottom: 14px; }
+    .auth-logo {
+      width: 72px; height: 72px; border-radius: 50%;
+      object-fit: cover; image-rendering: pixelated; background: #000;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+    }
+    .auth-modal h2 { font-size: 20px; margin-bottom: 6px; text-align: center; }
+    .auth-modal > p { color: #94a3b8; font-size: 13px; line-height: 1.5; margin-bottom: 18px; text-align: center; }
     .auth-close {
       position: absolute; top: 10px; right: 12px; border: none;
       background: transparent; color: #94a3b8; font-size: 22px; cursor: pointer;
@@ -283,8 +297,9 @@
   <div class="app">
     <header class="header">
       <div class="header-left">
-        <h1>VilmosGPT 0.3</h1>
-        <span class="header-sub">Személyes AI · tanul · keres [ALPHA] version 0.3 first beta at 1.0 </span>
+        <img class="header-logo" src="logo.svg?v=4" alt="VilmosGPT" width="40" height="40" />
+        <h1>VilmosGPT 3.0</h1>
+        <span class="header-sub">Személyes AI · tanul · keres · 20+ forrás [ALPHA] version 3.0</span>
       </div>
       <div class="header-actions">
         <span class="badge">Online</span>
@@ -367,6 +382,9 @@
     <div class="auth-modal-wrap">
       <button class="auth-close" id="auth-close" type="button" aria-label="Bezárás">×</button>
       <div class="auth-modal">
+        <div class="auth-logo-wrap">
+          <img class="auth-logo" src="logo.svg?v=4" alt="VilmosGPT" width="72" height="72" />
+        </div>
         <h2>Bejelentkezés / Regisztráció</h2>
         <p>Jelentkezz be Google-fiókkal, vagy adj meg egy nevet a helyi fiókhoz.</p>
         <div id="google-btn-slot"></div>
@@ -500,10 +518,11 @@
       if (GOOGLE_CLIENT_ID && window.google && google.accounts) {
         google.accounts.id.prompt();
       } else {
-        alert('A valódi Google bejelentkezéshez a tulajdonosnak be kell állítania a GOOGLE_CLIENT_ID-t a kódban (Google Cloud Console → OAuth 2.0 Client ID).\n\nAddig használd a névvel történő belépést.');
+        alert('A valódi Google bejelentkezéshez a tulajdonosnak be kell állítania a GOOGLE_CLIENT_ID-t a kódban (Google Cloud Console → OAuth 2.0 Client ID).\\n\\nAddig használd a névvel történő belépést.');
       }
     });
   </script>
   <script src="app.js"></script>
+  <script src="logo-inject.js?v=4"></script>
 </body>
 </html>
