@@ -1,10 +1,10 @@
-/* app loader – tiszta válaszok */
+/* app loader – mobil optim */
 (async function(){
   try {
     const parts = ['app-part1.js', 'app-part2.js'];
     let code = '';
     for (const p of parts) {
-      const r = await fetch(p + '?v=clean2');
+      const r = await fetch(p + '?v=mobile3');
       if (!r.ok) throw new Error('load ' + p);
       code += await r.text();
     }
