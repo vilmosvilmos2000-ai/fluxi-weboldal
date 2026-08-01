@@ -81,20 +81,20 @@ html, body {
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/svg+xml';
-      link.href = 'logo.svg';
+      link.href = 'logo.svg?v=3';
       document.head.appendChild(link);
       const apple = document.createElement('link');
       apple.rel = 'apple-touch-icon';
-      apple.href = 'logo.svg';
+      apple.href = 'logo.svg?v=3';
       document.head.appendChild(apple);
     }
     if (!document.getElementById('header-logo-style')) {
       const st = document.createElement('style');
       st.id = 'header-logo-style';
       st.textContent = [
-        '.header-logo{width:40px;height:40px;border-radius:10px;object-fit:cover;image-rendering:pixelated;background:#8fd4e8;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2)}',
+        '.header-logo{width:40px;height:40px;border-radius:50%;object-fit:cover;image-rendering:pixelated;background:#000;flex-shrink:0;box-shadow:0 0 0 1px rgba(255,255,255,.25)}',
         '.auth-logo-wrap{display:flex;justify-content:center;margin-bottom:14px}',
-        '.auth-logo{width:72px;height:72px;border-radius:16px;object-fit:cover;image-rendering:pixelated;background:#8fd4e8;box-shadow:0 4px 16px rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.15)}',
+        '.auth-logo{width:72px;height:72px;border-radius:50%;object-fit:cover;image-rendering:pixelated;background:#000;box-shadow:0 0 0 2px rgba(255,255,255,.2);border:none}',
         '.auth-modal h2{text-align:center}',
         '.auth-modal > p{text-align:center}'
       ].join('');
@@ -104,7 +104,7 @@ html, body {
     if (left && !left.querySelector('.header-logo')) {
       const img = document.createElement('img');
       img.className = 'header-logo';
-      img.src = 'logo.svg';
+      img.src = 'logo.svg?v=3';
       img.alt = 'VilmosGPT';
       img.width = 40;
       img.height = 40;
@@ -117,7 +117,7 @@ html, body {
       wrap.className = 'auth-logo-wrap';
       const img = document.createElement('img');
       img.className = 'auth-logo';
-      img.src = 'logo.svg';
+      img.src = 'logo.svg?v=3';
       img.alt = 'VilmosGPT';
       img.width = 72;
       img.height = 72;
