@@ -15,8 +15,9 @@
   <link rel="icon" type="image/svg+xml" href="logo.svg?v=7" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
-    /* Facebook App ID: developers.facebook.com → Új app → Facebook Login → Domain: fluxi.hu */
     window.VILMOS_FB_APP_ID = '';
+    window.VILMOS_APPLE_CLIENT_ID = '';
+    window.VILMOS_APPLE_REDIRECT = 'https://fluxi.hu/vilmosgpt/';
     window.fbAsyncInit = function() {
       if (window.VILMOS_FB_APP_ID) {
         FB.init({ appId: window.VILMOS_FB_APP_ID, cookie: true, xfbml: false, version: 'v21.0' });
@@ -24,6 +25,7 @@
     };
   </script>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/hu_HU/sdk.js"></script>
+  <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -31,30 +33,18 @@
       font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
       background: #000; color: #f8fafc;
     }
-    .app {
-      display: flex; flex-direction: column;
-      height: 100dvh; width: 100vw; overflow: hidden;
-    }
+    .app { display: flex; flex-direction: column; height: 100dvh; width: 100vw; overflow: hidden; }
     .header {
-      flex: 0 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 12px;
-      padding-top: max(10px, env(safe-area-inset-top, 10px));
-      background: #0a0a0f;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      z-index: 30;
+      flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; padding-top: max(10px, env(safe-area-inset-top, 10px));
+      background: #0a0a0f; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 30;
     }
     .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
     .header-logo {
       width: 36px; height: 36px; min-width: 36px; border-radius: 50%;
-      object-fit: cover; image-rendering: pixelated; background: #000;
-      display: block; flex-shrink: 0;
+      object-fit: cover; image-rendering: pixelated; background: #000; display: block; flex-shrink: 0;
     }
-    .header h1 {
-      font-size: 16px; font-weight: 700;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      max-width: 45vw;
-    }
+    .header h1 { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45vw; }
     .header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     #theme-toggle {
       border: none; background: rgba(255,255,255,0.15); color: white;
@@ -62,111 +52,83 @@
     }
     .btn-google {
       display: inline-flex; align-items: center; justify-content: center;
-      border: none; background: #fff; color: #3c4043;
-      border-radius: 999px; padding: 6px; cursor: pointer;
+      border: none; background: #fff; color: #3c4043; border-radius: 999px; padding: 6px; cursor: pointer;
     }
     .btn-google span.label { display: none; }
     .user-chip {
-      display: none; align-items: center; gap: 6px;
-      background: rgba(255,255,255,0.15); border-radius: 999px;
-      padding: 3px 8px 3px 3px; font-size: 12px; font-weight: 600; color: white;
+      display: none; align-items: center; gap: 6px; background: rgba(255,255,255,0.15);
+      border-radius: 999px; padding: 3px 8px 3px 3px; font-size: 12px; font-weight: 600; color: white;
     }
     .user-chip.visible { display: inline-flex; }
     .user-chip .user-avatar {
-      width: 26px; height: 26px; border-radius: 50%;
-      background: linear-gradient(135deg, #4285f4, #34a853);
+      width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #4285f4, #34a853);
       display: grid; place-items: center; font-size: 11px; overflow: hidden;
     }
     .user-chip .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .user-chip .logout-btn {
-      border: none; background: rgba(0,0,0,0.25); color: white;
-      border-radius: 999px; padding: 3px 8px; font-size: 11px; cursor: pointer;
+      border: none; background: rgba(0,0,0,0.25); color: white; border-radius: 999px; padding: 3px 8px; font-size: 11px; cursor: pointer;
     }
     .mobile-tabs {
-      flex: 0 0 auto; display: flex; gap: 6px;
-      background: #000; border-bottom: 1px solid rgba(255,255,255,0.1);
-      padding: 6px 8px;
+      flex: 0 0 auto; display: flex; gap: 6px; background: #000;
+      border-bottom: 1px solid rgba(255,255,255,0.1); padding: 6px 8px;
     }
     .mobile-tabs button {
-      flex: 1; border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.04); color: #94a3b8;
-      border-radius: 10px; padding: 10px 4px; font-size: 13px; font-weight: 600;
+      flex: 1; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+      color: #94a3b8; border-radius: 10px; padding: 10px 4px; font-size: 13px; font-weight: 600;
       cursor: pointer; white-space: nowrap;
     }
     .mobile-tabs button.active {
       background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(139,92,246,0.2));
       color: #f8fafc; border-color: rgba(56,189,248,0.4);
     }
-    .main-chat {
-      flex: 1 1 auto; min-height: 0;
-      display: flex; flex-direction: column;
-      background: rgba(0,0,0,0.4);
-    }
-    .chat {
-      flex: 1 1 auto; min-height: 0;
-      overflow-y: auto; -webkit-overflow-scrolling: touch;
-      padding: 12px; display: flex; flex-direction: column; gap: 12px;
-    }
+    .main-chat { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; background: rgba(0,0,0,0.4); }
+    .chat { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
     .message { display: flex; gap: 8px; align-items: flex-end; }
     .message.user { justify-content: flex-end; }
-    .avatar {
-      width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
-      font-weight: 700; font-size: 11px; flex-shrink: 0;
-    }
+    .avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 11px; flex-shrink: 0; }
     .message.bot .avatar { background: linear-gradient(135deg, #38bdf8, #8b5cf6); }
     .message.user .avatar { background: linear-gradient(135deg, #2563eb, #4f46e5); }
     .message.system .avatar { background: rgba(52,211,153,0.3); color: #a7f3d0; }
     .bubble {
-      max-width: 82%; padding: 10px 14px; border-radius: 16px;
-      line-height: 1.5; word-wrap: break-word; white-space: pre-wrap; font-size: 14px;
+      max-width: 82%; padding: 10px 14px; border-radius: 16px; line-height: 1.5;
+      word-wrap: break-word; white-space: pre-wrap; font-size: 14px;
       background: rgba(20,20,25,0.9); border: 1px solid rgba(255,255,255,0.1);
     }
     .message.user .bubble { background: linear-gradient(135deg, #1e3a5f, #2d1b4e); color: white; border: none; }
     .message.system .bubble { background: rgba(52,211,153,0.1); color: #dcfce7; border-color: rgba(52,211,153,0.2); }
     .message.typing .bubble { color: #94a3b8; font-style: italic; }
     .composer-wrap {
-      flex: 0 0 auto;
-      padding: 10px 12px;
+      flex: 0 0 auto; padding: 10px 12px;
       padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
-      border-top: 1px solid rgba(255,255,255,0.1);
-      background: rgba(0,0,0,0.75);
+      border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.75);
     }
     .composer { display: flex; gap: 8px; align-items: center; }
     .composer input {
       flex: 1; padding: 12px 14px; border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 999px; outline: none; font-size: 15px;
-      background: #f8fafc; color: #0f172a;
+      border-radius: 999px; outline: none; font-size: 15px; background: #f8fafc; color: #0f172a;
     }
-    .composer button {
-      border: none; border-radius: 999px; padding: 11px 14px;
-      font-weight: 700; font-size: 13px; cursor: pointer;
-    }
+    .composer button { border: none; border-radius: 999px; padding: 11px 14px; font-weight: 700; font-size: 13px; cursor: pointer; }
     #send { background: linear-gradient(90deg, #38bdf8, #8b5cf6); color: white; }
     #reset { background: rgba(71,85,105,0.9); color: white; }
     .hint { color: #64748b; font-size: 11px; margin-top: 6px; text-align: center; }
     .sidebar-left, .sidebar-right {
-      display: none; position: fixed; inset: 0; z-index: 25;
-      flex-direction: column; overflow-y: auto;
-      background: rgba(0,0,0,0.95);
-      padding-top: max(70px, calc(env(safe-area-inset-top, 0px) + 56px));
+      display: none; position: fixed; inset: 0; z-index: 25; flex-direction: column; overflow-y: auto;
+      background: rgba(0,0,0,0.95); padding-top: max(70px, calc(env(safe-area-inset-top, 0px) + 56px));
     }
     .sidebar-left.visible, .sidebar-right.visible { display: flex; }
     .panel-section { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .panel-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 10px; }
     .mode-switch { display: flex; flex-direction: column; gap: 6px; }
     .mode-switch button {
-      border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
-      color: #f8fafc; border-radius: 12px; padding: 12px; cursor: pointer;
-      font-size: 14px; font-weight: 600; text-align: left;
+      border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: #f8fafc;
+      border-radius: 12px; padding: 12px; cursor: pointer; font-size: 14px; font-weight: 600; text-align: left;
     }
     .mode-switch button.active {
-      background: linear-gradient(135deg, rgba(56,189,248,0.25), rgba(139,92,246,0.25));
-      border-color: rgba(56,189,248,0.5);
+      background: linear-gradient(135deg, rgba(56,189,248,0.25), rgba(139,92,246,0.25)); border-color: rgba(56,189,248,0.5);
     }
     .status-pill {
-      display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
-      font-size: 12px; color: #d1fae5; padding: 6px 10px; border-radius: 999px;
-      background: rgba(52,211,153,0.12);
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12px; color: #d1fae5;
+      padding: 6px 10px; border-radius: 999px; background: rgba(52,211,153,0.12);
     }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; }
     .mentor-list, .prompt-bank, .memory-list { display: flex; flex-direction: column; gap: 6px; }
@@ -175,9 +137,8 @@
       background: rgba(255,255,255,0.03); font-size: 13px; color: #cbd5e1; line-height: 1.4;
     }
     .prompt-item button {
-      display: block; width: 100%; border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.04); color: #f8fafc; text-align: left;
-      cursor: pointer; padding: 10px; border-radius: 11px; font-size: 13px;
+      display: block; width: 100%; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+      color: #f8fafc; text-align: left; cursor: pointer; padding: 10px; border-radius: 11px; font-size: 13px;
     }
     .card-actions { display: flex; gap: 8px; margin-top: 8px; }
     .card-actions button, .import-btn {
@@ -192,10 +153,7 @@
     }
     .auth-overlay.open { display: flex; }
     .auth-modal-wrap { position: relative; width: min(400px, 100%); }
-    .auth-modal {
-      background: #0f172a; border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 20px; padding: 24px; color: #f8fafc;
-    }
+    .auth-modal { background: #0f172a; border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 24px; color: #f8fafc; }
     .auth-logo-wrap { display: flex; justify-content: center; margin-bottom: 12px; }
     .auth-logo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; background: #000; }
     .auth-modal h2 { font-size: 18px; text-align: center; margin-bottom: 6px; }
@@ -203,13 +161,17 @@
     .auth-close { position: absolute; top: 10px; right: 12px; border: none; background: transparent; color: #94a3b8; font-size: 22px; cursor: pointer; }
     #google-btn-slot { display: flex; justify-content: center; min-height: 40px; margin-bottom: 8px; }
     .btn-facebook {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      width: 100%; border: none; border-radius: 999px; padding: 12px 16px;
-      background: #1877f2; color: #fff; font-size: 15px; font-weight: 600;
-      cursor: pointer; margin-bottom: 4px;
+      display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+      border: none; border-radius: 999px; padding: 12px 16px; background: #1877f2; color: #fff;
+      font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px;
     }
     .btn-facebook:hover { background: #166fe5; }
-    .btn-facebook svg { flex-shrink: 0; }
+    .btn-apple {
+      display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+      border: none; border-radius: 999px; padding: 12px 16px; background: #fff; color: #000;
+      font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 4px;
+    }
+    .btn-apple:hover { background: #f2f2f2; }
     .auth-divider { display: flex; align-items: center; gap: 10px; color: #64748b; font-size: 12px; margin: 12px 0; }
     .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
     .auth-modal input {
@@ -221,11 +183,7 @@
     .auth-primary { background: linear-gradient(90deg, #38bdf8, #8b5cf6); color: white; }
     .auth-secondary { background: rgba(255,255,255,0.08); color: #e2e8f0; }
     @media (min-width: 961px) {
-      .app {
-        display: grid;
-        grid-template-columns: 260px 1fr 280px;
-        grid-template-rows: auto 1fr;
-      }
+      .app { display: grid; grid-template-columns: 260px 1fr 280px; grid-template-rows: auto 1fr; }
       .header { grid-column: 1 / -1; }
       .mobile-tabs { display: none; }
       .sidebar-left, .sidebar-right {
@@ -314,11 +272,15 @@
       <div class="auth-modal">
         <div class="auth-logo-wrap"><img class="auth-logo" src="logo.svg?v=7" alt="VilmosGPT" width="72" height="72" /></div>
         <h2>Bejelentkezés</h2>
-        <p>Google-lel, Facebookkal vagy névvel.</p>
+        <p>Google, Facebook, Apple vagy név.</p>
         <div id="google-btn-slot"></div>
         <button class="btn-facebook" id="facebook-login-btn" type="button">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
           Folytatás Facebookkal
+        </button>
+        <button class="btn-apple" id="apple-login-btn" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+          Folytatás Apple-lel
         </button>
         <div class="auth-divider">vagy</div>
         <input id="auth-name" type="text" placeholder="A neved" maxlength="40" />
@@ -333,6 +295,8 @@
   <script>
     const GOOGLE_CLIENT_ID = '906956499349-fuqvjroddnh5fsi6tt6s9e21vd9qfq93.apps.googleusercontent.com';
     const FB_APP_ID = window.VILMOS_FB_APP_ID || '';
+    const APPLE_CLIENT_ID = window.VILMOS_APPLE_CLIENT_ID || '';
+    const APPLE_REDIRECT = window.VILMOS_APPLE_REDIRECT || (location.origin + location.pathname);
     const AUTH_KEY = 'vilmosgpt-user-v1';
     function getUser(){ try{ return JSON.parse(localStorage.getItem(AUTH_KEY)||'null'); }catch{ return null; } }
     function setUser(u){ if(u) localStorage.setItem(AUTH_KEY, JSON.stringify(u)); else localStorage.removeItem(AUTH_KEY); renderAuthUI(); }
@@ -343,7 +307,7 @@
         if(user.picture) av.innerHTML='<img src="'+user.picture+'" alt="" />'; else av.textContent=(user.name[0]||'?').toUpperCase();
       } else { chip.classList.remove('visible'); loginBtn.style.display=''; }
     }
-    function openAuth(){ document.getElementById('auth-overlay').classList.add('open'); initGoogleButton(); initFacebook(); }
+    function openAuth(){ document.getElementById('auth-overlay').classList.add('open'); initGoogleButton(); initFacebook(); initApple(); }
     function closeAuth(){ document.getElementById('auth-overlay').classList.remove('open'); }
     function parseJwt(t){ try{ const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+(('00'+c.charCodeAt(0).toString(16)).slice(-2))).join(''))); }catch{ return null; } }
     function handleGoogleCredential(r){
@@ -364,36 +328,55 @@
       try { FB.init({ appId: FB_APP_ID, cookie: true, xfbml: false, version: 'v21.0' }); } catch (e) {}
     }
     function handleFacebookLogin() {
-      if (!FB_APP_ID) {
-        alert('A Facebook bejelentkezéshez be kell állítani a Facebook App ID-t (developers.facebook.com).');
-        return;
-      }
-      if (!window.FB) {
-        alert('A Facebook SDK még nem töltődött be. Próbáld újra pár másodperc múlva.');
-        return;
-      }
+      if (!FB_APP_ID) { alert('A Facebook bejelentkezéshez be kell állítani a Facebook App ID-t (developers.facebook.com).'); return; }
+      if (!window.FB) { alert('A Facebook SDK még nem töltődött be. Próbáld újra pár másodperc múlva.'); return; }
       FB.login(function(response) {
         if (!response.authResponse) return;
         FB.api('/me', { fields: 'id,name,email,picture.type(large)' }, function(me) {
           if (!me || me.error) return;
           var pic = '';
           try { pic = me.picture && me.picture.data && me.picture.data.url ? me.picture.data.url : ''; } catch(e) {}
-          setUser({
-            name: me.name || 'Facebook felhasználó',
-            email: me.email || '',
-            picture: pic,
-            provider: 'facebook',
-            sub: me.id || ''
-          });
+          setUser({ name: me.name || 'Facebook felhasználó', email: me.email || '', picture: pic, provider: 'facebook', sub: me.id || '' });
           closeAuth();
-          if (typeof addMessage === 'function') {
-            addMessage('Szia, ' + (me.name || '') + '! Bejelentkeztél Facebookkal.', 'system');
-          }
+          if (typeof addMessage === 'function') addMessage('Szia, ' + (me.name || '') + '! Bejelentkeztél Facebookkal.', 'system');
         });
       }, { scope: 'public_profile,email' });
     }
-    window.addEventListener('load', ()=>{ renderAuthUI(); if(GOOGLE_CLIENT_ID&&window.google) initGoogleButton(); initFacebook(); });
+    function initApple() {
+      if (!APPLE_CLIENT_ID || !window.AppleID) return;
+      try {
+        AppleID.auth.init({ clientId: APPLE_CLIENT_ID, scope: 'name email', redirectURI: APPLE_REDIRECT, usePopup: true });
+      } catch (e) {}
+    }
+    async function handleAppleLogin() {
+      if (!APPLE_CLIENT_ID) { alert('Az Apple bejelentkezéshez be kell állítani az Apple Services ID-t (developer.apple.com).'); return; }
+      if (!window.AppleID) { alert('Az Apple SDK még nem töltődött be. Próbáld újra pár másodperc múlva.'); return; }
+      try {
+        initApple();
+        var data = await AppleID.auth.signIn();
+        var idToken = data && data.authorization && data.authorization.id_token;
+        var name = '';
+        if (data && data.user && data.user.name) {
+          name = [data.user.name.firstName, data.user.name.lastName].filter(Boolean).join(' ');
+        }
+        var email = '';
+        if (idToken) {
+          try {
+            var payload = parseJwt(idToken);
+            if (payload) { email = payload.email || ''; if (!name && payload.email) name = payload.email.split('@')[0]; }
+          } catch (e) {}
+        }
+        if (!name) name = email || 'Apple felhasználó';
+        setUser({ name: name, email: email, picture: '', provider: 'apple', sub: (data && data.authorization && data.authorization.code) || email || name });
+        closeAuth();
+        if (typeof addMessage === 'function') addMessage('Szia, ' + name + '! Bejelentkeztél Apple-lel.', 'system');
+      } catch (err) {
+        if (err && err.error !== 'popup_closed_by_user') console.warn('Apple login', err);
+      }
+    }
+    window.addEventListener('load', ()=>{ renderAuthUI(); if(GOOGLE_CLIENT_ID&&window.google) initGoogleButton(); initFacebook(); initApple(); });
     document.getElementById('facebook-login-btn').addEventListener('click', handleFacebookLogin);
+    document.getElementById('apple-login-btn').addEventListener('click', handleAppleLogin);
     document.getElementById('login-btn').addEventListener('click', openAuth);
     document.getElementById('auth-close').addEventListener('click', closeAuth);
     document.getElementById('auth-cancel').addEventListener('click', closeAuth);
