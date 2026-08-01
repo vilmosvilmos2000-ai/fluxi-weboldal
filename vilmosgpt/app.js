@@ -15,7 +15,7 @@ const sidebarLeft = document.getElementById('sidebar-left');
 const sidebarRight = document.getElementById('sidebar-right');
 const mainChat = document.getElementById('main-chat');
 const storageKey = 'vilmosgpt-memory-v2';
-let knowledge = loadKnowledge();
+let knowledge = [];
 let currentMode = 'learn';
 let conversationHistory = [];
 
@@ -51,3 +51,18 @@ const mentorTips = [
 ];
 
 const simpleDefinitions = {};
+
+// Load logic parts then multi-source search
+(function(){
+  var scripts = ['logic0.js', 'logic1.js', 'logic2.js', 'search-boost.js'];
+  var i = 0;
+  function next() {
+    if (i >= scripts.length) return;
+    var s = document.createElement('script');
+    s.src = scripts[i++];
+    s.onload = next;
+    s.onerror = function(){ console.error('fail', scripts[i-1]); next(); };
+    document.head.appendChild(s);
+  }
+  next();
+})();
