@@ -202,24 +202,83 @@ function shouldSearchWeb(text) {
   if (localSmartAnswer(text)) return false;
   return true;
 }
+
+function isBadWebText(s) {
+  if (!s || s.length < 40) return true;
+  var lower = s.toLowerCase();
+  var bad = ['wikimédia','wikimedia','article wizard','szócikk','osztály rendszertan','médiaállomány','alternatively','page contents','cookie','sign in','markdown content','létrehozás'];
+  for (var i = 0; i < bad.length; i++) if (lower.indexOf(bad[i]) >= 0) return true;
+  return false;
+}
+
+async function fetchOneUrl(url, ms) {
+  try {
+    var c = new AbortController();
+    var t = setTimeout(function(){ c.abort(); }, ms || 5000);
+    var r = await fetch(url, { headers: { Accept: 'text/plain' }, signal: c.signal });
+    clearTimeout(t);
+    if (!r.ok) return null;
+    return await r.text();
+  } catch (e) { return null; }
+}
+
+function parseExtract(raw) {
+  var t = String(raw || '');
+  var m = t.match(/"extract"\s*:\s*"((?:\\.|[^"\\])*)"/);
+  if (m) {
+    try {
+      var ex = JSON.parse('"' + m[1] + '"');
+      if (ex && ex.length > 40 && !isBadWebText(ex)) return ex.replace(/\s+/g, ' ').trim();
+    } catch (e) {}
+  }
+  if (t.indexOf('Markdown Content:') >= 0) t = t.split('Markdown Content:').slice(1).join(' ');
+  t = t.replace(/https?:\/\/\S+/gi, ' ').replace(/[#>*_`|\[\]{}]/g, ' ').replace(/\s+/g, ' ').trim();
+  var parts = t.split(/(?<=[.!?])\s+/);
+  var out = [];
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i].trim();
+    if (p.length < 40 || isBadWebText(p)) continue;
+    out.push(p);
+    if (out.join(' ').length > 350) break;
+  }
+  return out.length ? out.join(' ') : '';
+}
+
 async function fetchWebAnswer(question) {
+  var q = question.trim();
+  var topic = q.replace(/^(mi az a|mi a|mi az|mit jelent|mi ez a|mi ez|mi az a|ki az a|ki a)\s+/i, '').replace(/[?.!]+$/g, '').trim() || q;
+  var j = function(u){ return 'https://r.jina.ai/' + u; };
+  var urls = [
+    j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
+    j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
+    j('https://hu.wikipedia.org/wiki/' + encodeURIComponent(topic)),
+    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definíció'))
+  ];
+  for (var i = 0; i < urls.length; i++) {
+    var raw = await fetchOneUrl(urls[i], 5000);
+    if (!raw) continue;
+    var extract = parseExtract(raw);
+    if (extract && extract.length > 50) {
+      var ans = extract.slice(0, 450);
+      var d = Math.max(ans.lastIndexOf('.'), ans.lastIndexOf('!'), ans.lastIndexOf('?'));
+      if (d > 60) ans = ans.slice(0, d + 1);
+      return ans;
+    }
+  }
   return null;
 }
+
 function buildFriendlyReply(webText) {
-  var maxL = currentMode === 'research' ? 900 : 420;
   var raw = String(webText || '').trim();
-  if (!raw || raw.length < 40) return null;
-  var lower = raw.toLowerCase();
-  var looksBad = ['szócikk','page contents','létrehozás','cookie','sign in','markdown','wikimédia','wikimedia','article wizard','osztály rendszertan','médiaállomány','alternatively'].some(function(b){ return lower.indexOf(b) >= 0; });
-  if (looksBad) return null;
-  var a = raw.slice(0, maxL).trim();
+  if (!raw || raw.length < 40 || isBadWebText(raw)) return null;
+  var a = raw.slice(0, 450).trim();
   var lastDot = Math.max(a.lastIndexOf('.'), a.lastIndexOf('!'), a.lastIndexOf('?'));
   if (lastDot > 60) a = a.slice(0, lastDot + 1);
   return a;
 }
 function fallbackAnswer(msg) {
   if (currentMode === 'research') return 'Erről most nem találtam elég tiszta forrást. Fogalmazd meg konkrétabban.';
-  return 'Jó kérdés. Próbáljuk lépésről lépésre: mit értesz már belőle?';
+  return 'Erről most nem találtam megbízható választ. Próbáld meg másképp megfogalmazni a kérdést.';
 }
 async function answerUser(text) {
   var msg = text.trim();
@@ -292,4 +351,4 @@ renderMentorTips();
 renderMemoryList();
 setMode(currentMode);
 addMessage('Szia! Én vagyok a VilmosGPT. Beszélgessünk — emlékszem a beszélgetésünkre, és segítek, amiben tudok.', 'bot');
-addMessage('Példák: „mi az a teknős?”, „mi az a kutya?”, „mennyi 1+1?”.', 'system');
+addMessage('Példák: „mi az a teknős?”, „mi az a csivava?”, „mennyi 1+1?”.', 'system');
