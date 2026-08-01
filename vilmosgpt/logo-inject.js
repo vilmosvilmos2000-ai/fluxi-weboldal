@@ -5,7 +5,7 @@
     var h1 = document.querySelector('.header-left h1');
     if (h1) h1.textContent = 'VilmosGPT 3.0';
     var sub = document.querySelector('.header-sub');
-    if (sub) sub.textContent = 'Személyes AI · tanul · keres · 20+ forrás [ALPHA] version 3.0';
+    if (sub) sub.textContent = 'Személyes AI · tanul · keres · [ALPHA] version 3.0 elsö [BÉTA] 1.0';
     if (document.title) document.title = 'VilmosGPT 3.0';
 
     if (!document.querySelector('link[rel="icon"]')) {
