@@ -35,20 +35,14 @@ function initEmptyState() {
       es.id = 'empty-state';
       es.className = 'empty-state';
       es.innerHTML =
-        '<div class="empty-inner">' +
-          '<div class="empty-badge">0.4</div>' +
-          '<h2 class="empty-title">Vilmos GPT</h2>' +
-          '<p class="empty-sub">Szia! Kérdezz bármit — segítek kódban, tanulásban és kutatásban.</p>' +
-          '<div class="empty-cards">' +
-            '<button type="button" class="empty-card" data-q="Hogyan írjak egy admin panelt Roblox Luau-ban?">' +
-              '<span class="empty-card-icon">🎮</span><span class="empty-card-text">Hogyan írjak egy admin panelt Roblox Luau-ban?</span></button>' +
-            '<button type="button" class="empty-card" data-q="Mik a legjobb beállítások egy elektromos rollerhez?">' +
-              '<span class="empty-card-icon">🛴</span><span class="empty-card-text">Mik a legjobb beállítások egy elektromos rollerhez?</span></button>' +
-            '<button type="button" class="empty-card" data-q="Segíts egy HTML és CSS alapú kvíz kódolásában!">' +
-              '<span class="empty-card-icon">💻</span><span class="empty-card-text">Segíts egy HTML és CSS alapú kvíz kódolásában!</span></button>' +
-            '<button type="button" class="empty-card" data-q="Magyarázd el egyszerűen, mi az a mesterséges intelligencia.">' +
-              '<span class="empty-card-icon">🤖</span><span class="empty-card-text">Magyarázd el egyszerűen, mi az a mesterséges intelligencia.</span></button>' +
-          '</div></div>';
+        '<div class="empty-inner"><div class="empty-badge">0.4</div><h2 class="empty-title">Vilmos GPT</h2>' +
+        '<p class="empty-sub">Szia! Kérdezz bármit — segítek kódban, tanulásban és kutatásban.</p>' +
+        '<div class="empty-cards">' +
+        '<button type="button" class="empty-card" data-q="Hogyan írjak egy admin panelt Roblox Luau-ban?"><span class="empty-card-icon">🎮</span><span class="empty-card-text">Hogyan írjak egy admin panelt Roblox Luau-ban?</span></button>' +
+        '<button type="button" class="empty-card" data-q="Mik a legjobb beállítások egy elektromos rollerhez?"><span class="empty-card-icon">🛴</span><span class="empty-card-text">Mik a legjobb beállítások egy elektromos rollerhez?</span></button>' +
+        '<button type="button" class="empty-card" data-q="Segíts egy HTML és CSS alapú kvíz kódolásában!"><span class="empty-card-icon">💻</span><span class="empty-card-text">Segíts egy HTML és CSS alapú kvíz kódolásában!</span></button>' +
+        '<button type="button" class="empty-card" data-q="Magyarázd el egyszerűen, mi az a mesterséges intelligencia."><span class="empty-card-icon">🤖</span><span class="empty-card-text">Magyarázd el egyszerűen, mi az a mesterséges intelligencia.</span></button>' +
+        '</div></div>';
       var chatEl = document.getElementById('chat');
       if (chatEl && chatEl.parentNode) chatEl.parentNode.insertBefore(es, chatEl);
       else main.insertBefore(es, main.firstChild);
@@ -67,15 +61,75 @@ function initEmptyState() {
   } catch (e) { console.warn('empty state', e); }
 }
 
+function startNewChat() {
+  try {
+    typewriterToken++;
+    conversationHistory = [];
+    chat.innerHTML = '';
+    showEmptyState();
+    var items = document.querySelectorAll('.history-item');
+    items.forEach(function(el, idx){ el.classList.toggle('active', idx === 0); });
+    var sl = document.getElementById('sidebar-left');
+    var bd = document.getElementById('sidebar-backdrop');
+    if (sl) sl.classList.remove('visible');
+    if (bd) bd.classList.remove('open');
+    if (typeof isMobileView === 'function' && isMobileView()) {
+      if (typeof showPanel === 'function') showPanel('chat');
+    }
+  } catch (e) {}
+}
+function toggleLeftSidebar() {
+  var sl = document.getElementById('sidebar-left');
+  var bd = document.getElementById('sidebar-backdrop');
+  if (!sl) return;
+  var open = !sl.classList.contains('visible');
+  if (open) {
+    sl.classList.add('visible');
+    if (bd) bd.classList.add('open');
+    var sr = document.getElementById('sidebar-right');
+    if (sr) sr.classList.remove('visible');
+  } else {
+    sl.classList.remove('visible');
+    if (bd) bd.classList.remove('open');
+  }
+}
+function bindSidebarUX() {
+  var menu = document.getElementById('menu-toggle');
+  if (menu && !menu._bound) {
+    menu._bound = true;
+    menu.addEventListener('click', function(e) {
+      e.preventDefault();
+      toggleLeftSidebar();
+    });
+  }
+  var nc = document.getElementById('new-chat-btn');
+  if (nc && !nc._bound) {
+    nc._bound = true;
+    nc.addEventListener('click', function(){ startNewChat(); });
+  }
+  document.querySelectorAll('.history-item').forEach(function(item) {
+    if (item._bound) return;
+    item._bound = true;
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.history-item').forEach(function(el){ el.classList.remove('active'); });
+      item.classList.add('active');
+      if (typeof isMobileView === 'function' && isMobileView()) {
+        var sl = document.getElementById('sidebar-left');
+        var bd = document.getElementById('sidebar-backdrop');
+        if (sl) sl.classList.remove('visible');
+        if (bd) bd.classList.remove('open');
+        if (typeof showPanel === 'function') showPanel('chat');
+      }
+    });
+  });
+}
+
 function copyBotText(btn, plainText) {
   var text = String(plainText || '');
   function ok() {
     btn.classList.add('copied');
     btn.setAttribute('title', 'Másolva!');
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.setAttribute('title', 'Másolás');
-    }, 2000);
+    setTimeout(function() { btn.classList.remove('copied'); btn.setAttribute('title', 'Másolás'); }, 2000);
   }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(ok).catch(function() {
@@ -97,19 +151,14 @@ function copyBotText(btn, plainText) {
 async function regenerateBotMessage(msgEl) {
   var lastUser = null;
   for (var i = conversationHistory.length - 1; i >= 0; i--) {
-    if (conversationHistory[i].role === 'user') {
-      lastUser = conversationHistory[i].text;
-      break;
-    }
+    if (conversationHistory[i].role === 'user') { lastUser = conversationHistory[i].text; break; }
   }
   if (!lastUser) return;
   try {
     var row = msgEl && msgEl.closest ? msgEl.closest('.message') : msgEl;
     if (row && row.parentNode) row.parentNode.removeChild(row);
   } catch (e) {}
-  if (conversationHistory.length && conversationHistory[conversationHistory.length - 1].role === 'bot') {
-    conversationHistory.pop();
-  }
+  if (conversationHistory.length && conversationHistory[conversationHistory.length - 1].role === 'bot') conversationHistory.pop();
   userPinnedToBottom = true;
   addTypingMessage();
   scrollToBottom(true);
@@ -123,9 +172,7 @@ async function regenerateBotMessage(msgEl) {
     else if (err && err.code === 'TIMEOUT') failDetail = 'Időtúllépés.';
     else if (err && err.code === 'HTTP') failDetail = 'HTTP hiba: ' + (err.status || '?');
     else failDetail = 'Váratlan hiba történt.';
-  } finally {
-    removeLastMessageIfTyping();
-  }
+  } finally { removeLastMessageIfTyping(); }
   if (failed) { addErrorMessage(failDetail, lastUser); return; }
   await addMessage(reply || 'Nem kaptam választ. Próbáld újra.', 'bot');
   scrollToBottom(false);
@@ -136,28 +183,16 @@ function attachBotActions(col, plainText) {
   actions.className = 'bot-actions';
   actions.innerHTML =
     '<button type="button" class="bot-action-btn bot-copy" title="Másolás" aria-label="Másolás">' +
-      '<svg class="ico-copy" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
-      '<svg class="ico-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>' +
-      '<span class="bot-action-tip">Másolva!</span>' +
-    '</button>' +
+    '<svg class="ico-copy" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+    '<svg class="ico-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>' +
+    '<span class="bot-action-tip">Másolva!</span></button>' +
     '<button type="button" class="bot-action-btn bot-regen" title="Újra" aria-label="Újra generálás">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>' +
-    '</button>';
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>';
   col.appendChild(actions);
   var copyBtn = actions.querySelector('.bot-copy');
   var regenBtn = actions.querySelector('.bot-regen');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      copyBotText(copyBtn, plainText);
-    });
-  }
-  if (regenBtn) {
-    regenBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      regenerateBotMessage(col);
-    });
-  }
+  if (copyBtn) copyBtn.addEventListener('click', function(e) { e.stopPropagation(); copyBotText(copyBtn, plainText); });
+  if (regenBtn) regenBtn.addEventListener('click', function(e) { e.stopPropagation(); regenerateBotMessage(col); });
 }
 
 function isMobileView() { return window.innerWidth <= 960; }
@@ -243,10 +278,7 @@ function detectLang(text) {
   var enWords = ['what','who','where','when','why','how','the','is','are','was','were','this','that','please','hello','thanks','thank','can','you','tell','me','about','define','meaning'];
   var words = t.replace(/[^\p{L}\s]/gu, ' ').split(/\s+/).filter(Boolean);
   var hu = 0, en = 0;
-  words.forEach(function(w){
-    if (huWords.indexOf(w) >= 0) hu++;
-    if (enWords.indexOf(w) >= 0) en++;
-  });
+  words.forEach(function(w){ if (huWords.indexOf(w) >= 0) hu++; if (enWords.indexOf(w) >= 0) en++; });
   if (en > hu && en >= 1) return 'en';
   if (en >= 1 && !/[áéíóöőúüű]/.test(t) && /^[a-z0-9\s?'".,!-]+$/i.test(t)) return 'en';
   return 'hu';
@@ -285,9 +317,6 @@ function scrollToBottom(force) {
       if (typeof el.scrollTo === 'function') el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
       else el.scrollTop = el.scrollHeight;
     } catch (e) { el.scrollTop = el.scrollHeight; }
-    setTimeout(function() {
-      if (force || userPinnedToBottom) { try { el.scrollTop = el.scrollHeight; } catch (e2) {} }
-    }, 120);
   });
 }
 function bindChatScrollTracker() {
@@ -314,11 +343,8 @@ function addErrorMessage(detailText, retryText) {
   var main = 'Hoppá, a Vilmos GPT most nem tud válaszolni. Kérlek, ellenőrizd az internetkapcsolatot vagy próbáld újra később!';
   var extra = detailText ? ('<div class="error-detail">' + String(detailText).replace(/</g, '<') + '</div>') : '';
   var q = retryText || lastFailedQuestion || '';
-  bubble.innerHTML =
-    '<div class="error-row"><span class="error-icon" aria-hidden="true">⚠</span><div class="error-body">' +
-    '<div class="error-title">Kapcsolati hiba</div><div class="error-text">' + main + '</div>' + extra +
-    (q ? '<button type="button" class="error-retry-btn">Újrapróbálkozás</button>' : '') +
-    '</div></div>';
+  bubble.innerHTML = '<div class="error-row"><span class="error-icon">⚠</span><div class="error-body"><div class="error-title">Kapcsolati hiba</div><div class="error-text">' + main + '</div>' + extra +
+    (q ? '<button type="button" class="error-retry-btn">Újrapróbálkozás</button>' : '') + '</div></div>';
   msg.appendChild(avatar); msg.appendChild(bubble); chat.appendChild(msg);
   var btn = bubble.querySelector('.error-retry-btn');
   if (btn && q) {
@@ -336,7 +362,6 @@ function addErrorMessage(detailText, retryText) {
 function typewriterEffect(bubble, fullText, opts) {
   opts = opts || {};
   var plain = String(fullText == null ? '' : fullText);
-  var baseDelay = typeof opts.delay === 'number' ? opts.delay : 22;
   var token = ++typewriterToken;
   bubble.classList.add('markdown', 'typing-out');
   bubble.textContent = '';
@@ -348,7 +373,7 @@ function typewriterEffect(bubble, fullText, opts) {
     return Promise.resolve();
   }
   var chunks = plain.match(/\S+\s*|\s+/g) || [plain];
-  var delay = baseDelay;
+  var delay = 22;
   if (plain.length > 600) delay = 10;
   else if (plain.length > 300) delay = 14;
   else if (plain.length > 120) delay = 18;
@@ -396,10 +421,8 @@ function addMessage(text, role) {
   if (role === 'user') bubble.textContent = text;
   else if (role === 'bot') { bubble.classList.add('markdown'); typePromise = typewriterEffect(bubble, text); }
   else { bubble.classList.add('markdown'); bubble.innerHTML = renderMarkdown(text); }
-  if (role === 'user') {
-    msg.appendChild(bubble);
-    msg.appendChild(avatar);
-  } else {
+  if (role === 'user') { msg.appendChild(bubble); msg.appendChild(avatar); }
+  else {
     var col = document.createElement('div');
     col.className = 'bot-col';
     col.appendChild(bubble);
@@ -425,7 +448,7 @@ function addTypingMessage() {
   const bubble = document.createElement('div');
   bubble.className = 'bubble typing-bubble';
   var label = currentMode === 'research' ? 'Kutatás' : 'Gondolkodom';
-  bubble.innerHTML = '<div class="typing-indicator" aria-label="' + label + '"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div><span class="typing-label">' + label + '…</span>';
+  bubble.innerHTML = '<div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div><span class="typing-label">' + label + '…</span>';
   msg.appendChild(avatar); msg.appendChild(bubble); chat.appendChild(msg);
   scrollToBottom(true);
   return msg;
@@ -434,10 +457,7 @@ function removeLastMessageIfTyping() {
   try {
     var nodes = chat.querySelectorAll('.message.typing, [data-typing="1"]');
     for (var i = 0; i < nodes.length; i++) if (nodes[i] && nodes[i].parentNode) nodes[i].parentNode.removeChild(nodes[i]);
-  } catch (e) {
-    var last = chat.lastElementChild;
-    if (last && last.classList.contains('typing')) chat.removeChild(last);
-  }
+  } catch (e) {}
 }
 function rememberFact(text) {
   const cleaned = text.trim();
@@ -503,11 +523,6 @@ function localSmartAnswer(text, lang) {
       var key = keys[i];
       if (defKey === key || defKey.indexOf(key) >= 0 || key.indexOf(defKey) >= 0) return simpleDefinitions[key];
     }
-  }
-  var keys2 = Object.keys(simpleDefinitions);
-  for (var j = 0; j < keys2.length; j++) {
-    var k = keys2[j];
-    if (lower === k || lower === 'mi az a ' + k || lower === 'mi a ' + k || lower === 'mi az ' + k) return simpleDefinitions[k];
   }
   if (lower.indexOf('cpu') >= 0 && lower.indexOf('ram') >= 0) return 'CPU = agy (számol). RAM = munkaasztal.';
   if (lower.indexOf('segíts') >= 0 || lower === 'help') return lang === 'en' ? 'Of course! Tell me what you need.' : 'Persze! Mondd el, miben segíthetek.';
@@ -583,7 +598,6 @@ async function fetchWebAnswer(question, lang) {
     j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definíció magyarul')),
     j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic))
   ];
-  var sawNetworkHardFail = null;
   for (var i = 0; i < urls.length; i++) {
     try {
       var raw = await fetchOneUrl(urls[i], 5000);
@@ -597,10 +611,8 @@ async function fetchWebAnswer(question, lang) {
       }
     } catch (e) {
       if (e && e.code === 'OFFLINE') throw e;
-      sawNetworkHardFail = e; continue;
     }
   }
-  if (sawNetworkHardFail && !isOnline()) { var off = new Error('offline'); off.code = 'OFFLINE'; throw off; }
   return null;
 }
 function buildFriendlyReply(webText) {
@@ -613,10 +625,7 @@ function buildFriendlyReply(webText) {
 }
 function fallbackAnswer(msg, lang) {
   lang = lang || detectLang(msg || '');
-  if (lang === 'en') {
-    if (currentMode === 'research') return 'I could not find a clear source for this. Please rephrase more specifically.';
-    return 'I could not find a reliable answer. Try rephrasing your question.';
-  }
+  if (lang === 'en') return 'I could not find a reliable answer. Try rephrasing your question.';
   if (currentMode === 'research') return 'Erről most nem találtam elég tiszta forrást. Fogalmazd meg konkrétabban.';
   return 'Erről most nem találtam megbízható választ. Próbáld meg másképp megfogalmazni a kérdést.';
 }
@@ -639,7 +648,6 @@ async function callBackendChat(message, lang) {
   } catch (e) {
     if (e && (e.code === 'OFFLINE' || e.code === 'HTTP' || e.code === 'TIMEOUT')) throw e;
     if (!isOnline()) { var e3 = new Error('offline'); e3.code = 'OFFLINE'; throw e3; }
-    console.warn('backend chat', e);
   }
   return null;
 }
@@ -695,7 +703,6 @@ async function sendMessage() {
     reply = await answerUser(text);
   } catch (err) {
     failed = true;
-    console.warn('sendMessage', err);
     if (err && err.code === 'OFFLINE') failDetail = 'Nincs internetkapcsolat.';
     else if (err && err.code === 'TIMEOUT') failDetail = 'Időtúllépés — a szolgáltatás lassú vagy nem elérhető.';
     else if (err && err.code === 'HTTP') {
@@ -714,10 +721,12 @@ function showPanel(panel) {
   sidebarLeft.classList.remove('visible');
   sidebarRight.classList.remove('visible');
   mainChat.style.display = '';
+  var bd = document.getElementById('sidebar-backdrop');
+  if (bd && panel !== 'left') bd.classList.remove('open');
   document.querySelectorAll('.mobile-tabs button').forEach(function(b){
     b.classList.toggle('active', b.getAttribute('data-panel') === panel);
   });
-  if (panel === 'left') { sidebarLeft.classList.add('visible'); mainChat.style.display = 'none'; }
+  if (panel === 'left') { sidebarLeft.classList.add('visible'); mainChat.style.display = 'none'; if (bd) bd.classList.add('open'); }
   else if (panel === 'right') { sidebarRight.classList.add('visible'); mainChat.style.display = 'none'; }
   else { try { input.focus(); } catch (e) {} }
 }
@@ -748,3 +757,4 @@ renderMentorTips();
 renderMemoryList();
 setMode(currentMode);
 initEmptyState();
+bindSidebarUX();
