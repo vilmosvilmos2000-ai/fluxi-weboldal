@@ -1,3 +1,10 @@
+/* Biztonságos API base – Vercel deploy után állítsd pl. https://xxx.vercel.app */
+(function(){
+  if (typeof window.VILMOS_API_BASE === 'undefined') {
+    window.VILMOS_API_BASE = '';
+  }
+})();
+
 /* Apple touch icon – valódi PNG */
 (function(){
   try {
