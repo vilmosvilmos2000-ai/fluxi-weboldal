@@ -1,3 +1,19 @@
+function autoResizeInput() {
+  var el = typeof input !== 'undefined' ? input : document.getElementById('input');
+  if (!el) return;
+  el.style.height = 'auto';
+  var max = Math.round(1.4 * 16 * 5 + 24);
+  var next = Math.min(el.scrollHeight, max);
+  el.style.height = next + 'px';
+  el.style.overflowY = el.scrollHeight > max ? 'auto' : 'hidden';
+}
+function resetInputSize() {
+  var el = typeof input !== 'undefined' ? input : document.getElementById('input');
+  if (!el) return;
+  el.style.height = '44px';
+  el.style.overflowY = 'hidden';
+}
+
 function isMobileView() {
   return window.innerWidth <= 960;
 }
@@ -10,6 +26,7 @@ function renderPromptBank() {
     button.textContent = item;
     button.addEventListener('click', () => {
       input.value = item;
+      autoResizeInput();
       if (isMobileView()) {
         showPanel('chat');
         setTimeout(function(){ sendMessage(); }, 80);
@@ -195,6 +212,7 @@ function addErrorMessage(detailText, retryText) {
         }
       } catch (e) {}
       input.value = q;
+      autoResizeInput();
       sendMessage();
     });
   }
@@ -202,7 +220,6 @@ function addErrorMessage(detailText, retryText) {
   return msg;
 }
 
-/** Írógép-effekt: plain szöveg szavanként, Markdown CSAK a végén (HTML nem törik). */
 function typewriterEffect(bubble, fullText, opts) {
   opts = opts || {};
   var plain = String(fullText == null ? '' : fullText);
@@ -210,53 +227,35 @@ function typewriterEffect(bubble, fullText, opts) {
   var token = ++typewriterToken;
   bubble.classList.add('markdown', 'typing-out');
   bubble.textContent = '';
-
-  if (!plain) {
-    bubble.classList.remove('typing-out');
-    return Promise.resolve();
-  }
-
+  if (!plain) { bubble.classList.remove('typing-out'); return Promise.resolve(); }
   if (plain.length <= 4) {
     bubble.classList.remove('typing-out');
     bubble.innerHTML = renderMarkdown(plain);
     scrollToBottom(false);
     return Promise.resolve();
   }
-
   var chunks = plain.match(/\S+\s*|\s+/g);
   if (!chunks || !chunks.length) chunks = [plain];
-
   var delay = baseDelay;
   if (plain.length > 600) delay = 10;
   else if (plain.length > 300) delay = 14;
   else if (plain.length > 120) delay = 18;
-
   var i = 0;
   var acc = '';
-
   return new Promise(function(resolve) {
     function finish() {
       if (token !== typewriterToken) { resolve(); return; }
       bubble.classList.remove('typing-out');
-      try {
-        bubble.innerHTML = renderMarkdown(plain);
-      } catch (e) {
-        bubble.textContent = plain;
-      }
+      try { bubble.innerHTML = renderMarkdown(plain); } catch (e) { bubble.textContent = plain; }
       scrollToBottom(false);
       resolve();
     }
     function tick() {
       if (token !== typewriterToken) { resolve(); return; }
-      if (i >= chunks.length) {
-        finish();
-        return;
-      }
+      if (i >= chunks.length) { finish(); return; }
       var step = plain.length > 800 ? 3 : (plain.length > 400 ? 2 : 1);
       var end = Math.min(i + step, chunks.length);
-      while (i < end) {
-        acc += chunks[i++];
-      }
+      while (i < end) acc += chunks[i++];
       bubble.textContent = acc;
       if (userPinnedToBottom) scrollToBottom(true);
       setTimeout(tick, delay);
@@ -297,12 +296,8 @@ function addMessage(text, role) {
   if (role === 'user') { msg.appendChild(bubble); msg.appendChild(avatar); }
   else { msg.appendChild(avatar); msg.appendChild(bubble); }
   chat.appendChild(msg);
-  if (role === 'user') {
-    userPinnedToBottom = true;
-    scrollToBottom(true);
-  } else {
-    scrollToBottom(false);
-  }
+  if (role === 'user') { userPinnedToBottom = true; scrollToBottom(true); }
+  else { scrollToBottom(false); }
   if (role === 'user' || role === 'bot') {
     conversationHistory.push({ role: role, text: String(text) });
     if (conversationHistory.length > 40) conversationHistory = conversationHistory.slice(-40);
@@ -321,11 +316,8 @@ function addTypingMessage() {
   var label = currentMode === 'research' ? 'Kutatás' : 'Gondolkodom';
   bubble.innerHTML =
     '<div class="typing-indicator" aria-label="' + label + '">' +
-      '<span class="typing-dot"></span>' +
-      '<span class="typing-dot"></span>' +
-      '<span class="typing-dot"></span>' +
-    '</div>' +
-    '<span class="typing-label">' + label + '…</span>';
+      '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>' +
+    '</div><span class="typing-label">' + label + '…</span>';
   msg.appendChild(avatar);
   msg.appendChild(bubble);
   chat.appendChild(msg);
@@ -427,7 +419,6 @@ function localSmartAnswer(text, lang) {
 function shouldSearchWeb(text) {
   var lower = text.toLowerCase();
   if (!lower || lower.length < 3) return false;
-  if (lower.length <= 2) return false;
   if (isGreeting(lower) || isAboutHistory(lower)) return false;
   if (lower.indexOf('mi a neved') >= 0 || lower.indexOf('vicc') >= 0 || lower.indexOf('jegyezz meg') >= 0 || lower.indexOf('köszönöm') >= 0) return false;
   if (localSmartAnswer(text)) return false;
@@ -441,38 +432,21 @@ function isBadWebText(s) {
   return false;
 }
 async function fetchOneUrl(url, ms) {
-  if (!isOnline()) {
-    var err = new Error('offline');
-    err.code = 'OFFLINE';
-    throw err;
-  }
+  if (!isOnline()) { var err = new Error('offline'); err.code = 'OFFLINE'; throw err; }
   try {
     var c = new AbortController();
     var t = setTimeout(function(){ c.abort(); }, ms || 5000);
     var r = await fetch(url, { headers: { Accept: 'text/plain' }, signal: c.signal });
     clearTimeout(t);
     if (!r.ok) {
-      if (r.status === 429 || r.status >= 500) {
-        var e2 = new Error('http_' + r.status);
-        e2.code = 'HTTP';
-        e2.status = r.status;
-        throw e2;
-      }
+      if (r.status === 429 || r.status >= 500) { var e2 = new Error('http_' + r.status); e2.code = 'HTTP'; e2.status = r.status; throw e2; }
       return null;
     }
     return await r.text();
   } catch (e) {
     if (e && (e.code === 'OFFLINE' || e.code === 'HTTP')) throw e;
-    if (e && e.name === 'AbortError') {
-      var e3 = new Error('timeout');
-      e3.code = 'TIMEOUT';
-      throw e3;
-    }
-    if (!isOnline()) {
-      var e4 = new Error('offline');
-      e4.code = 'OFFLINE';
-      throw e4;
-    }
+    if (e && e.name === 'AbortError') { var e3 = new Error('timeout'); e3.code = 'TIMEOUT'; throw e3; }
+    if (!isOnline()) { var e4 = new Error('offline'); e4.code = 'OFFLINE'; throw e4; }
     return null;
   }
 }
@@ -502,22 +476,17 @@ async function fetchWebAnswer(question, lang) {
   var q = question.trim();
   var topic = q.replace(/^(mi az a|mi a|mi az|mit jelent|mi ez a|mi ez|mi az a|ki az a|ki a|what is|what are|who is|define)\s+/i, '').replace(/[?.!]+$/g, '').trim() || q;
   var j = function(u){ return 'https://r.jina.ai/' + u; };
-  var urls;
-  if (lang === 'en') {
-    urls = [
-      j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
-      j('https://en.wikipedia.org/wiki/' + encodeURIComponent(topic)),
-      j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definition')),
-      j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic))
-    ];
-  } else {
-    urls = [
-      j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
-      j('https://hu.wikipedia.org/wiki/' + encodeURIComponent(topic)),
-      j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definíció magyarul')),
-      j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic))
-    ];
-  }
+  var urls = lang === 'en' ? [
+    j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
+    j('https://en.wikipedia.org/wiki/' + encodeURIComponent(topic)),
+    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definition')),
+    j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic))
+  ] : [
+    j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
+    j('https://hu.wikipedia.org/wiki/' + encodeURIComponent(topic)),
+    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definíció magyarul')),
+    j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic))
+  ];
   var sawNetworkHardFail = null;
   for (var i = 0; i < urls.length; i++) {
     try {
@@ -536,11 +505,7 @@ async function fetchWebAnswer(question, lang) {
       continue;
     }
   }
-  if (sawNetworkHardFail && !isOnline()) {
-    var off = new Error('offline');
-    off.code = 'OFFLINE';
-    throw off;
-  }
+  if (sawNetworkHardFail && !isOnline()) { var off = new Error('offline'); off.code = 'OFFLINE'; throw off; }
   return null;
 }
 function buildFriendlyReply(webText) {
@@ -563,11 +528,7 @@ function fallbackAnswer(msg, lang) {
 async function callBackendChat(message, lang) {
   var base = (typeof window !== 'undefined' && window.VILMOS_API_BASE) ? String(window.VILMOS_API_BASE).replace(/\/$/, '') : '';
   if (!base) return null;
-  if (!isOnline()) {
-    var err = new Error('offline');
-    err.code = 'OFFLINE';
-    throw err;
-  }
+  if (!isOnline()) { var err = new Error('offline'); err.code = 'OFFLINE'; throw err; }
   try {
     var hist = (typeof conversationHistory !== 'undefined' ? conversationHistory : []).slice(-10).map(function(m){
       return { role: m.role, text: String(m.text || '').slice(0, 800) };
@@ -575,28 +536,14 @@ async function callBackendChat(message, lang) {
     var r = await fetch(base + '/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: message,
-        lang: lang || 'hu',
-        mode: typeof currentMode !== 'undefined' ? currentMode : 'learn',
-        history: hist
-      })
+      body: JSON.stringify({ message: message, lang: lang || 'hu', mode: typeof currentMode !== 'undefined' ? currentMode : 'learn', history: hist })
     });
-    if (!r.ok) {
-      var e2 = new Error('http_' + r.status);
-      e2.code = 'HTTP';
-      e2.status = r.status;
-      throw e2;
-    }
+    if (!r.ok) { var e2 = new Error('http_' + r.status); e2.code = 'HTTP'; e2.status = r.status; throw e2; }
     var data = await r.json();
     if (data && data.reply) return String(data.reply).trim();
   } catch (e) {
     if (e && (e.code === 'OFFLINE' || e.code === 'HTTP' || e.code === 'TIMEOUT')) throw e;
-    if (!isOnline()) {
-      var e3 = new Error('offline');
-      e3.code = 'OFFLINE';
-      throw e3;
-    }
+    if (!isOnline()) { var e3 = new Error('offline'); e3.code = 'OFFLINE'; throw e3; }
     console.warn('backend chat', e);
   }
   return null;
@@ -627,9 +574,7 @@ async function answerUser(text) {
       var baseReply = buildFriendlyReply(webText);
       if (baseReply) return personalizeReply(baseReply, currentMode, lang);
     } catch (webErr) {
-      if (webErr && (webErr.code === 'OFFLINE' || webErr.code === 'HTTP' || webErr.code === 'TIMEOUT')) {
-        throw webErr;
-      }
+      if (webErr && (webErr.code === 'OFFLINE' || webErr.code === 'HTTP' || webErr.code === 'TIMEOUT')) throw webErr;
     }
   }
   return personalizeReply(fallbackAnswer(msg, lang), currentMode, lang);
@@ -641,6 +586,7 @@ async function sendMessage() {
   userPinnedToBottom = true;
   addMessage(text, 'user');
   input.value = '';
+  resetInputSize();
   try {
     var oldErr = chat.querySelectorAll('[data-error="1"]');
     for (var i = 0; i < oldErr.length; i++) {
@@ -653,11 +599,7 @@ async function sendMessage() {
   var failed = false;
   var failDetail = '';
   try {
-    if (!isOnline()) {
-      var off = new Error('offline');
-      off.code = 'OFFLINE';
-      throw off;
-    }
+    if (!isOnline()) { var off = new Error('offline'); off.code = 'OFFLINE'; throw off; }
     reply = await answerUser(text);
   } catch (err) {
     failed = true;
@@ -669,16 +611,11 @@ async function sendMessage() {
       else if (err.status === 401 || err.status === 403) failDetail = 'Hitelesítési hiba (' + err.status + ').';
       else if (err.status >= 500) failDetail = 'A szerver átmenetileg hibás (' + err.status + ').';
       else failDetail = 'HTTP hiba: ' + (err.status || '?');
-    } else {
-      failDetail = 'Váratlan hiba történt.';
-    }
+    } else failDetail = 'Váratlan hiba történt.';
   } finally {
     removeLastMessageIfTyping();
   }
-  if (failed) {
-    addErrorMessage(failDetail, text);
-    return;
-  }
+  if (failed) { addErrorMessage(failDetail, text); return; }
   lastFailedQuestion = '';
   await addMessage(reply || 'Nem kaptam választ. Próbáld újra.', 'bot');
   scrollToBottom(false);
@@ -707,8 +644,12 @@ themeToggle.addEventListener('click', toggleTheme);
 exportMemoryBtn.addEventListener('click', exportMemory);
 importMemoryInput.addEventListener('change', importMemory);
 sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('input', function(){ autoResizeInput(); });
 input.addEventListener('keydown', function(event){
-  if (event.key === 'Enter') { event.preventDefault(); sendMessage(); }
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
 });
 resetBtn.addEventListener('click', function(){
   knowledge = []; conversationHistory = []; saveKnowledge(); renderMemoryList();
