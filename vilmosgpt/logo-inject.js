@@ -174,3 +174,4 @@
 })();
 
 (function(){var s=document.createElement('script');s.src='search-boost.js?v=m4';document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='sidebar-fix.js?v=2';document.body.appendChild(s);})();
