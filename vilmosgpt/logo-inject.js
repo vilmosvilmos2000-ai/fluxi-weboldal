@@ -48,8 +48,8 @@
 (function injectLogo() {
   try {
     var h1 = document.querySelector('.header-left h1');
-    if (h1) h1.textContent = 'VilmosGPT 0.3';
-    if (document.title) document.title = 'VilmosGPT 0.3';
+    if (h1) h1.textContent = 'VilmosGPT 0.4';
+    if (document.title) document.title = 'VilmosGPT 0.4';
     document.querySelectorAll('.header-logo, .auth-logo').forEach(function(img) {
       img.src = 'logo.svg?v=7';
       img.style.imageRendering = 'pixelated';
