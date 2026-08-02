@@ -26,7 +26,10 @@
       '.error-detail{margin-top:6px;font-size:12px;color:#f87171;opacity:.9}',
       '.error-retry-btn{margin-top:10px;border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;background:linear-gradient(90deg,#ef4444,#b91c1c);color:#fff}',
       '.error-retry-btn:hover{filter:brightness(1.08)}',
-      '.error-retry-btn:active{transform:scale(.98)}'
+      '.error-retry-btn:active{transform:scale(.98)}',
+      '.composer{align-items:flex-end!important}',
+      '.composer textarea#input,.composer #input{flex:1;padding:12px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:18px;outline:none;font-size:15px;background:#f8fafc;color:#0f172a;font-family:inherit;line-height:1.4;resize:none;overflow-y:hidden;min-height:44px;max-height:calc(1.4em * 5 + 24px);height:44px}',
+      '.composer textarea#input:focus{border-color:rgba(56,189,248,0.55);box-shadow:0 0 0 3px rgba(56,189,248,0.15)}'
     ].join('');
     document.head.appendChild(st);
   } catch(e) {}
