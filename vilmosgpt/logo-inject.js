@@ -1,4 +1,4 @@
-/* Biztonságos API base – Vercel deploy után állítsd pl. https://xxx.vercel.app */
+/* Biztonságos API base */
 (function(){
   if (typeof window.VILMOS_API_BASE === 'undefined') {
     window.VILMOS_API_BASE = '';
@@ -8,7 +8,16 @@
 (function(){
   try {
     var st = document.createElement('style');
-    st.textContent = '#chat, .chat { scroll-behavior: smooth !important; }';
+    st.textContent = [
+      '#chat, .chat { scroll-behavior: smooth !important; }',
+      '.message.typing .typing-bubble{display:flex;align-items:center;gap:10px;min-width:72px;padding:12px 16px}',
+      '.typing-indicator{display:inline-flex;align-items:center;gap:5px;height:14px}',
+      '.typing-dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#38bdf8,#8b5cf6);opacity:.45;animation:vilmos-bounce 1.15s ease-in-out infinite}',
+      '.typing-dot:nth-child(2){animation-delay:.18s}',
+      '.typing-dot:nth-child(3){animation-delay:.36s}',
+      '.typing-label{font-size:12px;color:#94a3b8;font-style:italic;white-space:nowrap}',
+      '@keyframes vilmos-bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}'
+    ].join('');
     document.head.appendChild(st);
   } catch(e) {}
 })();
