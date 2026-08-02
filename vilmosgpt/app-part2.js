@@ -113,17 +113,11 @@ function renderMarkdown(text) {
   var raw = String(text == null ? '' : text);
   try {
     if (window.marked && typeof marked.parse === 'function') {
-      if (marked.setOptions) {
-        marked.setOptions({ breaks: true, gfm: true });
-      }
+      if (marked.setOptions) marked.setOptions({ breaks: true, gfm: true });
       return marked.parse(raw);
     }
   } catch (e) {}
-  return raw
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/\n/g, '<br>');
+  return raw.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/\n/g, '<br>');
 }
 function addMessage(text, role) {
   role = role || 'bot';
@@ -255,7 +249,6 @@ function shouldSearchWeb(text) {
   if (localSmartAnswer(text)) return false;
   return true;
 }
-
 function isBadWebText(s) {
   if (!s || s.length < 40) return true;
   var lower = s.toLowerCase();
@@ -263,7 +256,6 @@ function isBadWebText(s) {
   for (var i = 0; i < bad.length; i++) if (lower.indexOf(bad[i]) >= 0) return true;
   return false;
 }
-
 async function fetchOneUrl(url, ms) {
   try {
     var c = new AbortController();
@@ -274,7 +266,6 @@ async function fetchOneUrl(url, ms) {
     return await r.text();
   } catch (e) { return null; }
 }
-
 function parseExtract(raw) {
   var t = String(raw || '');
   var m = t.match(/"extract"\s*:\s*"((?:\\.|[^"\\])*)"/);
@@ -296,7 +287,6 @@ function parseExtract(raw) {
   }
   return out.length ? out.join(' ') : '';
 }
-
 async function fetchWebAnswer(question, lang) {
   lang = lang || detectLang(question);
   var q = question.trim();
@@ -331,7 +321,6 @@ async function fetchWebAnswer(question, lang) {
   }
   return null;
 }
-
 function buildFriendlyReply(webText) {
   var raw = String(webText || '').trim();
   if (!raw || raw.length < 40 || isBadWebText(raw)) return null;
@@ -348,6 +337,31 @@ function fallbackAnswer(msg, lang) {
   }
   if (currentMode === 'research') return 'Erről most nem találtam elég tiszta forrást. Fogalmazd meg konkrétabban.';
   return 'Erről most nem találtam megbízható választ. Próbáld meg másképp megfogalmazni a kérdést.';
+}
+async function callBackendChat(message, lang) {
+  var base = (typeof window !== 'undefined' && window.VILMOS_API_BASE) ? String(window.VILMOS_API_BASE).replace(/\/$/, '') : '';
+  if (!base) return null;
+  try {
+    var hist = (typeof conversationHistory !== 'undefined' ? conversationHistory : []).slice(-10).map(function(m){
+      return { role: m.role, text: String(m.text || '').slice(0, 800) };
+    });
+    var r = await fetch(base + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: message,
+        lang: lang || 'hu',
+        mode: typeof currentMode !== 'undefined' ? currentMode : 'learn',
+        history: hist
+      })
+    });
+    if (!r.ok) return null;
+    var data = await r.json();
+    if (data && data.reply) return String(data.reply).trim();
+  } catch (e) {
+    console.warn('backend chat', e);
+  }
+  return null;
 }
 async function answerUser(text) {
   var msg = text.trim();
@@ -367,6 +381,8 @@ async function answerUser(text) {
   if (isGreeting(msg)) return lang === 'en' ? 'Hi! Glad you are here. What would you like to ask?' : 'Szia! Örülök, hogy itt vagy. Mit szeretnél ma megkérdezni?';
   var local = localSmartAnswer(msg, lang);
   if (local) return personalizeReply(local, currentMode, lang);
+  var aiReply = await callBackendChat(msg, lang);
+  if (aiReply) return personalizeReply(aiReply, currentMode, lang);
   if (shouldSearchWeb(msg)) {
     var webText = await fetchWebAnswer(msg, lang);
     var baseReply = buildFriendlyReply(webText);
