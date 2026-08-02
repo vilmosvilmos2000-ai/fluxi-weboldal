@@ -41,31 +41,21 @@ function initEmptyState() {
           '<p class="empty-sub">Szia! Kérdezz bármit — segítek kódban, tanulásban és kutatásban.</p>' +
           '<div class="empty-cards">' +
             '<button type="button" class="empty-card" data-q="Hogyan írjak egy admin panelt Roblox Luau-ban?">' +
-              '<span class="empty-card-icon">🎮</span>' +
-              '<span class="empty-card-text">Hogyan írjak egy admin panelt Roblox Luau-ban?</span>' +
-            '</button>' +
+              '<span class="empty-card-icon">🎮</span><span class="empty-card-text">Hogyan írjak egy admin panelt Roblox Luau-ban?</span></button>' +
             '<button type="button" class="empty-card" data-q="Mik a legjobb beállítások egy elektromos rollerhez?">' +
-              '<span class="empty-card-icon">🛴</span>' +
-              '<span class="empty-card-text">Mik a legjobb beállítások egy elektromos rollerhez?</span>' +
-            '</button>' +
+              '<span class="empty-card-icon">🛴</span><span class="empty-card-text">Mik a legjobb beállítások egy elektromos rollerhez?</span></button>' +
             '<button type="button" class="empty-card" data-q="Segíts egy HTML és CSS alapú kvíz kódolásában!">' +
-              '<span class="empty-card-icon">💻</span>' +
-              '<span class="empty-card-text">Segíts egy HTML és CSS alapú kvíz kódolásában!</span>' +
-            '</button>' +
+              '<span class="empty-card-icon">💻</span><span class="empty-card-text">Segíts egy HTML és CSS alapú kvíz kódolásában!</span></button>' +
             '<button type="button" class="empty-card" data-q="Magyarázd el egyszerűen, mi az a mesterséges intelligencia.">' +
-              '<span class="empty-card-icon">🤖</span>' +
-              '<span class="empty-card-text">Magyarázd el egyszerűen, mi az a mesterséges intelligencia.</span>' +
-            '</button>' +
-          '</div>' +
-        '</div>';
+              '<span class="empty-card-icon">🤖</span><span class="empty-card-text">Magyarázd el egyszerűen, mi az a mesterséges intelligencia.</span></button>' +
+          '</div></div>';
       var chatEl = document.getElementById('chat');
       if (chatEl && chatEl.parentNode) chatEl.parentNode.insertBefore(es, chatEl);
       else main.insertBefore(es, main.firstChild);
     }
     document.querySelectorAll('.empty-card').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var q = btn.getAttribute('data-q') || '';
-        q = String(q).trim();
+        var q = String(btn.getAttribute('data-q') || '').trim();
         if (!q) return;
         hideEmptyState();
         input.value = q;
@@ -77,9 +67,100 @@ function initEmptyState() {
   } catch (e) { console.warn('empty state', e); }
 }
 
-function isMobileView() {
-  return window.innerWidth <= 960;
+function copyBotText(btn, plainText) {
+  var text = String(plainText || '');
+  function ok() {
+    btn.classList.add('copied');
+    btn.setAttribute('title', 'Másolva!');
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.setAttribute('title', 'Másolás');
+    }, 2000);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(ok).catch(function() {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta); ok();
+      } catch (e) {}
+    });
+  } else {
+    try {
+      var ta2 = document.createElement('textarea');
+      ta2.value = text; document.body.appendChild(ta2); ta2.select();
+      document.execCommand('copy'); document.body.removeChild(ta2); ok();
+    } catch (e2) {}
+  }
 }
+
+async function regenerateBotMessage(msgEl) {
+  var lastUser = null;
+  for (var i = conversationHistory.length - 1; i >= 0; i--) {
+    if (conversationHistory[i].role === 'user') {
+      lastUser = conversationHistory[i].text;
+      break;
+    }
+  }
+  if (!lastUser) return;
+  try {
+    var row = msgEl && msgEl.closest ? msgEl.closest('.message') : msgEl;
+    if (row && row.parentNode) row.parentNode.removeChild(row);
+  } catch (e) {}
+  if (conversationHistory.length && conversationHistory[conversationHistory.length - 1].role === 'bot') {
+    conversationHistory.pop();
+  }
+  userPinnedToBottom = true;
+  addTypingMessage();
+  scrollToBottom(true);
+  var reply = null, failed = false, failDetail = '';
+  try {
+    if (!isOnline()) { var off = new Error('offline'); off.code = 'OFFLINE'; throw off; }
+    reply = await answerUser(lastUser);
+  } catch (err) {
+    failed = true;
+    if (err && err.code === 'OFFLINE') failDetail = 'Nincs internetkapcsolat.';
+    else if (err && err.code === 'TIMEOUT') failDetail = 'Időtúllépés.';
+    else if (err && err.code === 'HTTP') failDetail = 'HTTP hiba: ' + (err.status || '?');
+    else failDetail = 'Váratlan hiba történt.';
+  } finally {
+    removeLastMessageIfTyping();
+  }
+  if (failed) { addErrorMessage(failDetail, lastUser); return; }
+  await addMessage(reply || 'Nem kaptam választ. Próbáld újra.', 'bot');
+  scrollToBottom(false);
+}
+
+function attachBotActions(col, plainText) {
+  var actions = document.createElement('div');
+  actions.className = 'bot-actions';
+  actions.innerHTML =
+    '<button type="button" class="bot-action-btn bot-copy" title="Másolás" aria-label="Másolás">' +
+      '<svg class="ico-copy" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+      '<svg class="ico-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>' +
+      '<span class="bot-action-tip">Másolva!</span>' +
+    '</button>' +
+    '<button type="button" class="bot-action-btn bot-regen" title="Újra" aria-label="Újra generálás">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>' +
+    '</button>';
+  col.appendChild(actions);
+  var copyBtn = actions.querySelector('.bot-copy');
+  var regenBtn = actions.querySelector('.bot-regen');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      copyBotText(copyBtn, plainText);
+    });
+  }
+  if (regenBtn) {
+    regenBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      regenerateBotMessage(col);
+    });
+  }
+}
+
+function isMobileView() { return window.innerWidth <= 960; }
 function renderPromptBank() {
   promptBank.innerHTML = '';
   promptLibrary.forEach(item => {
@@ -90,12 +171,8 @@ function renderPromptBank() {
     button.addEventListener('click', () => {
       input.value = item;
       autoResizeInput();
-      if (isMobileView()) {
-        showPanel('chat');
-        setTimeout(function(){ sendMessage(); }, 80);
-      } else {
-        input.focus();
-      }
+      if (isMobileView()) { showPanel('chat'); setTimeout(function(){ sendMessage(); }, 80); }
+      else input.focus();
     });
     div.appendChild(button);
     promptBank.appendChild(div);
@@ -197,8 +274,7 @@ var typewriterToken = 0;
 
 function isNearBottom(el) {
   if (!el) return true;
-  var gap = el.scrollHeight - el.scrollTop - el.clientHeight;
-  return gap <= SCROLL_BOTTOM_THRESHOLD;
+  return (el.scrollHeight - el.scrollTop - el.clientHeight) <= SCROLL_BOTTOM_THRESHOLD;
 }
 function scrollToBottom(force) {
   var el = typeof chat !== 'undefined' ? chat : document.getElementById('chat');
@@ -320,8 +396,17 @@ function addMessage(text, role) {
   if (role === 'user') bubble.textContent = text;
   else if (role === 'bot') { bubble.classList.add('markdown'); typePromise = typewriterEffect(bubble, text); }
   else { bubble.classList.add('markdown'); bubble.innerHTML = renderMarkdown(text); }
-  if (role === 'user') { msg.appendChild(bubble); msg.appendChild(avatar); }
-  else { msg.appendChild(avatar); msg.appendChild(bubble); }
+  if (role === 'user') {
+    msg.appendChild(bubble);
+    msg.appendChild(avatar);
+  } else {
+    var col = document.createElement('div');
+    col.className = 'bot-col';
+    col.appendChild(bubble);
+    msg.appendChild(avatar);
+    msg.appendChild(col);
+    if (role === 'bot') attachBotActions(col, String(text == null ? '' : text));
+  }
   chat.appendChild(msg);
   if (role === 'user') { userPinnedToBottom = true; scrollToBottom(true); }
   else scrollToBottom(false);
