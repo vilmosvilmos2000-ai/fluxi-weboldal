@@ -5,6 +5,14 @@
   }
 })();
 
+(function(){
+  try {
+    var st = document.createElement('style');
+    st.textContent = '#chat, .chat { scroll-behavior: smooth !important; }';
+    document.head.appendChild(st);
+  } catch(e) {}
+})();
+
 /* Apple touch icon – valódi PNG */
 (function(){
   try {
@@ -56,7 +64,7 @@
       '  .header { flex: 0 0 auto !important; width: 100% !important; position: relative !important; z-index: 30 !important; }',
       '  .mobile-tabs { display: flex !important; flex: 0 0 auto !important; width: 100% !important; }',
       '  .main-chat { flex: 1 1 auto !important; min-height: 0 !important; display: flex !important; flex-direction: column !important; width: 100% !important; position: relative !important; }',
-      '  .chat { flex: 1 1 auto !important; min-height: 0 !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; padding: 12px !important; }',
+      '  .chat { flex: 1 1 auto !important; min-height: 0 !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; scroll-behavior: smooth !important; padding: 12px !important; }',
       '  .composer-wrap { flex: 0 0 auto !important; width: 100% !important; padding-bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important; }',
       '  .sidebar-left, .sidebar-right { display: none; position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: 0 !important; padding-top: max(60px, calc(env(safe-area-inset-top, 0px) + 52px)) !important; z-index: 25 !important; border: none !important; width: 100% !important; height: 100% !important; overflow-y: auto !important; }',
       '  .sidebar-left.visible, .sidebar-right.visible { display: flex !important; }',
