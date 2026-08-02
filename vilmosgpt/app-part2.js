@@ -112,6 +112,7 @@ function saveKnowledge() { localStorage.setItem(storageKey, JSON.stringify(knowl
 
 var userPinnedToBottom = true;
 var SCROLL_BOTTOM_THRESHOLD = 80;
+var lastFailedQuestion = '';
 
 function isNearBottom(el) {
   if (!el) return true;
@@ -150,6 +151,55 @@ function bindChatScrollTracker() {
   }, { passive: true });
 }
 bindChatScrollTracker();
+
+function isOnline() {
+  try {
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return false;
+  } catch (e) {}
+  return true;
+}
+
+function addErrorMessage(detailText, retryText) {
+  var msg = document.createElement('div');
+  msg.className = 'message error';
+  msg.setAttribute('data-error', '1');
+  var avatar = document.createElement('div');
+  avatar.className = 'avatar error-avatar';
+  avatar.textContent = '!';
+  var bubble = document.createElement('div');
+  bubble.className = 'bubble error-bubble';
+  var main = 'Hoppá, a Vilmos GPT most nem tud válaszolni. Kérlek, ellenőrizd az internetkapcsolatot vagy próbáld újra később!';
+  var extra = detailText ? ('<div class="error-detail">' + String(detailText).replace(/</g, '<') + '</div>') : '';
+  var q = retryText || lastFailedQuestion || '';
+  bubble.innerHTML =
+    '<div class="error-row">' +
+      '<span class="error-icon" aria-hidden="true">⚠</span>' +
+      '<div class="error-body">' +
+        '<div class="error-title">Kapcsolati hiba</div>' +
+        '<div class="error-text">' + main + '</div>' +
+        extra +
+        (q ? '<button type="button" class="error-retry-btn" data-retry="1">Újrapróbálkozás</button>' : '') +
+      '</div>' +
+    '</div>';
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+  chat.appendChild(msg);
+  var btn = bubble.querySelector('.error-retry-btn');
+  if (btn && q) {
+    btn.addEventListener('click', function() {
+      try {
+        var nodes = chat.querySelectorAll('[data-error="1"]');
+        for (var i = 0; i < nodes.length; i++) {
+          if (nodes[i].parentNode) nodes[i].parentNode.removeChild(nodes[i]);
+        }
+      } catch (e) {}
+      input.value = q;
+      sendMessage();
+    });
+  }
+  scrollToBottom(true);
+  return msg;
+}
 
 function renderMarkdown(text) {
   var raw = String(text == null ? '' : text);
@@ -322,14 +372,40 @@ function isBadWebText(s) {
   return false;
 }
 async function fetchOneUrl(url, ms) {
+  if (!isOnline()) {
+    var err = new Error('offline');
+    err.code = 'OFFLINE';
+    throw err;
+  }
   try {
     var c = new AbortController();
     var t = setTimeout(function(){ c.abort(); }, ms || 5000);
     var r = await fetch(url, { headers: { Accept: 'text/plain' }, signal: c.signal });
     clearTimeout(t);
-    if (!r.ok) return null;
+    if (!r.ok) {
+      if (r.status === 429 || r.status >= 500) {
+        var e2 = new Error('http_' + r.status);
+        e2.code = 'HTTP';
+        e2.status = r.status;
+        throw e2;
+      }
+      return null;
+    }
     return await r.text();
-  } catch (e) { return null; }
+  } catch (e) {
+    if (e && (e.code === 'OFFLINE' || e.code === 'HTTP')) throw e;
+    if (e && e.name === 'AbortError') {
+      var e3 = new Error('timeout');
+      e3.code = 'TIMEOUT';
+      throw e3;
+    }
+    if (!isOnline()) {
+      var e4 = new Error('offline');
+      e4.code = 'OFFLINE';
+      throw e4;
+    }
+    return null;
+  }
 }
 function parseExtract(raw) {
   var t = String(raw || '');
@@ -373,16 +449,28 @@ async function fetchWebAnswer(question, lang) {
       j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic))
     ];
   }
+  var sawNetworkHardFail = null;
   for (var i = 0; i < urls.length; i++) {
-    var raw = await fetchOneUrl(urls[i], 5000);
-    if (!raw) continue;
-    var extract = parseExtract(raw);
-    if (extract && extract.length > 50) {
-      var ans = extract.slice(0, 450);
-      var d = Math.max(ans.lastIndexOf('.'), ans.lastIndexOf('!'), ans.lastIndexOf('?'));
-      if (d > 60) ans = ans.slice(0, d + 1);
-      return ans;
+    try {
+      var raw = await fetchOneUrl(urls[i], 5000);
+      if (!raw) continue;
+      var extract = parseExtract(raw);
+      if (extract && extract.length > 50) {
+        var ans = extract.slice(0, 450);
+        var d = Math.max(ans.lastIndexOf('.'), ans.lastIndexOf('!'), ans.lastIndexOf('?'));
+        if (d > 60) ans = ans.slice(0, d + 1);
+        return ans;
+      }
+    } catch (e) {
+      if (e && e.code === 'OFFLINE') throw e;
+      sawNetworkHardFail = e;
+      continue;
     }
+  }
+  if (sawNetworkHardFail && !isOnline()) {
+    var off = new Error('offline');
+    off.code = 'OFFLINE';
+    throw off;
   }
   return null;
 }
@@ -406,6 +494,11 @@ function fallbackAnswer(msg, lang) {
 async function callBackendChat(message, lang) {
   var base = (typeof window !== 'undefined' && window.VILMOS_API_BASE) ? String(window.VILMOS_API_BASE).replace(/\/$/, '') : '';
   if (!base) return null;
+  if (!isOnline()) {
+    var err = new Error('offline');
+    err.code = 'OFFLINE';
+    throw err;
+  }
   try {
     var hist = (typeof conversationHistory !== 'undefined' ? conversationHistory : []).slice(-10).map(function(m){
       return { role: m.role, text: String(m.text || '').slice(0, 800) };
@@ -420,10 +513,21 @@ async function callBackendChat(message, lang) {
         history: hist
       })
     });
-    if (!r.ok) return null;
+    if (!r.ok) {
+      var e2 = new Error('http_' + r.status);
+      e2.code = 'HTTP';
+      e2.status = r.status;
+      throw e2;
+    }
     var data = await r.json();
     if (data && data.reply) return String(data.reply).trim();
   } catch (e) {
+    if (e && (e.code === 'OFFLINE' || e.code === 'HTTP' || e.code === 'TIMEOUT')) throw e;
+    if (!isOnline()) {
+      var e3 = new Error('offline');
+      e3.code = 'OFFLINE';
+      throw e3;
+    }
     console.warn('backend chat', e);
   }
   return null;
@@ -449,29 +553,64 @@ async function answerUser(text) {
   var aiReply = await callBackendChat(msg, lang);
   if (aiReply) return personalizeReply(aiReply, currentMode, lang);
   if (shouldSearchWeb(msg)) {
-    var webText = await fetchWebAnswer(msg, lang);
-    var baseReply = buildFriendlyReply(webText);
-    if (baseReply) return personalizeReply(baseReply, currentMode, lang);
+    try {
+      var webText = await fetchWebAnswer(msg, lang);
+      var baseReply = buildFriendlyReply(webText);
+      if (baseReply) return personalizeReply(baseReply, currentMode, lang);
+    } catch (webErr) {
+      if (webErr && (webErr.code === 'OFFLINE' || webErr.code === 'HTTP' || webErr.code === 'TIMEOUT')) {
+        throw webErr;
+      }
+    }
   }
   return personalizeReply(fallbackAnswer(msg, lang), currentMode, lang);
 }
 async function sendMessage() {
   var text = input.value.trim();
   if (!text) return;
+  lastFailedQuestion = text;
   userPinnedToBottom = true;
   addMessage(text, 'user');
   input.value = '';
+  try {
+    var oldErr = chat.querySelectorAll('[data-error="1"]');
+    for (var i = 0; i < oldErr.length; i++) {
+      if (oldErr[i].parentNode) oldErr[i].parentNode.removeChild(oldErr[i]);
+    }
+  } catch (e) {}
   addTypingMessage();
   scrollToBottom(true);
   var reply = null;
+  var failed = false;
+  var failDetail = '';
   try {
+    if (!isOnline()) {
+      var off = new Error('offline');
+      off.code = 'OFFLINE';
+      throw off;
+    }
     reply = await answerUser(text);
   } catch (err) {
+    failed = true;
     console.warn('sendMessage', err);
-    reply = 'Hiba történt a válasz közben. Próbáld újra.';
+    if (err && err.code === 'OFFLINE') failDetail = 'Nincs internetkapcsolat.';
+    else if (err && err.code === 'TIMEOUT') failDetail = 'Időtúllépés — a szolgáltatás lassú vagy nem elérhető.';
+    else if (err && err.code === 'HTTP') {
+      if (err.status === 429) failDetail = 'Túl sok kérés (429). Várj egy kicsit, majd próbáld újra.';
+      else if (err.status === 401 || err.status === 403) failDetail = 'Hitelesítési hiba (' + err.status + ').';
+      else if (err.status >= 500) failDetail = 'A szerver átmenetileg hibás (' + err.status + ').';
+      else failDetail = 'HTTP hiba: ' + (err.status || '?');
+    } else {
+      failDetail = 'Váratlan hiba történt.';
+    }
   } finally {
     removeLastMessageIfTyping();
   }
+  if (failed) {
+    addErrorMessage(failDetail, text);
+    return;
+  }
+  lastFailedQuestion = '';
   addMessage(reply || 'Nem kaptam választ. Próbáld újra.', 'bot');
   scrollToBottom(false);
 }
