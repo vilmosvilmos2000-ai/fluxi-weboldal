@@ -1,4 +1,4 @@
-/* Input → textarea (ha még INPUT a HTML-ben) – app.js előtt/után is biztonságos */
+/* Input → textarea */
 (function upgradeComposer(){
   try {
     var old = document.getElementById('input');
@@ -13,11 +13,8 @@
   } catch (e) {}
 })();
 
-/* Biztonságos API base */
 (function(){
-  if (typeof window.VILMOS_API_BASE === 'undefined') {
-    window.VILMOS_API_BASE = '';
-  }
+  if (typeof window.VILMOS_API_BASE === 'undefined') window.VILMOS_API_BASE = '';
 })();
 
 (function(){
@@ -44,13 +41,26 @@
       '.error-retry-btn:active{transform:scale(.98)}',
       '.composer{align-items:flex-end!important}',
       '.composer textarea#input,.composer #input{flex:1;padding:12px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:18px;outline:none;font-size:15px;background:#f8fafc;color:#0f172a;font-family:inherit;line-height:1.4;resize:none;overflow-y:hidden;min-height:44px;max-height:calc(1.4em * 5 + 24px);height:44px}',
-      '.composer textarea#input:focus{border-color:rgba(56,189,248,0.55);box-shadow:0 0 0 3px rgba(56,189,248,0.15)}'
+      '.composer textarea#input:focus{border-color:rgba(56,189,248,0.55);box-shadow:0 0 0 3px rgba(56,189,248,0.15)}',
+      '.empty-state{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:20px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch}',
+      '.empty-state.hidden{display:none!important}',
+      '.chat.is-empty{display:none!important}',
+      '.empty-inner{width:min(560px,100%);text-align:center}',
+      '.empty-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;color:#38bdf8;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.25);border-radius:999px;padding:4px 10px;margin-bottom:12px}',
+      '.empty-title{font-size:clamp(28px,6vw,40px);font-weight:800;letter-spacing:-0.03em;background:linear-gradient(135deg,#f8fafc,#38bdf8 50%,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 10px}',
+      '.empty-sub{color:#94a3b8;font-size:15px;line-height:1.5;margin:0 0 22px}',
+      '.empty-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}',
+      '.empty-card{display:flex;align-items:flex-start;gap:10px;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;cursor:pointer;font:inherit;text-align:left;transition:border-color .15s,background .15s,transform .15s}',
+      '.empty-card:hover{border-color:rgba(56,189,248,0.45);background:rgba(56,189,248,0.08);transform:translateY(-1px)}',
+      '.empty-card:active{transform:scale(.98)}',
+      '.empty-card-icon{font-size:18px;line-height:1.2;flex-shrink:0}',
+      '.empty-card-text{font-size:13px;line-height:1.4;font-weight:500}',
+      '@media (max-width:520px){.empty-cards{grid-template-columns:1fr}.empty-title{font-size:26px}.empty-sub{font-size:14px}}'
     ].join('');
     document.head.appendChild(st);
   } catch(e) {}
 })();
 
-/* Apple touch icon – valódi PNG */
 (function(){
   try {
     document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(function(el){ el.remove(); });
