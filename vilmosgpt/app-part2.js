@@ -109,6 +109,48 @@ function loadKnowledge() {
   try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { return []; }
 }
 function saveKnowledge() { localStorage.setItem(storageKey, JSON.stringify(knowledge)); }
+
+var userPinnedToBottom = true;
+var SCROLL_BOTTOM_THRESHOLD = 80;
+
+function isNearBottom(el) {
+  if (!el) return true;
+  var gap = el.scrollHeight - el.scrollTop - el.clientHeight;
+  return gap <= SCROLL_BOTTOM_THRESHOLD;
+}
+
+function scrollToBottom(force) {
+  var el = typeof chat !== 'undefined' ? chat : document.getElementById('chat');
+  if (!el) return;
+  if (!force && !userPinnedToBottom) return;
+  requestAnimationFrame(function() {
+    try {
+      if (typeof el.scrollTo === 'function') {
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+      } else {
+        el.scrollTop = el.scrollHeight;
+      }
+    } catch (e) {
+      el.scrollTop = el.scrollHeight;
+    }
+    setTimeout(function() {
+      if (force || userPinnedToBottom) {
+        try { el.scrollTop = el.scrollHeight; } catch (e2) {}
+      }
+    }, 120);
+  });
+}
+
+function bindChatScrollTracker() {
+  var el = typeof chat !== 'undefined' ? chat : document.getElementById('chat');
+  if (!el || el._vilmosScrollBound) return;
+  el._vilmosScrollBound = true;
+  el.addEventListener('scroll', function() {
+    userPinnedToBottom = isNearBottom(el);
+  }, { passive: true });
+}
+bindChatScrollTracker();
+
 function renderMarkdown(text) {
   var raw = String(text == null ? '' : text);
   try {
@@ -137,7 +179,12 @@ function addMessage(text, role) {
   if (role === 'user') { msg.appendChild(bubble); msg.appendChild(avatar); }
   else { msg.appendChild(avatar); msg.appendChild(bubble); }
   chat.appendChild(msg);
-  chat.scrollTop = chat.scrollHeight;
+  if (role === 'user') {
+    userPinnedToBottom = true;
+    scrollToBottom(true);
+  } else {
+    scrollToBottom(false);
+  }
   if (role === 'user' || role === 'bot') {
     conversationHistory.push({ role: role, text: String(text) });
     if (conversationHistory.length > 40) conversationHistory = conversationHistory.slice(-40);
@@ -152,7 +199,8 @@ function addTypingMessage() {
   bubble.className = 'bubble';
   bubble.textContent = currentMode === 'research' ? 'Mély kutatás...' : 'Keresem...';
   msg.appendChild(avatar); msg.appendChild(bubble);
-  chat.appendChild(msg); chat.scrollTop = chat.scrollHeight;
+  chat.appendChild(msg);
+  scrollToBottom(false);
   return msg;
 }
 function removeLastMessageIfTyping() {
@@ -393,12 +441,15 @@ async function answerUser(text) {
 async function sendMessage() {
   var text = input.value.trim();
   if (!text) return;
+  userPinnedToBottom = true;
   addMessage(text, 'user');
   input.value = '';
   addTypingMessage();
+  scrollToBottom(true);
   var reply = await answerUser(text);
   removeLastMessageIfTyping();
   addMessage(reply, 'bot');
+  scrollToBottom(false);
 }
 function showPanel(panel) {
   sidebarLeft.classList.remove('visible');
