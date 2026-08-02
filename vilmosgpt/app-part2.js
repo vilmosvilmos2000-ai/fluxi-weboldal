@@ -109,6 +109,22 @@ function loadKnowledge() {
   try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { return []; }
 }
 function saveKnowledge() { localStorage.setItem(storageKey, JSON.stringify(knowledge)); }
+function renderMarkdown(text) {
+  var raw = String(text == null ? '' : text);
+  try {
+    if (window.marked && typeof marked.parse === 'function') {
+      if (marked.setOptions) {
+        marked.setOptions({ breaks: true, gfm: true });
+      }
+      return marked.parse(raw);
+    }
+  } catch (e) {}
+  return raw
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/\n/g, '<br>');
+}
 function addMessage(text, role) {
   role = role || 'bot';
   const msg = document.createElement('div');
@@ -118,7 +134,12 @@ function addMessage(text, role) {
   avatar.textContent = role === 'user' ? 'Te' : role === 'system' ? '✓' : 'AI';
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
-  bubble.textContent = text;
+  if (role === 'user') {
+    bubble.textContent = text;
+  } else {
+    bubble.classList.add('markdown');
+    bubble.innerHTML = renderMarkdown(text);
+  }
   if (role === 'user') { msg.appendChild(bubble); msg.appendChild(avatar); }
   else { msg.appendChild(avatar); msg.appendChild(bubble); }
   chat.appendChild(msg);
@@ -399,5 +420,5 @@ renderPromptBank();
 renderMentorTips();
 renderMemoryList();
 setMode(currentMode);
-addMessage('Szia! Én vagyok a VilmosGPT. Beszélgessünk — emlékszem a beszélgetésünkre, és segítek, amiben tudok.', 'bot');
+addMessage('Szia! Én vagyok a **VilmosGPT**. Beszélgessünk — emlékszem a beszélgetésünkre, és segítek, amiben tudok.', 'bot');
 addMessage('Példák: „mi az a teknős?”, „mi az a csivava?”, „mennyi 1+1?”.', 'system');
