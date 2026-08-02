@@ -1,10 +1,10 @@
-/* loader v20 */
+/* loader v21 */
 (async function(){
   try {
     var parts = ['app-part1.js','app-part2.js'];
     var code = '';
     for (var i=0;i<parts.length;i++) {
-      var r = await fetch(parts[i]+'?v=c20');
+      var r = await fetch(parts[i]+'?v=c21');
       if (!r.ok) throw new Error(parts[i]);
       code += await r.text();
     }
