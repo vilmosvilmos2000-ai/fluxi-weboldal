@@ -113,6 +113,7 @@ function saveKnowledge() { localStorage.setItem(storageKey, JSON.stringify(knowl
 var userPinnedToBottom = true;
 var SCROLL_BOTTOM_THRESHOLD = 80;
 var lastFailedQuestion = '';
+var typewriterToken = 0;
 
 function isNearBottom(el) {
   if (!el) return true;
@@ -201,6 +202,69 @@ function addErrorMessage(detailText, retryText) {
   return msg;
 }
 
+/** Írógép-effekt: plain szöveg szavanként, Markdown CSAK a végén (HTML nem törik). */
+function typewriterEffect(bubble, fullText, opts) {
+  opts = opts || {};
+  var plain = String(fullText == null ? '' : fullText);
+  var baseDelay = typeof opts.delay === 'number' ? opts.delay : 22;
+  var token = ++typewriterToken;
+  bubble.classList.add('markdown', 'typing-out');
+  bubble.textContent = '';
+
+  if (!plain) {
+    bubble.classList.remove('typing-out');
+    return Promise.resolve();
+  }
+
+  if (plain.length <= 4) {
+    bubble.classList.remove('typing-out');
+    bubble.innerHTML = renderMarkdown(plain);
+    scrollToBottom(false);
+    return Promise.resolve();
+  }
+
+  var chunks = plain.match(/\S+\s*|\s+/g);
+  if (!chunks || !chunks.length) chunks = [plain];
+
+  var delay = baseDelay;
+  if (plain.length > 600) delay = 10;
+  else if (plain.length > 300) delay = 14;
+  else if (plain.length > 120) delay = 18;
+
+  var i = 0;
+  var acc = '';
+
+  return new Promise(function(resolve) {
+    function finish() {
+      if (token !== typewriterToken) { resolve(); return; }
+      bubble.classList.remove('typing-out');
+      try {
+        bubble.innerHTML = renderMarkdown(plain);
+      } catch (e) {
+        bubble.textContent = plain;
+      }
+      scrollToBottom(false);
+      resolve();
+    }
+    function tick() {
+      if (token !== typewriterToken) { resolve(); return; }
+      if (i >= chunks.length) {
+        finish();
+        return;
+      }
+      var step = plain.length > 800 ? 3 : (plain.length > 400 ? 2 : 1);
+      var end = Math.min(i + step, chunks.length);
+      while (i < end) {
+        acc += chunks[i++];
+      }
+      bubble.textContent = acc;
+      if (userPinnedToBottom) scrollToBottom(true);
+      setTimeout(tick, delay);
+    }
+    tick();
+  });
+}
+
 function renderMarkdown(text) {
   var raw = String(text == null ? '' : text);
   try {
@@ -220,8 +284,12 @@ function addMessage(text, role) {
   avatar.textContent = role === 'user' ? 'Te' : role === 'system' ? '✓' : 'AI';
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
+  var typePromise = Promise.resolve();
   if (role === 'user') {
     bubble.textContent = text;
+  } else if (role === 'bot') {
+    bubble.classList.add('markdown');
+    typePromise = typewriterEffect(bubble, text);
   } else {
     bubble.classList.add('markdown');
     bubble.innerHTML = renderMarkdown(text);
@@ -239,6 +307,7 @@ function addMessage(text, role) {
     conversationHistory.push({ role: role, text: String(text) });
     if (conversationHistory.length > 40) conversationHistory = conversationHistory.slice(-40);
   }
+  return typePromise;
 }
 function addTypingMessage() {
   const msg = document.createElement('div');
@@ -611,7 +680,7 @@ async function sendMessage() {
     return;
   }
   lastFailedQuestion = '';
-  addMessage(reply || 'Nem kaptam választ. Próbáld újra.', 'bot');
+  await addMessage(reply || 'Nem kaptam választ. Próbáld újra.', 'bot');
   scrollToBottom(false);
 }
 function showPanel(panel) {
