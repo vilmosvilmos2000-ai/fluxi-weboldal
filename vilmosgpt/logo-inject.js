@@ -1,3 +1,18 @@
+/* Input → textarea (ha még INPUT a HTML-ben) – app.js előtt/után is biztonságos */
+(function upgradeComposer(){
+  try {
+    var old = document.getElementById('input');
+    if (!old || old.tagName === 'TEXTAREA') return;
+    var ta = document.createElement('textarea');
+    ta.id = 'input';
+    ta.rows = 1;
+    ta.placeholder = old.getAttribute('placeholder') || 'Írd be a kérdésed...';
+    ta.setAttribute('autocomplete', 'off');
+    if (old.value) ta.value = old.value;
+    old.parentNode.replaceChild(ta, old);
+  } catch (e) {}
+})();
+
 /* Biztonságos API base */
 (function(){
   if (typeof window.VILMOS_API_BASE === 'undefined') {
