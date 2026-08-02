@@ -78,10 +78,32 @@ function importMemory(event) {
   reader.readAsText(file);
   event.target.value = '';
 }
-function personalizeReply(reply, mode) {
-  const base = String(reply || '').trim();
-  if (!base) return 'Próbálom megadni a lehető legjobb választ.';
-  return base;
+function detectLang(text) {
+  var t = String(text || '').toLowerCase().trim();
+  if (!t) return 'hu';
+  if (/[áéíóöőúüű]/.test(t)) return 'hu';
+  var huWords = ['mi','az','egy','hogy','nem','van','vagy','kell','lehet','miért','hogyan','mennyi','ki','hol','mikor','köszönöm','szia','igen','kérem','segíts','magyar'];
+  var enWords = ['what','who','where','when','why','how','the','is','are','was','were','this','that','please','hello','thanks','thank','can','you','tell','me','about','define','meaning'];
+  var words = t.replace(/[^\p{L}\s]/gu, ' ').split(/\s+/).filter(Boolean);
+  var hu = 0, en = 0;
+  words.forEach(function(w){
+    if (huWords.indexOf(w) >= 0) hu++;
+    if (enWords.indexOf(w) >= 0) en++;
+  });
+  if (en > hu && en >= 1) return 'en';
+  if (en >= 1 && !/[áéíóöőúüű]/.test(t) && /^[a-z0-9\s?'".,!-]+$/i.test(t)) return 'en';
+  return 'hu';
+}
+function ensureLang(reply, lang) {
+  var r = String(reply || '').trim();
+  if (!r) return lang === 'en' ? 'I could not find a good answer. Try rephrasing.' : 'Nem találtam jó választ. Próbáld másképp megfogalmazni.';
+  return r;
+}
+function personalizeReply(reply, mode, lang) {
+  lang = lang || 'hu';
+  var base = String(reply || '').trim();
+  if (!base) return lang === 'en' ? 'I will try to give the best answer I can.' : 'Próbálom megadni a lehető legjobb választ.';
+  return ensureLang(base, lang);
 }
 function loadKnowledge() {
   try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { return []; }
@@ -139,11 +161,11 @@ function tryEvaluateMath(text) {
 }
 function isGreeting(text) {
   var lower = text.toLowerCase().trim();
-  return /^(szia|hello|hey|jó napot|sziasztok|üdv)\b/i.test(lower) || lower === 'szia' || lower === 'hello';
+  return /^(szia|hello|hey|hi|jó napot|sziasztok|üdv)\b/i.test(lower) || lower === 'szia' || lower === 'hello' || lower === 'hi';
 }
 function isAboutHistory(text) {
   var lower = text.toLowerCase();
-  var patterns = ['előbb miről','miről beszéltünk','mit mondtál','mit kérdeztem','emlékszel','korábban','előző','összefoglal','miről volt szó','mit beszéltünk'];
+  var patterns = ['előbb miről','miről beszéltünk','mit mondtál','mit kérdeztem','emlékszel','korábban','előző','összefoglal','miről volt szó','mit beszéltünk','what did we talk','summarize'];
   return patterns.some(function(p){ return lower.indexOf(p) >= 0; });
 }
 function summarizeConversation() {
@@ -170,10 +192,19 @@ function extractDefinitionKey(text) {
   if (m) return m[1].replace(/[?.!]+$/g, '').trim();
   m = lower.match(/^(?:mi\s+ez\s+a|mi\s+ez)\s+(.+?)\s*[?.!]*$/i);
   if (m) return m[1].replace(/[?.!]+$/g, '').trim();
+  m = lower.match(/^(?:what\s+is\s+(?:a|an|the)?|define|what\s+does)\s+(.+?)\s*[?.!]*$/i);
+  if (m) return m[1].replace(/[?.!]+$/g, '').trim();
   return null;
 }
-function localSmartAnswer(text) {
+function localSmartAnswer(text, lang) {
+  lang = lang || detectLang(text);
   var lower = text.toLowerCase().trim();
+  if (lang === 'en') {
+    if (/\b(what is your name|who are you)\b/.test(lower)) return 'My name is VilmosGPT. I am a personal learning AI.';
+    if (/\bjoke\b/.test(lower)) return 'Why do computers never tell jokes? Because they always hit Enter too soon.';
+    if (/\b(thank|thanks)\b/.test(lower)) return 'You are welcome! Ask me anything else.';
+    if (/\b(help|help me)\b/.test(lower) || lower === 'help') return 'Of course! Tell me what you need help with.';
+  }
   if (lower.indexOf('mi a neved') >= 0 || lower.indexOf('ki vagy') >= 0) return 'A nevem VilmosGPT. Egy személyes, tanuló AI vagyok.';
   if (lower.indexOf('vicc') >= 0) return 'Miért nem mondja a számítógép a viccet? Mert a billentyűzeten van egy kis „enter” problémája. 😄';
   if (lower.indexOf('köszönöm') >= 0 || lower.indexOf('koszonom') >= 0) return 'Szívesen! Ha van még kérdésed, csak írd meg.';
@@ -191,12 +222,13 @@ function localSmartAnswer(text) {
     if (lower === k || lower === 'mi az a ' + k || lower === 'mi a ' + k || lower === 'mi az ' + k) return simpleDefinitions[k];
   }
   if (lower.indexOf('cpu') >= 0 && lower.indexOf('ram') >= 0) return 'CPU = agy (számol). RAM = munkaasztal.';
-  if (lower.indexOf('segíts') >= 0 || lower === 'help') return 'Persze! Mondd el, miben segíthetek.';
+  if (lower.indexOf('segíts') >= 0 || lower === 'help') return lang === 'en' ? 'Of course! Tell me what you need.' : 'Persze! Mondd el, miben segíthetek.';
   return null;
 }
 function shouldSearchWeb(text) {
   var lower = text.toLowerCase();
   if (!lower || lower.length < 3) return false;
+  if (lower.length <= 2) return false;
   if (isGreeting(lower) || isAboutHistory(lower)) return false;
   if (lower.indexOf('mi a neved') >= 0 || lower.indexOf('vicc') >= 0 || lower.indexOf('jegyezz meg') >= 0 || lower.indexOf('köszönöm') >= 0) return false;
   if (localSmartAnswer(text)) return false;
@@ -244,16 +276,27 @@ function parseExtract(raw) {
   return out.length ? out.join(' ') : '';
 }
 
-async function fetchWebAnswer(question) {
+async function fetchWebAnswer(question, lang) {
+  lang = lang || detectLang(question);
   var q = question.trim();
-  var topic = q.replace(/^(mi az a|mi a|mi az|mit jelent|mi ez a|mi ez|mi az a|ki az a|ki a)\s+/i, '').replace(/[?.!]+$/g, '').trim() || q;
+  var topic = q.replace(/^(mi az a|mi a|mi az|mit jelent|mi ez a|mi ez|mi az a|ki az a|ki a|what is|what are|who is|define)\s+/i, '').replace(/[?.!]+$/g, '').trim() || q;
   var j = function(u){ return 'https://r.jina.ai/' + u; };
-  var urls = [
-    j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
-    j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
-    j('https://hu.wikipedia.org/wiki/' + encodeURIComponent(topic)),
-    j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definíció'))
-  ];
+  var urls;
+  if (lang === 'en') {
+    urls = [
+      j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
+      j('https://en.wikipedia.org/wiki/' + encodeURIComponent(topic)),
+      j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definition')),
+      j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic))
+    ];
+  } else {
+    urls = [
+      j('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)),
+      j('https://hu.wikipedia.org/wiki/' + encodeURIComponent(topic)),
+      j('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' definíció magyarul')),
+      j('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic))
+    ];
+  }
   for (var i = 0; i < urls.length; i++) {
     var raw = await fetchOneUrl(urls[i], 5000);
     if (!raw) continue;
@@ -276,33 +319,39 @@ function buildFriendlyReply(webText) {
   if (lastDot > 60) a = a.slice(0, lastDot + 1);
   return a;
 }
-function fallbackAnswer(msg) {
+function fallbackAnswer(msg, lang) {
+  lang = lang || detectLang(msg || '');
+  if (lang === 'en') {
+    if (currentMode === 'research') return 'I could not find a clear source for this. Please rephrase more specifically.';
+    return 'I could not find a reliable answer. Try rephrasing your question.';
+  }
   if (currentMode === 'research') return 'Erről most nem találtam elég tiszta forrást. Fogalmazd meg konkrétabban.';
   return 'Erről most nem találtam megbízható választ. Próbáld meg másképp megfogalmazni a kérdést.';
 }
 async function answerUser(text) {
   var msg = text.trim();
   var lower = msg.toLowerCase();
-  if (!msg) return 'Írj valamit, hogy tudjak válaszolni.';
+  var lang = detectLang(msg);
+  if (!msg) return lang === 'en' ? 'Type something so I can answer.' : 'Írj valamit, hogy tudjak válaszolni.';
   if (isAboutHistory(msg)) return summarizeConversation();
-  if (lower.indexOf('jegyezz meg') >= 0 || lower.indexOf('emlékezz') >= 0) {
-    var fact = msg.replace(/^(jegyezz meg|tanulj meg|emlékezz|emlékezz meg)[^\p{L}]*/iu, '').replace(/^hogy\s+/i, '').trim();
-    if (fact) { rememberFact(fact); renderMemoryList(); return 'Rendben, megjegyeztem: ' + fact; }
-    return 'Rendben, megjegyeztem.';
+  if (lower.indexOf('jegyezz meg') >= 0 || lower.indexOf('emlékezz') >= 0 || /\b(remember that|remember this)\b/.test(lower)) {
+    var fact = msg.replace(/^(jegyezz meg|tanulj meg|emlékezz|emlékezz meg|remember that|remember this)[^\p{L}]*/iu, '').replace(/^hogy\s+/i, '').replace(/^that\s+/i, '').trim();
+    if (fact) { rememberFact(fact); renderMemoryList(); return lang === 'en' ? ('Got it, I remembered: ' + fact) : ('Rendben, megjegyeztem: ' + fact); }
+    return lang === 'en' ? 'Got it, remembered.' : 'Rendben, megjegyeztem.';
   }
   var known = knowledge.find(function(item){ return lower.indexOf(item.toLowerCase()) >= 0 && item.length > 3; });
-  if (known) return 'A korábbi emlékeim szerint: ' + known;
+  if (known) return (lang === 'en' ? 'From what I remember: ' : 'A korábbi emlékeim szerint: ') + known;
   var mathAnswer = tryEvaluateMath(msg);
   if (mathAnswer) return mathAnswer;
-  if (isGreeting(msg)) return 'Szia! Örülök, hogy itt vagy. Mit szeretnél ma megkérdezni?';
-  var local = localSmartAnswer(msg);
-  if (local) return personalizeReply(local, currentMode);
+  if (isGreeting(msg)) return lang === 'en' ? 'Hi! Glad you are here. What would you like to ask?' : 'Szia! Örülök, hogy itt vagy. Mit szeretnél ma megkérdezni?';
+  var local = localSmartAnswer(msg, lang);
+  if (local) return personalizeReply(local, currentMode, lang);
   if (shouldSearchWeb(msg)) {
-    var webText = await fetchWebAnswer(msg);
+    var webText = await fetchWebAnswer(msg, lang);
     var baseReply = buildFriendlyReply(webText);
-    if (baseReply) return personalizeReply(baseReply, currentMode);
+    if (baseReply) return personalizeReply(baseReply, currentMode, lang);
   }
-  return personalizeReply(fallbackAnswer(msg), currentMode);
+  return personalizeReply(fallbackAnswer(msg, lang), currentMode, lang);
 }
 async function sendMessage() {
   var text = input.value.trim();
