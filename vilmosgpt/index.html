@@ -26,6 +26,7 @@
   </script>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/hu_HU/sdk.js"></script>
   <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -97,6 +98,43 @@
     .message.user .bubble { background: linear-gradient(135deg, #1e3a5f, #2d1b4e); color: white; border: none; }
     .message.system .bubble { background: rgba(52,211,153,0.1); color: #dcfce7; border-color: rgba(52,211,153,0.2); }
     .message.typing .bubble { color: #94a3b8; font-style: italic; }
+    .bubble.markdown { white-space: normal; line-height: 1.55; }
+    .bubble.markdown p { margin: 0 0 0.55em 0; }
+    .bubble.markdown p:last-child { margin-bottom: 0; }
+    .bubble.markdown strong, .bubble.markdown b { font-weight: 700; color: #f1f5f9; }
+    .bubble.markdown em, .bubble.markdown i { font-style: italic; color: #e2e8f0; }
+    .bubble.markdown a { color: #38bdf8; text-decoration: underline; word-break: break-all; }
+    .bubble.markdown ul, .bubble.markdown ol { margin: 0.4em 0 0.6em 0; padding-left: 1.35em; }
+    .bubble.markdown li { margin: 0.25em 0; }
+    .bubble.markdown li::marker { color: #94a3b8; }
+    .bubble.markdown h1, .bubble.markdown h2, .bubble.markdown h3 {
+      margin: 0.6em 0 0.35em 0; font-weight: 700; line-height: 1.3; color: #f8fafc;
+    }
+    .bubble.markdown h1 { font-size: 1.2em; }
+    .bubble.markdown h2 { font-size: 1.1em; }
+    .bubble.markdown h3 { font-size: 1.05em; }
+    .bubble.markdown blockquote {
+      margin: 0.5em 0; padding: 0.4em 0.8em; border-left: 3px solid #38bdf8;
+      background: rgba(56,189,248,0.08); color: #cbd5e1; border-radius: 0 8px 8px 0;
+    }
+    .bubble.markdown hr { border: none; border-top: 1px solid rgba(255,255,255,0.12); margin: 0.75em 0; }
+    .bubble.markdown code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.88em; background: rgba(0,0,0,0.45); color: #f472b6;
+      padding: 0.12em 0.4em; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
+    }
+    .bubble.markdown pre {
+      margin: 0.55em 0; padding: 12px 14px; background: #0b1220;
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .bubble.markdown pre code {
+      display: block; padding: 0; background: transparent; border: none;
+      color: #e2e8f0; font-size: 0.84em; line-height: 1.5; white-space: pre;
+    }
+    .bubble.markdown table { border-collapse: collapse; width: 100%; margin: 0.5em 0; font-size: 0.92em; }
+    .bubble.markdown th, .bubble.markdown td { border: 1px solid rgba(255,255,255,0.12); padding: 6px 8px; text-align: left; }
+    .bubble.markdown th { background: rgba(255,255,255,0.06); }
     .composer-wrap {
       flex: 0 0 auto; padding: 10px 12px;
       padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
