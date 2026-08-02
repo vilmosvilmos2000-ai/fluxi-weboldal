@@ -1,9 +1,9 @@
-/* part2 restore loader – fetches last good snapshot */
+/* part2 – pre-sidebar stable snapshot */
 (async function(){
   try {
     var urls = [
-      'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@28ec7c28fb52bd3ff7bbd5131c2d3b9490f99cfd/vilmosgpt/app-part2.js',
-      'https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/28ec7c28fb52bd3ff7bbd5131c2d3b9490f99cfd/vilmosgpt/app-part2.js'
+      'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@6a7a296e61b3a2fa08af04a3cb44f8bf6c7acc4e/vilmosgpt/app-part2.js',
+      'https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/6a7a296e61b3a2fa08af04a3cb44f8bf6c7acc4e/vilmosgpt/app-part2.js'
     ];
     var code = null;
     for (var i = 0; i < urls.length; i++) {
@@ -15,8 +15,7 @@
         }
       } catch (e) {}
     }
-    if (!code) { console.error('VilmosGPT: app-part2 restore failed'); return; }
-    // Direct eval keeps lexical scope with part1 consts (chat, input, ...)
+    if (!code) { console.error('VilmosGPT: app-part2 load failed'); return; }
     eval(code);
   } catch (e) { console.error('VilmosGPT part2', e); }
 })();
