@@ -192,20 +192,37 @@ function addMessage(text, role) {
 }
 function addTypingMessage() {
   const msg = document.createElement('div');
-  msg.className = 'message typing';
+  msg.className = 'message bot typing';
+  msg.setAttribute('data-typing', '1');
   const avatar = document.createElement('div');
-  avatar.className = 'avatar'; avatar.textContent = 'AI';
+  avatar.className = 'avatar';
+  avatar.textContent = 'AI';
   const bubble = document.createElement('div');
-  bubble.className = 'bubble';
-  bubble.textContent = currentMode === 'research' ? 'Mély kutatás...' : 'Keresem...';
-  msg.appendChild(avatar); msg.appendChild(bubble);
+  bubble.className = 'bubble typing-bubble';
+  var label = currentMode === 'research' ? 'Kutatás' : 'Gondolkodom';
+  bubble.innerHTML =
+    '<div class="typing-indicator" aria-label="' + label + '">' +
+      '<span class="typing-dot"></span>' +
+      '<span class="typing-dot"></span>' +
+      '<span class="typing-dot"></span>' +
+    '</div>' +
+    '<span class="typing-label">' + label + '…</span>';
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
   chat.appendChild(msg);
-  scrollToBottom(false);
+  scrollToBottom(true);
   return msg;
 }
 function removeLastMessageIfTyping() {
-  const last = chat.lastElementChild;
-  if (last && last.classList.contains('typing')) chat.removeChild(last);
+  try {
+    var nodes = chat.querySelectorAll('.message.typing, [data-typing="1"]');
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i] && nodes[i].parentNode) nodes[i].parentNode.removeChild(nodes[i]);
+    }
+  } catch (e) {
+    var last = chat.lastElementChild;
+    if (last && last.classList.contains('typing')) chat.removeChild(last);
+  }
 }
 function rememberFact(text) {
   const cleaned = text.trim();
@@ -446,9 +463,16 @@ async function sendMessage() {
   input.value = '';
   addTypingMessage();
   scrollToBottom(true);
-  var reply = await answerUser(text);
-  removeLastMessageIfTyping();
-  addMessage(reply, 'bot');
+  var reply = null;
+  try {
+    reply = await answerUser(text);
+  } catch (err) {
+    console.warn('sendMessage', err);
+    reply = 'Hiba történt a válasz közben. Próbáld újra.';
+  } finally {
+    removeLastMessageIfTyping();
+  }
+  addMessage(reply || 'Nem kaptam választ. Próbáld újra.', 'bot');
   scrollToBottom(false);
 }
 function showPanel(panel) {
