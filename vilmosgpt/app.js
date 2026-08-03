@@ -1,4 +1,4 @@
-/* loader v27 – stable chat + sidebar + response quality */
+/* loader v28 – stable chat + sidebar + response quality v2 */
 (async function(){
   try {
     var base = 'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@6a7a296e61b3a2fa08af04a3cb44f8bf6c7acc4e/vilmosgpt/';
@@ -25,7 +25,7 @@
       if (ra.ok) code += '\n' + await ra.text();
     } catch (ea) {}
     try {
-      var rq = await fetch('response-quality.js?v=1');
+      var rq = await fetch('response-quality.js?v=2');
       if (rq.ok) code += '\n' + await rq.text();
     } catch (eq) {}
     var s = document.createElement('script');
