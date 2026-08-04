@@ -1,4 +1,4 @@
-/* loader v29 – stable chat + sidebar + response quality v2 (cache-bypass) */
+/* loader v30 – no API keys, web search only */
 (async function(){
   try {
     var base = 'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@6a7a296e61b3a2fa08af04a3cb44f8bf6c7acc4e/vilmosgpt/';
@@ -24,18 +24,17 @@
       var ra = await fetch('sidebar-addon.js?v=1');
       if (ra.ok) code += '\n' + await ra.text();
     } catch (ea) {}
-    // response-quality: try local then raw main (bypass stale Pages cache)
     var rqText = null;
     try {
-      var rq = await fetch('response-quality.js?v=2');
+      var rq = await fetch('response-quality.js?v=3');
       if (rq.ok) {
         var t = await rq.text();
-        if (t && t.indexOf('response-quality v2') >= 0) rqText = t;
+        if (t && t.indexOf('NO API keys') >= 0) rqText = t;
       }
     } catch (eq) {}
     if (!rqText) {
       try {
-        var rq2 = await fetch('https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/main/vilmosgpt/response-quality.js?v=2');
+        var rq2 = await fetch('https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/main/vilmosgpt/response-quality.js?v=3');
         if (rq2.ok) rqText = await rq2.text();
       } catch (eq2) {}
     }
