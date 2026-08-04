@@ -1,4 +1,4 @@
-/* response-quality v3 – NO API keys, internet search only */
+/* response-quality v4 – Wikipedia + DuckDuckGo always; research = 20+ trusted sources */
 function isBadWebText(s) {
   if (!s || s.length < 40) return true;
   var lower = String(s).toLowerCase();
@@ -11,7 +11,8 @@ function isBadWebText(s) {
     'disambiguation', 'may refer to', 'létrehozás', 'áthelyezés', 'eszközök',
     'permanent link', 'page information', 'cite this page', 'download as pdf',
     'upload file', 'printable version', 'what links here', 'you are making too many requests',
-    'enable javascript', 'captcha', 'privacy policy', 'terms of service'
+    'enable javascript', 'captcha', 'privacy policy', 'terms of service', 'accept all cookies',
+    'subscribe now', 'related searches', 'did you mean'
   ];
   for (var i = 0; i < bad.length; i++) if (lower.indexOf(bad[i]) >= 0) return true;
   if ((s.match(/\|/g) || []).length > 8) return true;
@@ -90,53 +91,122 @@ function jina(url) {
   return 'https://r.jina.ai/' + url;
 }
 
-async function fetchWebAnswer(question, lang) {
-  lang = lang || (typeof detectLang === 'function' ? detectLang(question) : 'hu');
+function cleanTopic(question) {
   var q = String(question || '').trim();
-  if (!q) return null;
   var topic = q
     .replace(/^(mi az a|mi a|mi az|mit jelent|mi ez a|mi ez|what is|what are|who is|define|hogyan|how)\s+/i, '')
     .replace(/[?.!]+$/g, '')
     .trim() || q;
-  topic = topic.slice(0, 90);
+  return topic.slice(0, 90);
+}
 
+/** Normál mód: Wiki + DuckDuckGo. Kutatás: +20 megbízható forrás. */
+function buildSearchUrls(question, lang) {
+  var topic = cleanTopic(question);
+  var q = String(question || '').trim();
+  var enc = encodeURIComponent(topic);
+  var encQ = encodeURIComponent(q);
+  var encHu = encodeURIComponent(topic + ' magyarázat');
+  var encEn = encodeURIComponent(topic + ' explained');
   var urls = [];
-  if (lang === 'en') {
-    urls.push(jina('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)));
-  } else {
-    urls.push(jina('https://hu.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)));
-    urls.push(jina('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(topic)));
-  }
-  var ddgQ = lang === 'en' ? (topic + ' explained') : (topic + ' magyarázat');
-  urls.push(jina('https://duckduckgo.com/html/?q=' + encodeURIComponent(ddgQ)));
-  if (typeof currentMode !== 'undefined' && currentMode === 'research') {
-    urls.push(jina('https://duckduckgo.com/html/?q=' + encodeURIComponent(q)));
-    if (lang !== 'en') {
-      urls.push(jina('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' site:hu.wikipedia.org')));
-    }
-  }
 
-  for (var i = 0; i < urls.length; i++) {
-    try {
-      var raw = await fetchOneUrl(urls[i], 8000);
+  if (lang === 'en') {
+    urls.push(jina('https://en.wikipedia.org/api/rest_v1/page/summary/' + enc));
+  } else {
+    urls.push(jina('https://hu.wikipedia.org/api/rest_v1/page/summary/' + enc));
+    urls.push(jina('https://en.wikipedia.org/api/rest_v1/page/summary/' + enc));
+  }
+  urls.push(jina('https://duckduckgo.com/html/?q=' + (lang === 'en' ? encEn : encHu)));
+  urls.push(jina('https://duckduckgo.com/html/?q=' + encQ));
+
+  var isResearch = (typeof currentMode !== 'undefined' && currentMode === 'research');
+  if (!isResearch) return urls;
+
+  urls.push(jina('https://hu.wikipedia.org/wiki/' + enc));
+  urls.push(jina('https://en.wikipedia.org/wiki/' + enc));
+  urls.push(jina('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' overview')));
+  urls.push(jina('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' guide')));
+  urls.push(jina('https://duckduckgo.com/html/?q=' + encodeURIComponent('"' + topic + '"')));
+  urls.push(jina('https://www.britannica.com/search?query=' + enc));
+  urls.push(jina('https://simple.wikipedia.org/wiki/' + enc));
+  urls.push(jina('https://www.wikidata.org/w/index.php?search=' + enc));
+  urls.push(jina('https://developer.mozilla.org/en-US/search?q=' + enc));
+  urls.push(jina('https://stackoverflow.com/search?q=' + enc));
+  urls.push(jina('https://github.com/search?q=' + enc + '&type=repositories'));
+  urls.push(jina('https://en.wikibooks.org/wiki/Special:Search?search=' + enc));
+  urls.push(jina('https://www.bbc.com/search?q=' + enc));
+  urls.push(jina('https://www.reuters.com/site-search/?query=' + enc));
+  urls.push(jina('https://www.nationalgeographic.com/search?q=' + enc));
+  urls.push(jina('https://www.scientificamerican.com/search/?q=' + enc));
+  urls.push(jina('https://hu.wikibooks.org/wiki/Special:Search?search=' + enc));
+  urls.push(jina('https://www.arcanum.com/hu/search/?query=' + enc));
+  urls.push(jina('https://web.archive.org/web/' + 'https://en.wikipedia.org/wiki/' + enc));
+  urls.push(jina('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' site:edu')));
+  urls.push(jina('https://duckduckgo.com/html/?q=' + encodeURIComponent(topic + ' site:gov')));
+
+  return urls;
+}
+
+async function fetchWebAnswer(question, lang) {
+  lang = lang || (typeof detectLang === 'function' ? detectLang(question) : 'hu');
+  var q = String(question || '').trim();
+  if (!q) return null;
+
+  var urls = buildSearchUrls(q, lang);
+  var isResearch = (typeof currentMode !== 'undefined' && currentMode === 'research');
+  var collected = [];
+  var seen = {};
+
+  var batchSize = isResearch ? 4 : 3;
+  for (var i = 0; i < urls.length; i += batchSize) {
+    var batch = urls.slice(i, i + batchSize);
+    var results = await Promise.all(batch.map(function (u) {
+      return fetchOneUrl(u, isResearch ? 6000 : 8000).catch(function () { return null; });
+    }));
+    for (var j = 0; j < results.length; j++) {
+      var raw = results[j];
       if (!raw) continue;
       var extract = parseExtract(raw);
-      if (extract && extract.length > 50 && !isBadWebText(extract)) {
-        var ans = extract.slice(0, 550);
-        var d = Math.max(ans.lastIndexOf('.'), ans.lastIndexOf('!'), ans.lastIndexOf('?'));
-        if (d > 80) ans = ans.slice(0, d + 1);
-        return ans;
-      }
-    } catch (e) {
-      if (e && e.code === 'OFFLINE') throw e;
+      if (!extract || extract.length < 50 || isBadWebText(extract)) continue;
+      var key = extract.slice(0, 80).toLowerCase();
+      if (seen[key]) continue;
+      seen[key] = true;
+      collected.push(extract.slice(0, 400));
+      if (!isResearch && collected.length >= 1) break;
+      if (isResearch && collected.length >= 6) break;
     }
+    if (!isResearch && collected.length >= 1) break;
+    if (isResearch && collected.length >= 6) break;
   }
-  return null;
+
+  if (!collected.length) return null;
+
+  if (!isResearch) {
+    var ans = collected[0];
+    var d = Math.max(ans.lastIndexOf('.'), ans.lastIndexOf('!'), ans.lastIndexOf('?'));
+    if (d > 80) ans = ans.slice(0, d + 1);
+    return ans;
+  }
+
+  var merged = [];
+  var total = 0;
+  for (var k = 0; k < collected.length; k++) {
+    var piece = collected[k];
+    var dd = Math.max(piece.lastIndexOf('.'), piece.lastIndexOf('!'), piece.lastIndexOf('?'));
+    if (dd > 60) piece = piece.slice(0, dd + 1);
+    if (isBadWebText(piece)) continue;
+    merged.push('• ' + piece);
+    total += piece.length;
+    if (total > 900 || merged.length >= 5) break;
+  }
+  if (!merged.length) return collected[0];
+  return 'Kutatás (több forrás alapján):\n\n' + merged.join('\n\n');
 }
 
 function buildFriendlyReply(webText) {
   var raw = String(webText || '').trim();
   if (!raw || raw.length < 40 || isBadWebText(raw)) return null;
+  if (raw.indexOf('Kutatás (több forrás') === 0) return raw.slice(0, 1200);
   var a = raw.slice(0, 550).trim();
   var lastDot = Math.max(a.lastIndexOf('.'), a.lastIndexOf('!'), a.lastIndexOf('?'));
   if (lastDot > 80) a = a.slice(0, lastDot + 1);
