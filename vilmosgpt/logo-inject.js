@@ -13,10 +13,6 @@
 })();
 
 (function(){
-  if (typeof window.VILMOS_API_BASE === 'undefined') window.VILMOS_API_BASE = '';
-})();
-
-(function(){
   try {
     var st = document.createElement('style');
     st.textContent = [
