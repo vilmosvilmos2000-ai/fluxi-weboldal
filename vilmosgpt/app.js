@@ -1,4 +1,4 @@
-/* loader v30 – no API keys, web search only */
+/* loader v31 – web search; research = 20+ sources */
 (async function(){
   try {
     var base = 'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@6a7a296e61b3a2fa08af04a3cb44f8bf6c7acc4e/vilmosgpt/';
@@ -26,15 +26,15 @@
     } catch (ea) {}
     var rqText = null;
     try {
-      var rq = await fetch('response-quality.js?v=3');
+      var rq = await fetch('response-quality.js?v=4');
       if (rq.ok) {
         var t = await rq.text();
-        if (t && t.indexOf('NO API keys') >= 0) rqText = t;
+        if (t && t.indexOf('20+ trusted') >= 0) rqText = t;
       }
     } catch (eq) {}
     if (!rqText) {
       try {
-        var rq2 = await fetch('https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/main/vilmosgpt/response-quality.js?v=3');
+        var rq2 = await fetch('https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/main/vilmosgpt/response-quality.js?v=4');
         if (rq2.ok) rqText = await rq2.text();
       } catch (eq2) {}
     }
