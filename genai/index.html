@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Hangasszisztens</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .setup-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    input[type="password"] {
+      padding: 12px 20px;
+      border-radius: 25px;
+      border: 1px solid #333;
+      background: #111;
+      color: #fff;
+      outline: none;
+      width: 280px;
+      text-align: center;
+      font-size: 14px;
+    }
+    button {
+      padding: 12px 30px;
+      border-radius: 25px;
+      border: none;
+      background-color: #ffffff;
+      color: #000000;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+    .circle {
+      width: 140px;
+      height: 140px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      display: none;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .circle.listening {
+      animation: pulse 1.5s infinite alternate ease-in-out;
+    }
+    .circle.speaking {
+      animation: talkPulse 0.4s infinite alternate ease-in-out;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+      100% { transform: scale(1.15); box-shadow: 0 0 50px rgba(255, 255, 255, 0.8); }
+    }
+    @keyframes talkPulse {
+      0% { transform: scale(1.0); }
+      100% { transform: scale(1.25); }
+    }
+    #status {
+      margin-top: 35px;
+      font-size: 15px;
+      color: #aaaaaa;
+      text-align: center;
+      max-width: 80%;
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="setup-container" id="setup">
+    <input type="password" id="apiKey" placeholder="OpenAI API kulcs (sk-...)" />
+    <button id="startBtn">Indítás & Mikrofon engedélyezése</button>
+  </div>
+
+  <div class="circle" id="aiCircle"></div>
+  <div id="status"></div>
+
+  <script>
+    const setupDiv = document.getElementById('setup');
+    const startBtn = document.getElementById('startBtn');
+    const apiKeyInput = document.getElementById('apiKey');
+    const circle = document.getElementById('aiCircle');
+    const statusText = document.getElementById('status');
+
+    let recognition;
+    let apiKey = '';
+    const messages = [{ role: "system", content: "Te egy segítőkész, közvetlen, rövid válaszokat adó AI asszisztens vagy. Magyarul válaszolj tömören." }];
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('A böngésző nem támogatja a beszédismétlést (Web Speech API). Használj Google Chrome vagy Microsoft Edge böngészőt.');
+    } else {
+      recognition = new SpeechRecognition();
+      recognition.lang = 'hu-HU';
+      recognition.interimResults = false;
+      recognition.continuous = false;
+    }
+
+    startBtn.addEventListener('click', async () => {
+      apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        alert('Kérlek add meg az OpenAI API kulcsodat!');
+        return;
+      }
+
+      try {
+        // Mikrofon engedély bekérése
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // Felület váltása
+        setupDiv.style.display = 'none';
+        circle.style.display = 'block';
+
+        initConversation();
+      } catch (err) {
+        alert('Mikrofon hozzáférés megtagadva vagy hiba történt: ' + err.message);
+      }
+    });
+
+    function initConversation() {
+      startListening();
+
+      recognition.onresult = async (event) => {
+        const userText = event.results[0][0].transcript;
+        statusText.textContent = `Te: "${userText}"`;
+        
+        circle.className = 'circle';
+        messages.push({ role: "user", content: userText });
+
+        statusText.textContent = 'Gondolkodom...';
+        const aiResponse = await fetchAiResponse();
+
+        if (aiResponse) {
+          messages.push({ role: "assistant", content: aiResponse });
+          statusText.textContent = `AI: "${aiResponse}"`;
+          speakResponse(aiResponse);
+        } else {
+          statusText.textContent = 'Hiba történt a válaszadás során.';
+          setTimeout(startListening, 2000);
+        }
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error !== 'no-speech') {
+          console.error('Beszédfelismerési hiba:', event.error);
+        }
+        setTimeout(startListening, 1000);
+      };
+    }
+
+    function startListening() {
+      circle.className = 'circle listening';
+      statusText.textContent = 'Hallgatlak...';
+      try {
+        recognition.start();
+      } catch (e) {
+        // Ha már futott a felismerő
+      }
+    }
+
+    async function fetchAiResponse() {
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: messages,
+            max_tokens: 150
+          })
+        });
+
+        const data = await response.json();
+        if (data.choices && data.choices[0]) {
+          return data.choices[0].message.content;
+        }
+        return null;
+      } catch (err) {
+        console.error('API hiba:', err);
+        return null;
+      }
+    }
+
+    function speakResponse(text) {
+      circle.className = 'circle speaking';
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'hu-HU';
+
+      utterance.onend = () => {
+        startListening();
+      };
+
+      utterance.onerror = () => {
+        startListening();
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>
