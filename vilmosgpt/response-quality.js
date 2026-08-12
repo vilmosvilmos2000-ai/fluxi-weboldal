@@ -1,4 +1,6 @@
-/* response-quality v4 – Wikipedia + DuckDuckGo always; research = 20+ trusted sources */
+/* response-quality v5 – Wikipedia + DuckDuckGo always; research = 20+ trusted sources
+   Stronger garbage filter: no web links, no Image markers, no site-name junk in final text
+*/
 function isBadWebText(s) {
   if (!s || s.length < 40) return true;
   var lower = String(s).toLowerCase();
@@ -12,10 +14,16 @@ function isBadWebText(s) {
     'permanent link', 'page information', 'cite this page', 'download as pdf',
     'upload file', 'printable version', 'what links here', 'you are making too many requests',
     'enable javascript', 'captcha', 'privacy policy', 'terms of service', 'accept all cookies',
-    'subscribe now', 'related searches', 'did you mean'
+    'subscribe now', 'related searches', 'did you mean',
+    // new strong filters for the garbage seen in screenshots
+    'duckduckgo', 'image 1', 'image 2', 'image 3', '! image', '( "duckduckgo',
+    'creator hub', 'roblox creator', 'documentation -', 'jina.ai', 'r.jina.ai',
+    'url source', 'title:', 'markdown content:'
   ];
   for (var i = 0; i < bad.length; i++) if (lower.indexOf(bad[i]) >= 0) return true;
   if ((s.match(/\|/g) || []).length > 8) return true;
+  // too many parentheses or quotes → likely search-result header junk
+  if ((s.match(/[()"']/g) || []).length > 12) return true;
   return false;
 }
 
@@ -71,7 +79,14 @@ function parseExtract(raw) {
     }
     t = body.join(' ');
   }
+  // aggressive clean before sentence split
   t = t.replace(/https?:\/\/\S+/gi, ' ')
+       .replace(/\bwww\.\S+/gi, ' ')
+       .replace(/\(?\s*!\s*Image\s*\d+\s*\)?/gi, ' ')
+       .replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ')
+       .replace(/\(\s*["']?(duckduckgo|google|bing|wikipedia|github|roblox)["']?\s*\)/gi, ' ')
+       .replace(/["']?(duckduckgo|google|bing|jina\.ai)["']?/gi, ' ')
+       .replace(/\bCreator Hub\b/gi, ' ')
        .replace(/[#>*_`|\[\]{}]/g, ' ')
        .replace(/\s+/g, ' ')
        .trim();
