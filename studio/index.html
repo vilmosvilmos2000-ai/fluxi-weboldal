@@ -42,15 +42,6 @@
             z-index: 100;
         }
         .lang-btn:hover { border-color: #667eea; color: #fff; }
-        .back {
-            display: inline-block;
-            color: #444;
-            text-decoration: none;
-            font-size: 0.9rem;
-            margin-bottom: 30px;
-            transition: color 0.2s;
-        }
-        .back:hover { color: #888; }
         h1 {
             font-size: 2.5rem;
             font-weight: 700;
@@ -140,7 +131,6 @@
     <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
 
     <div class="container">
-        <a href="/" class="back" data-i18n="back">&larr; vissza</a>
         <h1><span data-i18n="title">studio</span></h1>
         <p class="sub" data-i18n="sub">rendelj egyedi programozást</p>
 
@@ -179,7 +169,6 @@
 
         const i18n = {
             hu: {
-                back: "\u2190 vissza",
                 title: "studio",
                 sub: "rendelj egyedi programoz\u00e1st",
                 label1: "Mit szeretn\u00e9d, hogy megprogramozzak?",
@@ -194,7 +183,6 @@
                 successText: "Visszajelzek hamarosan az email c\u00edmeden."
             },
             en: {
-                back: "\u2190 back",
                 title: "studio",
                 sub: "order custom programming",
                 label1: "What would you like me to program?",
