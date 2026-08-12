@@ -51,7 +51,7 @@ const mentorTips = [
 ];
 
 const simpleDefinitions = {
-  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...]
+  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...],'
   csivava: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű. Hosszú és rövid szőrű változata is van.',
   chihuahua: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű.',
   labrador: 'A labrador (labrador retriever) barátságos, okos kutyafajta. Gyakori családi és segítő kutya; szeret apportírozni és vízben úszni.',
@@ -59,76 +59,7 @@ const simpleDefinitions = {
   yorkshire: 'A yorkshire terrier (yorkie) kis termetű, hosszú szőrű kutyafajta. Élénk, bátor, kedvelt társállat.',
   pudli: 'A pudli okos, fürge kutyafajta. Több méretben létezik; kevésbé vedlik.',
   husky: 'A szibériai husky erős, energikus kutyafajta. Eredetileg szánhúzó.',
-  macska: 'A macska (Felis catus) kis termetű háziállat. Önálló, ügyes vadász, sokan tartják társállatként. Éjszakai látása kiváló, és jellegzetesen dorombol.',
-  teknős: 'A teknős (vagy teknősbéka) páncélos hüllő. A háta és hasa kemény teknővel védett. Van szárazföldi és vízi faja is; lassú mozgású, tojással szaporodik.',
-  teknos: 'A teknős (vagy teknősbéka) páncélos hüllő. A háta és hasa kemény teknővel védett. Van szárazföldi és vízi faja is; lassú mozgású, tojással szaporodik.',
-  teknősbéka: 'A teknősbéka páncélos hüllő. Kemény teknő védi a testét. Vannak szárazföldi és vízi teknősök.',
-  kígyó: 'A kígyó lábatlan hüllő. Hosszú, hajlékony teste van. Van mérges és nem mérges faj is.',
-  béka: 'A béka kétéltű: ebihal korában vízben él, felnőttként ugró lábakkal a szárazon is.',
-  pók: 'A pók nyolclábú ízeltlábú. Hálót szőhet; nem rovar, hanem pókszabású.',
-  méh: 'A méh rovar, nektárt gyűjt és mézet készít. Fontos beporzó.',
-  hangya: 'A hangya kis rovar, államokban él.',
-  delfin: 'A delfin okos vízi emlős. Úszik, hangokkal kommunikál.',
-  cápa: 'A cápa porcos hal, ragadozó. Az óceánokban él.',
-  medve: 'A medve nagy termetű emlős (pl. barna medve, jegesmedve).',
-  farkas: 'A farkas vadon élő kutyaféle, a házi kutya őse. Falkában vadászik.',
-  róka: 'A róka kisebb kutyaféle ragadozó, főleg éjjel aktív.',
-  szarvas: 'A szarvas növényevő emlős; a bika agancsot visel.',
-  zsiráf: 'A zsiráf a legmagasabb szárazföldi állat, hosszú nyakkal. Afrikában él.',
-  majom: 'A majom főemlős: okos, gyakran fán él.',
-  pingvin: 'A pingvin röpképtelen madár, ügyesen úszik.',
-  papagáj: 'A papagáj színes madár, gyakran beszélni tanítható.',
-  ló: 'A ló nagy testű háziállat: lovaglás, fuvar, sport.',
-  madár: 'A madár gerinces, általában szárnnyal és tollal; tojással szaporodik.',
-  hal: 'A hal vízben élő gerinces, kopoltyúval lélegzik.',
-  egér: 'Az egér kis rágcsáló.',
-  nyúl: 'A nyúl hosszú fülű, ugró állat.',
-  tehén: 'A tehén a szarvasmarha nősténye; tejet ad.',
-  disznó: 'A disznó (sertés) háziállat, főleg húsáért tartják.',
-  birka: 'A birka (juh) háziállat, gyapjáért és húsáért tartják.',
-  oroszlán: 'Az oroszlán nagy ragadozó macskaféle, a „vadak királya”.',
-  tigris: 'A tigris a legnagyobb macskaféle, csíkos bundával.',
-  elefánt: 'Az elefánt a legnagyobb szárazföldi emlős; ormánya és agyarai vannak.',
-  tv: 'A TV (televízió) eszköz és média mozgóképhez és hanghoz: filmek, sorozatok, hírek.',
-  tévé: 'A TV (televízió) eszköz és média mozgóképhez és hanghoz: filmek, sorozatok, hírek.',
-  televízió: 'A televízió kép- és hangátviteli rendszer, illetve a készülék.',
-  televizio: 'A televízió kép- és hangátviteli rendszer, illetve a készülék.',
-  vonat: 'A vonat vasúti jármű: mozdony és kocsik a síneken.',
-  autó: 'Az autó motorral hajtott, kerekes személygépkocsi.',
-  busz: 'A busz (autóbusz) több utas szállítására való közúti jármű.',
-  repülő: 'A repülőgép levegőben közlekedő jármű.',
-  kerékpár: 'A kerékpár kétkerekű, emberi erővel hajtott jármű.',
-  számítógép: 'A számítógép elektronikus eszköz: programok, számolás, tárolás.',
-  laptop: 'A laptop hordozható számítógép.',
-  telefon: 'A telefon kommunikációs eszköz; az okostelefon appokat is futtat.',
-  internet: 'Az internet a világ hálózatainak összekapcsolt rendszere.',
-  ai: 'Az AI (mesterséges intelligencia) tanuló, döntő, emberhez hasonlóan válaszoló rendszerek.',
-  'mesterséges intelligencia': 'Az AI tanuló, döntő, emberhez hasonlóan válaszoló számítógépes rendszerek.',
-  robot: 'A robot programozható gép.',
-  nap: 'A Nap a Naprendszer központi csillaga.',
-  hold: 'A Hold a Föld természetes műholdja.',
-  föld: 'A Föld a Naprendszer harmadik bolygója, ahol élünk.',
-  víz: 'A víz (H₂O) az élet alapja.',
-  oxigén: 'Az oxigén a levegő kb. 21%-a; a légzéshez kell.',
-  gravitáció: 'A gravitáció a testek közötti vonzóerő.',
-  energia: 'Az energia a munka végzésére való képesség.',
-  atom: 'Az atom a kémiai elemek legkisebb jellemző részecskéje.',
-  sejt: 'A sejt az élőlények alapvető építőegysége.',
-  dna: 'A DNS az örökítőanyagot tároló molekula.',
-  dns: 'A DNS az örökítőanyagot tároló molekula.',
-  programozás: 'A programozás: kóddal utasítod a számítógépet.',
-  algoritmus: 'Az algoritmus lépésről lépésre leírt megoldási módszer.',
-  wifi: 'A Wi-Fi vezeték nélküli internetkapcsolat.',
-  bluetooth: 'A Bluetooth rövid távú vezeték nélküli kapcsolat.',
-  okostelefon: 'Az okostelefon modern mobiltelefon appokkal és internettel.',
-  google: 'A Google tech cég; legismertebb a keresője.',
-  youtube: 'A YouTube a legnagyobb videómegosztó oldal.',
-  facebook: 'A Facebook közösségi oldal.',
-  instagram: 'Az Instagram fénykép- és videómegosztó app.',
-  tiktok: 'A TikTok rövid videós app.',
-  minecraft: 'A Minecraft sandbox játék: építés, túlélés, bányászat.',
-  roblox: 'A Roblox online játékplatform.',
-  squishmallow: 'A Squishmallow puha plüssfigura márka.'
+  macska: 'A macska (Felis catus) kis termetű háziállat. Önálló, ügyes vadász, sokan tartják társállatként. Éjszakai látása kiváló, és jellegzetesen dorombol.'
 };
 
 
@@ -136,73 +67,151 @@ const simpleDefinitions = {
    This wrapper ensures bot messages are sanitized before display
 */
 (function(){
-  // Tisztító függvény: finomítható az igények szerint
+  // inject small stylesheet for source badges
+  try {
+    var st = document.createElement('style');
+    st.textContent = '\n  .vilmos-sources{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:12px;color:#94a3b8}\n  .vilmos-source-icons{display:flex;align-items:center;gap:6px}\n  .vilmos-source-badge{width:28px;height:28px;border-radius:999px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(0,0,0,0.06)}\n  .vilmos-source-badge img{width:20px;height:20px;display:block}\n  .vilmos-sources .vilmos-source-count{margin-left:6px;color:#94a3b8}\n    ';
+    document.head.appendChild(st);
+  } catch (e) {}
+
+  function extractDomains(text) {
+    var domains = [];
+    if (!text || typeof text !== 'string') return domains;
+    // find explicit URLs
+    var urlRegex = /https?:\/\/[^\s)]+/gi;
+    var m;
+    while ((m = urlRegex.exec(text)) !== null) {
+      try {
+        var u = new URL(m[0]);
+        domains.push(u.hostname.replace(/^www\./, ''));
+      } catch (e) {}
+    }
+    // common site name mapping (if LLM mentions site names without URLs)
+    var mapping = {
+      'wikip': 'wikipedia.org',
+      'wikipedia': 'wikipedia.org',
+      'github': 'github.com',
+      'duckduckgo': 'duckduckgo.com',
+      'google': 'google.com',
+      'bing': 'bing.com',
+      'roblox': 'roblox.com'
+    };
+    var lower = text.toLowerCase();
+    Object.keys(mapping).forEach(function(k){
+      if (lower.indexOf(k) !== -1) domains.push(mapping[k]);
+    });
+    // dedupe and limit
+    var out = [];
+    domains.forEach(function(d){ if (d && out.indexOf(d) === -1) out.push(d); });
+    return out;
+  }
+
+  // remove URLs and known site name artefacts from body text
   function sanitizeResponse(text) {
     if (!text || typeof text !== 'string') return text;
     var t = String(text);
 
-    // 1) Eltávolítjuk az Image N jelzéseket: "Image 1", "(Image 1)", "[Image 1]" és variánsok
+    // remove Image N markers
     t = t.replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ');
 
-    // 2) Eltávolítjuk egyes kereső/site artefaktumokat és rövid, tipikus mintákat
-    t = t.replace(/\(?\s*"?DuckDuckGo"?\s*\)?/gi, ' ');
-    t = t.replace(/\(?\s*"?Google"?\s*\)?/gi, ' ');
-    t = t.replace(/\(?\s*"?Bing"?\s*\)?/gi, ' ');
-    t = t.replace(/\(?\s*Wikip[eé]dia[^\)]{0,80}\)?/gi, ' ');
+    // remove common site name mentions (standalone)
+    t = t.replace(/\b(duckduckgo|google|bing|wikipedia|github|roblox)\b/gi, ' ');
 
-    // 3) Nyers URL-eket konvertáljuk rövid link-megjelenítéssé: https://example.com -> [example.com](https://example.com)
-    t = t.replace(/https?:\/\/[^\s)]+/gi, function(m) {
-      try {
-        var u = new URL(m);
-        return '[' + u.hostname + '](' + m + ')';
-      } catch (e) {
-        return '';
-      }
-    });
+    // remove explicit URLs entirely
+    t = t.replace(/https?:\/\/[^\s)]+/gi, ' ');
 
-    // 4) Eltávolítunk maradék furcsa zárójeleket / dupla jeleket, és normalizáljuk whitespace-eket
-    t = t.replace(/[\u200B-\u200D\uFEFF]/g, ''); // invisibles
-    t = t.replace(/[^\S\r\n]{2,}/g, ' '); // többszörös szóközök
-    t = t.replace(/\(\s*\)/g, ''); // üres zárójelek
-    t = t.replace(/^\s+|\s+$/g, ''); // eleje/vége trim
+    // cleanup invisible and excessive whitespace
+    t = t.replace(/[\u200B-\u200D\uFEFF]/g, '');
+    t = t.replace(/[^\S\r\n]{2,}/g, ' ');
+    t = t.replace(/\(\s*\)/g, '');
+    t = t.replace(/^\s+|\s+$/g, '');
 
     return t;
   }
 
-  // Polloljuk az addMessage definíciót és egyszer becsomagoljuk
+  // After message added, attach source badges under the last bot message element
+  function attachSourceBadges(domains) {
+    if (!domains || !domains.length) return;
+    try {
+      var chatEl = document.getElementById('chat');
+      if (!chatEl) return;
+      var messages = chatEl.querySelectorAll('.message');
+      if (!messages || messages.length === 0) return;
+      var last = messages[messages.length - 1];
+      if (!last) return;
+      // avoid duplicating source bar
+      if (last.querySelector('.vilmos-sources')) return;
+
+      var container = document.createElement('div');
+      container.className = 'vilmos-sources';
+
+      var icons = document.createElement('div');
+      icons.className = 'vilmos-source-icons';
+
+      var maxShow = 5;
+      for (var i = 0; i < Math.min(domains.length, maxShow); i++) {
+        var d = domains[i];
+        var badge = document.createElement('div');
+        badge.className = 'vilmos-source-badge';
+        var img = document.createElement('img');
+        // use google favicon service (works for most sites)
+        img.src = 'https://www.google.com/s2/favicons?sz=64&domain=' + encodeURIComponent(d);
+        img.alt = d;
+        badge.appendChild(img);
+        icons.appendChild(badge);
+      }
+      container.appendChild(icons);
+
+      var countSpan = document.createElement('span');
+      countSpan.className = 'vilmos-source-count';
+      countSpan.textContent = (domains.length === 1) ? '1 webhely' : (domains.length + ' webhely');
+      container.appendChild(countSpan);
+
+      // append to bubble area; prefer inside bubble for mobile compactness
+      var bubble = last.querySelector('.bubble');
+      if (bubble) bubble.appendChild(container); else last.appendChild(container);
+    } catch (e) {
+      console.warn('attachSourceBadges', e);
+    }
+  }
+
+  // Poll and wrap addMessage
   var attempts = 0;
-  var maxAttempts = 60; // kb 60 * 200ms = 12s
+  var maxAttempts = 80;
   var interval = setInterval(function(){
     attempts++;
     try {
       if (typeof window.addMessage === 'function' && window.addMessage._isSanitized !== true) {
-        // megőrizzük az eredetit
         var orig = window.addMessage;
         var wrapped = function() {
           var args = Array.prototype.slice.call(arguments);
-          // Ha az első argumentum string és valós üzenet -> sanitize
+          var raw = (typeof args[0] === 'string') ? args[0] : '';
+
+          // extract domains BEFORE we sanitize the body
+          var domains = extractDomains(raw);
+
+          // sanitize body so no links or site names remain inline
           if (typeof args[0] === 'string') {
             args[0] = sanitizeResponse(args[0]);
           }
-          return orig.apply(this, args);
+
+          // call original
+          var ret = orig.apply(this, args);
+
+          // attach badges async (allow original to render)
+          setTimeout(function(){ attachSourceBadges(domains); }, 30);
+
+          return ret;
         };
-        // jelző, hogy nem csomagoljuk újra
         wrapped._isSanitized = true;
         window.addMessage = wrapped;
-        // könnyű hozzáférés a tisztítóhoz debugginghoz / későbbiekhez
         window._vilmos_sanitizeResponse = sanitizeResponse;
         clearInterval(interval);
         return;
       }
-    } catch (e) {
-      // ignore
-    }
-    if (attempts >= maxAttempts) {
-      clearInterval(interval);
-    }
+    } catch (e) {}
+    if (attempts >= maxAttempts) clearInterval(interval);
   }, 200);
 
-  // VÉSZ: ha addMessage később dinamikusan kerül betöltésre és a polling még nem talált rá,
-  // a fenti kód megpróbálkozik többször, majd leáll. Szükség esetén növeld maxAttempts-et.
 })();
 /* === END: sanitize + addMessage wrapper === */
