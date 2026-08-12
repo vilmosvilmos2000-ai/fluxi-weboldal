@@ -51,7 +51,7 @@ const mentorTips = [
 ];
 
 const simpleDefinitions = {
-  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...],'
+  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...],',
   csivava: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű. Hosszú és rövid szőrű változata is van.',
   chihuahua: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű.',
   labrador: 'A labrador (labrador retriever) barátságos, okos kutyafajta. Gyakori családi és segítő kutya; szeret apportírozni és vízben úszni.',
@@ -65,6 +65,7 @@ const simpleDefinitions = {
 
 /* === START: sanitize + addMessage wrapper ===
    This wrapper ensures bot messages are sanitized before display
+   v2: strong clean – no web links, no DuckDuckGo/Image garbage
 */
 (function(){
   // inject small stylesheet for source badges
@@ -106,25 +107,51 @@ const simpleDefinitions = {
     return out;
   }
 
-  // remove URLs and known site name artefacts from body text
+  // remove URLs and known site name artefacts from body text – STRONG version
   function sanitizeResponse(text) {
     if (!text || typeof text !== 'string') return text;
     var t = String(text);
 
-    // remove Image N markers
+    // remove explicit URLs entirely (http, https, www)
+    t = t.replace(/https?:\/\/[^\s)\]]+/gi, ' ');
+    t = t.replace(/\bwww\.[^\s)\]]+/gi, ' ');
+
+    // remove Image N / ! Image N markers (with or without parens/brackets)
+    t = t.replace(/\(?\s*!\s*Image\s*\d+\s*\)?/gi, ' ');
     t = t.replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ');
+    t = t.replace(/\bImage\s*\d+\b/gi, ' ');
 
-    // remove common site name mentions (standalone)
-    t = t.replace(/\b(duckduckgo|google|bing|wikipedia|github|roblox)\b/gi, ' ');
+    // remove parenthetical site names: ( "DuckDuckGo" ), (DuckDuckGo), etc.
+    t = t.replace(/\(\s*["']?(duckduckgo|google|bing|wikipedia|github|roblox|jina\.ai)["']?\s*\)/gi, ' ');
 
-    // remove explicit URLs entirely
-    t = t.replace(/https?:\/\/[^\s)]+/gi, ' ');
+    // remove standalone or quoted site names
+    t = t.replace(/["']?(duckduckgo|google|bing|wikipedia|github|roblox|jina\.ai)["']?/gi, ' ');
 
-    // cleanup invisible and excessive whitespace
+    // remove search-result style headers: "Something Documentation - SiteName"
+    t = t.replace(/\b[A-Za-z0-9 _-]+\s+Documentation\s*[-–—]\s*[A-Za-z0-9 _.-]+/gi, ' ');
+    t = t.replace(/\bCreator Hub\b/gi, ' ');
+    t = t.replace(/\bRoblox Creator\b/gi, ' ');
+
+    // collapse leftover messy parentheses and brackets
+    t = t.replace(/\(\s*["']?\s*\)/g, ' ');
+    t = t.replace(/\(\s*\(/g, ' ');
+    t = t.replace(/\)\s*\)/g, ' ');
+    t = t.replace(/\[\s*\]/g, ' ');
+    t = t.replace(/\{\s*\}/g, ' ');
+
+    // remove leftover quote-only or punctuation garbage at start
+    t = t.replace(/^\s*[("']+\s*/g, '');
+    t = t.replace(/\s*[)"]+\s*$/g, '');
+
+    // cleanup invisible chars and excessive whitespace
     t = t.replace(/[\u200B-\u200D\uFEFF]/g, '');
     t = t.replace(/[^\S\r\n]{2,}/g, ' ');
-    t = t.replace(/\(\s*\)/g, '');
+    t = t.replace(/\n{3,}/g, '\n\n');
     t = t.replace(/^\s+|\s+$/g, '');
+
+    // final safety: if still looks like pure garbage (mostly punctuation / short), return empty so fallback kicks in
+    var cleanCheck = t.replace(/[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ0-9\s.,!?]/g, '').trim();
+    if (cleanCheck.length < 30) return '';
 
     return t;
   }
@@ -193,6 +220,12 @@ const simpleDefinitions = {
           // sanitize body so no links or site names remain inline
           if (typeof args[0] === 'string') {
             args[0] = sanitizeResponse(args[0]);
+            // if after strong clean nothing useful left → force fallback style short message
+            if (!args[0] || args[0].length < 25) {
+              args[0] = (typeof detectLang === 'function' && detectLang(raw) === 'en')
+                ? 'I could not extract a clean answer. Please rephrase the question.'
+                : 'Nem sikerült tiszta választ kinyerni. Próbáld másképp megfogalmazni a kérdést.';
+            }
           }
 
           // call original
