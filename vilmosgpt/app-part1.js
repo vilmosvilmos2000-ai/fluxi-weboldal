@@ -51,7 +51,7 @@ const mentorTips = [
 ];
 
 const simpleDefinitions = {
-  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrador, német juhász, yorkshire).',
+  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...]
   csivava: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű. Hosszú és rövid szőrű változata is van.',
   chihuahua: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű.',
   labrador: 'A labrador (labrador retriever) barátságos, okos kutyafajta. Gyakori családi és segítő kutya; szeret apportírozni és vízben úszni.',
@@ -130,3 +130,79 @@ const simpleDefinitions = {
   roblox: 'A Roblox online játékplatform.',
   squishmallow: 'A Squishmallow puha plüssfigura márka.'
 };
+
+
+/* === START: sanitize + addMessage wrapper ===
+   This wrapper ensures bot messages are sanitized before display
+*/
+(function(){
+  // Tisztító függvény: finomítható az igények szerint
+  function sanitizeResponse(text) {
+    if (!text || typeof text !== 'string') return text;
+    var t = String(text);
+
+    // 1) Eltávolítjuk az Image N jelzéseket: "Image 1", "(Image 1)", "[Image 1]" és variánsok
+    t = t.replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ');
+
+    // 2) Eltávolítjuk egyes kereső/site artefaktumokat és rövid, tipikus mintákat
+    t = t.replace(/\(?\s*"?DuckDuckGo"?\s*\)?/gi, ' ');
+    t = t.replace(/\(?\s*"?Google"?\s*\)?/gi, ' ');
+    t = t.replace(/\(?\s*"?Bing"?\s*\)?/gi, ' ');
+    t = t.replace(/\(?\s*Wikip[eé]dia[^\)]{0,80}\)?/gi, ' ');
+
+    // 3) Nyers URL-eket konvertáljuk rövid link-megjelenítéssé: https://example.com -> [example.com](https://example.com)
+    t = t.replace(/https?:\/\/[^\s)]+/gi, function(m) {
+      try {
+        var u = new URL(m);
+        return '[' + u.hostname + '](' + m + ')';
+      } catch (e) {
+        return '';
+      }
+    });
+
+    // 4) Eltávolítunk maradék furcsa zárójeleket / dupla jeleket, és normalizáljuk whitespace-eket
+    t = t.replace(/[\u200B-\u200D\uFEFF]/g, ''); // invisibles
+    t = t.replace(/[^\S\r\n]{2,}/g, ' '); // többszörös szóközök
+    t = t.replace(/\(\s*\)/g, ''); // üres zárójelek
+    t = t.replace(/^\s+|\s+$/g, ''); // eleje/vége trim
+
+    return t;
+  }
+
+  // Polloljuk az addMessage definíciót és egyszer becsomagoljuk
+  var attempts = 0;
+  var maxAttempts = 60; // kb 60 * 200ms = 12s
+  var interval = setInterval(function(){
+    attempts++;
+    try {
+      if (typeof window.addMessage === 'function' && window.addMessage._isSanitized !== true) {
+        // megőrizzük az eredetit
+        var orig = window.addMessage;
+        var wrapped = function() {
+          var args = Array.prototype.slice.call(arguments);
+          // Ha az első argumentum string és valós üzenet -> sanitize
+          if (typeof args[0] === 'string') {
+            args[0] = sanitizeResponse(args[0]);
+          }
+          return orig.apply(this, args);
+        };
+        // jelző, hogy nem csomagoljuk újra
+        wrapped._isSanitized = true;
+        window.addMessage = wrapped;
+        // könnyű hozzáférés a tisztítóhoz debugginghoz / későbbiekhez
+        window._vilmos_sanitizeResponse = sanitizeResponse;
+        clearInterval(interval);
+        return;
+      }
+    } catch (e) {
+      // ignore
+    }
+    if (attempts >= maxAttempts) {
+      clearInterval(interval);
+    }
+  }, 200);
+
+  // VÉSZ: ha addMessage később dinamikusan kerül betöltésre és a polling még nem talált rá,
+  // a fenti kód megpróbálkozik többször, majd leáll. Szükség esetén növeld maxAttempts-et.
+})();
+/* === END: sanitize + addMessage wrapper === */
