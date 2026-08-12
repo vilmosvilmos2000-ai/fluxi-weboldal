@@ -49,13 +49,35 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
         .lang-btn:hover { border-color: #667eea; color: #fff; }
+        .order-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 24px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .order-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+        }
+        .order-btn.hidden { display: none; }
         .back-btn {
             background: #111;
             border: 1px solid #222;
             border-radius: 12px;
-            padding: 10px 28px;
+            padding: 10px 24px;
             color: #888;
             font-size: 0.85rem;
             font-weight: 600;
@@ -65,32 +87,10 @@
             display: none;
             align-items: center;
             justify-content: center;
-            min-width: 120px;
+            white-space: nowrap;
         }
         .back-btn:hover { border-color: #667eea; color: #fff; }
         .back-btn.show { display: flex; }
-        .landing {
-            text-align: center;
-        }
-        .landing.hidden { display: none; }
-        .order-btn {
-            display: inline-block;
-            padding: 22px 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 16px;
-            color: #fff;
-            font-size: 1.15rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            line-height: 1.4;
-            max-width: 100%;
-        }
-        .order-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
-        }
         .order-view {
             display: none;
         }
@@ -185,17 +185,13 @@
 </head>
 <body>
     <div class="top-btns">
+        <button class="order-btn" id="orderBtn" onclick="showOrder()" data-i18n="orderBtn">rendelj egyedi programozást</button>
         <button class="back-btn" id="backBtn" onclick="goBack()" data-i18n="back">&larr; vissza</button>
         <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
     </div>
 
     <div class="container">
-        <!-- Kezdőképernyő: csak a nagy gomb -->
-        <div class="landing" id="landing">
-            <button class="order-btn" id="orderBtn" onclick="showOrder()" data-i18n="orderBtn">rendelj egyedi programozást</button>
-        </div>
-
-        <!-- Rendelési űrlap -->
+        <!-- Rendelési űrlap (alapból rejtve) -->
         <div class="order-view" id="orderView">
             <h1><span data-i18n="title">studio</span></h1>
             <p class="sub" data-i18n="sub">rendelj egyedi programozást</p>
@@ -289,10 +285,10 @@
         setLang(currentLang);
 
         function showOrder() {
-            document.getElementById('landing').classList.add('hidden');
-            document.getElementById('orderView').classList.add('show');
+            document.getElementById('orderBtn').classList.add('hidden');
             document.getElementById('backBtn').classList.add('show');
-            // reset form state if coming back from success
+            document.getElementById('orderView').classList.add('show');
+            // reset form state
             document.getElementById('form').classList.remove('hidden');
             document.getElementById('success').classList.remove('show');
             document.getElementById('submitBtn').disabled = false;
@@ -301,7 +297,7 @@
 
         function goBack() {
             document.getElementById('orderView').classList.remove('show');
-            document.getElementById('landing').classList.remove('hidden');
+            document.getElementById('orderBtn').classList.remove('hidden');
             document.getElementById('backBtn').classList.remove('show');
             // clear form
             document.getElementById('project').value = '';
