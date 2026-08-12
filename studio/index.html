@@ -28,68 +28,88 @@
         }
         .top-btns {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 16px;
+            right: 16px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             z-index: 100;
+            background: rgba(17, 17, 17, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            padding: 6px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
         .lang-btn {
-            background: #111;
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 10px 18px;
+            background: transparent;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
             color: #888;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            height: 42px;
+            transition: all 0.25s ease;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            letter-spacing: 0.5px;
         }
-        .lang-btn:hover { border-color: #667eea; color: #fff; }
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
         .order-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
-            border-radius: 12px;
-            padding: 10px 24px;
+            border-radius: 999px;
+            padding: 10px 22px;
             color: #fff;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            height: 42px;
+            transition: all 0.25s ease;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             white-space: nowrap;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
         }
         .order-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.45);
+            filter: brightness(1.08);
+        }
+        .order-btn:active {
+            transform: translateY(0);
         }
         .order-btn.hidden { display: none; }
         .back-btn {
-            background: #111;
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 10px 24px;
-            color: #888;
+            background: transparent;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 18px;
+            color: #aaa;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            height: 42px;
+            transition: all 0.25s ease;
+            height: 40px;
             display: none;
             align-items: center;
             justify-content: center;
             white-space: nowrap;
+            gap: 4px;
         }
-        .back-btn:hover { border-color: #667eea; color: #fff; }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
         .back-btn.show { display: flex; }
         .order-view {
             display: none;
@@ -288,7 +308,6 @@
             document.getElementById('orderBtn').classList.add('hidden');
             document.getElementById('backBtn').classList.add('show');
             document.getElementById('orderView').classList.add('show');
-            // reset form state
             document.getElementById('form').classList.remove('hidden');
             document.getElementById('success').classList.remove('show');
             document.getElementById('submitBtn').disabled = false;
@@ -299,7 +318,6 @@
             document.getElementById('orderView').classList.remove('show');
             document.getElementById('orderBtn').classList.remove('hidden');
             document.getElementById('backBtn').classList.remove('show');
-            // clear form
             document.getElementById('project').value = '';
             document.getElementById('rubux').value = '';
             document.getElementById('email').value = '';
