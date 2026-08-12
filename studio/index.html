@@ -8,195 +8,237 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
+            background: #050505;
             color: #fff;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 80px 20px 40px;
+            overflow-x: hidden;
         }
-        .container {
-            width: 100%;
-            max-width: 560px;
-            animation: fadeIn 0.8s ease-out;
-            position: relative;
+        /* soft gradient orbs in background */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        body::before {
+            width: 400px; height: 400px;
+            background: rgba(102, 126, 234, 0.18);
+            top: -100px; left: -100px;
         }
+        body::after {
+            width: 350px; height: 350px;
+            background: rgba(118, 75, 162, 0.15);
+            bottom: -80px; right: -80px;
+        }
+
         .top-btns {
             position: fixed;
             top: 16px;
             right: 16px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            z-index: 100;
-            background: rgba(17, 17, 17, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            gap: 6px;
+            z-index: 200;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 999px;
-            padding: 6px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            padding: 5px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+        .lang-btn, .back-btn, .order-btn {
+            border: none;
+            border-radius: 999px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.25s ease;
+            white-space: nowrap;
         }
         .lang-btn {
             background: transparent;
-            border: none;
-            border-radius: 999px;
-            padding: 10px 16px;
-            color: #888;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            letter-spacing: 0.5px;
+            color: #999;
+            padding: 0 16px;
         }
-        .lang-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-        }
+        .lang-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .order-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 999px;
-            padding: 10px 22px;
             color: #fff;
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+            padding: 0 20px;
+            box-shadow: 0 4px 18px rgba(102,126,234,0.35);
         }
-        .order-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.45);
-            filter: brightness(1.08);
-        }
-        .order-btn:active {
-            transform: translateY(0);
-        }
+        .order-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
         .order-btn.hidden { display: none; }
         .back-btn {
             background: transparent;
-            border: none;
-            border-radius: 999px;
-            padding: 10px 18px;
             color: #aaa;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            height: 40px;
+            padding: 0 16px;
             display: none;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap;
-            gap: 4px;
         }
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .back-btn.show { display: flex; }
 
-        /* Products section */
-        .products {
-            display: block;
+        .page {
+            position: relative;
+            z-index: 1;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 90px 20px 50px;
         }
+
+        /* Products list */
+        .products { display: block; }
         .products.hidden { display: none; }
-        .products-title {
-            font-size: 1.6rem;
+        .page-title {
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
         }
-        .products-title span {
+        .page-title span {
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .products-sub {
+        .page-sub {
             color: #555;
             font-size: 0.95rem;
             margin-bottom: 28px;
         }
-        .product-card {
-            background: #111;
-            border: 1px solid #1a1a1a;
-            border-radius: 18px;
-            padding: 24px;
-            margin-bottom: 16px;
-            transition: border-color 0.25s, transform 0.25s;
+
+        .product-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+            transition: all 0.25s ease;
         }
-        .product-card:hover {
-            border-color: #333;
+        .product-row:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.14);
             transform: translateY(-2px);
         }
-        .product-header {
+        .product-left {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
+            flex-direction: column;
+            gap: 2px;
         }
         .product-name {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             font-weight: 650;
         }
         .product-price {
+            font-size: 0.9rem;
+            font-weight: 700;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            font-size: 1.1rem;
-            white-space: nowrap;
         }
-        .product-desc {
-            color: #777;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 18px;
+        .more-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px;
+            color: #ccc;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.25s;
+            flex-shrink: 0;
+        }
+        .more-btn:hover {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+        /* Detail full page */
+        .detail {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .detail.show { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .detail-card {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+        .detail-name {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .detail-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 22px;
+        }
+        .detail-desc {
+            color: #aaa;
+            font-size: 1rem;
+            line-height: 1.65;
+            margin-bottom: 28px;
         }
         .buy-btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: #fff;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s;
+            box-shadow: 0 6px 24px rgba(102,126,234,0.35);
         }
         .buy-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(102,126,234,0.45);
+            filter: brightness(1.08);
         }
 
-        .order-view {
-            display: none;
-        }
-        .order-view.show {
-            display: block;
-            animation: fadeIn 0.5s ease-out;
+        /* Order form */
+        .order-view { display: none; }
+        .order-view.show { display: block; animation: fadeIn 0.4s ease; }
+        .card {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         h1 span {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -205,46 +247,41 @@
         }
         .sub {
             color: #555;
-            font-size: 1rem;
-            margin-bottom: 40px;
+            font-size: 0.95rem;
+            margin-bottom: 28px;
         }
-        .card {
-            background: #111;
-            border: 1px solid #1a1a1a;
-            border-radius: 20px;
-            padding: 40px;
-        }
-        .field {
-            margin-bottom: 25px;
-        }
+        .field { margin-bottom: 22px; }
         label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
             color: #888;
             margin-bottom: 8px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
         input, textarea {
             width: 100%;
-            background: #0a0a0a;
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 16px 18px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 15px 16px;
             color: #fff;
             font-size: 1rem;
             font-family: inherit;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.25s, background 0.25s;
         }
-        input:focus, textarea:focus { border-color: #667eea; }
-        textarea { min-height: 120px; resize: vertical; }
+        input:focus, textarea:focus {
+            border-color: rgba(102,126,234,0.6);
+            background: rgba(0,0,0,0.45);
+        }
+        textarea { min-height: 110px; resize: vertical; }
         .rubux-field { position: relative; }
-        .rubux-field input { padding-right: 70px; }
+        .rubux-field input { padding-right: 60px; }
         .rubux-suffix {
             position: absolute;
-            right: 18px;
-            bottom: 16px;
+            right: 16px;
+            bottom: 15px;
             color: #667eea;
             font-weight: 600;
             font-size: 0.9rem;
@@ -252,52 +289,62 @@
         }
         .btn {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: #fff;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
+            transition: all 0.25s;
+            margin-top: 6px;
+            box-shadow: 0 6px 24px rgba(102,126,234,0.35);
         }
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 32px rgba(102,126,234,0.45);
         }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .success { display: none; text-align: center; padding: 40px; }
+        .success { display: none; text-align: center; padding: 30px 10px; }
         .success.show { display: block; }
-        .success-icon { font-size: 3rem; margin-bottom: 20px; }
-        .success h2 { font-size: 1.5rem; margin-bottom: 10px; }
+        .success-icon { font-size: 2.8rem; margin-bottom: 16px; }
+        .success h2 { font-size: 1.4rem; margin-bottom: 8px; }
         .success p { color: #666; }
         .form.hidden { display: none; }
-        .error { color: #ff4444; font-size: 0.85rem; margin-top: 6px; display: none; }
+        .error { color: #ff5555; font-size: 0.82rem; margin-top: 6px; display: none; }
         .error.show { display: block; }
     </style>
 </head>
 <body>
     <div class="top-btns">
-        <button class="order-btn" id="orderBtn" onclick="showOrder()" data-i18n="orderBtn">rendelj egyedi programozást</button>
+        <button class="order-btn" id="orderBtn" onclick="showCustomOrder()" data-i18n="orderBtn">rendelj egyedi programozást</button>
         <button class="back-btn" id="backBtn" onclick="goBack()" data-i18n="back">&larr; vissza</button>
         <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
     </div>
 
-    <div class="container">
-        <!-- Termékek (kezdő nézet) -->
+    <div class="page">
+        <!-- Terméklista -->
         <div class="products" id="products">
-            <h2 class="products-title"><span data-i18n="productsTitle">studio</span></h2>
-            <p class="products-sub" data-i18n="productsSub">vásárolható dolgok</p>
+            <h2 class="page-title"><span data-i18n="productsTitle">studio</span></h2>
+            <p class="page-sub" data-i18n="productsSub">vásárolható dolgok</p>
 
-            <div class="product-card">
-                <div class="product-header">
+            <div class="product-row">
+                <div class="product-left">
                     <div class="product-name" data-i18n="p1name">Admin Panel</div>
                     <div class="product-price">60 R$</div>
                 </div>
-                <p class="product-desc" data-i18n="p1desc">Teljes admin panel a szerveredhez. Felhasználók kezelése, logok, beállítások.</p>
-                <button class="buy-btn" onclick="buyProduct('Admin Panel', 60)" data-i18n="buy">Vásárlás</button>
+                <button class="more-btn" onclick="showDetail('admin')" data-i18n="more">több</button>
+            </div>
+        </div>
+
+        <!-- Teljes oldalas részletek -->
+        <div class="detail" id="detail">
+            <div class="detail-card">
+                <div class="detail-name" id="detailName">Admin Panel</div>
+                <div class="detail-price" id="detailPrice">60 R$</div>
+                <p class="detail-desc" id="detailDesc">Teljes admin panel a szerveredhez. Felhasználók kezelése, logok, beállítások és minden, amire szükséged van.</p>
+                <button class="buy-btn" id="detailBuyBtn" onclick="buyCurrent()" data-i18n="buy">Vásárlás</button>
             </div>
         </div>
 
@@ -340,6 +387,20 @@
     <script>
         (function() { emailjs.init("I3zAazDdXnuEPYiBm"); })();
 
+        const products = {
+            admin: {
+                name: { hu: "Admin Panel", en: "Admin Panel" },
+                price: 60,
+                desc: {
+                    hu: "Teljes admin panel a szerveredhez. Felhasználók kezelése, logok, beállítások és minden, amire szükséged van.",
+                    en: "Full admin panel for your server. User management, logs, settings and everything you need."
+                }
+            }
+        };
+
+        let currentProduct = null;
+        let currentLang = localStorage.getItem('lang') || 'hu';
+
         const i18n = {
             hu: {
                 back: "\u2190 vissza",
@@ -347,7 +408,7 @@
                 productsTitle: "studio",
                 productsSub: "v\u00e1s\u00e1rolhat\u00f3 dolgok",
                 p1name: "Admin Panel",
-                p1desc: "Teljes admin panel a szerveredhez. Felhaszn\u00e1l\u00f3k kezel\u00e9se, logok, be\u00e1ll\u00edt\u00e1sok.",
+                more: "t\u00f6bb",
                 buy: "V\u00e1s\u00e1rl\u00e1s",
                 title: "studio",
                 sub: "rendelj egyedi programoz\u00e1st",
@@ -358,7 +419,6 @@
                 placeholder3: "pelda@email.hu",
                 emailError: "K\u00e9rlek \u00e9rv\u00e9nyes email c\u00edmet adj meg",
                 submit: "K\u00fcld\u00e9s",
-                submitting: "K\u00fcld\u00e9s...",
                 successTitle: "K\u00f6sz\u00f6n\u00f6m!",
                 successText: "Visszajelzek hamarosan az email c\u00edmeden."
             },
@@ -368,7 +428,7 @@
                 productsTitle: "studio",
                 productsSub: "available products",
                 p1name: "Admin Panel",
-                p1desc: "Full admin panel for your server. User management, logs, settings.",
+                more: "more",
                 buy: "Buy",
                 title: "studio",
                 sub: "order custom programming",
@@ -379,13 +439,10 @@
                 placeholder3: "sample@email.com",
                 emailError: "Please enter a valid email address",
                 submit: "Send",
-                submitting: "Sending...",
                 successTitle: "Thank you!",
                 successText: "I will get back to you soon at your email."
             }
         };
-
-        let currentLang = localStorage.getItem('lang') || 'hu';
 
         function setLang(lang) {
             currentLang = lang;
@@ -399,41 +456,77 @@
                 if (i18n[lang][key]) el.placeholder = i18n[lang][key];
             });
             document.getElementById('langBtn').textContent = lang === 'hu' ? 'EN' : 'HU';
+
+            // update detail if open
+            if (currentProduct && products[currentProduct]) {
+                const p = products[currentProduct];
+                document.getElementById('detailName').textContent = p.name[lang];
+                document.getElementById('detailDesc').textContent = p.desc[lang];
+            }
         }
 
         function toggleLang() { setLang(currentLang === 'hu' ? 'en' : 'hu'); }
         setLang(currentLang);
 
-        function buyProduct(name, price) {
-            document.getElementById('project').value = name;
-            document.getElementById('rubux').value = price;
-            showOrder();
-        }
+        function showDetail(id) {
+            currentProduct = id;
+            const p = products[id];
+            if (!p) return;
+            document.getElementById('detailName').textContent = p.name[currentLang];
+            document.getElementById('detailPrice').textContent = p.price + ' R$';
+            document.getElementById('detailDesc').textContent = p.desc[currentLang];
 
-        function showOrder() {
             document.getElementById('products').classList.add('hidden');
+            document.getElementById('orderView').classList.remove('show');
+            document.getElementById('detail').classList.add('show');
+
             document.getElementById('orderBtn').classList.add('hidden');
             document.getElementById('backBtn').classList.add('show');
+        }
+
+        function buyCurrent() {
+            if (!currentProduct || !products[currentProduct]) return;
+            const p = products[currentProduct];
+            document.getElementById('project').value = p.name[currentLang];
+            document.getElementById('rubux').value = p.price;
+            showOrderForm();
+        }
+
+        function showCustomOrder() {
+            currentProduct = null;
+            document.getElementById('project').value = '';
+            document.getElementById('rubux').value = '';
+            showOrderForm();
+        }
+
+        function showOrderForm() {
+            document.getElementById('products').classList.add('hidden');
+            document.getElementById('detail').classList.remove('show');
             document.getElementById('orderView').classList.add('show');
             document.getElementById('form').classList.remove('hidden');
             document.getElementById('success').classList.remove('show');
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('submitBtn').textContent = i18n[currentLang].submit;
+
+            document.getElementById('orderBtn').classList.add('hidden');
+            document.getElementById('backBtn').classList.add('show');
         }
 
         function goBack() {
             document.getElementById('orderView').classList.remove('show');
+            document.getElementById('detail').classList.remove('show');
             document.getElementById('products').classList.remove('hidden');
+
             document.getElementById('orderBtn').classList.remove('hidden');
             document.getElementById('backBtn').classList.remove('show');
+
             document.getElementById('project').value = '';
             document.getElementById('rubux').value = '';
             document.getElementById('email').value = '';
             document.getElementById('emailError').classList.remove('show');
             document.getElementById('form').classList.remove('hidden');
             document.getElementById('success').classList.remove('show');
-            document.getElementById('submitBtn').disabled = false;
-            document.getElementById('submitBtn').textContent = i18n[currentLang].submit;
+            currentProduct = null;
         }
 
         function sendOrder() {
