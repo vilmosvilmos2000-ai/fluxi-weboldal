@@ -13,8 +13,8 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 40px 20px;
+            align-items: flex-start;
+            padding: 80px 20px 40px;
         }
         .container {
             width: 100%;
@@ -111,6 +111,81 @@
             color: #fff;
         }
         .back-btn.show { display: flex; }
+
+        /* Products section */
+        .products {
+            display: block;
+        }
+        .products.hidden { display: none; }
+        .products-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .products-title span {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .products-sub {
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+        }
+        .product-card {
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+        .product-card:hover {
+            border-color: #333;
+            transform: translateY(-2px);
+        }
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .product-name {
+            font-size: 1.15rem;
+            font-weight: 650;
+        }
+        .product-price {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+        .product-desc {
+            color: #777;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+        .buy-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .buy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
         .order-view {
             display: none;
         }
@@ -211,7 +286,22 @@
     </div>
 
     <div class="container">
-        <!-- Rendelési űrlap (alapból rejtve) -->
+        <!-- Termékek (kezdő nézet) -->
+        <div class="products" id="products">
+            <h2 class="products-title"><span data-i18n="productsTitle">studio</span></h2>
+            <p class="products-sub" data-i18n="productsSub">vásárolható dolgok</p>
+
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-name" data-i18n="p1name">Admin Panel</div>
+                    <div class="product-price">60 R$</div>
+                </div>
+                <p class="product-desc" data-i18n="p1desc">Teljes admin panel a szerveredhez. Felhasználók kezelése, logok, beállítások.</p>
+                <button class="buy-btn" onclick="buyProduct('Admin Panel', 60)" data-i18n="buy">Vásárlás</button>
+            </div>
+        </div>
+
+        <!-- Rendelési űrlap -->
         <div class="order-view" id="orderView">
             <h1><span data-i18n="title">studio</span></h1>
             <p class="sub" data-i18n="sub">rendelj egyedi programozást</p>
@@ -254,6 +344,11 @@
             hu: {
                 back: "\u2190 vissza",
                 orderBtn: "rendelj egyedi programoz\u00e1st",
+                productsTitle: "studio",
+                productsSub: "v\u00e1s\u00e1rolhat\u00f3 dolgok",
+                p1name: "Admin Panel",
+                p1desc: "Teljes admin panel a szerveredhez. Felhaszn\u00e1l\u00f3k kezel\u00e9se, logok, be\u00e1ll\u00edt\u00e1sok.",
+                buy: "V\u00e1s\u00e1rl\u00e1s",
                 title: "studio",
                 sub: "rendelj egyedi programoz\u00e1st",
                 label1: "Mit szeretn\u00e9d, hogy megprogramozzak?",
@@ -270,6 +365,11 @@
             en: {
                 back: "\u2190 back",
                 orderBtn: "order custom programming",
+                productsTitle: "studio",
+                productsSub: "available products",
+                p1name: "Admin Panel",
+                p1desc: "Full admin panel for your server. User management, logs, settings.",
+                buy: "Buy",
                 title: "studio",
                 sub: "order custom programming",
                 label1: "What would you like me to program?",
@@ -304,7 +404,14 @@
         function toggleLang() { setLang(currentLang === 'hu' ? 'en' : 'hu'); }
         setLang(currentLang);
 
+        function buyProduct(name, price) {
+            document.getElementById('project').value = name;
+            document.getElementById('rubux').value = price;
+            showOrder();
+        }
+
         function showOrder() {
+            document.getElementById('products').classList.add('hidden');
             document.getElementById('orderBtn').classList.add('hidden');
             document.getElementById('backBtn').classList.add('show');
             document.getElementById('orderView').classList.add('show');
@@ -316,6 +423,7 @@
 
         function goBack() {
             document.getElementById('orderView').classList.remove('show');
+            document.getElementById('products').classList.remove('hidden');
             document.getElementById('orderBtn').classList.remove('hidden');
             document.getElementById('backBtn').classList.remove('show');
             document.getElementById('project').value = '';
