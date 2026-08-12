@@ -42,6 +42,53 @@
             z-index: 100;
         }
         .lang-btn:hover { border-color: #667eea; color: #fff; }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 10px 18px;
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            display: none;
+        }
+        .back-btn:hover { border-color: #667eea; color: #fff; }
+        .back-btn.show { display: block; }
+        .landing {
+            text-align: center;
+        }
+        .landing.hidden { display: none; }
+        .order-btn {
+            display: inline-block;
+            padding: 22px 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            line-height: 1.4;
+            max-width: 100%;
+        }
+        .order-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
+        }
+        .order-view {
+            display: none;
+        }
+        .order-view.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
         h1 {
             font-size: 2.5rem;
             font-weight: 700;
@@ -129,36 +176,45 @@
 </head>
 <body>
     <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+    <button class="back-btn" id="backBtn" onclick="goBack()" data-i18n="back">&larr; vissza</button>
 
     <div class="container">
-        <h1><span data-i18n="title">studio</span></h1>
-        <p class="sub" data-i18n="sub">rendelj egyedi programozást</p>
+        <!-- Kezdőképernyő: csak a nagy gomb -->
+        <div class="landing" id="landing">
+            <button class="order-btn" id="orderBtn" onclick="showOrder()" data-i18n="orderBtn">rendelj egyedi programozást</button>
+        </div>
 
-        <div class="card">
-            <div class="form" id="form">
-                <div class="field">
-                    <label data-i18n="label1">Mit szeretnéd, hogy megprogramozzak?</label>
-                    <textarea id="project" data-i18n-placeholder="placeholder1" placeholder="Írd le az ötleted..." required></textarea>
-                </div>
-                <div class="field">
-                    <label data-i18n="label2">Mennyi rubuxt adsz érte?</label>
-                    <div class="rubux-field">
-                        <input type="number" id="rubux" placeholder="0" min="0" required>
-                        <span class="rubux-suffix">R$</span>
+        <!-- Rendelési űrlap -->
+        <div class="order-view" id="orderView">
+            <h1><span data-i18n="title">studio</span></h1>
+            <p class="sub" data-i18n="sub">rendelj egyedi programozást</p>
+
+            <div class="card">
+                <div class="form" id="form">
+                    <div class="field">
+                        <label data-i18n="label1">Mit szeretnéd, hogy megprogramozzak?</label>
+                        <textarea id="project" data-i18n-placeholder="placeholder1" placeholder="Írd le az ötleted..." required></textarea>
                     </div>
+                    <div class="field">
+                        <label data-i18n="label2">Mennyi rubuxt adsz érte?</label>
+                        <div class="rubux-field">
+                            <input type="number" id="rubux" placeholder="0" min="0" required>
+                            <span class="rubux-suffix">R$</span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label data-i18n="label3">Email címed</label>
+                        <input type="email" id="email" data-i18n-placeholder="placeholder3" placeholder="pelda@email.hu" required>
+                        <div class="error" id="emailError" data-i18n="emailError">Kérlek érvényes email címet adj meg</div>
+                    </div>
+                    <button class="btn" id="submitBtn" onclick="sendOrder()" data-i18n="submit">Küldés</button>
                 </div>
-                <div class="field">
-                    <label data-i18n="label3">Email címed</label>
-                    <input type="email" id="email" data-i18n-placeholder="placeholder3" placeholder="pelda@email.hu" required>
-                    <div class="error" id="emailError" data-i18n="emailError">Kérlek érvényes email címet adj meg</div>
-                </div>
-                <button class="btn" id="submitBtn" onclick="sendOrder()" data-i18n="submit">Küldés</button>
-            </div>
 
-            <div class="success" id="success">
-                <div class="success-icon">&#x2714;&#xFE0F;</div>
-                <h2 data-i18n="successTitle">Köszönöm!</h2>
-                <p data-i18n="successText">Visszajelzek hamarosan az email címeden.</p>
+                <div class="success" id="success">
+                    <div class="success-icon">&#x2714;&#xFE0F;</div>
+                    <h2 data-i18n="successTitle">Köszönöm!</h2>
+                    <p data-i18n="successText">Visszajelzek hamarosan az email címeden.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -169,6 +225,8 @@
 
         const i18n = {
             hu: {
+                back: "\u2190 vissza",
+                orderBtn: "rendelj egyedi programoz\u00e1st",
                 title: "studio",
                 sub: "rendelj egyedi programoz\u00e1st",
                 label1: "Mit szeretn\u00e9d, hogy megprogramozzak?",
@@ -183,6 +241,8 @@
                 successText: "Visszajelzek hamarosan az email c\u00edmeden."
             },
             en: {
+                back: "\u2190 back",
+                orderBtn: "order custom programming",
                 title: "studio",
                 sub: "order custom programming",
                 label1: "What would you like me to program?",
@@ -216,6 +276,32 @@
 
         function toggleLang() { setLang(currentLang === 'hu' ? 'en' : 'hu'); }
         setLang(currentLang);
+
+        function showOrder() {
+            document.getElementById('landing').classList.add('hidden');
+            document.getElementById('orderView').classList.add('show');
+            document.getElementById('backBtn').classList.add('show');
+            // reset form state if coming back from success
+            document.getElementById('form').classList.remove('hidden');
+            document.getElementById('success').classList.remove('show');
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = i18n[currentLang].submit;
+        }
+
+        function goBack() {
+            document.getElementById('orderView').classList.remove('show');
+            document.getElementById('landing').classList.remove('hidden');
+            document.getElementById('backBtn').classList.remove('show');
+            // clear form
+            document.getElementById('project').value = '';
+            document.getElementById('rubux').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('emailError').classList.remove('show');
+            document.getElementById('form').classList.remove('hidden');
+            document.getElementById('success').classList.remove('show');
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = i18n[currentLang].submit;
+        }
 
         function sendOrder() {
             const project = document.getElementById('project').value.trim();
