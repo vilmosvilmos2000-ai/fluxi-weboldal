@@ -286,29 +286,132 @@
             }
         }
 
-        // ---------- Blokk-szín paletta ----------
+        // ---------- Blokk-szín paletta (bővített) ----------
         const BLOCK_COLORS = {
-            stone: 0x8a8a8a, cobblestone: 0x828282, mossy_cobblestone: 0x6f7a63,
-            dirt: 0x8b5a2b, grass_block: 0x5a8f3c, grass: 0x5a8f3c, farmland: 0x5a3d23,
-            oak_planks: 0xb08552, planks: 0xb08552, spruce_planks: 0x7a5836, birch_planks: 0xd8c98a,
-            log: 0x6b4a2f, oak_log: 0x6b4a2f, spruce_log: 0x4a3a28, birch_log: 0xd9d3bd,
-            leaves: 0x4a7a2e, oak_leaves: 0x4a7a2e, spruce_leaves: 0x2e5a33, birch_leaves: 0x6fa83f,
-            glass: 0x9fd8e8, glass_pane: 0x9fd8e8, stained_glass: 0x9fd8e8,
-            sand: 0xe0d3a0, sandstone: 0xdccd94, red_sand: 0xc46a2b,
-            water: 0x3a6fd8, lava: 0xe25c22, bedrock: 0x333333, gravel: 0x8f8a83,
-            iron_ore: 0xc2b8a3, gold_ore: 0xd9c04a, diamond_ore: 0x6be0d8, coal_ore: 0x3a3a3a,
-            emerald_ore: 0x3fcf7a, redstone_ore: 0xb4302a, lapis_ore: 0x2b53c9,
-            brick: 0x9c5a4a, bricks: 0x9c5a4a, wool: 0xd9d9d9, terracotta: 0x9c5a44,
-            obsidian: 0x14121a, netherrack: 0x6b3030, nether_brick: 0x2d1a1c,
-            snow: 0xf0f5f7, snow_block: 0xf0f5f7, ice: 0xa8d8f0, packed_ice: 0x9cc7e8,
-            clay: 0xa2a8b0, glowstone: 0xe8c96b, sea_lantern: 0xcfe8e0,
-            iron_block: 0xe0e0e0, gold_block: 0xf0d84a, diamond_block: 0x6be0d8,
+            // Kő és változatok
+            stone: 0x7d7d7d, cobblestone: 0x828282, mossy_cobblestone: 0x6f7a63,
+            stone_bricks: 0x7a7a7a, cracked_stone_bricks: 0x6e6e6e, mossy_stone_bricks: 0x6a7a5a,
+            chiseled_stone_bricks: 0x7a7a7a, smooth_stone: 0x9a9a9a,
+            granite: 0x9a6a4a, polished_granite: 0x9a6a4a,
+            diorite: 0xc0c0c0, polished_diorite: 0xc8c8c8,
+            andesite: 0x8a8a8a, polished_andesite: 0x8a8a8a,
+            deepslate: 0x3a3a3e, cobbled_deepslate: 0x3a3a3e, polished_deepslate: 0x3a3a3e,
+            deepslate_bricks: 0x3a3a3e, deepslate_tiles: 0x3a3a3e, chiseled_deepslate: 0x3a3a3e,
+            tuff: 0x6a6a5a, polished_tuff: 0x6a6a5a, tuff_bricks: 0x6a6a5a,
+            basalt: 0x4a4a4a, polished_basalt: 0x4a4a4a, smooth_basalt: 0x4a4a4a,
+            blackstone: 0x2a2a2a, polished_blackstone: 0x2a2a2a, gilded_blackstone: 0x3a2a1a,
+            calcite: 0xe8e4d8, dripstone_block: 0x8a6a4a,
+
+            // Föld és növényzet
+            dirt: 0x8b5a2b, coarse_dirt: 0x6b4a2b, rooted_dirt: 0x6b4a2b,
+            grass_block: 0x5a8f3c, grass: 0x5a8f3c, farmland: 0x5a3d23,
+            podzol: 0x6b4a2b, mycelium: 0x6b5a6b, mud: 0x4c4032, muddy_mangrove_roots: 0x4c4032,
+            moss_block: 0x4a7a3a, moss_carpet: 0x4a7a3a,
+
+            // Fák és deszkák
+            oak_planks: 0xb08552, spruce_planks: 0x7a5836, birch_planks: 0xd8c98a,
+            jungle_planks: 0xb07a4a, acacia_planks: 0xc07a4a, dark_oak_planks: 0x4a2a1a,
+            mangrove_planks: 0x7a3a3a, cherry_planks: 0xe8b0b0, bamboo_planks: 0xc8b050,
+            bamboo_mosaic: 0xc8b050, crimson_planks: 0x6a2a3a, warped_planks: 0x2a6a6a,
+            oak_log: 0x6b4a2f, spruce_log: 0x4a3a28, birch_log: 0xd9d3bd,
+            jungle_log: 0x5a3a2a, acacia_log: 0x6a4a2a, dark_oak_log: 0x3a2a1a,
+            mangrove_log: 0x5a2a2a, cherry_log: 0x5a3a3a, bamboo_block: 0xc8b050,
+            stripped_oak_log: 0xb08552, stripped_spruce_log: 0x7a5836,
+            oak_leaves: 0x4a7a2e, spruce_leaves: 0x2e5a33, birch_leaves: 0x6fa83f,
+            jungle_leaves: 0x3a7a2a, acacia_leaves: 0x5a8a2a, dark_oak_leaves: 0x2a5a2a,
+            mangrove_leaves: 0x3a6a3a, cherry_leaves: 0xe8a0b0, azalea_leaves: 0x4a8a3a,
+
+            // Homok és homokkő
+            sand: 0xe0d3a0, red_sand: 0xc46a2b, suspicious_sand: 0xe0d3a0,
+            sandstone: 0xdccd94, red_sandstone: 0xc46a2b, smooth_sandstone: 0xdccd94,
+            cut_sandstone: 0xdccd94, chiseled_sandstone: 0xdccd94,
+
+            // Üveg
+            glass: 0x9fd8e8, glass_pane: 0x9fd8e8, tinted_glass: 0x2a2a2a,
+            white_stained_glass: 0xf0f0f0, orange_stained_glass: 0xe08030,
+            magenta_stained_glass: 0xb050b0, light_blue_stained_glass: 0x60a0d0,
+            yellow_stained_glass: 0xe0d030, lime_stained_glass: 0x80c030,
+            pink_stained_glass: 0xe080a0, gray_stained_glass: 0x606060,
+            light_gray_stained_glass: 0xa0a0a0, cyan_stained_glass: 0x30a0a0,
+            purple_stained_glass: 0x8030b0, blue_stained_glass: 0x3030a0,
+            brown_stained_glass: 0x6a4a2a, green_stained_glass: 0x4a7a2a,
+            red_stained_glass: 0xa03030, black_stained_glass: 0x1a1a1a,
+
+            // Gyapjú (16 szín)
+            white_wool: 0xe9ecec, orange_wool: 0xf07613, magenta_wool: 0xbd44b3,
+            light_blue_wool: 0x3aafd9, yellow_wool: 0xf8c627, lime_wool: 0x70b919,
+            pink_wool: 0xed8dac, gray_wool: 0x3e4447, light_gray_wool: 0x8e8e86,
+            cyan_wool: 0x158991, purple_wool: 0x792aac, blue_wool: 0x35399d,
+            brown_wool: 0x724728, green_wool: 0x546d1b, red_wool: 0xa12722,
+            black_wool: 0x141519, wool: 0xe9ecec,
+
+            // Concrete
+            white_concrete: 0xcfd5d6, orange_concrete: 0xe06101, magenta_concrete: 0xa9309f,
+            light_blue_concrete: 0x2389c7, yellow_concrete: 0xf1af15, lime_concrete: 0x5ea818,
+            pink_concrete: 0xd5658f, gray_concrete: 0x36393d, light_gray_concrete: 0x7d7d73,
+            cyan_concrete: 0x157788, purple_concrete: 0x64209c, blue_concrete: 0x2c2e8f,
+            brown_concrete: 0x603b1f, green_concrete: 0x495b1a, red_concrete: 0x8e2121,
+            black_concrete: 0x080a0f, concrete: 0xb0b0b0,
+
+            // Terracotta
+            terracotta: 0x9c5a44, white_terracotta: 0xd1b1a1, orange_terracotta: 0x9f5224,
+            magenta_terracotta: 0x95576c, light_blue_terracotta: 0x706c8a, yellow_terracotta: 0xba8524,
+            lime_terracotta: 0x677534, pink_terracotta: 0xa04d4e, gray_terracotta: 0x392a23,
+            light_gray_terracotta: 0x876b61, cyan_terracotta: 0x565b5b, purple_terracotta: 0x764556,
+            blue_terracotta: 0x4a3b5b, brown_terracotta: 0x4d3323, green_terracotta: 0x4c532a,
+            red_terracotta: 0x8e3c2e, black_terracotta: 0x251610,
+
+            // Érc és blokk
+            coal_ore: 0x3a3a3a, deepslate_coal_ore: 0x2a2a2a,
+            iron_ore: 0xc2b8a3, deepslate_iron_ore: 0xa2a0a0,
+            copper_ore: 0x7a6a4a, deepslate_copper_ore: 0x5a5a4a,
+            gold_ore: 0xd9c04a, deepslate_gold_ore: 0xb9a03a,
+            redstone_ore: 0xb4302a, deepslate_redstone_ore: 0x8a2020,
+            emerald_ore: 0x3fcf7a, deepslate_emerald_ore: 0x2a9a5a,
+            lapis_ore: 0x2b53c9, deepslate_lapis_ore: 0x1a3a9a,
+            diamond_ore: 0x6be0d8, deepslate_diamond_ore: 0x4ab0b0,
+            nether_gold_ore: 0x8a5a2a, nether_quartz_ore: 0x8a6a6a,
+            ancient_debris: 0x5a4a3a,
+
+            iron_block: 0xd8d8d8, gold_block: 0xf0d84a, diamond_block: 0x6be0d8,
             emerald_block: 0x3fcf7a, redstone_block: 0xb4302a, lapis_block: 0x2b53c9,
-            stone_bricks: 0x878787, mud: 0x4c4032, mud_bricks: 0x8a6a4f,
-            concrete: 0xb0b0b0, quartz_block: 0xece5d8, prismarine: 0x62a89c,
-            melon: 0x6a9e2f, pumpkin: 0xd6892a, hay_block: 0xc7a83a,
-            door: 0x8a6a3a, fence: 0x8a6a3a, stairs: 0x9c8058, slab: 0x9c8058
+            coal_block: 0x1a1a1a, copper_block: 0xc07a4a, exposed_copper: 0xa07a5a,
+            weathered_copper: 0x6a8a6a, oxidized_copper: 0x4a8a7a,
+            netherite_block: 0x3c3c3c, raw_iron_block: 0xc2b8a3, raw_gold_block: 0xd9c04a,
+            raw_copper_block: 0xc07a4a, amethyst_block: 0x9966cc, budding_amethyst: 0x9966cc,
+
+            // Nether
+            netherrack: 0x6b3030, nether_bricks: 0x2d1a1c, red_nether_bricks: 0x5a1a1a,
+            soul_sand: 0x5a4a3a, soul_soil: 0x5a4a3a, magma_block: 0xc04a1a,
+            blackstone: 0x2a2a2a, basalt: 0x4a4a4a, glowstone: 0xe8c96b,
+            shroomlight: 0xe8a050, crying_obsidian: 0x2a1a4a, respawn_anchor: 0x4a2a6a,
+
+            // End
+            end_stone: 0xdbd5a0, end_stone_bricks: 0xdbd5a0, purpur_block: 0xa070a0,
+            purpur_pillar: 0xa070a0, chorus_plant: 0x5a3a6a, chorus_flower: 0x8a6a9a,
+
+            // Egyéb
+            water: 0x3a6fd8, lava: 0xe25c22, ice: 0xa8d8f0, packed_ice: 0x9cc7e8, blue_ice: 0x70b0e0,
+            snow: 0xf0f5f7, snow_block: 0xf0f5f7, powder_snow: 0xf0f5f7,
+            clay: 0xa2a8b0, brick: 0x9c5a4a, bricks: 0x9c5a4a, mud_bricks: 0x8a6a4f,
+            quartz_block: 0xece5d8, smooth_quartz: 0xece5d8, chiseled_quartz_block: 0xece5d8,
+            prismarine: 0x62a89c, prismarine_bricks: 0x62a89c, dark_prismarine: 0x2e6b62,
+            sea_lantern: 0xcfe8e0, melon: 0x6a9e2f, pumpkin: 0xd6892a, carved_pumpkin: 0xd6892a,
+            hay_block: 0xc7a83a, dried_kelp_block: 0x3a4a2a, sponge: 0xc8b050, wet_sponge: 0xa0c050,
+            obsidian: 0x14121a, crying_obsidian: 0x2a1a4a, bedrock: 0x333333, gravel: 0x8f8a83,
+            bone_block: 0xe8e0d0, sculk: 0x0a2a2a, sculk_catalyst: 0x0a2a2a, sculk_sensor: 0x0a2a2a,
+            sculk_shrieker: 0x0a2a2a, reinforced_deepslate: 0x3a3a3e,
+            honey_block: 0xe8a030, slime_block: 0x7ac030, honey_comb_block: 0xe8a030,
+            target: 0xe8e0d0, lodestone: 0x7a7a7a, lightning_rod: 0xc07a4a,
+            door: 0x8a6a3a, fence: 0x8a6a3a, stairs: 0x9c8058, slab: 0x9c8058,
+            barrel: 0x6b4a2f, chest: 0x8a6a3a, crafting_table: 0x8a6a3a, furnace: 0x6a6a6a,
+            bookshelf: 0x8a6a3a, lectern: 0x8a6a3a, note_block: 0x6b4a2f,
+            spawner: 0x2a2a3a, beacon: 0x80e0e0, conduit: 0x60a0a0,
+            shulker_box: 0x8a6a9a, white_shulker_box: 0xe9ecec, orange_shulker_box: 0xf07613,
+            // ... további shulker színek a wool-hoz hasonlóan
+            white_shulker_box: 0xe9ecec, black_shulker_box: 0x141519
         };
+
         const LEGACY_ID_NAMES = {
             0: 'air', 1: 'stone', 2: 'grass_block', 3: 'dirt', 4: 'cobblestone', 5: 'oak_planks',
             6: 'sapling', 7: 'bedrock', 8: 'water', 9: 'water', 10: 'lava', 11: 'lava',
@@ -338,12 +441,16 @@
             const name = normalizeName(rawName);
             let color = BLOCK_COLORS[name];
             if (color === undefined) {
+                // Prefix / contains matching (jobb egyezés)
                 for (const key in BLOCK_COLORS) {
-                    if (name.indexOf(key) !== -1) { color = BLOCK_COLORS[key]; break; }
+                    if (name === key || name.startsWith(key + '_') || name.indexOf(key) !== -1) {
+                        color = BLOCK_COLORS[key];
+                        break;
+                    }
                 }
             }
             if (color === undefined) color = hashColor(name);
-            const alpha = (name.indexOf('glass') !== -1 || name === 'water' || name.indexOf('ice') !== -1) ? 0.5 : 1;
+            const alpha = (name.indexOf('glass') !== -1 || name === 'water' || name.indexOf('ice') !== -1 || name.indexOf('slime') !== -1) ? 0.5 : 1;
             return { color: color, alpha: alpha };
         }
         function isAir(name) {
