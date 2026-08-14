@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D Schematic Nézegető</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #1a1a1a; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        
+        /* Modern, üveghatású UI a telefonos nézethez */
+        #ui-container { 
+            position: absolute; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            text-align: center; 
+            z-index: 10; 
+            width: 85%; 
+            max-width: 400px; 
+            background: rgba(20, 20, 20, 0.4); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            padding: 20px; 
+            border-radius: 16px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); 
+            color: white; 
+        }
+        
+        input[type="file"] { 
+            display: none; 
+        }
+        
+        .upload-btn { 
+            background: linear-gradient(135deg, #4CAF50, #2E7D32); 
+            color: white; 
+            padding: 14px 20px; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            font-weight: bold;
+            cursor: pointer; 
+            display: block;
+            width: 100%; 
+            box-sizing: border-box;
+            transition: transform 0.1s, box-shadow 0.2s; 
+        }
+        
+        .upload-btn:active { 
+            transform: scale(0.97); 
+        }
+        
+        #instructions { 
+            margin-top: 15px; 
+            font-size: 13px; 
+            opacity: 0.8; 
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui-container">
+        <label class="upload-btn">
+            📁 Schematic kiválasztása
+            <input type="file" id="fileInput" accept=".schematic,.litematic,.mcstructure">
+        </label>
+        <div id="instructions">
+            Kezdéshez válassz ki egy fájlt!<br>
+            👆 1 ujj: Forgatás | ✌️ 2 ujj: Nagyítás (belülre)
+        </div>
+    </div>
+
+    <!-- Three.js betöltése modulként -->
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+        import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+        // 1. Jelenet, Kamera, Renderelő beállítása
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#87CEEB'); // Világoskék ég
+        
+        // Enyhe köd, hogy jobban nézzen ki
+        scene.fog = new THREE.Fog('#87CEEB', 20, 100);
+
+        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(8, 6, 12);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Telókon szebb élek
+        document.body.appendChild(renderer.domElement);
+
+        // 2. Kameramozgás (OrbitControls)
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 0.5; // Ezzel tudsz nagyon közel menni (az épület belsejébe)
+        controls.maxDistance = 80;  // Ezzel tudsz kint maradni
+        controls.maxPolarAngle = Math.PI / 2 + 0.1; // Nem enged túlságosan a föld alá nézni
+
+        // 3. Fények
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(20, 30, 15);
+        scene.add(directionalLight);
+
+        // Földhálózat (Grid) hogy lehessen látni a talajt
+        const gridHelper = new THREE.GridHelper(50, 50, 0x000000, 0xffffff);
+        gridHelper.material.opacity = 0.2;
+        gridHelper.material.transparent = true;
+        scene.add(gridHelper);
+
+        // Csoport az építménynek
+        let schematicGroup = new THREE.Group();
+        scene.add(schematicGroup);
+
+        // Ablak/Képernyő átméretezés kezelése (telefon forgatásnál hasznos)
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 4. Fájlfeltöltés kezelése
+        document.getElementById('fileInput').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Töröljük az előző építményt a jelenetből
+            scene.remove(schematicGroup);
+            schematicGroup = new THREE.Group();
+            scene.add(schematicGroup);
+
+            // Gomb szövegének frissítése
+            document.getElementById('instructions').innerHTML = 
+                `<b>${file.name}</b> betöltve!<br>Nagyíts rá, hogy bemenj az épületbe.`;
+
+            /* 
+             * ITT JÖNNE A VALÓDI FÁJL FELDOLGOZÁSA
+             * A valódi .schematic egy tömörített NBT fájl. Annak a kiolvasásához
+             * olyan könyvtár kellene, mint a pako.js (kicsomagolás) és egy NBT parser.
+             * Helyette most egy 3D modellt generálunk a működés teszteléséhez.
+             */
+            buildDemoStructure();
+        });
+
+        // Demo épület (kockákból), hogy lehessen tesztelni a kinti-benti nézetet
+        function buildDemoStructure() {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            
+            const materials = {
+                wall: new THREE.MeshStandardMaterial({ color: 0x8B4513 }), // Barna fa
+                glass: new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.4 }), // Üveg
+                floor: new THREE.MeshStandardMaterial({ color: 0x555555 }), // Kő
+                roof: new THREE.MeshStandardMaterial({ color: 0x8c2c16 }) // Tégla tető
+            };
+
+            const size = 10;
+            const height = 6;
+            
+            for (let x = -size/2; x <= size/2; x++) {
+                for (let y = 0; y <= height; y++) {
+                    for (let z = -size/2; z <= size/2; z++) {
+                        
+                        let isWall = (x === -size/2 || x === size/2 || z === -size/2 || z === size/2);
+                        let isFloor = (y === 0);
+                        let isRoof = (y === height);
+                        let isWindow = (y === 2 || y === 3) && isWall && (x % 3 === 0 || z % 3 === 0);
+                        let isDoor = (z === size/2 && x === 0 && y <= 2);
+
+                        if ((isWall || isFloor || isRoof) && !isDoor) {
+                            let mat = materials.wall;
+                            if (isFloor) mat = materials.floor;
+                            if (isRoof) mat = materials.roof;
+                            if (isWindow) mat = materials.glass;
+                            
+                            const voxel = new THREE.Mesh(geometry, mat);
+                            voxel.position.set(x, y + 0.5, z);
+                            
+                            // Minecraftos blokk körvonal
+                            const edges = new THREE.EdgesGeometry(geometry);
+                            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1, transparent: true, opacity: 0.2 }));
+                            voxel.add(line);
+
+                            schematicGroup.add(voxel);
+                        }
+                    }
+                }
+            }
+            
+            // Kamera fókuszálása az új épületre
+            controls.target.set(0, height/2, 0);
+            camera.position.set(size, height + 5, size + 5);
+        }
+
+        // 5. Animációs ciklus
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // Damping (finom mozgás) miatt kötelező
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
