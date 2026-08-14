@@ -4,17 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3D Schematic Nézegető</title>
-    
-    <!-- Import map, hogy a Three.js modulok működjenek -->
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
-
     <style>
         body { 
             margin: 0; 
@@ -72,9 +61,25 @@
             opacity: 0.8; 
             line-height: 1.4;
         }
+
+        #error-box {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            max-width: 90%;
+            background: rgba(180, 30, 30, 0.85);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <div id="error-box"></div>
     <div id="ui-container">
         <label class="upload-btn">
             📁 Schematic kiválasztása
@@ -86,10 +91,31 @@
         </div>
     </div>
 
+    <!-- Import map: enélkül az OrbitControls.js belső "from 'three'" importja
+         hibával elhasal, mert a böngésző nem tudja, mire hivatkozik a "three" név. -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
     <!-- Three.js betöltése modulként -->
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        function showError(msg) {
+            const box = document.getElementById('error-box');
+            box.textContent = msg;
+            box.style.display = 'block';
+        }
+
+        window.addEventListener('error', (e) => {
+            showError('Hiba történt: ' + e.message);
+        });
 
         // 1. Jelenet, Kamera, Renderelő beállítása
         const scene = new THREE.Scene();
@@ -132,6 +158,9 @@
         let schematicGroup = new THREE.Group();
         scene.add(schematicGroup);
 
+        // Kezdésnek töltsünk be egy demó struktúrát is, hogy fájl nélkül is látszódjon valami
+        buildDemoStructure();
+
         // Ablak/Képernyő átméretezés kezelése (telefon forgatásnál hasznos)
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -165,6 +194,7 @@
         // Demo épület (kockákból), hogy lehessen tesztelni a kinti-benti nézetet
         function buildDemoStructure() {
             const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const edgesGeometry = new THREE.EdgesGeometry(geometry);
             
             const materials = {
                 wall: new THREE.MeshStandardMaterial({ color: 0x8B4513 }), // Barna fa
@@ -196,8 +226,7 @@
                             voxel.position.set(x, y + 0.5, z);
                             
                             // Minecraftos blokk körvonal
-                            const edges = new THREE.EdgesGeometry(geometry);
-                            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1, transparent: true, opacity: 0.2 }));
+                            const line = new THREE.LineSegments(edgesGeometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1, transparent: true, opacity: 0.2 }));
                             voxel.add(line);
 
                             schematicGroup.add(voxel);
