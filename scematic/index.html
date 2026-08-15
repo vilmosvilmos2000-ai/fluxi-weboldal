@@ -341,6 +341,73 @@
             pumpkin: { side: 'pumpkin_side', top: 'pumpkin_top', bottom: 'pumpkin_top' }
         };
 
+        const STAIR_TEXTURES = {
+            oak_stairs: 'oak_planks',
+            cobblestone_stairs: 'cobblestone',
+            brick_stairs: 'bricks',
+            stone_brick_stairs: 'stone_bricks',
+            nether_brick_stairs: 'nether_bricks',
+            sandstone_stairs: 'sandstone',
+            red_sandstone_stairs: 'red_sandstone',
+            spruce_stairs: 'spruce_planks',
+            birch_stairs: 'birch_planks',
+            jungle_stairs: 'jungle_planks',
+            acacia_stairs: 'acacia_planks',
+            dark_oak_stairs: 'dark_oak_planks',
+            quartz_stairs: 'quartz_block_side',
+            purpur_stairs: 'purpur_block',
+            prismarine_stairs: 'prismarine',
+            prismarine_brick_stairs: 'prismarine_bricks',
+            dark_prismarine_stairs: 'dark_prismarine',
+            stone_stairs: 'stone',
+            granite_stairs: 'granite',
+            polished_granite_stairs: 'polished_granite',
+            diorite_stairs: 'diorite',
+            polished_diorite_stairs: 'polished_diorite',
+            andesite_stairs: 'andesite',
+            polished_andesite_stairs: 'polished_andesite',
+            deepslate_stairs: 'deepslate',
+            cobbled_deepslate_stairs: 'cobbled_deepslate',
+            polished_deepslate_stairs: 'polished_deepslate',
+            deepslate_brick_stairs: 'deepslate_bricks',
+            deepslate_tile_stairs: 'deepslate_tiles',
+            blackstone_stairs: 'blackstone',
+            polished_blackstone_stairs: 'polished_blackstone',
+            polished_blackstone_brick_stairs: 'polished_blackstone_bricks',
+            end_stone_brick_stairs: 'end_stone_bricks',
+            mossy_stone_brick_stairs: 'mossy_stone_bricks',
+            mossy_cobblestone_stairs: 'mossy_cobblestone',
+            red_nether_brick_stairs: 'red_nether_bricks',
+            smooth_quartz_stairs: 'quartz_block_bottom',
+            smooth_sandstone_stairs: 'sandstone_top',
+            smooth_red_sandstone_stairs: 'red_sandstone_top',
+            cut_copper_stairs: 'cut_copper',
+            exposed_cut_copper_stairs: 'exposed_cut_copper',
+            weathered_cut_copper_stairs: 'weathered_cut_copper',
+            oxidized_cut_copper_stairs: 'oxidized_cut_copper',
+            mangrove_stairs: 'mangrove_planks',
+            cherry_stairs: 'cherry_planks',
+            bamboo_stairs: 'bamboo_planks',
+            bamboo_mosaic_stairs: 'bamboo_mosaic',
+            crimson_stairs: 'crimson_planks',
+            warped_stairs: 'warped_planks',
+            mud_brick_stairs: 'mud_bricks',
+            tuff_stairs: 'tuff',
+            polished_tuff_stairs: 'polished_tuff',
+            tuff_brick_stairs: 'tuff_bricks'
+        };
+
+        function isStairName(name) {
+            return normalizeName(name).indexOf('stairs') !== -1;
+        }
+
+        function stairTextureFor(name) {
+            if (STAIR_TEXTURES[name]) return STAIR_TEXTURES[name];
+            const base = name.replace(/_stairs$/, '');
+            if (TEXTURE_ALIASES[base] !== undefined || FACE_TEXTURES[base] !== undefined || BLOCK_COLORS[base] !== undefined) return base;
+            return name;
+        }
+
         const LEGACY_ID_NAMES = {
             0: 'air', 1: 'stone', 2: 'grass_block', 3: 'dirt', 4: 'cobblestone', 5: 'oak_planks',
             6: 'sapling', 7: 'bedrock', 8: 'water', 9: 'water', 10: 'lava', 11: 'lava',
@@ -352,7 +419,12 @@
             79: 'ice', 80: 'snow_block', 82: 'clay', 86: 'pumpkin', 87: 'netherrack',
             89: 'glowstone', 91: 'pumpkin', 98: 'stone_bricks', 103: 'melon', 121: 'quartz_block',
             152: 'redstone_block', 153: 'nether_brick', 155: 'quartz_block', 159: 'terracotta',
-            168: 'prismarine', 169: 'sea_lantern', 172: 'terracotta', 173: 'redstone_block'
+            168: 'prismarine', 169: 'sea_lantern', 172: 'terracotta', 173: 'redstone_block',
+            53: 'oak_stairs', 67: 'cobblestone_stairs', 108: 'brick_stairs', 109: 'stone_brick_stairs',
+            114: 'nether_brick_stairs', 128: 'sandstone_stairs', 134: 'spruce_stairs', 135: 'birch_stairs',
+            136: 'jungle_stairs', 156: 'quartz_stairs', 163: 'acacia_stairs', 164: 'dark_oak_stairs',
+            180: 'red_sandstone_stairs', 203: 'purpur_stairs', 205: 'prismarine_stairs',
+            328: 'prismarine_brick_stairs', 329: 'dark_prismarine_stairs'
         };
 
         function normalizeName(name) {
@@ -441,6 +513,127 @@
             return material;
         }
 
+        function stairYRotation(shape, facing, half) {
+            const straight = { east: 0, south: 90, west: 180, north: 270 };
+            const cornerLeftBottom = { east: 270, south: 0, west: 90, north: 180 };
+            const cornerRightBottom = { east: 0, south: 90, west: 180, north: 270 };
+            const cornerLeftTop = { east: 0, south: 90, west: 180, north: 270 };
+            const cornerRightTop = { east: 90, south: 180, west: 270, north: 0 };
+            if (shape.indexOf('left') !== -1) {
+                return half === 'top' ? cornerLeftTop[facing] : cornerLeftBottom[facing];
+            }
+            if (shape.indexOf('right') !== -1) {
+                return half === 'top' ? cornerRightTop[facing] : cornerRightBottom[facing];
+            }
+            return straight[facing];
+        }
+
+        function rotateStairBox(box, yDeg, top) {
+            let x = box.x, z = box.z, y = box.y;
+            const a = ((yDeg % 360) + 360) % 360;
+            let nx, nz;
+            if (a === 90) { nx = [1 - z[1], 1 - z[0]]; nz = x; }
+            else if (a === 180) { nx = [1 - x[1], 1 - x[0]]; nz = [1 - z[1], 1 - z[0]]; }
+            else if (a === 270) { nx = z; nz = [1 - x[1], 1 - x[0]]; }
+            else { nx = x; nz = z; }
+            if (top) {
+                y = [1 - y[1], 1 - y[0]];
+                nz = [1 - nz[1], 1 - nz[0]];
+            }
+            return { x: nx, y: y, z: nz };
+        }
+
+        function getStairParts(shape) {
+            if (shape === 'inner') {
+                return [
+                    { x: [0, 1], y: [0, 0.5], z: [0, 1] },
+                    { x: [0.5, 1], y: [0.5, 1], z: [0, 1] },
+                    { x: [0, 0.5], y: [0.5, 1], z: [0.5, 1] }
+                ];
+            }
+            if (shape === 'outer') {
+                return [
+                    { x: [0, 1], y: [0, 0.5], z: [0, 1] },
+                    { x: [0.5, 1], y: [0.5, 1], z: [0.5, 1] }
+                ];
+            }
+            return [
+                { x: [0, 1], y: [0, 0.5], z: [0, 1] },
+                { x: [0.5, 1], y: [0.5, 1], z: [0, 1] }
+            ];
+        }
+
+        function addStairBox(data, x0, x1, y0, y1, z0, z1) {
+            const faces = [
+                { n: [1, 0, 0], c: [[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], u: function (p) { return p[2] - z0; }, v: function (p) { return p[1] - y0; } },
+                { n: [-1, 0, 0], c: [[x0, y0, z1], [x0, y1, z1], [x0, y1, z0], [x0, y0, z0]], u: function (p) { return z1 - p[2]; }, v: function (p) { return p[1] - y0; } },
+                { n: [0, 1, 0], c: [[x0, y1, z1], [x1, y1, z1], [x1, y1, z0], [x0, y1, z0]], u: function (p) { return p[0] - x0; }, v: function (p) { return p[2] - z0; } },
+                { n: [0, -1, 0], c: [[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], u: function (p) { return p[0] - x0; }, v: function (p) { return p[2] - z0; } },
+                { n: [0, 0, 1], c: [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], u: function (p) { return p[0] - x0; }, v: function (p) { return p[1] - y0; } },
+                { n: [0, 0, -1], c: [[x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0]], u: function (p) { return x1 - p[0]; }, v: function (p) { return p[1] - y0; } }
+            ];
+            for (const f of faces) {
+                const base = data.position.length / 3;
+                for (const p of f.c) {
+                    data.position.push(p[0], p[1], p[2]);
+                    data.normal.push(f.n[0], f.n[1], f.n[2]);
+                    data.uv.push(f.u(p), f.v(p));
+                }
+                data.index.push(base, base + 1, base + 2, base, base + 2, base + 3);
+            }
+        }
+
+        const stairGeoCache = new Map();
+        function buildStairGeometry(shape, facing, half) {
+            const yDeg = stairYRotation(shape, facing, half);
+            const top = half === 'top';
+            const shapeKey = shape.indexOf('inner') === 0 ? 'inner' : (shape.indexOf('outer') === 0 ? 'outer' : 'straight');
+            const data = { position: [], normal: [], uv: [], index: [] };
+            for (const p of getStairParts(shapeKey)) {
+                const b = rotateStairBox(p, yDeg, top);
+                addStairBox(data, b.x[0] - 0.5, b.x[1] - 0.5, b.y[0] - 0.5, b.y[1] - 0.5, b.z[0] - 0.5, b.z[1] - 0.5);
+            }
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(data.position, 3));
+            geo.setAttribute('normal', new THREE.Float32BufferAttribute(data.normal, 3));
+            geo.setAttribute('uv', new THREE.Float32BufferAttribute(data.uv, 2));
+            geo.setIndex(data.index);
+            geo.computeBoundingSphere();
+            return geo;
+        }
+        function getStairGeometry(shape, facing, half) {
+            const key = shape + '|' + facing + '|' + half;
+            if (!stairGeoCache.has(key)) stairGeoCache.set(key, buildStairGeometry(shape, facing, half));
+            return stairGeoCache.get(key);
+        }
+
+        function renderStairs(items, minX, minY, minZ) {
+            const dummy = new THREE.Object3D();
+            const groups2 = new Map();
+            for (const s of items) {
+                const n = normalizeName(s.b.name);
+                const texName = stairTextureFor(n);
+                const key = texName + '_' + s.shape + '_' + s.facing + '_' + s.half;
+                if (!groups2.has(key)) groups2.set(key, { texName: texName, shape: s.shape, facing: s.facing, half: s.half, items: [] });
+                groups2.get(key).items.push(s);
+            }
+            groups2.forEach(function (g) {
+                const fallbackTex = createBlockTexture(hashColor(g.texName));
+                const material = makeBlockMaterial(g.texName, fallbackTex, 1);
+                const geo = getStairGeometry(g.shape, g.facing, g.half);
+                const mesh = new THREE.InstancedMesh(geo, material, g.items.length);
+                g.items.forEach(function (s, i) {
+                    dummy.position.set(s.b.x - minX, s.b.y - minY, s.b.z - minZ);
+                    dummy.updateMatrix();
+                    mesh.setMatrixAt(i, dummy.matrix);
+                });
+                mesh.instanceMatrix.needsUpdate = true;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                schematicGroup.add(mesh);
+            });
+        }
+
         function parseLegacySchematic(root) {
             const width = root.Width, height = root.Height, length = root.Length;
             const blocksArr = root.Blocks;
@@ -459,7 +652,15 @@
                         if (id === 0) continue;
                         const name = LEGACY_ID_NAMES[id] || ('id_' + id);
                         if (isAir(name)) continue;
-                        result.push({ x: x, y: y, z: z, name: name });
+                        const props = {};
+                        if (root.Data && isStairName(name)) {
+                            const data = root.Data[idx] & 0x0F;
+                            const facings = ['east', 'west', 'south', 'north'];
+                            props.facing = facings[data & 3] || 'east';
+                            props.half = (data & 4) ? 'top' : 'bottom';
+                            props.shape = (data & 8) ? 'inner_right' : 'straight';
+                        }
+                        result.push({ x: x, y: y, z: z, name: name, props: props });
                     }
                 }
             }
@@ -504,7 +705,20 @@
                     const paletteIndex = Number(value);
                     const entry = palette[paletteIndex];
                     if (!entry || !entry.Name || isAir(entry.Name)) continue;
-                    result.push({ x: minX + x, y: minY + y, z: minZ + z, name: entry.Name });
+                    const props = {};
+                    let baseName = entry.Name;
+                    const bracket = entry.Name.indexOf('[');
+                    if (bracket !== -1) {
+                        baseName = entry.Name.slice(0, bracket);
+                        const inner = entry.Name.slice(bracket + 1, entry.Name.length - 1);
+                        if (inner) {
+                            for (const pair of inner.split(',')) {
+                                const eq = pair.indexOf('=');
+                                if (eq !== -1) props[pair.slice(0, eq)] = pair.slice(eq + 1);
+                            }
+                        }
+                    }
+                    result.push({ x: minX + x, y: minY + y, z: minZ + z, name: baseName, props: props });
                 }
             }
             return result;
@@ -532,7 +746,20 @@
                         if (!entry) continue;
                         const name = entry.name || 'unknown';
                         if (isAir(name)) continue;
-                        result.push({ x: x, y: y, z: z, name: name });
+                        const props = {};
+                        let baseName = name;
+                        const bracket = name.indexOf('[');
+                        if (bracket !== -1) {
+                            baseName = name.slice(0, bracket);
+                            const inner = name.slice(bracket + 1, name.length - 1);
+                            if (inner) {
+                                for (const pair of inner.split(',')) {
+                                    const eq = pair.indexOf('=');
+                                    if (eq !== -1) props[pair.slice(0, eq)] = pair.slice(eq + 1);
+                                }
+                            }
+                        }
+                        result.push({ x: x, y: y, z: z, name: baseName, props: props });
                     }
                 }
             }
@@ -562,8 +789,20 @@
                 if (b.z < minZ) minZ = b.z; if (b.z > maxZ) maxZ = b.z;
             }
 
-            const groups = new Map();
+            const stairItems = [], normalBlocks = [];
             for (const b of blocks) {
+                if (isStairName(b.name)) {
+                    const props = b.props || {};
+                    let facing = props.facing || 'east';
+                    if (facing !== 'east' && facing !== 'west' && facing !== 'south' && facing !== 'north') facing = 'east';
+                    stairItems.push({ b: b, facing: facing, half: props.half === 'top' ? 'top' : 'bottom', shape: props.shape || 'straight' });
+                } else {
+                    normalBlocks.push(b);
+                }
+            }
+
+            const groups = new Map();
+            for (const b of normalBlocks) {
                 const app = getBlockAppearance(b.name);
                 const key = JSON.stringify(app.faces) + '_' + app.alpha;
                 if (!groups.has(key)) groups.set(key, { app: app, items: [] });
@@ -599,6 +838,8 @@
                 mesh.instanceMatrix.needsUpdate = true;
                 schematicGroup.add(mesh);
             });
+
+            if (stairItems.length) renderStairs(stairItems, minX, minY, minZ);
 
             const cx = (maxX - minX) / 2, cy = (maxY - minY) / 2, cz = (maxZ - minZ) / 2;
             target.set(cx, cy, cz);
