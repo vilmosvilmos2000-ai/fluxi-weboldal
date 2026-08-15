@@ -307,6 +307,40 @@
             glowstone: 0xe8c96b, sea_lantern: 0xcfe8e0, melon: 0x6a9e2f, pumpkin: 0xd6892a
         };
 
+        const TEX_BASE = 'https://raw.githubusercontent.com/Faithful-Pack/Default-Java/1.21.11/assets/minecraft/textures/block/';
+
+        const TEXTURE_ALIASES = {
+            water: 'water_still',
+            lava: 'lava_still',
+            sapling: 'oak_sapling',
+            nether_brick: 'nether_bricks',
+            wool: 'white_wool',
+            mob_spawner: 'spawner',
+            snow_block: 'snow'
+        };
+
+        const FACE_TEXTURES = {
+            grass_block: { side: 'grass_block_side', top: 'grass_block_top', bottom: 'dirt' },
+            podzol: { side: 'podzol_side', top: 'podzol_top', bottom: 'dirt' },
+            mycelium: { side: 'mycelium_side', top: 'mycelium_top', bottom: 'dirt' },
+            oak_log: { side: 'oak_log', top: 'oak_log_top', bottom: 'oak_log_top' },
+            spruce_log: { side: 'spruce_log', top: 'spruce_log_top', bottom: 'spruce_log_top' },
+            birch_log: { side: 'birch_log', top: 'birch_log_top', bottom: 'birch_log_top' },
+            jungle_log: { side: 'jungle_log', top: 'jungle_log_top', bottom: 'jungle_log_top' },
+            acacia_log: { side: 'acacia_log', top: 'acacia_log_top', bottom: 'acacia_log_top' },
+            dark_oak_log: { side: 'dark_oak_log', top: 'dark_oak_log_top', bottom: 'dark_oak_log_top' },
+            sandstone: { side: 'sandstone_side', top: 'sandstone_top', bottom: 'sandstone_top' },
+            red_sandstone: { side: 'red_sandstone', top: 'red_sandstone_top', bottom: 'red_sandstone_top' },
+            quartz_block: { side: 'quartz_block_side', top: 'quartz_block_top', bottom: 'quartz_block_top' },
+            bookshelf: { side: 'bookshelf', top: 'oak_planks', bottom: 'oak_planks' },
+            crafting_table: { side: 'crafting_table_side', top: 'crafting_table_top', bottom: 'oak_planks' },
+            barrel: { side: 'barrel_side', top: 'barrel_top', bottom: 'barrel_bottom' },
+            furnace: { side: 'furnace_side', top: 'furnace_top', bottom: 'furnace_top' },
+            hay_block: { side: 'hay_block_side', top: 'hay_block_top', bottom: 'hay_block_top' },
+            melon: { side: 'melon_side', top: 'melon_top', bottom: 'melon_top' },
+            pumpkin: { side: 'pumpkin_side', top: 'pumpkin_top', bottom: 'pumpkin_top' }
+        };
+
         const LEGACY_ID_NAMES = {
             0: 'air', 1: 'stone', 2: 'grass_block', 3: 'dirt', 4: 'cobblestone', 5: 'oak_planks',
             6: 'sapling', 7: 'bedrock', 8: 'water', 9: 'water', 10: 'lava', 11: 'lava',
@@ -345,7 +379,13 @@
             }
             if (color === undefined) color = hashColor(name);
             const alpha = (name.indexOf('glass') !== -1 || name === 'water' || name.indexOf('ice') !== -1 || name.indexOf('slime') !== -1) ? 0.55 : 1;
-            return { color: color, alpha: alpha };
+            let faces;
+            if (FACE_TEXTURES[name]) {
+                faces = FACE_TEXTURES[name];
+            } else {
+                faces = { all: TEXTURE_ALIASES[name] || name };
+            }
+            return { color: color, alpha: alpha, faces: faces };
         }
         function isAir(name) {
             const n = normalizeName(name);
@@ -381,6 +421,24 @@
             tex.generateMipmaps = false;
             textureCache.set(key, tex);
             return tex;
+        }
+
+        const textureLoader = new THREE.TextureLoader();
+        function makeBlockMaterial(file, fallbackTex, alpha) {
+            const material = new THREE.MeshLambertMaterial({
+                map: fallbackTex,
+                transparent: alpha < 1,
+                opacity: alpha,
+                color: 0xffffff
+            });
+            textureLoader.load(TEX_BASE + file + '.png', function (tex) {
+                tex.magFilter = THREE.NearestFilter;
+                tex.minFilter = THREE.NearestFilter;
+                tex.generateMipmaps = false;
+                material.map = tex;
+                material.needsUpdate = true;
+            }, undefined, function () { });
+            return material;
         }
 
         function parseLegacySchematic(root) {
@@ -507,8 +565,8 @@
             const groups = new Map();
             for (const b of blocks) {
                 const app = getBlockAppearance(b.name);
-                const key = app.color + '_' + app.alpha;
-                if (!groups.has(key)) groups.set(key, { color: app.color, alpha: app.alpha, items: [] });
+                const key = JSON.stringify(app.faces) + '_' + app.alpha;
+                if (!groups.has(key)) groups.set(key, { app: app, items: [] });
                 groups.get(key).items.push(b);
             }
 
@@ -516,14 +574,23 @@
             const dummy = new THREE.Object3D();
 
             groups.forEach(function (g) {
-                const tex = createBlockTexture(g.color);
-                const material = new THREE.MeshLambertMaterial({
-                    map: tex,
-                    transparent: g.alpha < 1,
-                    opacity: g.alpha,
-                    color: 0xffffff
-                });
-                const mesh = new THREE.InstancedMesh(geometry, material, g.items.length);
+                const app = g.app;
+                const fallbackTex = createBlockTexture(app.color);
+                let materials;
+                if (app.faces.all) {
+                    materials = makeBlockMaterial(app.faces.all, fallbackTex, app.alpha);
+                } else {
+                    const f = app.faces;
+                    materials = [
+                        makeBlockMaterial(f.side, fallbackTex, app.alpha),
+                        makeBlockMaterial(f.side, fallbackTex, app.alpha),
+                        makeBlockMaterial(f.top, fallbackTex, app.alpha),
+                        makeBlockMaterial(f.bottom, fallbackTex, app.alpha),
+                        makeBlockMaterial(f.side, fallbackTex, app.alpha),
+                        makeBlockMaterial(f.side, fallbackTex, app.alpha)
+                    ];
+                }
+                const mesh = new THREE.InstancedMesh(geometry, materials, g.items.length);
                 g.items.forEach((b, i) => {
                     dummy.position.set(b.x - minX, b.y - minY, b.z - minZ);
                     dummy.updateMatrix();
