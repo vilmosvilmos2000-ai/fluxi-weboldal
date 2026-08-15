@@ -5,21 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>3D Schematic Nézegető</title>
     <style>
-        html, body { margin: 0; overflow: hidden; background: #1a1a1a; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100%; width: 100%; }
+        html, body {
+            margin: 0;
+            overflow: hidden;
+            background: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100%;
+            width: 100%;
+        }
         canvas { display: block; touch-action: none; }
-        #ui-container { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10; width: 85%; max-width: 400px; background: rgba(20, 20, 20, 0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); color: white; }
+
+        #ui-container {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+            width: 85%;
+            max-width: 400px;
+            background: rgba(20, 20, 20, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
         input[type="file"] { display: none; }
-        .upload-btn { background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; padding: 14px 20px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; width: 100%; box-sizing: border-box; }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
         .upload-btn:active { transform: scale(0.97); }
-        #instructions { margin-top: 15px; font-size: 13px; opacity: 0.9; line-height: 1.4; word-break: break-word; }
-        #status-banner { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 20; color: white; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 8px; font-size: 13px; display: none; max-width: 90%; text-align: center; }
+
+        #instructions {
+            margin-top: 15px;
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        #status-banner {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            color: white;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div id="status-banner"></div>
     <div id="ui-container">
-        <label class="upload-btn">📁 Schematic kiválasztása<input type="file" id="fileInput" accept=".schematic,.litematic,.mcstructure"></label>
-        <div id="instructions">Kezdéshez válassz ki egy fájlt!<br>👆 1 ujj: Forgatás | ✌️ 2 ujj / görgő: Nagyítás</div>
+        <label class="upload-btn">
+            📁 Schematic kiválasztása
+            <input type="file" id="fileInput" accept=".schematic,.litematic,.mcstructure">
+        </label>
+        <div id="instructions">
+            Kezdéshez válassz ki egy fájlt!<br>
+            👆 1 ujj: Forgatás | ✌️ 2 ujj / görgő: Nagyítás
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -33,6 +100,7 @@
         scene.fog = new THREE.Fog('#87CEEB', 40, 200);
 
         const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
+
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -72,7 +140,10 @@
         let lastPinchDist = null;
         const dom = renderer.domElement;
 
-        dom.addEventListener('pointerdown', (e) => { dom.setPointerCapture(e.pointerId); pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); });
+        dom.addEventListener('pointerdown', (e) => {
+            dom.setPointerCapture(e.pointerId);
+            pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        });
         dom.addEventListener('pointerup', (e) => { pointers.delete(e.pointerId); lastPinchDist = null; });
         dom.addEventListener('pointercancel', (e) => { pointers.delete(e.pointerId); lastPinchDist = null; });
         dom.addEventListener('pointermove', (e) => {
@@ -80,17 +151,27 @@
             const prev = pointers.get(e.pointerId);
             const curr = { x: e.clientX, y: e.clientY };
             pointers.set(e.pointerId, curr);
+
             if (pointers.size === 1) {
                 const dx = curr.x - prev.x, dy = curr.y - prev.y;
-                theta -= dx * 0.006; phi -= dy * 0.006; updateCamera();
+                theta -= dx * 0.006;
+                phi -= dy * 0.006;
+                updateCamera();
             } else if (pointers.size >= 2) {
                 const pts = Array.from(pointers.values());
                 const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-                if (lastPinchDist != null) { radius -= (dist - lastPinchDist) * 0.05; updateCamera(); }
+                if (lastPinchDist != null) {
+                    radius -= (dist - lastPinchDist) * 0.05;
+                    updateCamera();
+                }
                 lastPinchDist = dist;
             }
         });
-        dom.addEventListener('wheel', (e) => { radius += e.deltaY * 0.02; updateCamera(); e.preventDefault(); }, { passive: false });
+        dom.addEventListener('wheel', (e) => {
+            radius += e.deltaY * 0.02;
+            updateCamera();
+            e.preventDefault();
+        }, { passive: false });
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -98,17 +179,25 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        function animate() { requestAnimationFrame(animate); renderer.render(scene, camera); }
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
         animate();
 
         const instructionsEl = document.getElementById('instructions');
         const bannerEl = document.getElementById('status-banner');
         function setStatus(text) { instructionsEl.innerHTML = text; }
-        function setBanner(text, show) { bannerEl.innerHTML = text; bannerEl.style.display = show ? 'block' : 'none'; }
+        function setBanner(text, show) {
+            bannerEl.innerHTML = text;
+            bannerEl.style.display = show ? 'block' : 'none';
+        }
 
-        // NBT Reader (rövidítve a lényeg)
         function NBTReader(buffer, littleEndian) {
-            this.view = new DataView(buffer); this.offset = 0; this.little = !!littleEndian; this.decoder = new TextDecoder('utf-8');
+            this.view = new DataView(buffer);
+            this.offset = 0;
+            this.little = !!littleEndian;
+            this.decoder = new TextDecoder('utf-8');
         }
         NBTReader.prototype.readByte = function () { const v = this.view.getInt8(this.offset); this.offset += 1; return v; };
         NBTReader.prototype.readUByte = function () { const v = this.view.getUint8(this.offset); this.offset += 1; return v; };
@@ -118,51 +207,154 @@
         NBTReader.prototype.readLong = function () { const v = this.view.getBigInt64(this.offset, this.little); this.offset += 8; return v; };
         NBTReader.prototype.readFloat = function () { const v = this.view.getFloat32(this.offset, this.little); this.offset += 4; return v; };
         NBTReader.prototype.readDouble = function () { const v = this.view.getFloat64(this.offset, this.little); this.offset += 8; return v; };
-        NBTReader.prototype.readString = function () { const len = this.readUShort(); const bytes = new Uint8Array(this.view.buffer, this.offset, len); this.offset += len; return this.decoder.decode(bytes); };
-        NBTReader.prototype.readByteArray = function () { const len = this.readInt(); const arr = new Int8Array(this.view.buffer.slice(this.offset, this.offset + len)); this.offset += len; return arr; };
-        NBTReader.prototype.readIntArray = function () { const len = this.readInt(); const arr = new Int32Array(len); for (let i = 0; i < len; i++) arr[i] = this.readInt(); return arr; };
-        NBTReader.prototype.readLongArray = function () { const len = this.readInt(); const arr = new BigInt64Array(len); for (let i = 0; i < len; i++) arr[i] = this.readLong(); return arr; };
+        NBTReader.prototype.readString = function () {
+            const len = this.readUShort();
+            const bytes = new Uint8Array(this.view.buffer, this.offset, len);
+            this.offset += len;
+            return this.decoder.decode(bytes);
+        };
+        NBTReader.prototype.readByteArray = function () {
+            const len = this.readInt();
+            const arr = new Int8Array(this.view.buffer.slice(this.offset, this.offset + len));
+            this.offset += len;
+            return arr;
+        };
+        NBTReader.prototype.readIntArray = function () {
+            const len = this.readInt();
+            const arr = new Int32Array(len);
+            for (let i = 0; i < len; i++) arr[i] = this.readInt();
+            return arr;
+        };
+        NBTReader.prototype.readLongArray = function () {
+            const len = this.readInt();
+            const arr = new BigInt64Array(len);
+            for (let i = 0; i < len; i++) arr[i] = this.readLong();
+            return arr;
+        };
         NBTReader.prototype.readTagPayload = function (type) {
             switch (type) {
-                case 1: return this.readByte(); case 2: return this.readShort(); case 3: return this.readInt(); case 4: return this.readLong();
-                case 5: return this.readFloat(); case 6: return this.readDouble(); case 7: return this.readByteArray(); case 8: return this.readString();
-                case 9: return this.readList(); case 10: return this.readCompound(); case 11: return this.readIntArray(); case 12: return this.readLongArray();
-                default: throw new Error('Ismeretlen NBT tag típus: ' + type);
+                case 1: return this.readByte();
+                case 2: return this.readShort();
+                case 3: return this.readInt();
+                case 4: return this.readLong();
+                case 5: return this.readFloat();
+                case 6: return this.readDouble();
+                case 7: return this.readByteArray();
+                case 8: return this.readString();
+                case 9: return this.readList();
+                case 10: return this.readCompound();
+                case 11: return this.readIntArray();
+                case 12: return this.readLongArray();
+                default: throw new Error('Ismeretlen NBT tag típus: ' + type + ' (offset ' + this.offset + ')');
             }
         };
-        NBTReader.prototype.readList = function () { const type = this.readUByte(); const len = this.readInt(); const arr = []; for (let i = 0; i < len; i++) arr.push(this.readTagPayload(type)); return arr; };
-        NBTReader.prototype.readCompound = function () { const obj = {}; while (true) { const type = this.readUByte(); if (type === 0) break; const name = this.readString(); obj[name] = this.readTagPayload(type); } return obj; };
-        NBTReader.prototype.readNamedTag = function () { const type = this.readUByte(); if (type === 0) return null; const name = this.readString(); const value = this.readTagPayload(type); return { name, type, value }; };
+        NBTReader.prototype.readList = function () {
+            const type = this.readUByte();
+            const len = this.readInt();
+            const arr = [];
+            for (let i = 0; i < len; i++) arr.push(this.readTagPayload(type));
+            return arr;
+        };
+        NBTReader.prototype.readCompound = function () {
+            const obj = {};
+            while (true) {
+                const type = this.readUByte();
+                if (type === 0) break;
+                const name = this.readString();
+                obj[name] = this.readTagPayload(type);
+            }
+            return obj;
+        };
+        NBTReader.prototype.readNamedTag = function () {
+            const type = this.readUByte();
+            if (type === 0) return null;
+            const name = this.readString();
+            const value = this.readTagPayload(type);
+            return { name: name, type: type, value: value };
+        };
 
         function decompress(buffer) {
             const bytes = new Uint8Array(buffer);
-            if (bytes[0] === 0x1f && bytes[1] === 0x8b) return pako.ungzip(bytes).buffer;
-            try { return pako.inflate(bytes).buffer; } catch (e) { return buffer; }
+            if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
+                return pako.ungzip(bytes).buffer;
+            }
+            try {
+                return pako.inflate(bytes).buffer;
+            } catch (e) {
+                return buffer;
+            }
         }
 
         const BLOCK_COLORS = {
-            stone: 0x7d7d7d, cobblestone: 0x828282, dirt: 0x8b5a2b, grass_block: 0x5a8f3c,
+            stone: 0x7d7d7d, cobblestone: 0x828282, mossy_cobblestone: 0x6f7a63,
+            stone_bricks: 0x7a7a7a, dirt: 0x8b5a2b, grass_block: 0x5a8f3c, grass: 0x5a8f3c,
             oak_planks: 0xb08552, spruce_planks: 0x7a5836, birch_planks: 0xd8c98a,
-            oak_log: 0x6b4a2f, sand: 0xe0d3a0, glass: 0x9fd8e8, water: 0x3a6fd8, lava: 0xe25c22,
-            white_wool: 0xe9ecec, orange_wool: 0xf07613, red_wool: 0xa12722, black_wool: 0x141519,
-            white_concrete: 0xcfd5d6, iron_block: 0xd8d8d8, gold_block: 0xf0d84a, diamond_block: 0x6be0d8,
-            netherrack: 0x6b3030, obsidian: 0x14121a, bedrock: 0x333333, ice: 0xa8d8f0
-            // ... (a többi a korábbi bővített listából)
+            jungle_planks: 0xb07a4a, acacia_planks: 0xc07a4a, dark_oak_planks: 0x4a2a1a,
+            oak_log: 0x6b4a2f, spruce_log: 0x4a3a28, birch_log: 0xd9d3bd,
+            oak_leaves: 0x4a7a2e, spruce_leaves: 0x2e5a33, birch_leaves: 0x6fa83f,
+            sand: 0xe0d3a0, red_sand: 0xc46a2b, sandstone: 0xdccd94,
+            glass: 0x9fd8e8, water: 0x3a6fd8, lava: 0xe25c22, bedrock: 0x333333, gravel: 0x8f8a83,
+            iron_ore: 0xc2b8a3, gold_ore: 0xd9c04a, diamond_ore: 0x6be0d8, coal_ore: 0x3a3a3a,
+            iron_block: 0xd8d8d8, gold_block: 0xf0d84a, diamond_block: 0x6be0d8,
+            white_wool: 0xe9ecec, orange_wool: 0xf07613, magenta_wool: 0xbd44b3,
+            light_blue_wool: 0x3aafd9, yellow_wool: 0xf8c627, lime_wool: 0x70b919,
+            pink_wool: 0xed8dac, gray_wool: 0x3e4447, light_gray_wool: 0x8e8e86,
+            cyan_wool: 0x158991, purple_wool: 0x792aac, blue_wool: 0x35399d,
+            brown_wool: 0x724728, green_wool: 0x546d1b, red_wool: 0xa12722, black_wool: 0x141519,
+            white_concrete: 0xcfd5d6, orange_concrete: 0xe06101, red_concrete: 0x8e2121, black_concrete: 0x080a0f,
+            terracotta: 0x9c5a44, netherrack: 0x6b3030, obsidian: 0x14121a, ice: 0xa8d8f0,
+            snow_block: 0xf0f5f7, clay: 0xa2a8b0, bricks: 0x9c5a4a, quartz_block: 0xece5d8,
+            glowstone: 0xe8c96b, sea_lantern: 0xcfe8e0, melon: 0x6a9e2f, pumpkin: 0xd6892a
+        };
+
+        const LEGACY_ID_NAMES = {
+            0: 'air', 1: 'stone', 2: 'grass_block', 3: 'dirt', 4: 'cobblestone', 5: 'oak_planks',
+            6: 'sapling', 7: 'bedrock', 8: 'water', 9: 'water', 10: 'lava', 11: 'lava',
+            12: 'sand', 13: 'gravel', 14: 'gold_ore', 15: 'iron_ore', 16: 'coal_ore',
+            17: 'oak_log', 18: 'oak_leaves', 20: 'glass', 21: 'lapis_ore', 22: 'lapis_block',
+            24: 'sandstone', 35: 'wool', 41: 'gold_block', 42: 'iron_block', 43: 'stone_bricks',
+            45: 'bricks', 48: 'mossy_cobblestone', 49: 'obsidian', 52: 'spawner',
+            56: 'diamond_ore', 57: 'diamond_block', 58: 'oak_planks', 61: 'stone', 62: 'stone',
+            79: 'ice', 80: 'snow_block', 82: 'clay', 86: 'pumpkin', 87: 'netherrack',
+            89: 'glowstone', 91: 'pumpkin', 98: 'stone_bricks', 103: 'melon', 121: 'quartz_block',
+            152: 'redstone_block', 153: 'nether_brick', 155: 'quartz_block', 159: 'terracotta',
+            168: 'prismarine', 169: 'sea_lantern', 172: 'terracotta', 173: 'redstone_block'
         };
 
         function normalizeName(name) {
             let n = (name || 'unknown').replace('minecraft:', '');
-            return n.split('[')[0];
+            n = n.split('[')[0];
+            return n;
+        }
+        function hashColor(str) {
+            let h = 0;
+            for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+            const hue = Math.abs(h) % 360;
+            return new THREE.Color('hsl(' + hue + ', 45%, 55%)').getHex();
+        }
+        function getBlockAppearance(rawName) {
+            const name = normalizeName(rawName);
+            let color = BLOCK_COLORS[name];
+            if (color === undefined) {
+                for (const key in BLOCK_COLORS) {
+                    if (name === key || name.startsWith(key + '_') || name.indexOf(key) !== -1) {
+                        color = BLOCK_COLORS[key];
+                        break;
+                    }
+                }
+            }
+            if (color === undefined) color = hashColor(name);
+            const alpha = (name.indexOf('glass') !== -1 || name === 'water' || name.indexOf('ice') !== -1 || name.indexOf('slime') !== -1) ? 0.55 : 1;
+            return { color: color, alpha: alpha };
         }
         function isAir(name) {
             const n = normalizeName(name);
             return n === 'air' || n === 'cave_air' || n === 'void_air' || n === '';
         }
 
-        // Pixeles fallback textúra
         const textureCache = new Map();
         function createBlockTexture(hexColor) {
-            const key = 'gen_' + hexColor;
+            const key = hexColor;
             if (textureCache.has(key)) return textureCache.get(key);
             const size = 16;
             const canvas = document.createElement('canvas');
@@ -175,87 +367,64 @@
                 for (let x = 0; x < size; x++) {
                     const i = (y * size + x) * 4;
                     const noise = (Math.random() - 0.5) * 28;
-                    const edge = (x === 0 || y === 0 || x === size-1 || y === size-1) ? -18 : 0;
+                    const edge = (x === 0 || y === 0 || x === size - 1 || y === size - 1) ? -18 : 0;
                     data[i] = Math.max(0, Math.min(255, r + noise + edge));
-                    data[i+1] = Math.max(0, Math.min(255, g + noise + edge));
-                    data[i+2] = Math.max(0, Math.min(255, b + noise + edge));
-                    data[i+3] = 255;
+                    data[i + 1] = Math.max(0, Math.min(255, g + noise + edge));
+                    data[i + 2] = Math.max(0, Math.min(255, b + noise + edge));
+                    data[i + 3] = 255;
                 }
             }
             ctx.putImageData(imageData, 0, 0);
             const tex = new THREE.CanvasTexture(canvas);
-            tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
+            tex.magFilter = THREE.NearestFilter;
+            tex.minFilter = THREE.NearestFilter;
+            tex.generateMipmaps = false;
             textureCache.set(key, tex);
             return tex;
         }
 
-        // Valódi textúra betöltés (jsDelivr)
-        const loader = new THREE.TextureLoader();
-        const realTextureCache = new Map();
-        const TEXTURE_BASE = 'https://cdn.jsdelivr.net/gh/InventivetalentDev/minecraft-assets@1.20.1/assets/minecraft/textures/block/';
-
-        function loadRealTexture(blockName) {
-            return new Promise((resolve) => {
-                if (realTextureCache.has(blockName)) {
-                    resolve(realTextureCache.get(blockName));
-                    return;
-                }
-                const url = TEXTURE_BASE + blockName + '.png';
-                loader.load(url, (tex) => {
-                    tex.magFilter = THREE.NearestFilter;
-                    tex.minFilter = THREE.NearestFilter;
-                    tex.generateMipmaps = false;
-                    realTextureCache.set(blockName, tex);
-                    resolve(tex);
-                }, undefined, () => {
-                    // fallback
-                    resolve(null);
-                });
-            });
-        }
-
-        function getBlockAppearance(rawName) {
-            const name = normalizeName(rawName);
-            let color = BLOCK_COLORS[name];
-            if (color === undefined) {
-                for (const key in BLOCK_COLORS) {
-                    if (name.indexOf(key) !== -1) { color = BLOCK_COLORS[key]; break; }
-                }
-            }
-            if (color === undefined) color = 0x888888;
-            const alpha = (name.indexOf('glass') !== -1 || name === 'water' || name.indexOf('ice') !== -1) ? 0.55 : 1;
-            return { name, color, alpha };
-        }
-
-        // Parserek (egyszerűsítve a lényeg)
         function parseLegacySchematic(root) {
             const width = root.Width, height = root.Height, length = root.Length;
             const blocksArr = root.Blocks;
+            const add = root.AddBlocks;
             const result = [];
-            for (let y = 0; y < height; y++) for (let z = 0; z < length; z++) for (let x = 0; x < width; x++) {
-                const idx = (y * length + z) * width + x;
-                let id = blocksArr[idx] & 0xFF;
-                if (id === 0) continue;
-                const name = (id === 1 ? 'stone' : id === 2 ? 'grass_block' : id === 3 ? 'dirt' : id === 4 ? 'cobblestone' : id === 5 ? 'oak_planks' : 'stone');
-                result.push({ x, y, z, name });
+            for (let y = 0; y < height; y++) {
+                for (let z = 0; z < length; z++) {
+                    for (let x = 0; x < width; x++) {
+                        const idx = (y * length + z) * width + x;
+                        let id = blocksArr[idx] & 0xFF;
+                        if (add) {
+                            const addIdx = idx >> 1;
+                            const nibble = (idx % 2 === 0) ? (add[addIdx] & 0x0F) : ((add[addIdx] >> 4) & 0x0F);
+                            id |= nibble << 8;
+                        }
+                        if (id === 0) continue;
+                        const name = LEGACY_ID_NAMES[id] || ('id_' + id);
+                        if (isAir(name)) continue;
+                        result.push({ x: x, y: y, z: z, name: name });
+                    }
+                }
             }
             return result;
         }
 
         function parseLitematic(root) {
-            const regions = root.Regions || {};
+            const regions = root.Regions;
             const result = [];
+            if (!regions) throw new Error('Nem található "Regions" mező — nem litematic fájl?');
             for (const regionName in regions) {
                 const region = regions[regionName];
                 const size = region.Size, pos = region.Position;
                 if (!size || !pos) continue;
-                const absX = Math.abs(size.x), absY = Math.abs(size.y), absZ = Math.abs(size.z);
-                const minX = size.x < 0 ? pos.x + size.x + 1 : pos.x;
-                const minY = size.y < 0 ? pos.y + size.y + 1 : pos.y;
-                const minZ = size.z < 0 ? pos.z + size.z + 1 : pos.z;
-                const palette = region.BlockStatePalette || [];
-                const states = region.BlockStates || [];
-                const bitsPerEntry = Math.max(2, Math.ceil(Math.log2(palette.length || 1)));
+                const sx = size.x, sy = size.y, sz = size.z;
+                const absX = Math.abs(sx), absY = Math.abs(sy), absZ = Math.abs(sz);
+                const minX = sx < 0 ? pos.x + sx + 1 : pos.x;
+                const minY = sy < 0 ? pos.y + sy + 1 : pos.y;
+                const minZ = sz < 0 ? pos.z + sz + 1 : pos.z;
+                const palette = region.BlockStatePalette;
+                const states = region.BlockStates;
+                if (!palette || !states || absX === 0 || absY === 0 || absZ === 0) continue;
+                const bitsPerEntry = Math.max(2, Math.ceil(Math.log2(palette.length)));
                 const mask = (1n << BigInt(bitsPerEntry)) - 1n;
                 const total = absX * absY * absZ;
                 for (let i = 0; i < total; i++) {
@@ -266,12 +435,16 @@
                     const startBit = BigInt(i) * BigInt(bitsPerEntry);
                     const longIndex = Number(startBit / 64n);
                     const startOffset = Number(startBit % 64n);
-                    let value = (BigInt.asUintN(64, states[longIndex] || 0n) >> BigInt(startOffset)) & mask;
-                    if (startOffset + bitsPerEntry > 64) {
-                        const hi = BigInt.asUintN(64, states[longIndex + 1] || 0n) << BigInt(64 - startOffset);
-                        value = (value | hi) & mask;
+                    let value;
+                    const lo = BigInt.asUintN(64, states[longIndex]) >> BigInt(startOffset);
+                    if (startOffset + bitsPerEntry <= 64) {
+                        value = lo & mask;
+                    } else {
+                        const hi = BigInt.asUintN(64, states[longIndex + 1]) << BigInt(64 - startOffset);
+                        value = (lo | hi) & mask;
                     }
-                    const entry = palette[Number(value)];
+                    const paletteIndex = Number(value);
+                    const entry = palette[paletteIndex];
                     if (!entry || !entry.Name || isAir(entry.Name)) continue;
                     result.push({ x: minX + x, y: minY + y, z: minZ + z, name: entry.Name });
                 }
@@ -282,38 +455,43 @@
         function parseMcstructure(buffer) {
             const reader = new NBTReader(buffer, true);
             const rootTag = reader.readNamedTag();
-            if (!rootTag) throw new Error('Üres mcstructure');
+            if (!rootTag) throw new Error('Üres mcstructure fájl.');
             const root = rootTag.value;
-            const size = root.size || [0,0,0];
+            const size = root.size;
+            if (!size) throw new Error('Hiányzó "size" mező az mcstructure fájlban.');
             const sx = size[0], sy = size[1], sz = size[2];
-            const structure = root.structure || {};
-            const layer0 = (structure.block_indices || [])[0] || [];
-            const paletteList = ((structure.palette || {}).default || {}).block_palette || [];
+            const structure = root.structure;
+            const layer0 = structure.block_indices[0];
+            const paletteList = structure.palette.default.block_palette;
             const result = [];
-            for (let x = 0; x < sx; x++) for (let y = 0; y < sy; y++) for (let z = 0; z < sz; z++) {
-                const idx = (x * sy + y) * sz + z;
-                const pIdx = layer0[idx];
-                if (pIdx === undefined || pIdx < 0) continue;
-                const entry = paletteList[pIdx];
-                if (!entry) continue;
-                const name = entry.name || 'unknown';
-                if (isAir(name)) continue;
-                result.push({ x, y, z, name });
+            for (let x = 0; x < sx; x++) {
+                for (let y = 0; y < sy; y++) {
+                    for (let z = 0; z < sz; z++) {
+                        const idx = (x * sy + y) * sz + z;
+                        const pIdx = layer0[idx];
+                        if (pIdx === undefined || pIdx < 0) continue;
+                        const entry = paletteList[pIdx];
+                        if (!entry) continue;
+                        const name = entry.name || 'unknown';
+                        if (isAir(name)) continue;
+                        result.push({ x: x, y: y, z: z, name: name });
+                    }
+                }
             }
             return result;
         }
 
-        async function renderBlocks(blocks, filename) {
+        function renderBlocks(blocks, filename) {
             scene.remove(schematicGroup);
             schematicGroup = new THREE.Group();
             scene.add(schematicGroup);
 
             if (!blocks || blocks.length === 0) {
-                setBanner('Nem sikerült blokkot kiolvasni.', true);
+                setBanner('Nem sikerült blokkot kiolvasni ebből a fájlból.', true);
                 return;
             }
 
-            const MAX_BLOCKS = 300000;
+            const MAX_BLOCKS = 350000;
             if (blocks.length > MAX_BLOCKS) {
                 const stride = Math.ceil(blocks.length / MAX_BLOCKS);
                 blocks = blocks.filter((_, i) => i % stride === 0);
@@ -326,25 +504,19 @@
                 if (b.z < minZ) minZ = b.z; if (b.z > maxZ) maxZ = b.z;
             }
 
-            // Csoportosítás név szerint (textúra alapján)
             const groups = new Map();
             for (const b of blocks) {
                 const app = getBlockAppearance(b.name);
-                const key = app.name;
-                if (!groups.has(key)) groups.set(key, { name: app.name, color: app.color, alpha: app.alpha, items: [] });
+                const key = app.color + '_' + app.alpha;
+                if (!groups.has(key)) groups.set(key, { color: app.color, alpha: app.alpha, items: [] });
                 groups.get(key).items.push(b);
             }
 
             const geometry = new THREE.BoxGeometry(1, 1, 1);
             const dummy = new THREE.Object3D();
 
-            setBanner('Textúrák betöltése...', true);
-
-            const entries = Array.from(groups.entries());
-            for (const [key, g] of entries) {
-                let tex = await loadRealTexture(g.name);
-                if (!tex) tex = createBlockTexture(g.color);
-
+            groups.forEach(function (g) {
+                const tex = createBlockTexture(g.color);
                 const material = new THREE.MeshLambertMaterial({
                     map: tex,
                     transparent: g.alpha < 1,
@@ -359,13 +531,14 @@
                 });
                 mesh.instanceMatrix.needsUpdate = true;
                 schematicGroup.add(mesh);
-            }
+            });
 
             const cx = (maxX - minX) / 2, cy = (maxY - minY) / 2, cz = (maxZ - minZ) / 2;
             target.set(cx, cy, cz);
             const dim = Math.max(maxX - minX, maxY - minY, maxZ - minZ, 5);
             radius = dim * 1.6;
-            theta = Math.PI / 4; phi = Math.PI / 3;
+            theta = Math.PI / 4;
+            phi = Math.PI / 3;
             updateCamera();
 
             setBanner('', false);
@@ -377,7 +550,9 @@
             if (!file) return;
             setBanner('Betöltés: ' + file.name + '...', true);
             const reader = new FileReader();
-            reader.onerror = function () { setBanner('Nem sikerült beolvasni a fájlt.', true); };
+            reader.onerror = function () {
+                setBanner('Nem sikerült beolvasni a fájlt.', true);
+            };
             reader.onload = function () {
                 try {
                     const buffer = reader.result;
@@ -389,14 +564,17 @@
                         const nbtBuffer = decompress(buffer);
                         const nbtReader = new NBTReader(nbtBuffer, false);
                         const root = nbtReader.readNamedTag();
-                        if (!root) throw new Error('Üres NBT');
-                        if (ext === 'litematic') blocks = parseLitematic(root.value);
-                        else blocks = parseLegacySchematic(root.value);
+                        if (!root) throw new Error('Üres vagy érvénytelen NBT fájl.');
+                        if (ext === 'litematic') {
+                            blocks = parseLitematic(root.value);
+                        } else {
+                            blocks = parseLegacySchematic(root.value);
+                        }
                     }
                     renderBlocks(blocks, file.name);
                 } catch (err) {
                     console.error(err);
-                    setBanner('Hiba: ' + err.message, true);
+                    setBanner('Hiba a fájl feldolgozása közben: ' + err.message, true);
                 }
             };
             reader.readAsArrayBuffer(file);
