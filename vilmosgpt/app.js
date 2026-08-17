@@ -1,4 +1,4 @@
-/* loader v35 – stable pinned core + image embed only */
+/* loader v36 – stable core + reliable image embed via renderMarkdown override */
 (async function(){
   try {
     var base = 'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@6a7a296e61b3a2fa08af04a3cb44f8bf6c7acc4e/vilmosgpt/';
@@ -40,67 +40,108 @@
     }
     if (rqText) code += '\n' + rqText;
 
-    // === IMAGE EMBED ONLY (minimal) ===
-    // Converts image URLs -> markdown images so marked renders real <img>
-    // Removes [Image N] / (Image N) placeholders
-    // Does not change normal text otherwise
-    code += '\n' + [
-      '(function(){',
-      '  try {',
-      '    var st = document.createElement("style");',
-      '    st.textContent = ".bubble.markdown img, .bubble img { max-width: 100%; height: auto; border-radius: 12px; margin: 8px 0; display: block; }";',
-      '    document.head.appendChild(st);',
-      '  } catch (e) {}',
-      '  function isImageUrl(url) {',
-      '    if (!url || typeof url !== "string") return false;',
-      '    var u = url.toLowerCase().split("?")[0].split("#")[0];',
-      '    if (/\\.(jpe?g|png|gif|webp|svg|bmp|avif)$/i.test(u)) return true;',
-      '    if (/imgur\\.com|i\\.imgur|cdn\\.discordapp|media\\.discordapp|pbs\\.twimg|twimg\\.com|googleusercontent\\.com|ggpht\\.com|ytimg\\.com|pinimg\\.com|flickr\\.com|unsplash\\.com|pexels\\.com|wikimedia\\.org|upload\\.wikimedia|i\\.ibb\\.co|postimg\\.cc/i.test(url)) return true;',
-      '    return false;',
-      '  }',
-      '  function processImages(text) {',
-      '    if (!text || typeof text !== "string") return text;',
-      '    var t = String(text);',
-      '    // Convert image URLs to markdown so marked produces real <img>',
-      '    t = t.replace(/https?:\\/\\/[^\\s)\\]]+/gi, function(url) {',
-      '      var clean = url.replace(/[.,;:!?)]+$/, "");',
-      '      var trailing = url.slice(clean.length);',
-      '      if (isImageUrl(clean)) return "\\n\\n![Kép](" + clean + ")\\n\\n" + trailing;',
-      '      return url;',
-      '    });',
-      '    // Remove placeholder text like [Image 1], (Image 2), ! Image 3, (! Image 1 (',
-      '    t = t.replace(/\\(?\\s*\\[?Image\\s*\\d+\\]?\\s*\\)?/gi, " ");',
-      '    t = t.replace(/!\\s*Image\\s*\\d+/gi, " ");',
-      '    t = t.replace(/\\(\\s*!\\s*Image\\s*\\d+\\s*\\(/gi, " ");',
-      '    t = t.replace(/[^\\S\\r\\n]{2,}/g, " ").replace(/^\\s+|\\s+$/g, "");',
-      '    return t;',
-      '  }',
-      '  var attempts = 0;',
-      '  var maxAttempts = 100;',
-      '  var interval = setInterval(function(){',
-      '    attempts++;',
-      '    try {',
-      '      if (typeof window.addMessage === "function" && !window.addMessage._imageEmbed) {',
-      '        var orig = window.addMessage;',
-      '        var wrapped = function() {',
-      '          var args = Array.prototype.slice.call(arguments);',
-      '          if (typeof args[0] === "string" && (args[1] === "bot" || args[1] === undefined || args[1] === "system")) {',
-      '            args[0] = processImages(args[0]);',
-      '          }',
-      '          return orig.apply(this, args);',
-      '        };',
-      '        wrapped._imageEmbed = true;',
-      '        window.addMessage = wrapped;',
-      '        clearInterval(interval);',
-      '      }',
-      '    } catch (e) {}',
-      '    if (attempts >= maxAttempts) clearInterval(interval);',
-      '  }, 100);',
-      '})();'
-    ].join('\n');
-
+    // Run core first
     var s = document.createElement('script');
     s.textContent = code;
     document.body.appendChild(s);
+
+    // === IMAGE EMBED: runs AFTER core, overrides renderMarkdown + wraps addMessage ===
+    (function installImageEmbed(){
+      function isImageUrl(url) {
+        if (!url || typeof url !== 'string') return false;
+        var u = url.toLowerCase().split('?')[0].split('#')[0];
+        if (/\.(jpe?g|png|gif|webp|svg|bmp|avif)$/i.test(u)) return true;
+        if (/imgur\.com|i\.imgur|cdn\.discordapp|media\.discordapp|pbs\.twimg|twimg\.com|googleusercontent\.com|ggpht\.com|ytimg\.com|pinimg\.com|flickr\.com|unsplash\.com|pexels\.com|wikimedia\.org|upload\.wikimedia|i\.ibb\.co|postimg\.cc/i.test(url)) return true;
+        return false;
+      }
+
+      function stripImagePlaceholders(text) {
+        var t = String(text || '');
+        t = t.replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ');
+        t = t.replace(/!\s*Image\s*\d+/gi, ' ');
+        t = t.replace(/\(\s*!\s*Image\s*\d+\s*\(/gi, ' ');
+        return t;
+      }
+
+      function urlsToMarkdownImages(text) {
+        var t = String(text || '');
+        t = t.replace(/https?:\/\/[^\s)\]]+/gi, function(url) {
+          var clean = url.replace(/[.,;:!?)]+$/, '');
+          var trailing = url.slice(clean.length);
+          if (isImageUrl(clean)) {
+            return '\n\n![Kép](' + clean + ')\n\n' + trailing;
+          }
+          return url;
+        });
+        return t;
+      }
+
+      function prepareForRender(text) {
+        var t = String(text || '');
+        t = urlsToMarkdownImages(t);
+        t = stripImagePlaceholders(t);
+        t = t.replace(/[^\S\r\n]{2,}/g, ' ').replace(/^\s+|\s+$/g, '');
+        return t;
+      }
+
+      try {
+        if (!document.getElementById('vilmos-img-css')) {
+          var st = document.createElement('style');
+          st.id = 'vilmos-img-css';
+          st.textContent = '.bubble.markdown img, .bubble img { max-width: 100%; height: auto; border-radius: 12px; margin: 8px 0; display: block; object-fit: contain; }';
+          document.head.appendChild(st);
+        }
+      } catch (e) {}
+
+      var tries = 0;
+      var iv = setInterval(function() {
+        tries++;
+        var ready = typeof window.renderMarkdown === 'function' || typeof window.addMessage === 'function';
+        if (!ready) {
+          if (tries > 80) clearInterval(iv);
+          return;
+        }
+        clearInterval(iv);
+
+        if (typeof window.renderMarkdown === 'function' && !window.renderMarkdown._imgEmbed) {
+          var origRM = window.renderMarkdown;
+          var newRM = function(text) {
+            var prepared = prepareForRender(text);
+            var html = origRM(prepared);
+            if (html && html.indexOf('<img') === -1) {
+              var urls = String(text || '').match(/https?:\/\/[^\s)\]]+/gi) || [];
+              for (var i = 0; i < urls.length; i++) {
+                var clean = urls[i].replace(/[.,;:!?)]+$/, '');
+                if (isImageUrl(clean)) {
+                  html += '<img src="' + clean.replace(/"/g, '&quot;') + '" alt="Kép" style="max-width:100%;height:auto;border-radius:12px;margin:8px 0;display:block;">';
+                }
+              }
+              html = stripImagePlaceholders(html);
+            }
+            return html;
+          };
+          newRM._imgEmbed = true;
+          window.renderMarkdown = newRM;
+        }
+
+        if (typeof window.addMessage === 'function' && !window.addMessage._imageEmbed) {
+          var origAM = window.addMessage;
+          var newAM = function() {
+            var args = Array.prototype.slice.call(arguments);
+            if (typeof args[0] === 'string') {
+              var role = args[1];
+              if (role === 'bot' || role === 'system' || role === undefined) {
+                args[0] = prepareForRender(args[0]);
+              }
+            }
+            return origAM.apply(this, args);
+          };
+          newAM._imageEmbed = true;
+          window.addMessage = newAM;
+        }
+
+        console.log('[VilmosGPT] image embed active');
+      }, 100);
+    })();
   } catch (e) { console.error('VilmosGPT load', e); }
 })();
