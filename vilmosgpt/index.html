@@ -305,7 +305,7 @@
     }
     function openAuth(){ document.getElementById('auth-overlay').classList.add('open'); if(window.google) try{ initGoogleButton(); }catch(e){} }
     function closeAuth(){ document.getElementById('auth-overlay').classList.remove('open'); }
-    function parseJwt(t){ try{ const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+(('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''))); }catch{ return null; } }
+    function parseJwt(t){ try{ const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+(('00'+c.charCodeAt(0).toString(16)).slice(-2))).join(''))); }catch{ return null; } }
     function handleGoogleCredential(r){
       const d=parseJwt(r.credential); if(!d) return;
       setUser({ name:d.name||d.email||'Google', email:d.email||'', picture:d.picture||'', provider:'google', sub:d.sub||'' });
