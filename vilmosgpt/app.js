@@ -40,49 +40,8 @@
     }
     if (rqText) code += '\n' + rqText;
 
-    // Image embed fix: override sanitize after the core is loaded
-    code += '\n' +
-"(function(){\n" +
-"  function isImageUrl(url) {\n" +
-"    if (!url || typeof url !== 'string') return false;\n" +
-"    var u = url.toLowerCase().split('?')[0].split('#')[0];\n" +
-"    if (/\\.(jpe?g|png|gif|webp|svg|bmp|avif)$/i.test(u)) return true;\n" +
-"    if (/imgur\\.com|i\\.imgur|cdn\\.discordapp|media\\.discordapp|pbs\\.twimg|twimg\\.com|googleusercontent\\.com|ggpht\\.com|ytimg\\.com|pinimg\\.com|flickr\\.com|unsplash\\.com|pexels\\.com|wikimedia\\.org|upload\\.wikimedia/i.test(url)) return true;\n" +
-"    return false;\n" +
-"  }\n" +
-"  function enhanceSanitize(orig) {\n" +
-"    return function(text) {\n" +
-"      if (!text || typeof text !== 'string') return text;\n" +
-"      var t = String(text);\n" +
-"      t = t.replace(/https?:\\/\\/[^\\s)\\]]+/gi, function(url) {\n" +
-"        var clean = url.replace(/[.,;:!?)]+$/, '');\n" +
-"        var trailing = url.slice(clean.length);\n" +
-"        if (isImageUrl(clean)) return '\\n\\n![Kép](' + clean + ')\\n\\n' + trailing;\n" +
-"        return trailing || ' ';\n" +
-"      });\n" +
-"      t = t.replace(/\\(?\\s*\\[?Image\\s*\\d+\\]?\\s*\\)?/gi, ' ');\n" +
-"      t = t.replace(/!\\s*Image\\s*\\d+/gi, ' ');\n" +
-"      if (typeof orig === 'function') t = orig(t);\n" +
-"      return t;\n" +
-"    };\n" +
-"  }\n" +
-"  try {\n" +
-"    var st = document.createElement('style');\n" +
-"    st.textContent = '.bubble.markdown img, .bubble img { max-width: 100%; height: auto; border-radius: 12px; margin: 8px 0; display: block; }';\n" +
-"    document.head.appendChild(st);\n" +
-"  } catch(e) {}\n" +
-"  var tries = 0;\n" +
-"  var iv = setInterval(function(){\n" +
-"    tries++;\n" +
-"    if (window._vilmos_sanitizeResponse) {\n" +
-"      window._vilmos_sanitizeResponse = enhanceSanitize(window._vilmos_sanitizeResponse);\n" +
-"      clearInterval(iv);\n" +
-"    } else if (typeof window.addMessage === 'function' && tries > 20) {\n" +
-"      clearInterval(iv);\n" +
-"    }\n" +
-"    if (tries > 60) clearInterval(iv);\n" +
-"  }, 150);\n" +
-"})();\n";
+    // Image embed fix: enhance sanitize after core loads
+    code += '\n(function(){\n  function isImageUrl(url) {\n    if (!url || typeof url !== \'string\') return false;\n    var u = url.toLowerCase().split(\'?\')[0].split(\'#\')[0];\n    if (/\\.(jpe?g|png|gif|webp|svg|bmp|avif)$/i.test(u)) return true;\n    if (/imgur\\.com|i\\.imgur|cdn\\.discordapp|media\\.discordapp|pbs\\.twimg|twimg\\.com|googleusercontent\\.com|ggpht\\.com|ytimg\\.com|pinimg\\.com|flickr\\.com|unsplash\\.com|pexels\\.com|wikimedia\\.org|upload\\.wikimedia/i.test(url)) return true;\n    return false;\n  }\n  function enhanceSanitize(orig) {\n    return function(text) {\n      if (!text || typeof text !== \'string\') return text;\n      var t = String(text);\n      t = t.replace(/https?:\\/\\/[^\\s)\\]]+/gi, function(url) {\n        var clean = url.replace(/[.,;:!?)]+$/, \'\');\n        var trailing = url.slice(clean.length);\n        if (isImageUrl(clean)) return \'\\n\\n![Kép](\' + clean + \')\\n\\n\' + trailing;\n        return trailing || \' \';\n      });\n      t = t.replace(/\\(?\\s*\\[?Image\\s*\\d+\\]?\\s*\\)?/gi, \' \');\n      t = t.replace(/!\\s*Image\\s*\\d+/gi, \' \');\n      if (typeof orig === \'function\') t = orig(t);\n      return t;\n    };\n  }\n  try {\n    var st = document.createElement(\'style\');\n    st.textContent = \'.bubble.markdown img, .bubble img { max-width: 100%; height: auto; border-radius: 12px; margin: 8px 0; display: block; }\';\n    document.head.appendChild(st);\n  } catch(e) {}\n  var tries = 0;\n  var iv = setInterval(function(){\n    tries++;\n    if (window._vilmos_sanitizeResponse) {\n      window._vilmos_sanitizeResponse = enhanceSanitize(window._vilmos_sanitizeResponse);\n      clearInterval(iv);\n    } else if (tries > 60) clearInterval(iv);\n  }, 150);\n})();\n';
 
     var s = document.createElement('script');
     s.textContent = code;
