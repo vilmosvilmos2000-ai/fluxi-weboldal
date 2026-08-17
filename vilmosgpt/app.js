@@ -1,29 +1,30 @@
-/* loader v32 – image embed support; load from main */
+/* loader v33 – force jsDelivr @main for image embed fix */
 (async function(){
   try {
-    // Prefer local / main branch so image-embedding fix is live
+    // Prefer jsDelivr @main (fast + up to date). Local Pages can lag behind commits.
     var base = 'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@main/vilmosgpt/';
     var rawBase = 'https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/main/vilmosgpt/';
     var names = ['app-part1.js', 'app-part2.js'];
     var code = '';
+    var bust = Date.now();
     for (var i = 0; i < names.length; i++) {
       var text = null;
-      // try local first (when served from the site itself)
       try {
-        var local = await fetch(names[i] + '?v=' + Date.now());
-        if (local.ok) text = await local.text();
-      } catch (el) {}
+        var r = await fetch(base + names[i] + '?v=' + bust);
+        if (r.ok) text = await r.text();
+      } catch (e) {}
       if (!text) {
         try {
-          var r = await fetch(base + names[i] + '?v=' + Date.now());
-          if (r.ok) text = await r.text();
-        } catch (e) {}
-      }
-      if (!text) {
-        try {
-          var r2 = await fetch(rawBase + names[i] + '?v=' + Date.now());
+          var r2 = await fetch(rawBase + names[i] + '?v=' + bust);
           if (r2.ok) text = await r2.text();
         } catch (e2) {}
+      }
+      // last resort: local (may be stale)
+      if (!text) {
+        try {
+          var local = await fetch(names[i] + '?v=' + bust);
+          if (local.ok) text = await local.text();
+        } catch (el) {}
       }
       if (!text) throw new Error('load fail ' + names[i]);
       code += text + '\n';
