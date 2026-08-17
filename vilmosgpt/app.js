@@ -1,19 +1,27 @@
-/* loader v31 – web search; research = 20+ sources */
+/* loader v32 – image embed support; load from main */
 (async function(){
   try {
-    var base = 'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@6a7a296e61b3a2fa08af04a3cb44f8bf6c7acc4e/vilmosgpt/';
-    var rawBase = 'https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/6a7a296e61b3a2fa08af04a3cb44f8bf6c7acc4e/vilmosgpt/';
+    // Prefer local / main branch so image-embedding fix is live
+    var base = 'https://cdn.jsdelivr.net/gh/vilmosvilmos2000-ai/fluxi-weboldal@main/vilmosgpt/';
+    var rawBase = 'https://raw.githubusercontent.com/vilmosvilmos2000-ai/fluxi-weboldal/main/vilmosgpt/';
     var names = ['app-part1.js', 'app-part2.js'];
     var code = '';
     for (var i = 0; i < names.length; i++) {
       var text = null;
+      // try local first (when served from the site itself)
       try {
-        var r = await fetch(base + names[i]);
-        if (r.ok) text = await r.text();
-      } catch (e) {}
+        var local = await fetch(names[i] + '?v=' + Date.now());
+        if (local.ok) text = await local.text();
+      } catch (el) {}
       if (!text) {
         try {
-          var r2 = await fetch(rawBase + names[i]);
+          var r = await fetch(base + names[i] + '?v=' + Date.now());
+          if (r.ok) text = await r.text();
+        } catch (e) {}
+      }
+      if (!text) {
+        try {
+          var r2 = await fetch(rawBase + names[i] + '?v=' + Date.now());
           if (r2.ok) text = await r2.text();
         } catch (e2) {}
       }

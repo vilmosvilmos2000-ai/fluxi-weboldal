@@ -65,12 +65,13 @@ const simpleDefinitions = {
 
 /* === START: sanitize + addMessage wrapper ===
    This wrapper ensures bot messages are sanitized before display
+   + image embedding: convert image URLs to markdown so marked renders real <img>
 */
 (function(){
-  // inject small stylesheet for source badges
+  // inject stylesheet for source badges + chat images
   try {
     var st = document.createElement('style');
-    st.textContent = '\n  .vilmos-sources{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:12px;color:#94a3b8}\n  .vilmos-source-icons{display:flex;align-items:center;gap:6px}\n  .vilmos-source-badge{width:28px;height:28px;border-radius:999px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(0,0,0,0.06)}\n  .vilmos-source-badge img{width:20px;height:20px;display:block}\n  .vilmos-sources .vilmos-source-count{margin-left:6px;color:#94a3b8}\n    ';
+    st.textContent = '\n  .vilmos-sources{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:12px;color:#94a3b8}\n  .vilmos-source-icons{display:flex;align-items:center;gap:6px}\n  .vilmos-source-badge{width:28px;height:28px;border-radius:999px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(0,0,0,0.06)}\n  .vilmos-source-badge img{width:20px;height:20px;display:block}\n  .vilmos-sources .vilmos-source-count{margin-left:6px;color:#94a3b8}\n  .bubble.markdown img, .bubble img { max-width: 100%; height: auto; border-radius: 12px; margin: 8px 0; display: block; }\n    ';
     document.head.appendChild(st);
   } catch (e) {}
 
@@ -106,19 +107,39 @@ const simpleDefinitions = {
     return out;
   }
 
-  // remove URLs and known site name artefacts from body text
+  function isImageUrl(url) {
+    if (!url || typeof url !== 'string') return false;
+    var u = url.toLowerCase().split('?')[0].split('#')[0];
+    if (/\.(jpe?g|png|gif|webp|svg|bmp|avif)$/i.test(u)) return true;
+    // common image hosts / paths
+    if (/imgur\.com|i\.imgur|cdn\.discordapp|media\.discordapp|pbs\.twimg|twimg\.com|googleusercontent\.com|ggpht\.com|ytimg\.com|pinimg\.com|flickr\.com|unsplash\.com|pexels\.com|wikimedia\.org|upload\.wikimedia/i.test(url)) return true;
+    return false;
+  }
+
+  // sanitize body: convert image URLs to markdown images, remove other URLs + Image N markers
   function sanitizeResponse(text) {
     if (!text || typeof text !== 'string') return text;
     var t = String(text);
 
-    // remove Image N markers
+    // First: convert image-like URLs into markdown images so marked can embed them
+    t = t.replace(/https?:\/\/[^\s)\]]+/gi, function(url) {
+      // clean trailing punctuation that is not part of the URL
+      var clean = url.replace(/[.,;:!?)]+$/, '');
+      var trailing = url.slice(clean.length);
+      if (isImageUrl(clean)) {
+        return '\n\n![Kép](' + clean + ')\n\n' + trailing;
+      }
+      // non-image URL → remove (keep only the trailing punctuation if any)
+      return trailing || ' ';
+    });
+
+    // remove Image N markers (the text placeholders the model sometimes outputs)
     t = t.replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ');
+    t = t.replace(/!\s*Image\s*\d+/gi, ' ');
+    t = t.replace(/\(\s*!\s*Image\s*\d+\s*\(/gi, ' ');
 
     // remove common site name mentions (standalone)
     t = t.replace(/\b(duckduckgo|google|bing|wikipedia|github|roblox)\b/gi, ' ');
-
-    // remove explicit URLs entirely
-    t = t.replace(/https?:\/\/[^\s)]+/gi, ' ');
 
     // cleanup invisible and excessive whitespace
     t = t.replace(/[\u200B-\u200D\uFEFF]/g, '');
@@ -190,7 +211,7 @@ const simpleDefinitions = {
           // extract domains BEFORE we sanitize the body
           var domains = extractDomains(raw);
 
-          // sanitize body so no links or site names remain inline
+          // sanitize body so no links or site names remain inline, but images become real embeds
           if (typeof args[0] === 'string') {
             args[0] = sanitizeResponse(args[0]);
           }
