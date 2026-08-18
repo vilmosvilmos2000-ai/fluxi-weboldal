@@ -111,8 +111,8 @@ const simpleDefinitions = {
     if (!text || typeof text !== 'string') return text;
     var t = String(text);
 
-    // remove Image N markers
-    t = t.replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ');
+    // remove Image N markers (covers (! Image 1 (, [Image 1], (Image 1) etc.)
+    t = t.replace(/[![\(\)\[\]\s]*Image\s*\d+[![\(\)\[\]\s]*/gi, ' ');
 
     // remove common site name mentions (standalone)
     t = t.replace(/\b(duckduckgo|google|bing|wikipedia|github|roblox)\b/gi, ' ');
