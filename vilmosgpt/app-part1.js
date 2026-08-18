@@ -111,11 +111,14 @@ const simpleDefinitions = {
     if (!text || typeof text !== 'string') return text;
     var t = String(text);
 
-    // remove Image N markers (covers (! Image 1 (, [Image 1], (Image 1) etc.)
+    // remove Image N markers – any surrounding noise: (! Image 1 (, [Image 1], (Image 1), etc.
     t = t.replace(/[![\(\)\[\]\s]*Image\s*\d+[![\(\)\[\]\s]*/gi, ' ');
 
-    // remove common site name mentions (standalone)
-    t = t.replace(/\b(duckduckgo|google|bing|wikipedia|github|roblox)\b/gi, ' ');
+    // remove ISO timestamps like 2024-12-01T00:00:00.0000000
+    t = t.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\.\d]*/g, ' ');
+
+    // remove common site name artefacts
+    t = t.replace(/\b(duckduckgo|google|bing|wikipedia|wiktionary|github|roblox)\b/gi, ' ');
 
     // remove explicit URLs entirely
     t = t.replace(/https?:\/\/[^\s)]+/gi, ' ');
@@ -123,7 +126,9 @@ const simpleDefinitions = {
     // cleanup invisible and excessive whitespace
     t = t.replace(/[\u200B-\u200D\uFEFF]/g, '');
     t = t.replace(/[^\S\r\n]{2,}/g, ' ');
+    // remove empty parentheses and double parens
     t = t.replace(/\(\s*\)/g, '');
+    t = t.replace(/\(\s*\(/g, '(');
     t = t.replace(/^\s+|\s+$/g, '');
 
     return t;
