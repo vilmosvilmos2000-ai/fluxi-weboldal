@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord Szerver</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://images.steamusercontent.com/ugc/2385305092455309889/7E1866FADC01993C86B6F2888D05279B18672C3F/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true') no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+    }
+    .card {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 40px 30px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    p {
+      color: #dddddd;
+      margin-bottom: 28px;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .btn-discord {
+      display: inline-block;
+      background-color: #5865F2;
+      color: #ffffff;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+    }
+    .btn-discord:hover {
+      background-color: #4752C4;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(88, 101, 242, 0.6);
+    }
+    .btn-discord:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Csatlakozz a Discordunkhoz!</h1>
+    <p>Kattints az alábbi gombra a meghívó elfogadásához és a közösséghez való csatlakozáshoz.</p>
+    <a href="https://discord.gg/2Y3bFd52X" target="_blank" rel="noopener noreferrer" class="btn-discord">
+      Csatlakozás
+    </a>
+  </div>
+</body>
+</html>
