@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Játék Frissítések</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e24;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #2b2b36;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #3f3f4e;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+        select:focus {
+            border-color: #4CAF50;
+        }
+        #update-section, #info-section {
+            display: none; /* Alapból rejtve vannak */
+            animation: fadeIn 0.5s ease;
+        }
+        .info-box {
+            background-color: #3f3f4e;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #4CAF50;
+            margin-top: 20px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Játék Adatbázis</h1>
+    
+    <div class="form-group">
+        <label for="game-select">Válassz egy játékot:</label>
+        <select id="game-select">
+            <option value="">-- Válassz --</option>
+            <!-- A JavaScript tölti fel -->
+        </select>
+    </div>
+
+    <div class="form-group" id="update-section">
+        <label for="update-select">Válassz egy frissítést (Update):</label>
+        <select id="update-select">
+            <option value="">-- Válassz --</option>
+            <!-- A JavaScript tölti fel -->
+        </select>
+    </div>
+
+    <div id="info-section">
+        <div class="info-box">
+            <h3 id="update-title">Frissítés címe</h3>
+            <p id="update-desc">Itt jelenik meg a leírás...</p>
+            <h4>Kérdések:</h4>
+            <ul id="update-questions">
+                <!-- A JavaScript tölti fel a kérdéseket -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Az adatok, amiket a program használni fog
+    const gameData = {
+        "minecraft": {
+            name: "Minecraft",
+            updates: {
+                "1_21": {
+                    name: "1.21 - Tricky Trials",
+                    desc: "A Tricky Trials frissítés új kihívásokat, Trial Chambereket, új mobokat (mint a Breeze) és a várva várt Crafter blokkot hozta el.",
+                    questions: ["Milyen támadásai vannak a Breeze mobnak?", "Mire lehet használni a Crafter blokkot a Redstone rendszerekben?"]
+                },
+                "1_20": {
+                    name: "1.20 - Trails & Tales",
+                    desc: "Ez a frissítés behozta a gyönyörű cseresznyefás ligeteket (Cherry Grove), az archeológiát, az ecsetet, valamint a tevét és a Sniffert.",
+                    questions: ["Hogyan lehet kikelteni egy Sniffer tojást?", "Hol találhatók a gyanús homok (suspicious sand) blokkok?"]
+                }
+            }
+        },
+        "roblox": {
+            name: "Roblox",
+            updates: {
+                "voice_chat": {
+                    name: "Spatial Voice Chat",
+                    desc: "A hangalapú csevegés lehetővé tette, hogy a játékosok a térbeli elhelyezkedésük alapján (spatial audio) hallják egymást a kompatibilis játékokban.",
+                    questions: ["Milyen korhatárhoz és azonosításhoz kötötték a Voice Chat használatát?", "Hogyan javítja a játékélményt a térbeli hangzás egy horror játékban (pl. Evade)?"]
+                },
+                "materials": {
+                    name: "Materials 1.5 (PBR Update)",
+                    desc: "A Roblox Studio grafikai motorja jelentős frissítést kapott, amely sokkal élethűbb, fizika-alapú textúrákat (PBR) biztosít a fejlesztőknek.",
+                    questions: ["Miben különbözik egy PBR textúra a régi, egyszerű anyagoktól?", "Hogyan hatott ez a frissítés a játékok teljesítményére?"]
+                }
+            }
+        },
+        "fortnite": {
+            name: "Fortnite",
+            updates: {
+                "ch5_s1": {
+                    name: "Chapter 5 Season 1 - Underground",
+                    desc: "Hatalmas frissítés új térképpel, fegyvermódosításokkal (modokkal), mozgási mechanikákkal és a Lego Fortnite játékmód bevezetésével.",
+                    questions: ["Hol lehet fegyvermódosításokat (Weapon Mods) felszerelni a térképen?", "Milyen alapvető túlélő mechanikák vannak a Lego Fortnite-ban?"]
+                },
+                "og": {
+                    name: "Fortnite OG (Chapter 4 Season OG)",
+                    desc: "Egy nosztalgikus, rövid szezon, ami hétről hétre visszahozta az eredeti Chapter 1 térképeit, fegyvereit és járműveit.",
+                    questions: ["Melyik ikonikus helyszín volt a legnépszerűbb landolási pont a visszatérésekor?", "Milyen régi járművek tértek vissza (pl. bevásárlókocsi)?"]
+                }
+            }
+        },
+        "fnaf": {
+            name: "Five Nights at Freddy's",
+            updates: {
+                "ruin": {
+                    name: "Security Breach - Ruin DLC",
+                    desc: "A Ruin DLC-ben Cassie-t irányítjuk, aki a lepusztult Pizzaplexben próbálja megtalálni Gregory-t a V.A.N.N.I. maszk segítségével.",
+                    questions: ["Hogyan változtatja meg a kiterjesztett valóság (V.A.N.N.I. maszk) a játéktér környezetét?", "Ki az igazi főellenség, akivel a játék végén találkozunk?"]
+                },
+                "hw2": {
+                    name: "Help Wanted 2",
+                    desc: "A VR játék folytatása új minijátékokkal, a Sister Location ijesztő helyszíneivel és a Faz-Wrench eszközzel bővítette a lore-t.",
+                    questions: ["Melyik minijáték igényli a legtöbb memóriát és reflexet?", "Milyen titkokat fed fel a játék a Ruin DLC történetével kapcsolatban?"]
+                }
+            }
+        },
+        "gtav": {
+            name: "Grand Theft Auto V",
+            updates: {
+                "cayo_perico": {
+                    name: "The Cayo Perico Heist",
+                    desc: "Az első olyan rablás (Heist), amit a játékosok akár teljesen egyedül (solo) is végrehajthatnak, egy vadonatúj trópusi szigeten.",
+                    questions: ["Kinek a szigetét kell kirabolni?", "Melyik bázis/jármű megvásárlása szükséges a rablás elindításához?"]
+                },
+                "casino": {
+                    name: "The Diamond Casino & Resort",
+                    desc: "Megnyílt a Los Santos-i kaszinó szerencsejátékkal, új küldetésekkel, luxus Penthouse lakásokkal és a pörgethető szerencsekerékkel.",
+                    questions: ["Milyen jutalmakat lehet nyerni a kaszinó szerencsekerekén?", "Kik a kaszinó főellenségei, akiket le kell győzni a sztori küldetésekben?"]
+                }
+            }
+        }
+    };
+
+    // Elemek lekérése a HTML-ből
+    const gameSelect = document.getElementById('game-select');
+    const updateSection = document.getElementById('update-section');
+    const updateSelect = document.getElementById('update-select');
+    const infoSection = document.getElementById('info-section');
+    const updateTitle = document.getElementById('update-title');
+    const updateDesc = document.getElementById('update-desc');
+    const updateQuestions = document.getElementById('update-questions');
+
+    // 1. Játék lista feltöltése
+    for (const [key, game] of Object.entries(gameData)) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = game.name;
+        gameSelect.appendChild(option);
+    }
+
+    // 2. Ha kiválasztunk egy játékot
+    gameSelect.addEventListener('change', (e) => {
+        const selectedGameKey = e.target.value;
+        
+        // Alaphelyzetbe állítjuk az alsó mezőket
+        updateSelect.innerHTML = '<option value="">-- Válassz --</option>';
+        infoSection.style.display = 'none';
+
+        if (selectedGameKey) {
+            // Betöltjük a játékhoz tartozó update-eket
+            const updates = gameData[selectedGameKey].updates;
+            for (const [updateKey, update] of Object.entries(updates)) {
+                const option = document.createElement('option');
+                option.value = updateKey;
+                option.textContent = update.name;
+                updateSelect.appendChild(option);
+            }
+            updateSection.style.display = 'block'; // Megjelenítjük a második lenyílót
+        } else {
+            updateSection.style.display = 'none'; // Elrejtjük, ha nincs játék kiválasztva
+        }
+    });
+
+    // 3. Ha kiválasztunk egy frissítést
+    updateSelect.addEventListener('change', (e) => {
+        const selectedGameKey = gameSelect.value;
+        const selectedUpdateKey = e.target.value;
+
+        if (selectedUpdateKey) {
+            // Lekérjük az adatokat a JSON objektumból
+            const updateInfo = gameData[selectedGameKey].updates[selectedUpdateKey];
+            
+            // Beállítjuk a szövegeket
+            updateTitle.textContent = updateInfo.name;
+            updateDesc.textContent = updateInfo.desc;
+            
+            // Kérdések listájának generálása
+            updateQuestions.innerHTML = ''; // Előző kérdések törlése
+            updateInfo.questions.forEach(q => {
+                const li = document.createElement('li');
+                li.textContent = q;
+                updateQuestions.appendChild(li);
+            });
+
+            infoSection.style.display = 'block'; // Információs doboz megjelenítése
+        } else {
+            infoSection.style.display = 'none'; // Elrejtjük, ha nincs update kiválasztva
+        }
+    });
+</script>
+
+</body>
+</html>
