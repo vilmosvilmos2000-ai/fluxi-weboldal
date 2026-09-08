@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Játék Frissítések</title>
+    <title>Játék Frissítések Évente</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -49,9 +49,10 @@
         select:focus {
             border-color: #4CAF50;
         }
-        #update-section, #info-section {
-            display: none; /* Alapból rejtve vannak */
-            animation: fadeIn 0.5s ease;
+        /* Alapból rejtjük az év, az update és az infó szekciókat */
+        #year-section, #update-section, #info-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
         }
         .info-box {
             background-color: #3f3f4e;
@@ -77,6 +78,7 @@
 <div class="container">
     <h1>Játék Adatbázis</h1>
     
+    <!-- 1. Játék választó -->
     <div class="form-group">
         <label for="game-select">Válassz egy játékot:</label>
         <select id="game-select">
@@ -85,14 +87,25 @@
         </select>
     </div>
 
+    <!-- 2. Év választó (ÚJ) -->
+    <div class="form-group" id="year-section">
+        <label for="year-select">Válassz egy évet:</label>
+        <select id="year-select">
+            <option value="">-- Válassz --</option>
+            <!-- A JavaScript tölti fel -->
+        </select>
+    </div>
+
+    <!-- 3. Frissítés választó -->
     <div class="form-group" id="update-section">
-        <label for="update-select">Válassz egy frissítést (Update):</label>
+        <label for="update-select">Válassz egy frissítést:</label>
         <select id="update-select">
             <option value="">-- Válassz --</option>
             <!-- A JavaScript tölti fel -->
         </select>
     </div>
 
+    <!-- 4. Információs doboz -->
     <div id="info-section">
         <div class="info-box">
             <h3 id="update-title">Frissítés címe</h3>
@@ -106,87 +119,174 @@
 </div>
 
 <script>
-    // Az adatok, amiket a program használni fog
+    // Kibővített adatbázis évekkel
     const gameData = {
         "minecraft": {
             name: "Minecraft",
-            updates: {
-                "1_21": {
-                    name: "1.21 - Tricky Trials",
-                    desc: "A Tricky Trials frissítés új kihívásokat, Trial Chambereket, új mobokat (mint a Breeze) és a várva várt Crafter blokkot hozta el.",
-                    questions: ["Milyen támadásai vannak a Breeze mobnak?", "Mire lehet használni a Crafter blokkot a Redstone rendszerekben?"]
+            years: {
+                "2024": {
+                    updates: {
+                        "1_21": {
+                            name: "1.21 - Tricky Trials",
+                            desc: "A Tricky Trials frissítés új kihívásokat, Trial Chambereket, a Breeze mobot és a Crafter blokkot hozta el.",
+                            questions: ["Milyen lootot ad az Ominous Vault?", "Mire lehet használni a Mace (Buzogány) fegyvert?"]
+                        }
+                    }
                 },
-                "1_20": {
-                    name: "1.20 - Trails & Tales",
-                    desc: "Ez a frissítés behozta a gyönyörű cseresznyefás ligeteket (Cherry Grove), az archeológiát, az ecsetet, valamint a tevét és a Sniffert.",
-                    questions: ["Hogyan lehet kikelteni egy Sniffer tojást?", "Hol találhatók a gyanús homok (suspicious sand) blokkok?"]
+                "2023": {
+                    updates: {
+                        "1_20": {
+                            name: "1.20 - Trails & Tales",
+                            desc: "Behozta a cseresznyefás ligeteket (Cherry Grove), az archeológiát, az ecsetet, a tevét és a Sniffert.",
+                            questions: ["Hogyan lehet kikelteni egy Sniffer tojást?", "Hol találhatók a gyanús homok (suspicious sand) blokkok?"]
+                        }
+                    }
+                },
+                "2022": {
+                    updates: {
+                        "1_19": {
+                            name: "1.19 - The Wild Update",
+                            desc: "Megérkezett a Deep Dark biome, az Ancient City, a félelmetes Warden és a mocsári békák.",
+                            questions: ["Hogyan lehet elkerülni, hogy a Warden meghalljon?", "Mit esznek a békák a játékban?"]
+                        }
+                    }
                 }
             }
         },
         "roblox": {
             name: "Roblox",
-            updates: {
-                "voice_chat": {
-                    name: "Spatial Voice Chat",
-                    desc: "A hangalapú csevegés lehetővé tette, hogy a játékosok a térbeli elhelyezkedésük alapján (spatial audio) hallják egymást a kompatibilis játékokban.",
-                    questions: ["Milyen korhatárhoz és azonosításhoz kötötték a Voice Chat használatát?", "Hogyan javítja a játékélményt a térbeli hangzás egy horror játékban (pl. Evade)?"]
+            years: {
+                "2024": {
+                    updates: {
+                        "dynamic_heads": {
+                            name: "Dynamic Heads & Facial Animation",
+                            desc: "A Roblox karakterek arcai animálttá váltak, és a kamerán keresztül a valós arckifejezésünket is átvihetjük a játékba.",
+                            questions: ["Hogyan kell bekapcsolni a kamera-alapú arckövetést?", "Minden játék (élmény) támogatja az animált arcokat?"]
+                        }
+                    }
                 },
-                "materials": {
-                    name: "Materials 1.5 (PBR Update)",
-                    desc: "A Roblox Studio grafikai motorja jelentős frissítést kapott, amely sokkal élethűbb, fizika-alapú textúrákat (PBR) biztosít a fejlesztőknek.",
-                    questions: ["Miben különbözik egy PBR textúra a régi, egyszerű anyagoktól?", "Hogyan hatott ez a frissítés a játékok teljesítményére?"]
+                "2023": {
+                    updates: {
+                        "voice_chat": {
+                            name: "Voice Chat széleskörű kiterjesztése",
+                            desc: "A térbeli hangalapú csevegés (Spatial Voice) elérhetőbbé vált, sokaknak már személyi igazolvány sem kellett hozzá.",
+                            questions: ["Hány éves kortól használható a Voice Chat hivatalosan?", "Hogyan működik a Spatial Audio (térbeli hang) a játékokban?"]
+                        }
+                    }
+                },
+                "2022": {
+                    updates: {
+                        "layered_clothing": {
+                            name: "Layered Clothing (Réteges ruházat)",
+                            desc: "A játékosok végre 3D-s ruhákat (kabátokat, pulóvereket, cipőket) vehettek fel egymásra rétegezve az avatárjukon.",
+                            questions: ["Hány réteg ruhát lehet maximum ráadni egy karakterre?", "Működik a Layered Clothing a régi blokkos (R6) avatárokon is?"]
+                        }
+                    }
                 }
             }
         },
         "fortnite": {
             name: "Fortnite",
-            updates: {
-                "ch5_s1": {
-                    name: "Chapter 5 Season 1 - Underground",
-                    desc: "Hatalmas frissítés új térképpel, fegyvermódosításokkal (modokkal), mozgási mechanikákkal és a Lego Fortnite játékmód bevezetésével.",
-                    questions: ["Hol lehet fegyvermódosításokat (Weapon Mods) felszerelni a térképen?", "Milyen alapvető túlélő mechanikák vannak a Lego Fortnite-ban?"]
+            years: {
+                "2024": {
+                    updates: {
+                        "ch5_s2": {
+                            name: "Chapter 5 Season 2 - Myths & Mortals",
+                            desc: "A görög mitológia ihlette szezon, ahol Zeusz, Hádész és más istenek képességeit (pl. villámcsapás) lehetett használni.",
+                            questions: ["Milyen mitológiai képességeket lehetett találni a pályán?", "Hol volt Hádész alvilági bázisa?"]
+                        }
+                    }
                 },
-                "og": {
-                    name: "Fortnite OG (Chapter 4 Season OG)",
-                    desc: "Egy nosztalgikus, rövid szezon, ami hétről hétre visszahozta az eredeti Chapter 1 térképeit, fegyvereit és járműveit.",
-                    questions: ["Melyik ikonikus helyszín volt a legnépszerűbb landolási pont a visszatérésekor?", "Milyen régi járművek tértek vissza (pl. bevásárlókocsi)?"]
+                "2023": {
+                    updates: {
+                        "og": {
+                            name: "Fortnite OG",
+                            desc: "Egy nosztalgikus szezon, ami visszahozta az eredeti Chapter 1 térképeit, fegyvereit és járműveit heti forgásban.",
+                            questions: ["Melyik ikonikus helyszín (POI) volt a legnépszerűbb?", "Milyen régi járművek tértek vissza a játékba?"]
+                        }
+                    }
+                },
+                "2022": {
+                    updates: {
+                        "zero_build": {
+                            name: "Zero Build mód bevezetése",
+                            desc: "Megjelent a Chapter 3 Season 2, ami bevezette a Zero Build módot – a klasszikus építés nélküli Battle Royale élményt.",
+                            questions: ["Milyen új védelmi funkciót kaptak a játékosok az építés helyett (Overshield)?", "Hogyan változtatta meg a Zero Build a játékmenetet?"]
+                        }
+                    }
                 }
             }
         },
         "fnaf": {
             name: "Five Nights at Freddy's",
-            updates: {
-                "ruin": {
-                    name: "Security Breach - Ruin DLC",
-                    desc: "A Ruin DLC-ben Cassie-t irányítjuk, aki a lepusztult Pizzaplexben próbálja megtalálni Gregory-t a V.A.N.N.I. maszk segítségével.",
-                    questions: ["Hogyan változtatja meg a kiterjesztett valóság (V.A.N.N.I. maszk) a játéktér környezetét?", "Ki az igazi főellenség, akivel a játék végén találkozunk?"]
+            years: {
+                "2024": {
+                    updates: {
+                        "into_the_pit": {
+                            name: "Into the Pit Megjelenés",
+                            desc: "Egy vadonatúj, 2D-s pixel art stílusú túlélő horror, ami a Fazbear Frights könyvsorozat első történetét dolgozza fel.",
+                            questions: ["Hogyan lehet utazni az időben a játékban?", "Ki a főellenség, aki üldözi Oswaldot?"]
+                        }
+                    }
                 },
-                "hw2": {
-                    name: "Help Wanted 2",
-                    desc: "A VR játék folytatása új minijátékokkal, a Sister Location ijesztő helyszíneivel és a Faz-Wrench eszközzel bővítette a lore-t.",
-                    questions: ["Melyik minijáték igényli a legtöbb memóriát és reflexet?", "Milyen titkokat fed fel a játék a Ruin DLC történetével kapcsolatban?"]
+                "2023": {
+                    updates: {
+                        "ruin": {
+                            name: "Security Breach - Ruin DLC",
+                            desc: "Cassie a lepusztult Pizzaplexben próbálja megtalálni Gregory-t a V.A.N.N.I. kiterjesztett valóság maszk segítségével.",
+                            questions: ["Hogyan változtatja meg a maszk a környezetet?", "Mi a Mimic igazi célja?"]
+                        }
+                    }
+                },
+                "2022": {
+                    updates: {
+                        "xbox_port": {
+                            name: "Security Breach Xbox & Switch Port",
+                            desc: "A hatalmas PizzaPlex megnyitotta kapuit az Xbox és a Nintendo Switch konzolokon is, rengeteg hibajavítással.",
+                            questions: ["Milyen nehézséget okozott a Switch portolása a játéknak?", "Melyik animatronic üldöz folyamatosan a játék elején?"]
+                        }
+                    }
                 }
             }
         },
         "gtav": {
             name: "Grand Theft Auto V",
-            updates: {
-                "cayo_perico": {
-                    name: "The Cayo Perico Heist",
-                    desc: "Az első olyan rablás (Heist), amit a játékosok akár teljesen egyedül (solo) is végrehajthatnak, egy vadonatúj trópusi szigeten.",
-                    questions: ["Kinek a szigetét kell kirabolni?", "Melyik bázis/jármű megvásárlása szükséges a rablás elindításához?"]
+            years: {
+                "2024": {
+                    updates: {
+                        "bottom_dollar": {
+                            name: "Bottom Dollar Bounties",
+                            desc: "Saját fejvadász irodát nyithatunk, és Maude Eccles lányával, Jenette-tel kaphatjuk el Los Santos bűnözőit.",
+                            questions: ["Hogyan működik az óvadék (Bail) rendszer a játékban?", "Kiket kell elkapni a legnagyobb jutalomért?"]
+                        }
+                    }
                 },
-                "casino": {
-                    name: "The Diamond Casino & Resort",
-                    desc: "Megnyílt a Los Santos-i kaszinó szerencsejátékkal, új küldetésekkel, luxus Penthouse lakásokkal és a pörgethető szerencsekerékkel.",
-                    questions: ["Milyen jutalmakat lehet nyerni a kaszinó szerencsekerekén?", "Kik a kaszinó főellenségei, akiket le kell győzni a sztori küldetésekben?"]
+                "2023": {
+                    updates: {
+                        "chop_shop": {
+                            name: "The Chop Shop",
+                            desc: "Egy autóbontó (salvage yard) vállalkozás, ahol Yusuf Amir (GTA IV) tér vissza, hogy luxusautókat lopjunk el neki.",
+                            questions: ["Milyen ekstra bevételt hoz a bontóüzem (Tow Truck missions)?", "Hogyan működnek a heti autólopós küldetések?"]
+                        }
+                    }
+                },
+                "2022": {
+                    updates: {
+                        "drug_wars": {
+                            name: "Los Santos Drug Wars",
+                            desc: "Csatlakozunk a Fooliganz csapatához, hogy egy hatalmas mozgó laboratóriumban (Acid Lab) indítsunk új bizniszt.",
+                            questions: ["Melyik járműben (kamionban) található az Acid Lab?", "Ki vezeti a Fooliganz bandát?"]
+                        }
+                    }
                 }
             }
         }
     };
 
-    // Elemek lekérése a HTML-ből
+    // Elemek lekérése
     const gameSelect = document.getElementById('game-select');
+    const yearSection = document.getElementById('year-section');
+    const yearSelect = document.getElementById('year-select');
     const updateSection = document.getElementById('update-section');
     const updateSelect = document.getElementById('update-select');
     const infoSection = document.getElementById('info-section');
@@ -202,53 +302,76 @@
         gameSelect.appendChild(option);
     }
 
-    // 2. Ha kiválasztunk egy játékot
+    // 2. Játék kiválasztása -> Évek betöltése
     gameSelect.addEventListener('change', (e) => {
-        const selectedGameKey = e.target.value;
+        const selectedGame = e.target.value;
         
-        // Alaphelyzetbe állítjuk az alsó mezőket
+        // Alaphelyzet: elrejtjük az alsóbb szinteket
+        yearSelect.innerHTML = '<option value="">-- Válassz --</option>';
         updateSelect.innerHTML = '<option value="">-- Válassz --</option>';
+        updateSection.style.display = 'none';
         infoSection.style.display = 'none';
 
-        if (selectedGameKey) {
-            // Betöltjük a játékhoz tartozó update-eket
-            const updates = gameData[selectedGameKey].updates;
-            for (const [updateKey, update] of Object.entries(updates)) {
+        if (selectedGame) {
+            // Betöltjük a játékhoz tartozó éveket (fordított sorrendben, pl. 2024, 2023, 2022)
+            const years = Object.keys(gameData[selectedGame].years).sort((a, b) => b - a);
+            years.forEach(year => {
                 const option = document.createElement('option');
-                option.value = updateKey;
-                option.textContent = update.name;
-                updateSelect.appendChild(option);
-            }
-            updateSection.style.display = 'block'; // Megjelenítjük a második lenyílót
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+            yearSection.style.display = 'block';
         } else {
-            updateSection.style.display = 'none'; // Elrejtjük, ha nincs játék kiválasztva
+            yearSection.style.display = 'none';
         }
     });
 
-    // 3. Ha kiválasztunk egy frissítést
-    updateSelect.addEventListener('change', (e) => {
-        const selectedGameKey = gameSelect.value;
-        const selectedUpdateKey = e.target.value;
+    // 3. Év kiválasztása -> Frissítések betöltése
+    yearSelect.addEventListener('change', (e) => {
+        const selectedGame = gameSelect.value;
+        const selectedYear = e.target.value;
 
-        if (selectedUpdateKey) {
-            // Lekérjük az adatokat a JSON objektumból
-            const updateInfo = gameData[selectedGameKey].updates[selectedUpdateKey];
+        // Alaphelyzet
+        updateSelect.innerHTML = '<option value="">-- Válassz --</option>';
+        infoSection.style.display = 'none';
+
+        if (selectedYear) {
+            const updates = gameData[selectedGame].years[selectedYear].updates;
+            for (const [updateKey, updateInfo] of Object.entries(updates)) {
+                const option = document.createElement('option');
+                option.value = updateKey;
+                option.textContent = updateInfo.name;
+                updateSelect.appendChild(option);
+            }
+            updateSection.style.display = 'block';
+        } else {
+            updateSection.style.display = 'none';
+        }
+    });
+
+    // 4. Frissítés kiválasztása -> Infó megjelenítése
+    updateSelect.addEventListener('change', (e) => {
+        const selectedGame = gameSelect.value;
+        const selectedYear = yearSelect.value;
+        const selectedUpdate = e.target.value;
+
+        if (selectedUpdate) {
+            const updateInfo = gameData[selectedGame].years[selectedYear].updates[selectedUpdate];
             
-            // Beállítjuk a szövegeket
             updateTitle.textContent = updateInfo.name;
             updateDesc.textContent = updateInfo.desc;
             
-            // Kérdések listájának generálása
-            updateQuestions.innerHTML = ''; // Előző kérdések törlése
+            updateQuestions.innerHTML = ''; 
             updateInfo.questions.forEach(q => {
                 const li = document.createElement('li');
                 li.textContent = q;
                 updateQuestions.appendChild(li);
             });
 
-            infoSection.style.display = 'block'; // Információs doboz megjelenítése
+            infoSection.style.display = 'block';
         } else {
-            infoSection.style.display = 'none'; // Elrejtjük, ha nincs update kiválasztva
+            infoSection.style.display = 'none';
         }
     });
 </script>
