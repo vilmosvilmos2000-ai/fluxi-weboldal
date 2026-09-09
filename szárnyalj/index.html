@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Játék Frissítések Évente</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1e1e24;
@@ -15,9 +12,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
         }
         .container {
             background-color: #2b2b36;
@@ -25,54 +21,33 @@
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.3);
             width: 100%;
-            max-width: 560px;
+            max-width: 500px;
         }
         h1 {
             text-align: center;
             margin-top: 0;
-            margin-bottom: 24px;
             color: #4CAF50;
         }
         .form-group {
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
         label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: bold;
-            font-size: 15px;
         }
-        .button-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .choice-btn {
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #444;
             background-color: #3f3f4e;
             color: #fff;
-            border: 2px solid #555;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            flex: 1 1 auto;
-            min-width: 120px;
-            text-align: center;
-            font-family: inherit;
+            font-size: 16px;
+            outline: none;
         }
-        .choice-btn:hover {
-            background-color: #4a4a5c;
+        select:focus {
             border-color: #4CAF50;
-            transform: translateY(-1px);
-        }
-        .choice-btn.selected {
-            background-color: #2e7d32;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
-        }
-        .choice-btn:active {
-            transform: translateY(0);
         }
         /* Alapból rejtjük az év, az update és az infó szekciókat */
         #year-section, #update-section, #info-section {
@@ -81,26 +56,16 @@
         }
         .info-box {
             background-color: #3f3f4e;
-            padding: 18px;
+            padding: 15px;
             border-radius: 8px;
             border-left: 5px solid #4CAF50;
-            margin-top: 10px;
+            margin-top: 20px;
         }
         .info-box h3 {
             margin-top: 0;
-            color: #81C784;
-        }
-        .info-box p {
-            line-height: 1.5;
-            margin-bottom: 14px;
         }
         ul {
             padding-left: 20px;
-            margin: 0;
-        }
-        li {
-            margin-bottom: 6px;
-            line-height: 1.4;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
@@ -115,26 +80,29 @@
     
     <!-- 1. Játék választó -->
     <div class="form-group">
-        <label>Válassz egy játékot:</label>
-        <div class="button-grid" id="game-buttons">
+        <label for="game-select">Válassz egy játékot:</label>
+        <select id="game-select">
+            <option value="">-- Válassz --</option>
             <!-- A JavaScript tölti fel -->
-        </div>
+        </select>
     </div>
 
-    <!-- 2. Év választó -->
+    <!-- 2. Év választó (ÚJ) -->
     <div class="form-group" id="year-section">
-        <label>Válassz egy évet:</label>
-        <div class="button-grid" id="year-buttons">
+        <label for="year-select">Válassz egy évet:</label>
+        <select id="year-select">
+            <option value="">-- Válassz --</option>
             <!-- A JavaScript tölti fel -->
-        </div>
+        </select>
     </div>
 
     <!-- 3. Frissítés választó -->
     <div class="form-group" id="update-section">
-        <label>Válassz egy frissítést:</label>
-        <div class="button-grid" id="update-buttons">
+        <label for="update-select">Válassz egy frissítést:</label>
+        <select id="update-select">
+            <option value="">-- Válassz --</option>
             <!-- A JavaScript tölti fel -->
-        </div>
+        </select>
     </div>
 
     <!-- 4. Információs doboz -->
@@ -315,94 +283,96 @@
         }
     };
 
-    // Állapot
-    let selectedGame = null;
-    let selectedYear = null;
-    let selectedUpdate = null;
-
-    // Elemek
-    const gameButtons = document.getElementById('game-buttons');
+    // Elemek lekérése
+    const gameSelect = document.getElementById('game-select');
     const yearSection = document.getElementById('year-section');
-    const yearButtons = document.getElementById('year-buttons');
+    const yearSelect = document.getElementById('year-select');
     const updateSection = document.getElementById('update-section');
-    const updateButtons = document.getElementById('update-buttons');
+    const updateSelect = document.getElementById('update-select');
     const infoSection = document.getElementById('info-section');
     const updateTitle = document.getElementById('update-title');
     const updateDesc = document.getElementById('update-desc');
     const updateQuestions = document.getElementById('update-questions');
 
-    // Segédfüggvény: gombok generálása
-    function createButtons(container, items, onSelect, selectedValue = null) {
-        container.innerHTML = '';
-        items.forEach(item => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'choice-btn' + (item.value === selectedValue ? ' selected' : '');
-            btn.textContent = item.label;
-            btn.dataset.value = item.value;
-            btn.addEventListener('click', () => {
-                // Előző kijelölés törlése
-                container.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                onSelect(item.value);
-            });
-            container.appendChild(btn);
-        });
+    // 1. Játék lista feltöltése
+    for (const [key, game] of Object.entries(gameData)) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = game.name;
+        gameSelect.appendChild(option);
     }
 
-    // 1. Játék gombok feltöltése
-    const gameItems = Object.entries(gameData).map(([key, game]) => ({
-        value: key,
-        label: game.name
-    }));
-    createButtons(gameButtons, gameItems, (value) => {
-        selectedGame = value;
-        selectedYear = null;
-        selectedUpdate = null;
-
-        // Alsó szintek reset
-        yearButtons.innerHTML = '';
-        updateButtons.innerHTML = '';
+    // 2. Játék kiválasztása -> Évek betöltése
+    gameSelect.addEventListener('change', (e) => {
+        const selectedGame = e.target.value;
+        
+        // Alaphelyzet: elrejtjük az alsóbb szinteket
+        yearSelect.innerHTML = '<option value="">-- Válassz --</option>';
+        updateSelect.innerHTML = '<option value="">-- Válassz --</option>';
         updateSection.style.display = 'none';
         infoSection.style.display = 'none';
 
-        // Évek betöltése (csökkenő sorrend)
-        const years = Object.keys(gameData[selectedGame].years).sort((a, b) => b - a);
-        const yearItems = years.map(y => ({ value: y, label: y }));
-        createButtons(yearButtons, yearItems, (yearValue) => {
-            selectedYear = yearValue;
-            selectedUpdate = null;
+        if (selectedGame) {
+            // Betöltjük a játékhoz tartozó éveket (fordított sorrendben, pl. 2024, 2023, 2022)
+            const years = Object.keys(gameData[selectedGame].years).sort((a, b) => b - a);
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+            yearSection.style.display = 'block';
+        } else {
+            yearSection.style.display = 'none';
+        }
+    });
 
-            updateButtons.innerHTML = '';
-            infoSection.style.display = 'none';
+    // 3. Év kiválasztása -> Frissítések betöltése
+    yearSelect.addEventListener('change', (e) => {
+        const selectedGame = gameSelect.value;
+        const selectedYear = e.target.value;
 
-            // Frissítések betöltése
+        // Alaphelyzet
+        updateSelect.innerHTML = '<option value="">-- Válassz --</option>';
+        infoSection.style.display = 'none';
+
+        if (selectedYear) {
             const updates = gameData[selectedGame].years[selectedYear].updates;
-            const updateItems = Object.entries(updates).map(([key, upd]) => ({
-                value: key,
-                label: upd.name
-            }));
-            createButtons(updateButtons, updateItems, (updateValue) => {
-                selectedUpdate = updateValue;
-                const updateInfo = gameData[selectedGame].years[selectedYear].updates[selectedUpdate];
+            for (const [updateKey, updateInfo] of Object.entries(updates)) {
+                const option = document.createElement('option');
+                option.value = updateKey;
+                option.textContent = updateInfo.name;
+                updateSelect.appendChild(option);
+            }
+            updateSection.style.display = 'block';
+        } else {
+            updateSection.style.display = 'none';
+        }
+    });
 
-                updateTitle.textContent = updateInfo.name;
-                updateDesc.textContent = updateInfo.desc;
+    // 4. Frissítés kiválasztása -> Infó megjelenítése
+    updateSelect.addEventListener('change', (e) => {
+        const selectedGame = gameSelect.value;
+        const selectedYear = yearSelect.value;
+        const selectedUpdate = e.target.value;
 
-                updateQuestions.innerHTML = '';
-                updateInfo.questions.forEach(q => {
-                    const li = document.createElement('li');
-                    li.textContent = q;
-                    updateQuestions.appendChild(li);
-                });
-
-                infoSection.style.display = 'block';
+        if (selectedUpdate) {
+            const updateInfo = gameData[selectedGame].years[selectedYear].updates[selectedUpdate];
+            
+            updateTitle.textContent = updateInfo.name;
+            updateDesc.textContent = updateInfo.desc;
+            
+            updateQuestions.innerHTML = ''; 
+            updateInfo.questions.forEach(q => {
+                const li = document.createElement('li');
+                li.textContent = q;
+                updateQuestions.appendChild(li);
             });
 
-            updateSection.style.display = 'block';
-        });
-
-        yearSection.style.display = 'block';
+            infoSection.style.display = 'block';
+        } else {
+            infoSection.style.display = 'none';
+        }
     });
 </script>
 
