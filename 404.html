@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Az oldal nem található</title>
+    <!-- Google Fonts: Inter betűtípus a modernebb megjelenésért -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -15,23 +16,24 @@
         }
 
         body {
-            background: radial-gradient(circle at top, #111115 0%, #000000 100%);
+            background: radial-gradient(circle at center, #111115 0%, #000000 100%);
             color: #ffffff;
             font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        .header-container {
+        .container {
             text-align: center;
-            margin-bottom: 40px;
+            padding: 20px;
+            max-width: 600px;
         }
 
         .error-code {
-            font-size: 6rem;
+            font-size: 7rem;
             font-weight: 800;
             letter-spacing: -2px;
             background: linear-gradient(180deg, #ffffff 0%, #555555 100%);
@@ -42,10 +44,11 @@
         }
 
         .message {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             font-weight: 400;
             color: #a1a1aa;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            line-height: 1.4;
         }
 
         .message span {
@@ -53,101 +56,29 @@
             font-weight: 600;
         }
 
-        /* --- A te gomb dizájnod adaptálva linkekhez --- */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
-        }
-
-        .custom-btn {
-            position: relative;
-            font-size: 1.1em;
-            padding: 0.7em 1.4em;
-            background-color: #BF0426;
-            text-decoration: none;
-            border: none;
-            border-radius: 0.5em;
-            color: #DEDEDE;
-            box-shadow: 0.5em 0.5em 0.5em rgba(0, 0, 0, 0.3);
-            text-align: center;
-            font-weight: 600;
-            display: block;
-        }
-
-        .custom-btn::before {
-            position: absolute;
-            content: '';
-            height: 0;
-            width: 0;
-            top: 0;
-            left: 0;
-            background: linear-gradient(135deg, rgba(33,33,33,1) 0%, rgba(33,33,33,1) 50%, rgba(150,4,31,1) 50%, rgba(191,4,38,1) 60%);
-            border-radius: 0 0 0.5em 0;
-            box-shadow: 0.2em 0.2em 0.2em rgba(0, 0, 0, 0.3);
-            transition: 0.3s;
-        }
-
-        .custom-btn:hover::before {
-            width: 1.6em;
-            height: 1.6em;
-        }
-
-        .custom-btn:active {
-            box-shadow: 0.2em 0.2em 0.3em rgba(0, 0, 0, 0.3);
-            transform: translate(0.1em, 0.1em);
-        }
-        
-        /* A főoldal gomb kiemelése */
-        .home-btn {
-            background-color: #333;
-            margin-bottom: 30px;
+        .btn {
             display: inline-block;
+            padding: 12px 28px;
+            background-color: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            background-color: #e4e4e7;
         }
     </style>
 </head>
 <body>
-
-    <div class="header-container">
+    <div class="container">
         <div class="error-code">ERROR 404</div>
         <p class="message">A <span>fluxi</span> weboldal jelenleg nem elérhető ezen a címen.</p>
-        <p class="message">Válassz az alábbi működő oldalak közül:</p>
-        <a href="/" class="custom-btn home-btn">Vissza a főoldalra</a>
+        <a href="/" class="btn">Vissza a főoldalra</a>
     </div>
-
-    <div class="grid-container">
-        <!-- A képekről kigyűjtött projektek -->
-        <a href="https://fluxi.hu/cactus" class="custom-btn">cactus</a>
-        <a href="https://fluxi.hu/case" class="custom-btn">case</a>
-        <a href="https://fluxi.hu/dc" class="custom-btn">dc</a>
-        <a href="https://fluxi.hu/egri" class="custom-btn">egri</a>
-        <a href="https://fluxi.hu/fruits" class="custom-btn">fruits</a>
-        <a href="https://fluxi.hu/gamehub" class="custom-btn">gamehub</a>
-        <a href="https://fluxi.hu/genai" class="custom-btn">genai</a>
-        <a href="https://fluxi.hu/jatek1" class="custom-btn">jatek1</a>
-        <a href="https://fluxi.hu/jatek2" class="custom-btn">jatek2</a>
-        <a href="https://fluxi.hu/jatek3" class="custom-btn">jatek3</a>
-        <a href="https://fluxi.hu/kocka" class="custom-btn">kocka</a>
-        <a href="https://fluxi.hu/particle" class="custom-btn">particle</a>
-        <a href="https://fluxi.hu/probavizsga" class="custom-btn">probavizsga</a>
-        <a href="https://fluxi.hu/roblox" class="custom-btn">roblox</a>
-        <a href="https://fluxi.hu/scematic" class="custom-btn">scematic</a>
-        <a href="https://fluxi.hu/stilus" class="custom-btn">stilus</a>
-        <a href="https://fluxi.hu/studio" class="custom-btn">studio</a>
-        <a href="https://fluxi.hu/suli" class="custom-btn">suli</a>
-        <a href="https://fluxi.hu/sulismp" class="custom-btn">sulismp</a>
-        <a href="https://fluxi.hu/szárnyalj" class="custom-btn">szárnyalj</a>
-        <a href="https://fluxi.hu/titkosciganyok" class="custom-btn">titkosciganyok</a>
-        <a href="https://fluxi.hu/tx" class="custom-btn">tx</a>
-        <a href="https://fluxi.hu/vilmos201_offical" class="custom-btn">vilmos201_offical</a>
-        <a href="https://fluxi.hu/vilmos201_offical1" class="custom-btn">vilmos201_offical1</a>
-        <a href="https://fluxi.hu/vilmos201_offical2" class="custom-btn">vilmos201_offical2</a>
-        <a href="https://fluxi.hu/vilmos201_offical3" class="custom-btn">vilmos201_offical3</a>
-        <a href="https://fluxi.hu/vilmosgpt" class="custom-btn">vilmosgpt</a>
-        <a href="https://fluxi.hu/walet" class="custom-btn">walet</a>
-    </div>
-
 </body>
 </html>
