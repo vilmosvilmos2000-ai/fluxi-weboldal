@@ -3,34 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error 404 - Nem található</title>
+    <title>404 - Az oldal nem található</title>
+    <!-- Google Fonts: Inter betűtípus a modernebb megjelenésért -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: black;
-            color: white;
-            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at center, #111115 0%, #000000 100%);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 100vh; /* Ez teszi a szöveget pontosan a képernyő közepére */
-            margin: 0;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
             text-align: center;
+            padding: 20px;
+            max-width: 600px;
         }
-        h1 {
-            font-size: 2.5rem;
+
+        .error-code {
+            font-size: 7rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(180deg, #ffffff 0%, #555555 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
-            font-weight: normal;
+            text-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
         }
-        p {
+
+        .message {
             font-size: 1.5rem;
-            margin: 0;
-            color: #ff4444; /* Halvány piros szín, hogy kitűnjön az error felirat */
+            font-weight: 400;
+            color: #a1a1aa;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .message span {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            background-color: #e4e4e7;
         }
     </style>
 </head>
 <body>
-    <h1>a "fluxi" web most nem elérhetö</h1>
-    <p>error 404</p>
+    <div class="container">
+        <div class="error-code">ERROR 404</div>
+        <p class="message">A <span>fluxi</span> weboldal jelenleg nem elérhető ezen a címen.</p>
+        <a href="/" class="btn">Vissza a főoldalra</a>
+    </div>
 </body>
 </html>
