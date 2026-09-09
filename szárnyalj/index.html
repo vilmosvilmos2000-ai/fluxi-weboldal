@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duolingo Games - Napi Lecke</title>
+    <title>Történelem tanulás</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -14,8 +14,9 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
-            color: #4b4b4b;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #08192f 0%, #0d2342 100%);
+            color: #e8f4ff;
         }
 
         /* 6 Másodperces Duolingo Töltőképernyő */
@@ -25,13 +26,13 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #58cc02;
+            background: linear-gradient(180deg, #0b1d39 0%, #123f66 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            color: white;
+            color: #eaf7ff;
         }
 
         .loader-text {
@@ -55,87 +56,32 @@
             height: 10em;
         }
 
-        .pencil__body1,
-        .pencil__body2,
-        .pencil__body3,
-        .pencil__eraser,
-        .pencil__eraser-skew,
-        .pencil__point,
-        .pencil__rotate,
-        .pencil__stroke {
+        .pencil__body1, .pencil__body2, .pencil__body3,
+        .pencil__eraser, .pencil__eraser-skew, .pencil__point,
+        .pencil__rotate, .pencil__stroke {
             animation-duration: 3s;
             animation-timing-function: linear;
             animation-iteration-count: infinite;
         }
 
-        .pencil__body1,
-        .pencil__body2,
-        .pencil__body3 {
-            transform: rotate(-90deg);
-        }
-
+        .pencil__body1, .pencil__body2, .pencil__body3 { transform: rotate(-90deg); }
         .pencil__body1 { animation-name: pencilBody1; }
         .pencil__body2 { animation-name: pencilBody2; }
         .pencil__body3 { animation-name: pencilBody3; }
-
-        .pencil__eraser {
-            animation-name: pencilEraser;
-            transform: rotate(-90deg) translate(49px,0);
-        }
-
-        .pencil__eraser-skew {
-            animation-name: pencilEraserSkew;
-            animation-timing-function: ease-in-out;
-        }
-
-        .pencil__point {
-            animation-name: pencilPoint;
-            transform: rotate(-90deg) translate(49px,-30px);
-        }
-
+        .pencil__eraser { animation-name: pencilEraser; transform: rotate(-90deg) translate(49px,0); }
+        .pencil__eraser-skew { animation-name: pencilEraserSkew; animation-timing-function: ease-in-out; }
+        .pencil__point { animation-name: pencilPoint; transform: rotate(-90deg) translate(49px,-30px); }
         .pencil__rotate { animation-name: pencilRotate; }
+        .pencil__stroke { animation-name: pencilStroke; transform: translate(100px,100px) rotate(-113deg); }
 
-        .pencil__stroke {
-            animation-name: pencilStroke;
-            transform: translate(100px,100px) rotate(-113deg);
-        }
-
-        @keyframes pencilBody1 {
-            from, to { stroke-dashoffset: 351.86; transform: rotate(-90deg); }
-            50% { stroke-dashoffset: 150.8; transform: rotate(-225deg); }
-        }
-        @keyframes pencilBody2 {
-            from, to { stroke-dashoffset: 406.84; transform: rotate(-90deg); }
-            50% { stroke-dashoffset: 174.36; transform: rotate(-225deg); }
-        }
-        @keyframes pencilBody3 {
-            from, to { stroke-dashoffset: 296.88; transform: rotate(-90deg); }
-            50% { stroke-dashoffset: 127.23; transform: rotate(-225deg); }
-        }
-        @keyframes pencilEraser {
-            from, to { transform: rotate(-45deg) translate(49px,0); }
-            50% { transform: rotate(0deg) translate(49px,0); }
-        }
-        @keyframes pencilEraserSkew {
-            from, 32.5%, 67.5%, to { transform: skewX(0); }
-            35%, 65% { transform: skewX(-4deg); }
-            37.5%, 62.5% { transform: skewX(8deg); }
-            40%, 45%, 50%, 55%, 60% { transform: skewX(-15deg); }
-            42.5%, 47.5%, 52.5%, 57.5% { transform: skewX(15deg); }
-        }
-        @keyframes pencilPoint {
-            from, to { transform: rotate(-90deg) translate(49px,-30px); }
-            50% { transform: rotate(-225deg) translate(49px,-30px); }
-        }
-        @keyframes pencilRotate {
-            from { transform: translate(100px,100px) rotate(0); }
-            to { transform: translate(100px,100px) rotate(720deg); }
-        }
-        @keyframes pencilStroke {
-            from { stroke-dashoffset: 439.82; transform: translate(100px,100px) rotate(-113deg); }
-            50% { stroke-dashoffset: 164.93; transform: translate(100px,100px) rotate(-113deg); }
-            75%, to { stroke-dashoffset: 439.82; transform: translate(100px,100px) rotate(112deg); }
-        }
+        @keyframes pencilBody1 { from, to { stroke-dashoffset: 351.86; transform: rotate(-90deg); } 50% { stroke-dashoffset: 150.8; transform: rotate(-225deg); } }
+        @keyframes pencilBody2 { from, to { stroke-dashoffset: 406.84; transform: rotate(-90deg); } 50% { stroke-dashoffset: 174.36; transform: rotate(-225deg); } }
+        @keyframes pencilBody3 { from, to { stroke-dashoffset: 296.88; transform: rotate(-90deg); } 50% { stroke-dashoffset: 127.23; transform: rotate(-225deg); } }
+        @keyframes pencilEraser { from, to { transform: rotate(-45deg) translate(49px,0); } 50% { transform: rotate(0deg) translate(49px,0); } }
+        @keyframes pencilEraserSkew { from, 32.5%, 67.5%, to { transform: skewX(0); } 35%, 65% { transform: skewX(-4deg); } 37.5%, 62.5% { transform: skewX(8deg); } 40%, 45%, 50%, 55%, 60% { transform: skewX(-15deg); } 42.5%, 47.5%, 52.5%, 57.5% { transform: skewX(15deg); } }
+        @keyframes pencilPoint { from, to { transform: rotate(-90deg) translate(49px,-30px); } 50% { transform: rotate(-225deg) translate(49px,-30px); } }
+        @keyframes pencilRotate { from { transform: translate(100px,100px) rotate(0); } to { transform: translate(100px,100px) rotate(720deg); } }
+        @keyframes pencilStroke { from { stroke-dashoffset: 439.82; transform: translate(100px,100px) rotate(-113deg); } 50% { stroke-dashoffset: 164.93; transform: translate(100px,100px) rotate(-113deg); } 75%, to { stroke-dashoffset: 439.82; transform: translate(100px,100px) rotate(112deg); } }
 
         /* Duolingo Stílusú Főfelület */
         #main-content {
@@ -145,45 +91,48 @@
         }
 
         .duo-header {
-            background-color: #58cc02;
-            color: white;
+            background: linear-gradient(180deg, #0f2e57 0%, #123d6b 100%);
+            color: #ecf9ff;
             padding: 18px 40px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border-bottom: 5px solid #46a302;
+            border-bottom: 5px solid #0a2345;
         }
 
         .duo-header h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: clamp(22px, 2vw, 34px);
             font-weight: 900;
             letter-spacing: 0.5px;
         }
 
         .container {
-            max-width: 650px;
-            margin: 40px auto;
-            background-color: #ffffff;
-            border: 2px solid #e5e5e5;
-            border-bottom: 6px solid #e5e5e5;
-            border-radius: 24px;
-            padding: 32px;
+            width: min(1180px, calc(100% - 36px));
+            min-height: calc(100vh - 170px);
+            margin: 28px auto 40px;
+            background: linear-gradient(180deg, #122c4a 0%, #102640 100%);
+            border: 2px solid #203c60;
+            border-bottom: 6px solid #183154;
+            border-radius: 28px;
+            padding: 32px clamp(20px, 3vw, 42px);
+            box-shadow: 0 18px 40px rgba(5, 13, 26, 0.35);
         }
 
         .duo-speech-bubble {
             display: flex;
             align-items: center;
             gap: 16px;
-            background-color: #ddf4ff;
-            border: 2px solid #84d8ff;
-            border-bottom: 4px solid #84d8ff;
-            padding: 16px 20px;
+            width: 100%;
+            background: linear-gradient(180deg, #dff7ff 0%, #c5ebff 100%);
+            border: 2px solid #7ccaf9;
+            border-bottom: 4px solid #67b8ef;
+            padding: 18px 20px;
             border-radius: 18px;
             margin-bottom: 28px;
-            font-size: 17px;
+            font-size: clamp(16px, 1.7vw, 20px);
             font-weight: 800;
-            color: #1cb0f6;
+            color: #0e6ab5;
         }
 
         .duo-owl {
@@ -199,29 +148,83 @@
             margin-bottom: 10px;
             font-weight: 800;
             font-size: 16px;
-            color: #4b4b4b;
+            color: #dfefff;
             text-transform: uppercase;
             letter-spacing: 0.8px;
         }
 
+        .question-dropdown + label,
+        label + select {
+            position: relative;
+        }
+
         select {
             width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e5e5e5;
-            border-bottom: 5px solid #e5e5e5;
-            border-radius: 16px;
-            background-color: #ffffff;
-            font-size: 17px;
+            min-height: 68px;
+            padding: 14px 52px 14px 18px;
+            border: 2px solid #2c4a73;
+            border-bottom: 5px solid #1f3e63;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #112847 0%, #163759 100%);
+            font-size: 18px;
             font-weight: 800;
-            color: #4b4b4b;
+            color: #edf7ff;
             cursor: pointer;
             outline: none;
-            transition: all 0.15s ease;
+            transition: all 0.18s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, #8de0ff 50%), linear-gradient(135deg, #8de0ff 50%, transparent 50%);
+            background-position: calc(100% - 20px) calc(50% - 3px), calc(100% - 14px) calc(50% - 3px);
+            background-size: 6px 6px, 6px 6px;
+            background-repeat: no-repeat;
+            box-shadow: 0 6px 0 rgba(13, 55, 90, 0.75);
+        }
+
+        select:invalid {
+            color: #b9d9f5;
+        }
+
+        select option {
+            background: linear-gradient(180deg, #163759 0%, #112847 100%);
+            color: #edf7ff;
+            font-size: 17px;
+            font-weight: 800;
+            padding: 14px 14px;
+            line-height: 1.5;
+        }
+
+        select option:checked,
+        select option:hover,
+        select option:focus {
+            background: linear-gradient(180deg, #2c6cb2 0%, #215b97 100%);
+            color: #f4fbff;
+        }
+
+        select:hover {
+            border-color: #79d7ff;
+            box-shadow: 0 8px 0 rgba(55, 155, 219, 0.35);
         }
 
         select:focus {
-            border-color: #1cb0f6;
-            border-bottom-color: #1899d6;
+            border-color: #7dd3ff;
+            border-bottom-color: #58bce9;
+            box-shadow: 0 0 0 4px rgba(125, 211, 255, 0.18), 0 8px 0 rgba(55, 155, 219, 0.25);
+        }
+
+        #game-select {
+            background-color: #163759;
+            border-radius: 20px;
+        }
+
+        #game-select option {
+            padding: 16px 14px;
+            margin: 4px 0;
+        }
+
+        .question-dropdown {
+            margin-top: 10px;
         }
 
         #year-section, #update-section, #info-section {
@@ -230,17 +233,16 @@
         }
 
         .info-box {
-            background-color: #ffffff;
-            border: 2px solid #e5e5e5;
-            border-bottom: 6px solid #e5e5e5;
+            background: linear-gradient(180deg, #112847 0%, #102640 100%);
+            border: 2px solid #234270;
             border-radius: 22px;
-            padding: 24px;
+            padding: clamp(20px, 2.5vw, 30px);
             margin-top: 30px;
         }
 
         .info-box h3 {
             margin-top: 0;
-            color: #58cc02;
+            color: #eef9ff;
             font-size: 24px;
             font-weight: 900;
         }
@@ -248,126 +250,59 @@
         .info-box p {
             font-size: 17px;
             line-height: 1.5;
-            color: #4b4b4b;
+            color: #bfdaf6;
             font-weight: 700;
+            margin-bottom: 30px;
         }
 
-        .questions-title {
-            margin-top: 22px;
-            margin-bottom: 16px;
-            color: #1cb0f6;
-            font-size: 18px;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
-
-        /* Interaktív Kérdés Opciók */
-        .q-block {
-            margin-bottom: 22px;
-            background-color: #f7f7f7;
-            padding: 16px;
-            border-radius: 16px;
-            border: 2px solid #e5e5e5;
-        }
-
-        .q-text {
-            font-size: 17px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            color: #3c3c3c;
-        }
-
-        .option-btn {
+        /* Gomb dizájn */
+        .submit-btn {
             display: block;
             width: 100%;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            border: 2px solid #e5e5e5;
-            border-bottom: 4px solid #e5e5e5;
-            border-radius: 14px;
-            background: #ffffff;
-            font-weight: 800;
-            font-size: 16px;
-            color: #4b4b4b;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.1s ease;
-        }
-
-        .option-btn:hover:not(:disabled) {
-            background-color: #f0f0f0;
-        }
-
-        .option-btn.selected {
-            border-color: #84d8ff;
-            border-bottom-color: #1cb0f6;
-            background-color: #ddf4ff;
-            color: #1cb0f6;
-        }
-
-        .option-btn.correct {
-            border-color: #58cc02 !important;
-            border-bottom-color: #46a302 !important;
-            background-color: #d7ffb8 !important;
-            color: #2e5a00 !important;
-        }
-
-        .option-btn.wrong {
-            border-color: #ff4b4b !important;
-            border-bottom-color: #ea2b2b !important;
-            background-color: #ffdfe0 !important;
-            color: #ea2b2b !important;
-        }
-
-        /* Beküldés gomb */
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            margin-top: 15px;
             background-color: #58cc02;
+            color: white;
             border: none;
             border-bottom: 5px solid #46a302;
             border-radius: 16px;
-            color: white;
+            padding: 16px;
             font-size: 18px;
             font-weight: 900;
-            cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            transition: background 0.1s ease;
-        }
-
-        .submit-btn:hover {
-            background-color: #61e002;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 20px;
+            font-family: 'Nunito', sans-serif;
+            letter-spacing: 1px;
         }
 
         .submit-btn:active {
-            transform: translateY(2px);
-            border-bottom-width: 3px;
+            transform: translateY(5px);
+            border-bottom: 0px solid #46a302;
+            margin-bottom: 5px;
         }
 
-        .result-box {
+        /* Visszajelzés (Jó vagy Rossz) */
+        .feedback-message {
+            display: none;
             margin-top: 20px;
             padding: 16px;
             border-radius: 16px;
-            font-size: 18px;
             font-weight: 900;
+            font-size: 18px;
             text-align: center;
-            display: none;
+            animation: duoPop 0.3s ease;
         }
 
-        .result-box.success {
+        .feedback-success {
             background-color: #d7ffb8;
-            color: #2e5a00;
+            color: #3b8200;
             border: 2px solid #58cc02;
-            border-bottom: 4px solid #46a302;
         }
 
-        .result-box.error {
+        .feedback-error {
             background-color: #ffdfe0;
             color: #ea2b2b;
-            border: 2px solid #ff4b4b;
-            border-bottom: 4px solid #ea2b2b;
+            border: 2px solid #ea2b2b;
         }
 
         @keyframes duoPop {
@@ -381,11 +316,7 @@
 <!-- 6 Másodperces Betöltőképernyő -->
 <div id="loader-wrapper">
     <svg xmlns="http://www.w3.org/2000/svg" height="200px" width="200px" viewBox="0 0 200 200" class="pencil">
-        <defs>
-            <clipPath id="pencil-eraser">
-                <rect height="30" width="30" ry="5" rx="5"></rect>
-            </clipPath>
-        </defs>
+        <defs><clipPath id="pencil-eraser"><rect height="30" width="30" ry="5" rx="5"></rect></clipPath></defs>
         <circle transform="rotate(-113,100,100)" stroke-linecap="round" stroke-dashoffset="439.82" stroke-dasharray="439.82 439.82" stroke-width="2" stroke="#ffffff" fill="none" r="70" class="pencil__stroke"></circle>
         <g transform="translate(100,100)" class="pencil__rotate">
             <g fill="none">
@@ -411,20 +342,18 @@
             </g>
         </g>
     </svg>
-    <div class="loader-text">Duo előkészíti a mai leckédet...</div>
-    <div class="loader-subtext">Tartsd életben a szériádat minden nap! 🔥</div>
+    <div class="loader-text">Betöltés...</div>
 </div>
 
 <!-- Duolingo Fő Tartalom -->
 <div id="main-content">
     <header class="duo-header">
-        <h1>DUOLINGO GAMES</h1>
+        <h1>Történelem tanulás</h1>
     </header>
 
     <div class="container">
         <div class="duo-speech-bubble">
-            <span class="duo-owl">🦉</span>
-            <span>Szia! Válassz egy játékot, és teljesítsd a mai frissítés-leckét!</span>
+            <span>Szia! Válassz egy játékot, majd teszteld a tudásod a frissítésekből!</span>
         </div>
 
         <div class="form-group">
@@ -448,16 +377,18 @@
             </select>
         </div>
 
+        <!-- Ide kerülnek dinamikusan a kérdések -->
         <div id="info-section">
             <div class="info-box">
                 <h3 id="update-title">Lecke címe</h3>
                 <p id="update-desc">Itt jelenik meg a leírás...</p>
-                
-                <div class="questions-title">🎯 Válaszolj a lecke kérdéseire:</div>
-                <div id="update-questions"></div>
 
-                <button class="submit-btn" id="submit-answers">Beküldés</button>
-                <div class="result-box" id="result-box"></div>
+                <div id="questions-container">
+                    <!-- A JavaScript ide generálja a lenyíló kérdéseket -->
+                </div>
+
+                <button class="submit-btn" id="submit-btn">Beküldés</button>
+                <div id="feedback-message" class="feedback-message"></div>
             </div>
         </div>
     </div>
@@ -470,7 +401,7 @@
         document.getElementById('main-content').style.display = 'block';
     }, 6000);
 
-    // Adatbázis interaktív opciókkal és helyes válasz indexszel
+    // Kiterjesztett Adatbázis (Kérdések + Válaszlehetőségek + Helyes válasz indexe)
     const gameData = {
         "minecraft": {
             name: "Minecraft 🟩",
@@ -479,18 +410,10 @@
                     updates: {
                         "1_21": {
                             name: "1.21 - Tricky Trials",
-                            desc: "A Tricky Trials frissítés új kihívásokat, Trial Chambereket, a Breeze mobot és a Crafter automatizáló blokkot hozta el.",
+                            desc: "A Tricky Trials frissítés új kihívásokat, Trial Chambereket és a Crafter blokkot hozta el.",
                             questions: [
-                                {
-                                    text: "Milyen új fegyver érkezett az 1.21-ben, ami magasból leugorva nagyobb sebzést ad?",
-                                    options: ["Mace (Buzogány)", "Trident (Szigony)", "Crossbow (Nyílpuska)"],
-                                    correct: 0
-                                },
-                                {
-                                    text: "Milyen mob szór levegőlövedékeket a Trial Chamberben?",
-                                    options: ["Blaze", "Breeze", "Phantom"],
-                                    correct: 1
-                                }
+                                { q: "Milyen lootot ad az Ominous Vault?", options: ["Gyémántot és vasat", "Ominous Core-t és Heavy Core-t", "Csak fegyvereket"], correct: 1 },
+                                { q: "Mire lehet használni a Mace (Buzogány) fegyvert?", options: ["Fák gyors kivágására", "Zuhanás közbeni hatalmas sebzésre", "Páncél törésére"], correct: 1 }
                             ]
                         }
                     }
@@ -499,18 +422,10 @@
                     updates: {
                         "1_20": {
                             name: "1.20 - Trails & Tales",
-                            desc: "Behozta a gyönyörű cseresznyefás ligeteket (Cherry Grove), az archeológiát, az ecsetet, a tevét és a Sniffert.",
+                            desc: "Behozta a cseresznyefás ligeteket (Cherry Grove), az archeológiát és a Sniffert.",
                             questions: [
-                                {
-                                    text: "Hol találhatók a gyanús homok (suspicious sand) blokkok?",
-                                    options: ["Nether várakban", "Sivatagi piramisokban és romoknál", "End városokban"],
-                                    correct: 1
-                                },
-                                {
-                                    text: "Melyik állat segíti a ritka magvak kiasását?",
-                                    options: ["Sniffer", "Teve", "Armadillo"],
-                                    correct: 0
-                                }
+                                { q: "Hogyan lehet kikelteni egy Sniffer tojást?", options: ["Lávában", "Víz alatt", "Moha (Moss) blokkon"], correct: 2 },
+                                { q: "Hol találhatók a gyanús homok blokkok?", options: ["Sivatagi piramisokban és kutaknál", "Az óceán fenekén", "Hegycsúcsokon"], correct: 0 }
                             ]
                         }
                     }
@@ -519,13 +434,10 @@
                     updates: {
                         "1_19": {
                             name: "1.19 - The Wild Update",
-                            desc: "Megérkezett a Deep Dark biome, az Ancient City, a félelmetes Warden és a mocsári békák.",
+                            desc: "Megérkezett a Deep Dark biome, a félelmetes Warden és a mocsári békák.",
                             questions: [
-                                {
-                                    text: "Hogyan lehet elkerülni, hogy a Warden észrevegyen?",
-                                    options: ["Futással", "Osonással (Guggolva)", "Láthatatlansági itallal"],
-                                    correct: 1
-                                }
+                                { q: "Hogyan lehet elkerülni, hogy a Warden meghalljon?", options: ["Lopakodva (Sneaking)", "Gyorsan futva", "Vízbe ugorva"], correct: 0 },
+                                { q: "Mit esznek a békák a játékban?", options: ["Halakat", "Kis Slime-okat és Magma Cube-okat", "Búzát"], correct: 1 }
                             ]
                         }
                     }
@@ -538,14 +450,11 @@
                 "2024": {
                     updates: {
                         "dynamic_heads": {
-                            name: "Dynamic Heads & Facial Animation",
-                            desc: "A Roblox karakterek arcai animálttá váltak, és a kamerán keresztül a valós arckifejezésünket is átvihetjük a játékba.",
+                            name: "Dynamic Heads",
+                            desc: "A Roblox karakterek arcai animálttá váltak.",
                             questions: [
-                                {
-                                    text: "Mit használ a Roblox a valós idejű arckövetéshez?",
-                                    options: ["A webkamerát", "A billentyűzetet", "A mikrofont"],
-                                    correct: 0
-                                }
+                                { q: "Hogyan kell bekapcsolni a kamera-alapú arckövetést?", options: ["A Privacy (Adatvédelem) beállításokban", "A játék indulásakor", "Robuxért megvéve"], correct: 0 },
+                                { q: "Minden játék támogatja az animált arcokat?", options: ["Igen, mindegyik", "Csak amelyiknél a fejlesztő engedélyezi", "Csak a horror játékok"], correct: 1 }
                             ]
                         }
                     }
@@ -553,14 +462,11 @@
                 "2023": {
                     updates: {
                         "voice_chat": {
-                            name: "Voice Chat széleskörű kiterjesztése",
-                            desc: "A térbeli hangalapú csevegés (Spatial Voice) sokkal elérhetőbbé vált a közösség számára.",
+                            name: "Voice Chat",
+                            desc: "A térbeli hangalapú csevegés széleskörűen elérhetővé vált.",
                             questions: [
-                                {
-                                    text: "Hány éves kortól érhető el a korhatáros igazolású Voice Chat?",
-                                    options: ["13+", "18+", "7+"],
-                                    correct: 0
-                                }
+                                { q: "Hány éves kortól használható a Voice Chat hivatalosan?", options: ["13 éves kortól", "18 éves kortól", "Bárkinek elérhető"], correct: 0 },
+                                { q: "Hogyan működik a Spatial Audio (térbeli hang)?", options: ["Mindenkit egyformán hallani", "Akik közelebb vannak hozzád, hangosabbak", "Csak csapaton belül működik"], correct: 1 }
                             ]
                         }
                     }
@@ -568,14 +474,11 @@
                 "2022": {
                     updates: {
                         "layered_clothing": {
-                            name: "Layered Clothing (Réteges ruházat)",
-                            desc: "A játékosok végre 3D-s ruhákat (kabátokat, pulóvereket) vehettek fel egymásra rétegezve az avatárjukon.",
+                            name: "Layered Clothing",
+                            desc: "A játékosok végre 3D-s ruhákat vehettek fel egymásra rétegezve.",
                             questions: [
-                                {
-                                    text: "Milyen típusú ruhákat lehet egymásra rétegezni a Layered Clothing segítségével?",
-                                    options: ["3D-s ruhákat és kabátokat", "Klasszikus 2D-s pólókat", "Csak sapkákat"],
-                                    correct: 0
-                                }
+                                { q: "Hány réteg ruhát lehet maximum ráadni egy karakterre?", options: ["Legfeljebb 6 réteget", "Csak egyet", "Korlátlan számút"], correct: 0 },
+                                { q: "Működik a Layered Clothing a régi R6 avatárokon?", options: ["Igen, tökéletesen", "Nem, csak R15-ön támogatott", "Félig-meddig"], correct: 1 }
                             ]
                         }
                     }
@@ -588,14 +491,11 @@
                 "2024": {
                     updates: {
                         "ch5_s2": {
-                            name: "Chapter 5 Season 2 - Myths & Mortals",
-                            desc: "A görög mitológia ihlette szezon, ahol Zeusz, Hádész és más istenek képességeit lehetett használni.",
+                            name: "Myths & Mortals",
+                            desc: "A görög mitológia ihlette szezon.",
                             questions: [
-                                {
-                                    text: "Kinek a szárnyaival lehetett repülni ebben a szezonban?",
-                                    options: ["Ikarosz (Wings of Icarus)", "Zeusz", "Poseidon"],
-                                    correct: 0
-                                }
+                                { q: "Milyen mitológiai képességeket lehetett találni?", options: ["Zeusz villámát és Ikarusz szárnyát", "Poseidon szigonyát", "Thor kalapácsát"], correct: 0 },
+                                { q: "Hol volt Hádész alvilági bázisa?", options: ["Mount Olympus", "The Underworld", "Reckless Railways"], correct: 1 }
                             ]
                         }
                     }
@@ -604,13 +504,10 @@
                     updates: {
                         "og": {
                             name: "Fortnite OG",
-                            desc: "Egy nosztalgikus szezon, ami visszahozta az eredeti Chapter 1 térképeit, fegyvereit és járműveit.",
+                            desc: "Egy nosztalgikus szezon, ami visszahozta a régi Chapter 1-et.",
                             questions: [
-                                {
-                                    text: "Melyik híres helyszín tért vissza a Fortnite OG-ben?",
-                                    options: ["Tilted Towers", "Neo Tilted", "Mega City"],
-                                    correct: 0
-                                }
+                                { q: "Melyik ikonikus helyszín volt a legnépszerűbb?", options: ["Tilted Towers", "Mega City", "Coral Castle"], correct: 0 },
+                                { q: "Milyen régi járművek tértek vissza a játékba?", options: ["Helikopterek és UFO-k", "Bevásárlókocsik és golfkocsik (ATK)", "Sportautók"], correct: 1 }
                             ]
                         }
                     }
@@ -618,14 +515,11 @@
                 "2022": {
                     updates: {
                         "zero_build": {
-                            name: "Zero Build mód bevezetése",
-                            desc: "Megjelent a Chapter 3 Season 2, ami bevezette a Zero Build módot – az építés nélküli pörgős játékélményt.",
+                            name: "Zero Build",
+                            desc: "Bevezették a klasszikus építés nélküli Battle Royale élményt.",
                             questions: [
-                                {
-                                    text: "Milyen extra védelmet kaptak a játékosok építés hiányában a Zero Build módban?",
-                                    options: ["Overshield (Pajzs réteg)", "Extra életet", "Végtelen repülést"],
-                                    correct: 0
-                                }
+                                { q: "Milyen új védelmi funkciót kaptak a játékosok?", options: ["Overshield (Plusz 50 pajzs, ami magától újratöltődik)", "Golyóálló mellény", "Láthatatlanság 5 másodpercre"], correct: 0 },
+                                { q: "Hogyan változtatta meg a Zero Build a meccseket?", options: ["Több építőanyag kellett", "Teljesen a lövöldözésre és a fedezékek használatára fókuszált", "Kisebb lett a térkép"], correct: 1 }
                             ]
                         }
                     }
@@ -633,19 +527,16 @@
             }
         },
         "fnaf": {
-            name: "Five Nights at Freddy's 🐻",
+            name: "FNAF 🐻",
             years: {
                 "2024": {
                     updates: {
                         "into_the_pit": {
-                            name: "Into the Pit Megjelenés",
-                            desc: "Egy vadonatúj, 2D-s pixel art stílusú túlélő horror, ami a Fazbear Frights könyvsorozatot dolgozza fel.",
+                            name: "Into the Pit",
+                            desc: "Egy vadonatúj, 2D-s pixel art stílusú túlélő horror.",
                             questions: [
-                                {
-                                    text: "Hogyan utazik az időben a főszereplő Oswald?",
-                                    options: ["Beleugrik a labdatengerbe (Pit)", "Egy időgép segítségével", "Egy elvarázsolt ajtón át"],
-                                    correct: 0
-                                }
+                                { q: "Hogyan lehet utazni az időben a játékban?", options: ["Egy régi zenedobozzal", "A golyómedencébe (Ball Pit) ugorva", "Kamerákon keresztül"], correct: 1 },
+                                { q: "Ki a főellenség, aki üldözi Oswaldot?", options: ["Spring Bonnie (Yellow Rabbit)", "Freddy Fazbear", "Vanny"], correct: 0 }
                             ]
                         }
                     }
@@ -653,14 +544,11 @@
                 "2023": {
                     updates: {
                         "ruin": {
-                            name: "Security Breach - Ruin DLC",
-                            desc: "Cassie a lepusztult Pizzaplexben próbálja megtalálni Gregory-t a V.A.N.N.I. maszk segítségével.",
+                            name: "Ruin DLC",
+                            desc: "Cassie a lepusztult Pizzaplexben próbálja megtalálni Gregory-t.",
                             questions: [
-                                {
-                                    text: "Mit csinál a V.A.N.N.I. maszk a játékban?",
-                                    options: ["Átváltsa a látásmódot a digitális AR világra", "Láthatatlanná teszi Cassie-t", "Lefagyasztja a robotokat"],
-                                    correct: 0
-                                }
+                                { q: "Hogyan változtatja meg a maszk a környezetet?", options: ["Láthatatlanná tesz", "Felfedi a V.A.N.N.I. hálózat rejtett átjáróit", "Felgyorsítja a karaktert"], correct: 1 },
+                                { q: "Mi a Mimic igazi célja?", options: ["Segíteni Cassie-nek", "Kijutni a csapdájából Gregory hangját utánozva", "Megjavítani a Pizzaplexet"], correct: 1 }
                             ]
                         }
                     }
@@ -668,14 +556,11 @@
                 "2022": {
                     updates: {
                         "xbox_port": {
-                            name: "Security Breach Console Ports",
-                            desc: "A hatalmas PizzaPlex megnyitotta kapuit az Xbox és Nintendo Switch konzolokon is.",
+                            name: "Console Ports",
+                            desc: "A Security Breach Xbox és Nintendo Switch portja.",
                             questions: [
-                                {
-                                    text: "Ki az a fő animatronic, aki segíti Gregory-t a Security Breach-ben?",
-                                    options: ["Glamrock Freddy", "Montgomery Gator", "Roxanne Wolf"],
-                                    correct: 0
-                                }
+                                { q: "Milyen nehézséget okozott a Switch portolása?", options: ["Túl sok gomb kellett", "A nagy nyílt térkép és a grafika optimalizálása", "Nem volt benne hang"], correct: 1 },
+                                { q: "Melyik animatronic üldöz folyamatosan a játék elején?", options: ["Roxanne Wolf", "Montgomery Gator", "Glamrock Chica"], correct: 2 }
                             ]
                         }
                     }
@@ -683,19 +568,16 @@
             }
         },
         "gtav": {
-            name: "Grand Theft Auto V 🚗",
+            name: "GTA V 🚗",
             years: {
                 "2024": {
                     updates: {
                         "bottom_dollar": {
                             name: "Bottom Dollar Bounties",
-                            desc: "Saját fejvadász irodát nyithatunk, és Maude Eccles lányával kaphatjuk el Los Santos bűnözőit.",
+                            desc: "Saját fejvadász irodát nyithatunk.",
                             questions: [
-                                {
-                                    text: "Milyen új üzletet nyithatunk ebben a frissítésben?",
-                                    options: ["Fejvadász irodát (Bail Enforcement)", "Éjszakai klubot", "Kaszinót"],
-                                    correct: 0
-                                }
+                                { q: "Hogyan működik az óvadék (Bail) rendszer?", options: ["Pénzt adsz a rendőröknek, hogy békén hagyjanak", "Ha élve viszed be a célpontot, sokkal több pénzt kapsz", "Csak drága kocsikat kell lopni"], correct: 1 },
+                                { q: "Kiket kell elkapni a legnagyobb jutalomért?", options: ["Sima bolti tolvajokat", "A napi/heti kiemelt 'Most Wanted' célpontokat", "Bármelyik utcai járókelőt"], correct: 1 }
                             ]
                         }
                     }
@@ -704,13 +586,10 @@
                     updates: {
                         "chop_shop": {
                             name: "The Chop Shop",
-                            desc: "Egy autóbontó vállalkozás, ahol Yusuf Amir segítségével luxusautókat lophatunk el.",
+                            desc: "Egy autóbontó vállalkozás Yusuf Amirral.",
                             questions: [
-                                {
-                                    text: "Ki a híres karakter, aki visszatért a GTA IV-ből a Chop Shop frissítésben?",
-                                    options: ["Yusuf Amir", "Niko Bellic", "Roman Bellic"],
-                                    correct: 0
-                                }
+                                { q: "Milyen extra bevételt hoz a bontóüzem?", options: ["Vontatós (Tow Truck) küldetésekkel autókat lehet bezúzni pénzért", "Repülőket lehet eladni", "Bankot lehet vele rabolni"], correct: 0 },
+                                { q: "Hogyan működnek a heti autólopós küldetések?", options: ["Minden héten 3 egyedi luxusautót lehet ellopni", "Csak be kell szállni az utcán és elhajtani", "Nincsenek heti küldetések"], correct: 0 }
                             ]
                         }
                     }
@@ -719,13 +598,10 @@
                     updates: {
                         "drug_wars": {
                             name: "Los Santos Drug Wars",
-                            desc: "Csatlakozunk a Fooliganz csapatához, hogy egy hatalmas mozgó laboratóriumban indítsunk új üzletet.",
+                            desc: "Egy hatalmas mozgó laboratóriumban indíthatunk új üzletet.",
                             questions: [
-                                {
-                                    text: "Melyik nagyméretű jármű alakítható át Acid Lab-bé?",
-                                    options: ["Brickade 6x6", "Terrorbyte", "Avenger"],
-                                    correct: 0
-                                }
+                                { q: "Melyik járműben található az Acid Lab?", options: ["Terrorbyte", "Brickade 6x6", "Kosatka"], correct: 1 },
+                                { q: "Ki vezeti a Fooliganz bandát?", options: ["Lester Crest", "Dax", "Lamar Davis"], correct: 1 }
                             ]
                         }
                     }
@@ -742,12 +618,13 @@
     const infoSection = document.getElementById('info-section');
     const updateTitle = document.getElementById('update-title');
     const updateDesc = document.getElementById('update-desc');
-    const updateQuestions = document.getElementById('update-questions');
-    const submitBtn = document.getElementById('submit-answers');
-    const resultBox = document.getElementById('result-box');
+    const questionsContainer = document.getElementById('questions-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const feedbackMessage = document.getElementById('feedback-message');
 
-    let userAnswers = {};
+    let currentQuestions = [];
 
+    // Fő játék legördülő
     for (const [key, game] of Object.entries(gameData)) {
         const option = document.createElement('option');
         option.value = key;
@@ -757,7 +634,6 @@
 
     gameSelect.addEventListener('change', (e) => {
         const selectedGame = e.target.value;
-        
         yearSelect.innerHTML = '<option value="">-- Melyik év érdekel? --</option>';
         updateSelect.innerHTML = '<option value="">-- Melyik frissítést tanuljuk meg? --</option>';
         updateSection.style.display = 'none';
@@ -805,41 +681,43 @@
 
         if (selectedUpdate) {
             const updateInfo = gameData[selectedGame].years[selectedYear].updates[selectedUpdate];
+            currentQuestions = updateInfo.questions; // Eltároljuk a kérdéseket az ellenőrzéshez
             
             updateTitle.textContent = updateInfo.name;
             updateDesc.textContent = updateInfo.desc;
             
-            // Kérdések generálása
-            updateQuestions.innerHTML = ''; 
-            userAnswers = {};
-            resultBox.style.display = 'none';
-            submitBtn.disabled = false;
+            // Kérdések generálása lenyíló menüként
+            questionsContainer.innerHTML = ''; 
+            feedbackMessage.style.display = 'none'; // Elrejtjük az előző visszajelzést
+            
+            currentQuestions.forEach((qObj, index) => {
+                const formGroup = document.createElement('div');
+                formGroup.className = 'form-group';
+                
+                const label = document.createElement('label');
+                label.textContent = `${index + 1}. Kérdés: ${qObj.q}`;
+                
+                const select = document.createElement('select');
+                select.className = 'question-dropdown';
+                select.dataset.correctIndex = qObj.correct; // Eltároljuk a helyes indexet a HTML-ben
+                
+                // Alap opció
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = "-- Válassz egy választ! --";
+                select.appendChild(defaultOption);
 
-            updateInfo.questions.forEach((qObj, qIdx) => {
-                const qBlock = document.createElement('div');
-                qBlock.className = 'q-block';
-
-                const qText = document.createElement('div');
-                qText.className = 'q-text';
-                qText.textContent = `${qIdx + 1}. ${qObj.text}`;
-                qBlock.appendChild(qText);
-
-                qObj.options.forEach((optText, optIdx) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'option-btn';
-                    btn.textContent = optText;
-                    btn.type = 'button';
-
-                    btn.addEventListener('click', () => {
-                        qBlock.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-                        btn.classList.add('selected');
-                        userAnswers[qIdx] = optIdx;
-                    });
-
-                    qBlock.appendChild(btn);
+                // Válaszlehetőségek hozzáadása
+                qObj.options.forEach((optText, optIndex) => {
+                    const option = document.createElement('option');
+                    option.value = optIndex;
+                    option.textContent = optText;
+                    select.appendChild(option);
                 });
 
-                updateQuestions.appendChild(qBlock);
+                formGroup.appendChild(label);
+                formGroup.appendChild(select);
+                questionsContainer.appendChild(formGroup);
             });
 
             infoSection.style.display = 'block';
@@ -848,54 +726,39 @@
         }
     });
 
-    // Ellenőrzés és válasz kiértékelés
+    // Beküldés Gomb Logika (Jó vagy Rossz ellenőrzése)
     submitBtn.addEventListener('click', () => {
-        const selectedGame = gameSelect.value;
-        const selectedYear = yearSelect.value;
-        const selectedUpdate = updateSelect.value;
-        const updateInfo = gameData[selectedGame].years[selectedYear].updates[selectedUpdate];
-        const totalQuestions = updateInfo.questions.length;
+        const dropdowns = document.querySelectorAll('.question-dropdown');
+        let mindJo = true;
+        let vanUres = false;
 
-        if (Object.keys(userAnswers).length < totalQuestions) {
-            alert('Kérlek válaszolj minden kérdésre a beküldés előtt!');
-            return;
-        }
+        dropdowns.forEach(dropdown => {
+            const valasztottIndex = dropdown.value;
+            const helyesIndex = dropdown.dataset.correctIndex;
 
-        let correctCount = 0;
-
-        updateInfo.questions.forEach((qObj, qIdx) => {
-            const qBlock = updateQuestions.children[qIdx];
-            const buttons = qBlock.querySelectorAll('.option-btn');
-            const chosenIndex = userAnswers[qIdx];
-
-            buttons.forEach((btn, optIdx) => {
-                btn.disabled = true;
-
-                if (optIdx === qObj.correct) {
-                    btn.classList.add('correct');
-                }
-                if (chosenIndex === optIdx && chosenIndex !== qObj.correct) {
-                    btn.classList.add('wrong');
-                }
-            });
-
-            if (chosenIndex === qObj.correct) {
-                correctCount++;
+            if (valasztottIndex === "") {
+                vanUres = true;
+            } else if (valasztottIndex !== helyesIndex) {
+                mindJo = false;
             }
         });
 
-        resultBox.style.display = 'block';
-        if (correctCount === totalQuestions) {
-            resultBox.className = 'result-box success';
-            resultBox.textContent = `🎉 JÓ VÁLASZ! Hibátlan teljesítmény: ${correctCount}/${totalQuestions}! (+10 XP)`;
-        } else {
-            resultBox.className = 'result-box error';
-            resultBox.textContent = `❌ ROSSZ! ${correctCount}/${totalQuestions} helyes válasz. Nézd meg a zölddel jelölt jó válaszokat!`;
-        }
+        feedbackMessage.style.display = 'block';
+        feedbackMessage.className = 'feedback-message'; // Reset class
 
-        submitBtn.disabled = true;
+        if (vanUres) {
+            feedbackMessage.textContent = "Kérlek, válaszolj minden kérdésre a beküldés előtt! 🦉";
+            feedbackMessage.classList.add('feedback-error');
+        } else if (mindJo) {
+            feedbackMessage.textContent = "Jó! Kiváló munka, megkaptad a pontokat! 🎉 +10 XP";
+            feedbackMessage.classList.add('feedback-success');
+        } else {
+            feedbackMessage.textContent = "Rossz! Van benne hiba, próbáld újra! 💔";
+            feedbackMessage.classList.add('feedback-error');
+        }
     });
 </script>
 
 </body>
 </html>
+
