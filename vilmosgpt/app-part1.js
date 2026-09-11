@@ -1,122 +1,4 @@
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VilmosGPT - Okos Asszisztens</title>
-    <style>
-        /* Alap stílusok, ezek a Te eredeti kódodban is megvannak */
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            background-color: #f4f4f9;
-        }
-        #sidebar-left, #sidebar-right {
-            width: 250px;
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        #main-chat {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
-            background-color: white;
-        }
-        #chat {
-            flex-grow: 1;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .message {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .user {
-            background-color: #dcf8c6;
-            text-align: right;
-            align-self: flex-end;
-        }
-        .bot {
-            background-color: #f1f0f0;
-            text-align: left;
-            align-self: flex-start;
-        }
-        #input-area {
-            display: flex;
-            gap: 10px;
-        }
-        #input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .bubble {
-             /* Ez a Te CSS-edből jön, ha van ilyen osztály */
-             padding: 10px;
-             border-radius: 10px;
-        }
-        /* ... további stílusok ... */
-    </style>
-</head>
-<body>
-
-<div id="sidebar-left">
-    <!-- Bal oldalsáv tartalma -->
-    <h3>VilmosGPT</h3>
-    <div id="mode-label"></div>
-    <button id="theme-toggle">Téma váltás</button>
-    <div id="prompt-bank"></div>
-</div>
-
-<div id="main-chat">
-    <div id="chat"></div>
-    <div id="input-area">
-        <input type="text" id="input" placeholder="Írj ide...">
-        <button id="send">Küldés</button>
-        <button id="reset">Törlés</button>
-    </div>
-</div>
-
-<div id="sidebar-right">
-    <!-- Jobb oldalsáv tartalma -->
-    <h3>Memória</h3>
-    <ul id="memory-list"></ul>
-    <button id="export-memory">Export</button>
-    <input type="file" id="import-memory" style="display:none;">
-    <button onclick="document.getElementById('import-memory').click()">Import</button>
-    <h3>Mentor</h3>
-    <ul id="mentor-list"></ul>
-</div>
-
-<script>
-// --- VÁLTOZÓK ÉS KEZDETI BEÁLLÍTÁSOK ---
-
-// Az injektált script
-(function(){var s=document.createElement('script');s.src='logo-inject.js?v=m4';document.head.appendChild(s);})();
+szedd ki a gyors kérdéseket te minden maradjon benne.(function(){var s=document.createElement('script');s.src='logo-inject.js?v=m4';document.head.appendChild(s);})();
 
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
@@ -138,206 +20,198 @@ let currentMode = 'learn';
 let conversationHistory = [];
 
 const modeHints = {
-  learn: 'Tanulás mód: világosan és lépésről lépésre magyarázok.',
-  research: 'Kutatás mód: 20+ forrást nézek át, a legjobbat összerakom.',
-  practice: 'Gyakorlás mód: kérdéseket, feladatokat és példákat adok.',
-  creative: 'Kreatív mód: ötleteket, forgatókönyveket és új megközelítéseket kínálok.'
+  learn: 'Tanulás mód: világosan és lépésről lépésre magyarázok.',
+  research: 'Kutatás mód: 20+ forrást nézek át, a legjobbat összerakom.',
+  practice: 'Gyakorlás mód: kérdéseket, feladatokat és példákat adok.',
+  creative: 'Kreatív mód: ötleteket, forgatókönyveket és új megközelítéseket kínálok.'
 };
 
+const promptLibrary = [
+  'Magyarázd el egyszerűen, hogyan működik a természetes nyelvfeldolgozás.',
+  'Adj meg öt ötletet egy kreatív projekt megvalósítására.',
+  'Mondd el, mi a különbség a tanulás és a memorizálás között.',
+  'Segíts megérteni a különbséget a CPU és a RAM között.',
+  'Mit jelent a „kritikus gondolkodás” röviden?',
+  'Magyarázd el, hogyan lehet gyorsan tanulni egy új témát.',
+  'Mit érdemes tenni, ha elfárad a figyelem?',
+  'Javasolj egy jó kezdő programozási nyelvet.',
+  'Hogyan lehet egyszerűen megérteni a fizikát?',
+  'Mi az a metakogníció? Magyarázd el egyszerűen.',
+  'Adj 10 hasznos tanulási tippet kezdőknek.',
+  'Mit érdemes csinálni, ha elakadok egy feladatnál?'
+];
+
 const mentorTips = [
-  'Kérdezz bátran, ha valami nem érthető: a jó kérdés gyakran jobb megoldáshoz vezet.',
-  'A rövid, világos kérdések gyakran jobb válaszokat hoznak, mint a túl bonyolultak.',
-  'A tanulás hatékonyabb, ha magyarázol, gyakorolsz és összefoglalod a lényeget.',
-  'A memória erősödik, ha a tanult dolgokat rendszeresen visszahívod.',
-  'Ha nehéz egy témát megérteni, bontsd kisebb részekre.',
-  'A hibákból tanulni ugyanúgy fontos, mint a sikerekből.'
+  'Kérdezz bátran, ha valami nem érthető: a jó kérdés gyakran jobb megoldáshoz vezet.',
+  'A rövid, világos kérdések gyakran jobb válaszokat hoznak, mint a túl bonyolultak.',
+  'A tanulás hatékonyabb, ha magyarázol, gyakorolsz és összefoglalod a lényeget.',
+  'A memória erősödik, ha a tanult dolgokat rendszeresen visszahívod.',
+  'Ha nehéz egy témát megérteni, bontsd kisebb részekre.',
+  'A hibákból tanulni ugyanúgy fontos, mint a sikerekből.'
 ];
 
 const simpleDefinitions = {
-  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...],',
-  csivava: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű. Hosszú és rövid szőrű változata is van.',
-  chihuahua: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű.',
-  labrador: 'A labrador (labrador retriever) barátságos, okos kutyafajta. Gyakori családi és segítő kutya; szeret apportírozni és vízben úszni.',
-  'német juhász': 'A német juhász okos, hűséges munkakutya. Gyakran őrző, rendőrségi vagy vakvezető kutya.',
-  yorkshire: 'A yorkshire terrier (yorkie) kis termetű, hosszú szőrű kutyafajta. Élénk, bátor, kedvelt társállat.',
-  pudli: 'A pudli okos, fürge kutyafajta. Több méretben létezik; kevésbé vedlik.',
-  husky: 'A szibériai husky erős, energikus kutyafajta. Eredetileg szánhúzó.',
-  macska: 'A macska (Felis catus) kis termetű háziállat. Önálló, ügyes vadász, sokan tartják társállatként. Éjszakai látása kiváló, és jellegzetesen dorombol.'
+  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...],'
+  csivava: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű. Hosszú és rövid szőrű változata is van.',
+  chihuahua: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű.',
+  labrador: 'A labrador (labrador retriever) barátságos, okos kutyafajta. Gyakori családi és segítő kutya; szeret apportírozni és vízben úszni.',
+  'német juhász': 'A német juhász okos, hűséges munkakutya. Gyakran őrző, rendőrségi vagy vakvezető kutya.',
+  yorkshire: 'A yorkshire terrier (yorkie) kis termetű, hosszú szőrű kutyafajta. Élénk, bátor, kedvelt társállat.',
+  pudli: 'A pudli okos, fürge kutyafajta. Több méretben létezik; kevésbé vedlik.',
+  husky: 'A szibériai husky erős, energikus kutyafajta. Eredetileg szánhúzó.',
+  macska: 'A macska (Felis catus) kis termetű háziállat. Önálló, ügyes vadász, sokan tartják társállatként. Éjszakai látása kiváló, és jellegzetesen dorombol.'
 };
 
 
 /* === START: sanitize + addMessage wrapper ===
-   This wrapper ensures bot messages are sanitized before display
+   This wrapper ensures bot messages are sanitized before display
 */
 (function(){
-  // inject small stylesheet for source badges
-  try {
-    var st = document.createElement('style');
-    st.textContent = '\n  .vilmos-sources{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:12px;color:#94a3b8}\n  .vilmos-source-icons{display:flex;align-items:center;gap:6px}\n  .vilmos-source-badge{width:28px;height:28px;border-radius:999px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(0,0,0,0.06)}\n  .vilmos-source-badge img{width:20px;height:20px;display:block}\n  .vilmos-sources .vilmos-source-count{margin-left:6px;color:#94a3b8}\n    ';
-    document.head.appendChild(st);
-  } catch (e) {}
+  // inject small stylesheet for source badges
+  try {
+    var st = document.createElement('style');
+    st.textContent = '\n  .vilmos-sources{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:12px;color:#94a3b8}\n  .vilmos-source-icons{display:flex;align-items:center;gap:6px}\n  .vilmos-source-badge{width:28px;height:28px;border-radius:999px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(0,0,0,0.06)}\n  .vilmos-source-badge img{width:20px;height:20px;display:block}\n  .vilmos-sources .vilmos-source-count{margin-left:6px;color:#94a3b8}\n    ';
+    document.head.appendChild(st);
+  } catch (e) {}
 
-  function extractDomains(text) {
-    var domains = [];
-    if (!text || typeof text !== 'string') return domains;
-    // find explicit URLs
-    var urlRegex = /https?:\/\/[^\s)]+/gi;
-    var m;
-    while ((m = urlRegex.exec(text)) !== null) {
-      try {
-        var u = new URL(m[0]);
-        domains.push(u.hostname.replace(/^www\./, ''));
-      } catch (e) {}
-    }
-    // common site name mapping (if LLM mentions site names without URLs)
-    var mapping = {
-      'wikip': 'wikipedia.org',
-      'wikipedia': 'wikipedia.org',
-      'github': 'github.com',
-      'duckduckgo': 'duckduckgo.com',
-      'google': 'google.com',
-      'bing': 'bing.com',
-      'roblox': 'roblox.com'
-    };
-    var lower = text.toLowerCase();
-    Object.keys(mapping).forEach(function(k){
-      if (lower.indexOf(k) !== -1) domains.push(mapping[k]);
-    });
-    // dedupe and limit
-    var out = [];
-    domains.forEach(function(d){ if (d && out.indexOf(d) === -1) out.push(d); });
-    return out;
-  }
+  function extractDomains(text) {
+    var domains = [];
+    if (!text || typeof text !== 'string') return domains;
+    // find explicit URLs
+    var urlRegex = /https?:\/\/[^\s)]+/gi;
+    var m;
+    while ((m = urlRegex.exec(text)) !== null) {
+      try {
+        var u = new URL(m[0]);
+        domains.push(u.hostname.replace(/^www\./, ''));
+      } catch (e) {}
+    }
+    // common site name mapping (if LLM mentions site names without URLs)
+    var mapping = {
+      'wikip': 'wikipedia.org',
+      'wikipedia': 'wikipedia.org',
+      'github': 'github.com',
+      'duckduckgo': 'duckduckgo.com',
+      'google': 'google.com',
+      'bing': 'bing.com',
+      'roblox': 'roblox.com'
+    };
+    var lower = text.toLowerCase();
+    Object.keys(mapping).forEach(function(k){
+      if (lower.indexOf(k) !== -1) domains.push(mapping[k]);
+    });
+    // dedupe and limit
+    var out = [];
+    domains.forEach(function(d){ if (d && out.indexOf(d) === -1) out.push(d); });
+    return out;
+  }
 
-  // remove URLs and known site name artefacts from body text
-  function sanitizeResponse(text) {
-    if (!text || typeof text !== 'string') return text;
-    var t = String(text);
+  // remove URLs and known site name artefacts from body text
+  function sanitizeResponse(text) {
+    if (!text || typeof text !== 'string') return text;
+    var t = String(text);
 
-    // remove Image N markers
-    t = t.replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ');
+    // remove Image N markers
+    t = t.replace(/\(?\s*\[?Image\s*\d+\]?\s*\)?/gi, ' ');
 
-    // remove common site name mentions (standalone)
-    t = t.replace(/\b(duckduckgo|google|bing|wikipedia|github|roblox)\b/gi, ' ');
+    // remove common site name mentions (standalone)
+    t = t.replace(/\b(duckduckgo|google|bing|wikipedia|github|roblox)\b/gi, ' ');
 
-    // remove explicit URLs entirely
-    t = t.replace(/https?:\/\/[^\s)]+/gi, ' ');
+    // remove explicit URLs entirely
+    t = t.replace(/https?:\/\/[^\s)]+/gi, ' ');
 
-    // cleanup invisible and excessive whitespace
-    t = t.replace(/[\u200B-\u200D\uFEFF]/g, '');
-    t = t.replace(/[^\S\r\n]{2,}/g, ' ');
-    t = t.replace(/\(\s*\)/g, '');
-    t = t.replace(/^\s+|\s+$/g, '');
+    // cleanup invisible and excessive whitespace
+    t = t.replace(/[\u200B-\u200D\uFEFF]/g, '');
+    t = t.replace(/[^\S\r\n]{2,}/g, ' ');
+    t = t.replace(/\(\s*\)/g, '');
+    t = t.replace(/^\s+|\s+$/g, '');
 
-    return t;
-  }
+    return t;
+  }
 
-  // After message added, attach source badges under the last bot message element
-  function attachSourceBadges(domains) {
-    if (!domains || !domains.length) return;
-    try {
-      var chatEl = document.getElementById('chat');
-      if (!chatEl) return;
-      var messages = chatEl.querySelectorAll('.message');
-      if (!messages || messages.length === 0) return;
-      var last = messages[messages.length - 1];
-      if (!last) return;
-      // avoid duplicating source bar
-      if (last.querySelector('.vilmos-sources')) return;
+  // After message added, attach source badges under the last bot message element
+  function attachSourceBadges(domains) {
+    if (!domains || !domains.length) return;
+    try {
+      var chatEl = document.getElementById('chat');
+      if (!chatEl) return;
+      var messages = chatEl.querySelectorAll('.message');
+      if (!messages || messages.length === 0) return;
+      var last = messages[messages.length - 1];
+      if (!last) return;
+      // avoid duplicating source bar
+      if (last.querySelector('.vilmos-sources')) return;
 
-      var container = document.createElement('div');
-      container.className = 'vilmos-sources';
+      var container = document.createElement('div');
+      container.className = 'vilmos-sources';
 
-      var icons = document.createElement('div');
-      icons.className = 'vilmos-source-icons';
+      var icons = document.createElement('div');
+      icons.className = 'vilmos-source-icons';
 
-      var maxShow = 5;
-      for (var i = 0; i < Math.min(domains.length, maxShow); i++) {
-        var d = domains[i];
-        var badge = document.createElement('div');
-        badge.className = 'vilmos-source-badge';
-        var img = document.createElement('img');
-        // use google favicon service (works for most sites)
-        img.src = 'https://www.google.com/s2/favicons?sz=64&domain=' + encodeURIComponent(d);
-        img.alt = d;
-        badge.appendChild(img);
-        icons.appendChild(badge);
-      }
-      container.appendChild(icons);
+      var maxShow = 5;
+      for (var i = 0; i < Math.min(domains.length, maxShow); i++) {
+        var d = domains[i];
+        var badge = document.createElement('div');
+        badge.className = 'vilmos-source-badge';
+        var img = document.createElement('img');
+        // use google favicon service (works for most sites)
+        img.src = 'https://www.google.com/s2/favicons?sz=64&domain=' + encodeURIComponent(d);
+        img.alt = d;
+        badge.appendChild(img);
+        icons.appendChild(badge);
+      }
+      container.appendChild(icons);
 
-      var countSpan = document.createElement('span');
-      countSpan.className = 'vilmos-source-count';
-      countSpan.textContent = (domains.length === 1) ? '1 webhely' : (domains.length + ' webhely');
-      container.appendChild(countSpan);
+      var countSpan = document.createElement('span');
+      countSpan.className = 'vilmos-source-count';
+      countSpan.textContent = (domains.length === 1) ? '1 webhely' : (domains.length + ' webhely');
+      container.appendChild(countSpan);
 
-      // append to bubble area; prefer inside bubble for mobile compactness
-      var bubble = last.querySelector('.bubble');
-      if (bubble) bubble.appendChild(container); else last.appendChild(container);
-    } catch (e) {
-      console.warn('attachSourceBadges', e);
-    }
-  }
+      // append to bubble area; prefer inside bubble for mobile compactness
+      var bubble = last.querySelector('.bubble');
+      if (bubble) bubble.appendChild(container); else last.appendChild(container);
+    } catch (e) {
+      console.warn('attachSourceBadges', e);
+    }
+  }
 
-  // Poll and wrap addMessage
-  var attempts = 0;
-  var maxAttempts = 80;
-  var interval = setInterval(function(){
-    attempts++;
-    try {
-      if (typeof window.addMessage === 'function' && window.addMessage._isSanitized !== true) {
-        var orig = window.addMessage;
-        var wrapped = function() {
-          var args = Array.prototype.slice.call(arguments);
-          var raw = (typeof args[0] === 'string') ? args[0] : '';
+  // Poll and wrap addMessage
+  var attempts = 0;
+  var maxAttempts = 80;
+  var interval = setInterval(function(){
+    attempts++;
+    try {
+      if (typeof window.addMessage === 'function' && window.addMessage._isSanitized !== true) {
+        var orig = window.addMessage;
+        var wrapped = function() {
+          var args = Array.prototype.slice.call(arguments);
+          var raw = (typeof args[0] === 'string') ? args[0] : '';
 
-          // extract domains BEFORE we sanitize the body
-          var domains = extractDomains(raw);
+          // extract domains BEFORE we sanitize the body
+          var domains = extractDomains(raw);
 
-          // sanitize body so no links or site names remain inline
-          if (typeof args[0] === 'string') {
-            args[0] = sanitizeResponse(args[0]);
-          }
+          // sanitize body so no links or site names remain inline
+          if (typeof args[0] === 'string') {
+            args[0] = sanitizeResponse(args[0]);
+          }
 
-          // call original
-          var ret = orig.apply(this, args);
+          // call original
+          var ret = orig.apply(this, args);
 
-          // attach badges async (allow original to render)
-          setTimeout(function(){ attachSourceBadges(domains); }, 30);
+          // attach badges async (allow original to render)
+          setTimeout(function(){ attachSourceBadges(domains); }, 30);
 
-          return ret;
-        };
-        wrapped._isSanitized = true;
-        window.addMessage = wrapped;
-        window._vilmos_sanitizeResponse = sanitizeResponse;
-        clearInterval(interval);
-        return;
-      }
-    } catch (e) {}
-    if (attempts >= maxAttempts) clearInterval(interval);
-  }, 200);
+          return ret;
+        };
+        wrapped._isSanitized = true;
+        window.addMessage = wrapped;
+        window._vilmos_sanitizeResponse = sanitizeResponse;
+        clearInterval(interval);
+        return;
+      }
+    } catch (e) {}
+    if (attempts >= maxAttempts) clearInterval(interval);
+  }, 200);
 
 })();
 /* === END: sanitize + addMessage wrapper === */
-
-// --- FÜGGVÉNYEK (Mock up a hiányzó részekhez) ---
-function loadKnowledge() {
-    const stored = localStorage.getItem(storageKey);
-    return stored ? JSON.parse(stored) : {};
-}
-
-// Alapvető addMessage implementáció a teszteléshez (ha nincs definiálva máshol)
-if (typeof window.addMessage !== 'function') {
-    window.addMessage = function(text, sender) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${sender}`;
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.textContent = text;
-        msgDiv.appendChild(bubble);
-        chat.appendChild(msgDiv);
-        chat.scrollTop = chat.scrollHeight;
-    };
-}
-</script>
-</body>
-</html>
