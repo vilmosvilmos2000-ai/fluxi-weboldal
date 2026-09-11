@@ -341,7 +341,58 @@
     function openAuth(){ document.getElementById('auth-overlay').classList.add('open'); if(window.google) try{ initGoogleButton(); }catch(e){} }
     function closeAuth(){ document.getElementById('auth-overlay').classList.remove('open'); }
     function parseJwt(t){ try{ const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+(('00'+c.charCodeAt(0).toString(16)).slice(-2))).join(''))); }catch{ return null; } }
-    // FULL AUTH SCRIPT RESTORED FROM GOOD COMMIT - login, Google, Facebook, Apple, local name all work again.
+    function handleGoogleCredential(r){
+      const d=parseJwt(r.credential); if(!d) return;
+      setUser({ name:d.name||d.email||'Google', email:d.email||'', picture:d.picture||'', provider:'google', sub:d.sub||'' });
+      closeAuth();
+      if(typeof addMessage==='function') addMessage('Szia, '+(d.name||'')+'! Bejelentkeztél Google-lel.', 'system');
+    }
+    function initGoogleButton(){
+      const slot=document.getElementById('google-btn-slot');
+      if(!GOOGLE_CLIENT_ID||!window.google||!google.accounts){ slot.innerHTML=''; return; }
+      slot.innerHTML='';
+      google.accounts.id.initialize({ client_id:GOOGLE_CLIENT_ID, callback:handleGoogleCredential, auto_select:false });
+      google.accounts.id.renderButton(slot, { theme:'outline', size:'large', shape:'pill', text:'continue_with', width:300 });
+    }
+    function handleFacebookLogin() {
+      if (!FB_APP_ID || !window.FB) { alert('Facebook bejelentkezés nem elérhető.'); return; }
+      FB.login(function(response) {
+        if (!response.authResponse) return;
+        FB.api('/me', { fields: 'id,name,email,picture.type(large)' }, function(me) {
+          if (!me || me.error) return;
+          var pic = (me.picture && me.picture.data && me.picture.data.url) || '';
+          setUser({ name: me.name || 'Facebook', email: me.email || '', picture: pic, provider: 'facebook', sub: me.id || '' });
+          closeAuth();
+          if (typeof addMessage === 'function') addMessage('Szia, ' + (me.name || '') + '! Bejelentkeztél Facebookkal.', 'system');
+        });
+      }, { scope: 'public_profile,email' });
+    }
+    async function handleAppleLogin() {
+      if (!APPLE_CLIENT_ID || !window.AppleID) { alert('Apple bejelentkezéshez Services ID kell.'); return; }
+      try {
+        AppleID.auth.init({ clientId: APPLE_CLIENT_ID, scope: 'name email', redirectURI: APPLE_REDIRECT, usePopup: true });
+        var data = await AppleID.auth.signIn();
+        var name = 'Apple felhasználó';
+        setUser({ name: name, email: '', picture: '', provider: 'apple', sub: name });
+        closeAuth();
+        if (typeof addMessage === 'function') addMessage('Szia! Bejelentkeztél Apple-lel.', 'system');
+      } catch (err) {}
+    }
+    window.addEventListener('load', ()=>{ renderAuthUI(); });
+    document.getElementById('facebook-login-btn').addEventListener('click', handleFacebookLogin);
+    document.getElementById('apple-login-btn').addEventListener('click', handleAppleLogin);
+    document.getElementById('login-btn').addEventListener('click', openAuth);
+    document.getElementById('auth-close').addEventListener('click', closeAuth);
+    document.getElementById('auth-cancel').addEventListener('click', closeAuth);
+    document.getElementById('auth-overlay').addEventListener('click', e=>{ if(e.target.id==='auth-overlay') closeAuth(); });
+    document.getElementById('logout-btn').addEventListener('click', ()=>{ setUser(null); if(typeof addMessage==='function') addMessage('Kijelentkeztél.', 'system'); });
+    document.getElementById('auth-local').addEventListener('click', ()=>{
+      const name=document.getElementById('auth-name').value.trim();
+      const email=document.getElementById('auth-email').value.trim();
+      if(!name){ document.getElementById('auth-name').focus(); return; }
+      setUser({ name, email, picture:'', provider:'local' }); closeAuth();
+      if(typeof addMessage==='function') addMessage('Szia, '+name+'! Beléptél.', 'system');
+    });
   </script>
   <script src="logo-inject.js?v=15"></script>
   <script src="app.js"></script>
