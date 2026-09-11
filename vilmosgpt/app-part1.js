@@ -26,20 +26,6 @@ const modeHints = {
   creative: 'Kreatív mód: ötleteket, forgatókönyveket és új megközelítéseket kínálok.'
 };
 
-const promptLibrary = [
-  'Magyarázd el egyszerűen, hogyan működik a természetes nyelvfeldolgozás.',
-  'Adj meg öt ötletet egy kreatív projekt megvalósítására.',
-  'Mondd el, mi a különbség a tanulás és a memorizálás között.',
-  'Segíts megérteni a különbséget a CPU és a RAM között.',
-  'Mit jelent a „kritikus gondolkodás” röviden?',
-  'Magyarázd el, hogyan lehet gyorsan tanulni egy új témát.',
-  'Mit érdemes tenni, ha elfárad a figyelem?',
-  'Javasolj egy jó kezdő programozási nyelvet.',
-  'Hogyan lehet egyszerűen megérteni a fizikát?',
-  'Mi az a metakogníció? Magyarázd el egyszerűen.',
-  'Adj 10 hasznos tanulási tippet kezdőknek.',
-  'Mit érdemes csinálni, ha elakadok egy feladatnál?'
-];
 
 const mentorTips = [
   'Kérdezz bátran, ha valami nem érthető: a jó kérdés gyakran jobb megoldáshoz vezet.',
