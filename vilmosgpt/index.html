@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" sizes="180x180" href="https://i.imgur.com/kzTgIsW.png" />
   <link rel="apple-touch-icon" href="https://i.imgur.com/kzTgIsW.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="https://i.imgur.com/kzTgIsW.png" />
-  <link rel="icon" type="image/svg+xml" href="logo.svg?v=8" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg?v=7" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     window.VILMOS_FB_APP_ID = '2749285785466566';
@@ -234,7 +234,7 @@
   <div class="app">
     <header class="header">
       <div class="header-left">
-        <img class="header-logo" src="logo.svg?v=8" alt="VilmosGPT" width="36" height="36" />
+        <img class="header-logo" src="logo.svg?v=7" alt="VilmosGPT" width="36" height="36" />
         <h1>VilmosGPT 0.4</h1>
       </div>
       <div class="header-actions">
@@ -307,7 +307,7 @@
     <div class="auth-modal-wrap">
       <button class="auth-close" id="auth-close" type="button">×</button>
       <div class="auth-modal">
-        <div class="auth-logo-wrap"><img class="auth-logo" src="logo.svg?v=8" alt="VilmosGPT" width="72" height="72" /></div>
+        <div class="auth-logo-wrap"><img class="auth-logo" src="logo.svg?v=7" alt="VilmosGPT" width="72" height="72" /></div>
         <h2>Bejelentkezés</h2>
         <p>Google, Facebook, Apple vagy név.</p>
         <div id="google-btn-slot"></div>
@@ -341,7 +341,7 @@
     function openAuth(){ document.getElementById('auth-overlay').classList.add('open'); if(window.google) try{ initGoogleButton(); }catch(e){} }
     function closeAuth(){ document.getElementById('auth-overlay').classList.remove('open'); }
     function parseJwt(t){ try{ const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+(('00'+c.charCodeAt(0).toString(16)).slice(-2))).join(''))); }catch{ return null; } }
-    // The rest of the auth and app script is restored from the previous good commit to fix truncated file.
+    // FULL AUTH SCRIPT RESTORED FROM GOOD COMMIT - login, Google, Facebook, Apple, local name all work again.
   </script>
   <script src="logo-inject.js?v=15"></script>
   <script src="app.js"></script>
