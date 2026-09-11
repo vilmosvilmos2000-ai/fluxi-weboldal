@@ -1,4 +1,4 @@
-szedd ki a gyors kérdéseket te minden maradjon benne.(function(){var s=document.createElement('script');s.src='logo-inject.js?v=m4';document.head.appendChild(s);})();
+(function(){var s=document.createElement('script');s.src='logo-inject.js?v=m4';document.head.appendChild(s);})();
 
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
