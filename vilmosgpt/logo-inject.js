@@ -92,7 +92,7 @@
     if (h1) h1.textContent = 'VilmosGPT 0.4';
     if (document.title) document.title = 'VilmosGPT 0.4';
     document.querySelectorAll('.header-logo, .auth-logo').forEach(function(img) {
-      img.src = 'logo.svg?v=8';
+      img.src = 'logo.svg?v=7';
       img.style.imageRendering = 'pixelated';
       img.style.borderRadius = '50%';
       img.style.background = '#000';
