@@ -1,3 +1,121 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VilmosGPT - Okos Asszisztens</title>
+    <style>
+        /* Alap stílusok, ezek a Te eredeti kódodban is megvannak */
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        #sidebar-left, #sidebar-right {
+            width: 250px;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        #main-chat {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: white;
+        }
+        #chat {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user {
+            background-color: #dcf8c6;
+            text-align: right;
+            align-self: flex-end;
+        }
+        .bot {
+            background-color: #f1f0f0;
+            text-align: left;
+            align-self: flex-start;
+        }
+        #input-area {
+            display: flex;
+            gap: 10px;
+        }
+        #input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .bubble {
+             /* Ez a Te CSS-edből jön, ha van ilyen osztály */
+             padding: 10px;
+             border-radius: 10px;
+        }
+        /* ... további stílusok ... */
+    </style>
+</head>
+<body>
+
+<div id="sidebar-left">
+    <!-- Bal oldalsáv tartalma -->
+    <h3>VilmosGPT</h3>
+    <div id="mode-label"></div>
+    <button id="theme-toggle">Téma váltás</button>
+    <div id="prompt-bank"></div>
+</div>
+
+<div id="main-chat">
+    <div id="chat"></div>
+    <div id="input-area">
+        <input type="text" id="input" placeholder="Írj ide...">
+        <button id="send">Küldés</button>
+        <button id="reset">Törlés</button>
+    </div>
+</div>
+
+<div id="sidebar-right">
+    <!-- Jobb oldalsáv tartalma -->
+    <h3>Memória</h3>
+    <ul id="memory-list"></ul>
+    <button id="export-memory">Export</button>
+    <input type="file" id="import-memory" style="display:none;">
+    <button onclick="document.getElementById('import-memory').click()">Import</button>
+    <h3>Mentor</h3>
+    <ul id="mentor-list"></ul>
+</div>
+
+<script>
+// --- VÁLTOZÓK ÉS KEZDETI BEÁLLÍTÁSOK ---
+
+// Az injektált script
 (function(){var s=document.createElement('script');s.src='logo-inject.js?v=m4';document.head.appendChild(s);})();
 
 const chat = document.getElementById('chat');
@@ -26,21 +144,6 @@ const modeHints = {
   creative: 'Kreatív mód: ötleteket, forgatókönyveket és új megközelítéseket kínálok.'
 };
 
-const promptLibrary = [
-  'Magyarázd el egyszerűen, hogyan működik a természetes nyelvfeldolgozás.',
-  'Adj meg öt ötletet egy kreatív projekt megvalósítására.',
-  'Mondd el, mi a különbség a tanulás és a memorizálás között.',
-  'Segíts megérteni a különbséget a CPU és a RAM között.',
-  'Mit jelent a „kritikus gondolkodás” röviden?',
-  'Magyarázd el, hogyan lehet gyorsan tanulni egy új témát.',
-  'Mit érdemes tenni, ha elfárad a figyelem?',
-  'Javasolj egy jó kezdő programozási nyelvet.',
-  'Hogyan lehet egyszerűen megérteni a fizikát?',
-  'Mi az a metakogníció? Magyarázd el egyszerűen.',
-  'Adj 10 hasznos tanulási tippet kezdőknek.',
-  'Mit érdemes csinálni, ha elakadok egy feladatnál?'
-];
-
 const mentorTips = [
   'Kérdezz bátran, ha valami nem érthető: a jó kérdés gyakran jobb megoldáshoz vezet.',
   'A rövid, világos kérdések gyakran jobb válaszokat hoznak, mint a túl bonyolultak.',
@@ -51,7 +154,7 @@ const mentorTips = [
 ];
 
 const simpleDefinitions = {
-  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...],'
+  kutya: 'A kutya (Canis familiaris) az ember egyik legrégebbi háziállata. A farkas leszármazottja, hűséges társ, őrző, vadásztárs vagy munkakutya is lehet. Sok fajtája van (pl. labrad[...],',
   csivava: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű. Hosszú és rövid szőrű változata is van.',
   chihuahua: 'A csivava (chihuahua) a legkisebb kutyafajták egyike. Mexikóból származik, kicsi, élénk, gyakran merész természetű.',
   labrador: 'A labrador (labrador retriever) barátságos, okos kutyafajta. Gyakori családi és segítő kutya; szeret apportírozni és vízben úszni.',
@@ -215,3 +318,26 @@ const simpleDefinitions = {
 
 })();
 /* === END: sanitize + addMessage wrapper === */
+
+// --- FÜGGVÉNYEK (Mock up a hiányzó részekhez) ---
+function loadKnowledge() {
+    const stored = localStorage.getItem(storageKey);
+    return stored ? JSON.parse(stored) : {};
+}
+
+// Alapvető addMessage implementáció a teszteléshez (ha nincs definiálva máshol)
+if (typeof window.addMessage !== 'function') {
+    window.addMessage = function(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = text;
+        msgDiv.appendChild(bubble);
+        chat.appendChild(msgDiv);
+        chat.scrollTop = chat.scrollHeight;
+    };
+}
+</script>
+</body>
+</html>
