@@ -183,12 +183,16 @@
         }
 
         select:invalid {
-            color: #b9d9f5;
+            color: #f9fafb;
+        }
+
+        select:valid {
+            color: #000000;
         }
 
         select option {
-            background: linear-gradient(180deg, #163759 0%, #112847 100%);
-            color: #edf7ff;
+            background: #ffffff;
+            color: #000000;
             font-size: 17px;
             font-weight: 800;
             padding: 14px 14px;
@@ -198,8 +202,8 @@
         select option:checked,
         select option:hover,
         select option:focus {
-            background: linear-gradient(180deg, #2c6cb2 0%, #215b97 100%);
-            color: #f4fbff;
+            background: #ffffff;
+            color: #000000;
         }
 
         select:hover {
@@ -358,21 +362,21 @@
 
         <div class="form-group">
             <label for="game-select">Válassz játékot:</label>
-            <select id="game-select">
+            <select id="game-select" required>
                 <option value="">-- Kattints a választáshoz --</option>
             </select>
         </div>
 
         <div class="form-group" id="year-section">
             <label for="year-select">Válassz évet:</label>
-            <select id="year-select">
+            <select id="year-select" required>
                 <option value="">-- Melyik év érdekel? --</option>
             </select>
         </div>
 
         <div class="form-group" id="update-section">
             <label for="update-select">Válassz frissítést:</label>
-            <select id="update-select">
+            <select id="update-select" required>
                 <option value="">-- Melyik frissítést tanuljuk meg? --</option>
             </select>
         </div>
@@ -699,6 +703,7 @@
                 
                 const select = document.createElement('select');
                 select.className = 'question-dropdown';
+                select.required = true;
                 select.dataset.correctIndex = qObj.correct; // Eltároljuk a helyes indexet a HTML-ben
                 
                 // Alap opció
