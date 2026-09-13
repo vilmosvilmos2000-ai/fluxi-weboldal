@@ -1,36 +1,464 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Üzenet Apának</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f6f9;
-        }
-        .card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        h1 {
-            color: #d9534f;
-            margin: 0;
-            font-size: 2.5rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MinimalShop - Átgondolt Webáruház</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Fejléc és Navigáció */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .cart-btn {
+      position: relative;
+      background: none;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cart-badge {
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    /* Fő tartalom */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Termékrács */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 180px;
+      background-color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .product-info {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-category {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .product-title {
+      font-size: 1.1rem;
+      margin: 0.25rem 0 0.5rem;
+    }
+
+    .product-price {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-top: auto;
+      padding-top: 0.5rem;
+    }
+
+    .add-to-cart-btn {
+      margin-top: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .add-to-cart-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Kosár Oldalsáv */
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 100%;
+      max-width: 400px;
+      height: 100vh;
+      background: var(--card-bg);
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+      transition: right 0.3s ease;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+    }
+
+    .cart-drawer.open {
+      right: 0;
+    }
+
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .cart-items {
+      flex-grow: 1;
+      overflow-y: auto;
+      margin: 1rem 0;
+      list-style: none;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cart-item-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .cart-item-price {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .cart-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      z-index: 25;
+    }
+
+    .backdrop.active {
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+  </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Szeretem apát ❤️</h1>
+
+  <!-- Fejléc -->
+  <header>
+    <div class="nav-container">
+      <a href="#" class="logo">NordicHome</a>
+      <button class="cart-btn" id="open-cart-btn" aria-label="Kosár megnyitása">
+        🛒 Kosár <span class="cart-badge" id="cart-count">0</span>
+      </button>
     </div>
+  </header>
+
+  <!-- Fő tartalom -->
+  <main class="container">
+    <section class="controls" aria-label="Termékszűrők">
+      <button class="filter-btn active" data-category="all">Összes</button>
+      <button class="filter-btn" data-category="furniture">Bútor</button>
+      <button class="filter-btn" data-category="lighting">Világítás</button>
+      <button class="filter-btn" data-category="accessories">Kiegészítők</button>
+    </section>
+
+    <!-- Terméklista -->
+    <section class="product-grid" id="product-grid" aria-label="Termékek"></section>
+  </main>
+
+  <!-- Kosár és háttér panel -->
+  <div class="backdrop" id="backdrop"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Bevásárlókosár">
+    <div class="cart-header">
+      <h2>Kosarad</h2>
+      <button class="remove-btn" id="close-cart-btn" style="font-size: 1.2rem;">✕</button>
+    </div>
+    <ul class="cart-items" id="cart-items">
+      <!-- Tételek dinamikusan -->
+    </ul>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Összesen:</span>
+        <span id="cart-total-price">0 Ft</span>
+      </div>
+      <button class="checkout-btn" onclick="checkout()">Fizetés és Megrendelés</button>
+    </div>
+  </aside>
+
+  <!-- Lábléc -->
+  <footer>
+    <p>&copy; 2026 NordicHome Webáruház. Minden jog fenntartva.</p>
+  </footer>
+
+  <!-- Webshop Logika -->
+  <script>
+    // Termékadatbázis modell
+    const products = [
+      { id: 1, name: "Minimalista Íróasztal", category: "furniture", price: 45990 },
+      { id: 2, name: "Ergonomikus Szék", category: "furniture", price: 62500 },
+      { id: 3, name: "Éjjeli LED Lámpa", category: "lighting", price: 12900 },
+      { id: 4, name: "Állólámpa Matt Fekete", category: "lighting", price: 28400 },
+      { id: 5, name: "Kerámia Kaspó Szett", category: "accessories", price: 8900 },
+      { id: 6, name: "Falitükör Fa Kerettel", category: "accessories", price: 17900 }
+    ];
+
+    let cart = [];
+
+    // DOM Elemek
+    const productGrid = document.getElementById("product-grid");
+    const cartDrawer = document.getElementById("cart-drawer");
+    const backdrop = document.getElementById("backdrop");
+    const cartItemsContainer = document.getElementById("cart-items");
+    const cartCountEl = document.getElementById("cart-count");
+    const cartTotalEl = document.getElementById("cart-total-price");
+    const filterBtns = document.querySelectorAll(".filter-btn");
+
+    // Termékek renderelése
+    function renderProducts(filter = "all") {
+      productGrid.innerHTML = "";
+      const filtered = filter === "all" ? products : products.filter(p => p.category === filter);
+
+      filtered.forEach(p => {
+        const card = document.createElement("article");
+        card.className = "product-card";
+        card.innerHTML = `
+          <div class="product-img">Kép: ${p.name}</div>
+          <div class="product-info">
+            <span class="product-category">${p.category}</span>
+            <h3 class="product-title">${p.name}</h3>
+            <div class="product-price">${p.price.toLocaleString("hu-HU")} Ft</div>
+            <button class="add-to-cart-btn" onclick="addToCart(${p.id})">Kosárba teszem</button>
+          </div>
+        `;
+        productGrid.appendChild(card);
+      });
+    }
+
+    // Szűrés kezelése
+    filterBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        filterBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderProducts(btn.dataset.category);
+      });
+    });
+
+    // Kosár műveletek
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      const existing = cart.find(item => item.id === productId);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ ...product, qty: 1 });
+      }
+      updateCartUI();
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.id !== productId);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      // Számláló és tételek listázása
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      cartCountEl.textContent = totalCount;
+      cartTotalEl.textContent = `${totalPrice.toLocaleString("hu-HU")} Ft`;
+
+      cartItemsContainer.innerHTML = cart.length === 0 
+        ? "<p style='color: var(--text-muted); text-align: center; margin-top: 2rem;'>A kosár üres.</p>" 
+        : "";
+
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "cart-item";
+        li.innerHTML = `
+          <div>
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">${item.qty} db x ${item.price.toLocaleString("hu-HU")} Ft</div>
+          </div>
+          <button class="remove-btn" onclick="removeFromCart(${item.id})">Törlés</button>
+        `;
+        cartItemsContainer.appendChild(li);
+      });
+    }
+
+    // Modal kezelés
+    function toggleCart(open) {
+      cartDrawer.classList.toggle("open", open);
+      backdrop.classList.toggle("active", open);
+    }
+
+    document.getElementById("open-cart-btn").addEventListener("click", () => toggleCart(true));
+    document.getElementById("close-cart-btn").addEventListener("click", () => toggleCart(false));
+    backdrop.addEventListener("click", () => toggleCart(false));
+
+    function checkout() {
+      if (cart.length === 0) {
+        alert("A kosarad üres!");
+        return;
+      }
+      alert("Köszönjük a rendelést! (Prototípus checkout)");
+      cart = [];
+      updateCartUI();
+      toggleCart(false);
+    }
+
+    // Kezdeti megjelenítés
+    renderProducts();
+    updateCartUI();
+  </script>
 </body>
 </html>
