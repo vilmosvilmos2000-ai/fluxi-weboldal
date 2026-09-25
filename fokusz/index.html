@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Napi Fókusz | Produktivitási Dashboard</title>
+    <!-- Tailwind CSS a gyors és reszponzív modern dizájnért -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome az ikonokhoz -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Tailwind slate-900 */
+            color: #f8fafc; /* Tailwind slate-50 */
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism hatás */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Háttér animált foltok */
+        .bg-shape {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 20s infinite alternate;
+        }
+
+        .shape-1 {
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(56,189,248,0.4) 0%, rgba(15,23,42,0) 70%);
+        }
+
+        .shape-2 {
+            bottom: -10%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, rgba(15,23,42,0) 70%);
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 10%) scale(1.1); }
+            100% { transform: translate(-5%, -5%) scale(0.9); }
+        }
+
+        /* Egyedi görgetősáv a feladatlistának */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Checkbox stílusok */
+        .todo-checkbox:checked + div {
+            text-decoration: line-through;
+            color: #94a3b8; /* slate-400 */
+        }
+        
+        .todo-item {
+            transition: all 0.3s ease;
+        }
+        
+        .todo-item:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8 relative">
+
+    <!-- Háttér animációk -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <!-- Fő konténer -->
+    <main class="glass w-full max-w-5xl rounded-3xl p-6 sm:p-10 z-10 flex flex-col gap-8">
+        
+        <!-- Fejléc: Óra és Dátum -->
+        <header class="flex flex-col sm:flex-row justify-between items-center pb-6 border-b border-white/10 gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+                    Napi Fókusz
+                </h1>
+                <p class="text-slate-400 text-sm sm:text-base mt-1" id="greetingMessage">Készen állsz a mai napra?</p>
+            </div>
+            <div class="text-center sm:text-right">
+                <div class="text-4xl sm:text-5xl font-light tracking-wider font-mono" id="liveClock">00:00</div>
+                <div class="text-slate-400 text-sm sm:text-base mt-1 font-medium tracking-wide uppercase" id="liveDate">Dátum betöltése...</div>
+            </div>
+        </header>
+
+        <!-- Tartalom oszlopok -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            
+            <!-- BAL OLDAL: Pomodoro Időzítő -->
+            <section class="flex flex-col gap-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch text-sky-400"></i> Fókusz Időzítő
+                    </h2>
+                    <!-- Mód váltó badge -->
+                    <span id="timerModeBadge" class="px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                        Munka szakasz
+                    </span>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden">
+                    <!-- Progress bar háttere -->
+                    <div class="absolute top-0 left-0 w-full h-1 bg-slate-800">
+                        <div id="timerProgress" class="h-full bg-gradient-to-r from-sky-400 to-indigo-500 transition-all duration-1000 ease-linear" style="width: 100%;"></div>
+                    </div>
+
+                    <!-- Kijelző -->
+                    <div id="timeDisplay" class="text-7xl sm:text-8xl font-light font-mono tracking-tighter my-6 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-colors duration-300">
+                        25:00
+                    </div>
+
+                    <!-- Gombok -->
+                    <div class="flex gap-4 w-full justify-center mt-4">
+                        <button id="btnStartPause" class="flex-1 max-w-[140px] py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-semibold transition-all shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)] active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i> Indítás
+                        </button>
+                        <button id="btnReset" class="py-3 px-5 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-white font-semibold transition-all border border-slate-600 active:scale-95 flex items-center justify-center">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mód választó gombok -->
+                <div class="flex gap-2">
+                    <button id="modeWork" class="flex-1 py-2 text-sm font-medium rounded-lg bg-white/10 text-white transition-colors border border-white/5 hover:bg-white/20 active-mode ring-1 ring-sky-400">
+                        25p Munka
+                    </button>
+                    <button id="modeBreak" class="flex-1 py-2 text-sm font-medium rounded-lg bg-transparent text-slate-400 transition-colors border border-transparent hover:bg-white/5">
+                        5p Szünet
+                    </button>
+                </div>
+            </section>
+
+            <!-- JOBB OLDAL: Teendők -->
+            <section class="flex flex-col gap-4 h-[500px]">
+                <h2 class="text-xl font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-purple-400"></i> Mai Teendők
+                </h2>
+                
+                <!-- Hozzáadás input -->
+                <form id="todoForm" class="flex gap-2">
+                    <input type="text" id="todoInput" placeholder="Új feladat hozzáadása..." class="flex-1 bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all">
+                    <button type="submit" class="bg-purple-500 hover:bg-purple-400 text-white px-5 py-3 rounded-xl transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] active:scale-95">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </form>
+
+                <!-- Feladatok listája -->
+                <div class="glass-panel flex-1 rounded-2xl p-2 overflow-y-auto" id="todoContainer">
+                    <ul id="todoList" class="flex flex-col gap-1">
+                        <!-- A feladatok ide generálódnak JS által -->
+                    </ul>
+                    
+                    <!-- Üres állapoti üzenet -->
+                    <div id="emptyState" class="h-full flex flex-col items-center justify-center text-slate-500 opacity-50 py-10 hidden">
+                        <i class="fa-regular fa-circle-check text-4xl mb-3"></i>
+                        <p>Nincsenek feladatok.</p>
+                        <p class="text-sm">Pihenhetsz vagy adj hozzá újat!</p>
+                    </div>
+                </div>
+                
+                <!-- Statisztika / Törlés gomb -->
+                <div class="flex justify-between items-center px-2 text-xs text-slate-400">
+                    <span id="taskStats">0 / 0 kész</span>
+                    <button id="clearCompletedBtn" class="hover:text-red-400 transition-colors hidden">Készek törlése</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // --- 1. ÓRA ÉS DÁTUM LOGIKA ---
+        function updateClock() {
+            const now = new Date();
+            
+            // Óra formázása (HH:MM)
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('liveClock').textContent = `${hours}:${minutes}`;
+            
+            // Dátum formázása (Év. Hónap Nap, Nap neve)
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            const dateStr = now.toLocaleDateString('hu-HU', options);
+            document.getElementById('liveDate').textContent = dateStr;
+
+            // Üdvözlés napszak szerint
+            const greeting = document.getElementById('greetingMessage');
+            const hour = now.getHours();
+            if (hour >= 5 && hour < 12) greeting.textContent = "Jó reggelt, legyen produktív napod!";
+            else if (hour >= 12 && hour < 18) greeting.textContent = "Jó napot, tartsd a fókuszt!";
+            else greeting.textContent = "Jó estét, lassan ideje pihenni.";
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // Azonnali meghívás
+
+        // --- 2. POMODORO IDŐZÍTŐ LOGIKA ---
+        let timer;
+        let isRunning = false;
+        let isWorkMode = true;
+        
+        const WORK_TIME = 25 * 60; // 25 perc másodpercben
+        const BREAK_TIME = 5 * 60; // 5 perc másodpercben
+        let timeLeft = WORK_TIME;
+        let totalTime = WORK_TIME;
+
+        const timeDisplay = document.getElementById('timeDisplay');
+        const progressBar = document.getElementById('timerProgress');
+        const btnStartPause = document.getElementById('btnStartPause');
+        const btnReset = document.getElementById('btnReset');
+        const modeWorkBtn = document.getElementById('modeWork');
+        const modeBreakBtn = document.getElementById('modeBreak');
+        const modeBadge = document.getElementById('timerModeBadge');
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function updateTimerUI() {
+            timeDisplay.textContent = formatTime(timeLeft);
+            const progressPercent = (timeLeft / totalTime) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            
+            // Címsor frissítése
+            document.title = `${formatTime(timeLeft)} | ${isWorkMode ? 'Munka' : 'Szünet'} | Napi Fókusz`;
+        }
+
+        function setMode(workMode) {
+            if (isRunning) toggleTimer(); // Állítsuk meg, ha váltunk
+            isWorkMode = workMode;
+            timeLeft = isWorkMode ? WORK_TIME : BREAK_TIME;
+            totalTime = timeLeft;
+            
+            // Gombok stílusának frissítése
+            if (isWorkMode) {
+                modeWorkBtn.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-white/10 text-white transition-colors border border-white/5 ring-1 ring-sky-400";
+                modeBreakBtn.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-transparent text-slate-400 transition-colors border border-transparent hover:bg-white/5";
+                modeBadge.textContent = "Munka szakasz";
+                modeBadge.className = "px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30";
+                timeDisplay.classList.remove('text-emerald-400');
+                progressBar.classList.replace('from-emerald-400', 'from-sky-400');
+                progressBar.classList.replace('to-teal-500', 'to-indigo-500');
+            } else {
+                modeBreakBtn.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-white/10 text-white transition-colors border border-white/5 ring-1 ring-emerald-400";
+                modeWorkBtn.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-transparent text-slate-400 transition-colors border border-transparent hover:bg-white/5";
+                modeBadge.textContent = "Szünet szakasz";
+                modeBadge.className = "px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                timeDisplay.classList.add('text-emerald-400');
+                progressBar.classList.replace('from-sky-400', 'from-emerald-400');
+                progressBar.classList.replace('to-indigo-500', 'to-teal-500');
+            }
+            updateTimerUI();
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                clearInterval(timer);
+                btnStartPause.innerHTML = '<i class="fa-solid fa-play"></i> Indítás';
+                btnStartPause.classList.remove('bg-amber-500', 'hover:bg-amber-400', 'shadow-[0_0_20px_rgba(245,158,11,0.3)]');
+                btnStartPause.classList.add('bg-sky-500', 'hover:bg-sky-400', 'shadow-[0_0_20px_rgba(14,165,233,0.3)]');
+            } else {
+                if (timeLeft === 0) {
+                    // Ha lejárt, váltsunk módot és indítsuk újra
+                    setMode(!isWorkMode);
+                }
+                timer = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerUI();
+                    } else {
+                        clearInterval(timer);
+                        isRunning = false;
+                        btnStartPause.innerHTML = '<i class="fa-solid fa-play"></i> Indítás';
+                        // Értesítés szerű üzenet
+                        const msg = document.createElement('div');
+                        msg.className = "fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-4 rounded-xl shadow-2xl border border-white/20 z-50 animate-bounce";
+                        msg.innerHTML = `<i class="fa-solid fa-bell text-amber-400 mr-2"></i> ${isWorkMode ? 'Lejárt a munkaidő! Tarts szünetet.' : 'Vége a szünetnek! Folytasd a munkát.'}`;
+                        document.body.appendChild(msg);
+                        setTimeout(() => msg.remove(), 6000);
+                        document.title = "⏰ Lejárt az idő! | Napi Fókusz";
+                    }
+                }, 1000);
+                btnStartPause.innerHTML = '<i class="fa-solid fa-pause"></i> Szünet';
+                btnStartPause.classList.remove('bg-sky-500', 'hover:bg-sky-400', 'shadow-[0_0_20px_rgba(14,165,233,0.3)]');
+                btnStartPause.classList.add('bg-amber-500', 'hover:bg-amber-400', 'shadow-[0_0_20px_rgba(245,158,11,0.3)]');
+            }
+            isRunning = !isRunning;
+        }
+
+        btnStartPause.addEventListener('click', toggleTimer);
+        btnReset.addEventListener('click', () => setMode(isWorkMode));
+        modeWorkBtn.addEventListener('click', () => setMode(true));
+        modeBreakBtn.addEventListener('click', () => setMode(false));
+
+        // --- 3. TO-DO LISTA LOGIKA (LocalStorage-al) ---
+        let todos = JSON.parse(localStorage.getItem('focusTodos')) || [];
+        
+        const todoForm = document.getElementById('todoForm');
+        const todoInput = document.getElementById('todoInput');
+        const todoList = document.getElementById('todoList');
+        const emptyState = document.getElementById('emptyState');
+        const taskStats = document.getElementById('taskStats');
+        const clearCompletedBtn = document.getElementById('clearCompletedBtn');
+
+        function saveTodos() {
+            localStorage.setItem('focusTodos', JSON.stringify(todos));
+            renderTodos();
+        }
+
+        function renderTodos() {
+            todoList.innerHTML = '';
+            let completedCount = 0;
+
+            if (todos.length === 0) {
+                emptyState.classList.remove('hidden');
+                clearCompletedBtn.classList.add('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                
+                todos.forEach((todo, index) => {
+                    if (todo.completed) completedCount++;
+                    
+                    const li = document.createElement('li');
+                    li.className = "todo-item flex items-center justify-between p-3 rounded-xl border border-white/5 cursor-pointer";
+                    // Beállítjuk a háttérszínt attól függően, hogy kész van-e
+                    li.style.backgroundColor = todo.completed ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)";
+                    
+                    li.innerHTML = `
+                        <label class="flex items-center gap-3 cursor-pointer flex-1 overflow-hidden">
+                            <input type="checkbox" class="todo-checkbox hidden" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${index})">
+                            <div class="w-5 h-5 rounded border ${todo.completed ? 'bg-purple-500 border-purple-500 text-white flex items-center justify-center' : 'border-slate-500'} transition-all flex-shrink-0">
+                                ${todo.completed ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                            </div>
+                            <span class="truncate ${todo.completed ? 'text-slate-400 line-through' : 'text-slate-200'} select-none transition-all">${todo.text}</span>
+                        </label>
+                        <button onclick="deleteTodo(${index})" class="text-slate-500 hover:text-red-400 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 ml-2">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    `;
+                    todoList.appendChild(li);
+                });
+
+                if (completedCount > 0) {
+                    clearCompletedBtn.classList.remove('hidden');
+                } else {
+                    clearCompletedBtn.classList.add('hidden');
+                }
+            }
+
+            taskStats.textContent = `${completedCount} / ${todos.length} kész`;
+        }
+
+        todoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = todoInput.value.trim();
+            if (text !== '') {
+                todos.unshift({ text: text, completed: false }); // Az elejére szúrjuk be
+                todoInput.value = '';
+                saveTodos();
+            }
+        });
+
+        window.toggleTodo = function(index) {
+            todos[index].completed = !todos[index].completed;
+            saveTodos();
+        }
+
+        window.deleteTodo = function(index) {
+            todos.splice(index, 1);
+            saveTodos();
+        }
+
+        clearCompletedBtn.addEventListener('click', () => {
+            todos = todos.filter(todo => !todo.completed);
+            saveTodos();
+        });
+
+        // Inicializáló render
+        renderTodos();
+        updateTimerUI();
+
+    </script>
+</body>
+</html>
