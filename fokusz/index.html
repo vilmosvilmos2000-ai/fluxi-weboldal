@@ -3,421 +3,839 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Napi Fókusz | Produktivitási Dashboard</title>
-    <!-- Tailwind CSS a gyors és reszponzív modern dizájnért -->
+    <title>Napi Fókusz | Produktivitás</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts (Inter) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome az ikonokhoz -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        :root {
+            --sky: #38bdf8;
+            --purple: #a855f7;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+        }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* Tailwind slate-900 */
-            color: #f8fafc; /* Tailwind slate-50 */
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0b1120;
+            color: #f1f5f9;
+            min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Glassmorphism hatás */
+        /* Background orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.45;
+            pointer-events: none;
+            z-index: 0;
+            animation: drift 22s ease-in-out infinite alternate;
+        }
+        .orb-1 {
+            width: 55vw; height: 55vw;
+            top: -15%; left: -15%;
+            background: radial-gradient(circle, rgba(56,189,248,0.5) 0%, transparent 70%);
+        }
+        .orb-2 {
+            width: 50vw; height: 50vw;
+            bottom: -20%; right: -10%;
+            background: radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%);
+            animation-delay: -8s;
+        }
+        .orb-3 {
+            width: 30vw; height: 30vw;
+            top: 40%; left: 50%;
+            background: radial-gradient(circle, rgba(52,211,153,0.25) 0%, transparent 70%);
+            animation-delay: -14s;
+        }
+
+        @keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            50%  { transform: translate(4%, 6%) scale(1.08); }
+            100% { transform: translate(-3%, -4%) scale(0.95); }
+        }
+
+        /* Glass */
         .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .glass-soft {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .glass-panel {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+        /* Views */
+        .view {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+            transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                        visibility 0.55s;
+        }
+        .view.hidden-view {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.97) translateY(12px);
+            pointer-events: none;
         }
 
-        /* Háttér animált foltok */
-        .bg-shape {
+        /* Welcome */
+        #welcomeView {
+            flex-direction: column;
+            text-align: center;
+            gap: 1.5rem;
+        }
+        .welcome-card {
+            max-width: 480px;
+            width: 100%;
+            padding: 2.5rem 2rem;
+            border-radius: 2rem;
+            animation: welcomeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes welcomeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .welcome-emoji {
+            font-size: 3.5rem;
+            margin-bottom: 0.75rem;
+            display: inline-block;
+            animation: bounceSoft 2.5s ease-in-out infinite;
+        }
+        @keyframes bounceSoft {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-8px); }
+        }
+
+        /* Dashboard */
+        #dashboardView {
+            align-items: flex-start;
+            overflow-y: auto;
+            padding-top: 1.5rem;
+            padding-bottom: 2rem;
+        }
+        .dashboard-inner {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Circular progress */
+        .timer-ring {
+            position: relative;
+            width: 220px;
+            height: 220px;
+        }
+        .timer-ring svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+        .timer-ring circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+        .ring-bg { stroke: rgba(255,255,255,0.06); }
+        .ring-progress {
+            stroke: url(#gradWork);
+            stroke-dasharray: 628;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear, stroke 0.4s;
+        }
+        .timer-center {
             position: absolute;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.6;
-            animation: float 20s infinite alternate;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .shape-1 {
-            top: -10%;
-            left: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, rgba(56,189,248,0.4) 0%, rgba(15,23,42,0) 70%);
-        }
-
-        .shape-2 {
-            bottom: -10%;
-            right: -10%;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, rgba(15,23,42,0) 70%);
-            animation-delay: -5s;
-        }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(5%, 10%) scale(1.1); }
-            100% { transform: translate(-5%, -5%) scale(0.9); }
-        }
-
-        /* Egyedi görgetősáv a feladatlistának */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        /* Checkbox stílusok */
-        .todo-checkbox:checked + div {
-            text-decoration: line-through;
-            color: #94a3b8; /* slate-400 */
-        }
-        
+        /* Todo item */
         .todo-item {
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
         }
-        
         .todo-item:hover {
-            background: rgba(255,255,255,0.08);
-            transform: translateX(4px);
+            background: rgba(255,255,255,0.07) !important;
+            transform: translateX(3px);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            box-shadow: 0 4px 20px rgba(14,165,233,0.35);
+            transition: all 0.25s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px rgba(14,165,233,0.45);
+        }
+        .btn-primary:active { transform: scale(0.97); }
+
+        .mode-btn.active {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: 0 0 0 1px currentColor;
+        }
+
+        /* Quote */
+        .quote {
+            font-style: italic;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Stats pills */
+        .stat-pill {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 9999px;
+            padding: 0.35rem 0.85rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Notification toast */
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+            background: #1e293b;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: toastIn 0.4s cubic-bezier(0.22,1,0.36,1);
+            max-width: 320px;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Fade helpers */
+        .fade-in {
+            animation: fadeIn 0.5s ease both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            .timer-ring { width: 180px; height: 180px; }
+            .welcome-card { padding: 2rem 1.25rem; }
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 sm:p-8 relative">
+<body>
 
-    <!-- Háttér animációk -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
+    <!-- Background orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
-    <!-- Fő konténer -->
-    <main class="glass w-full max-w-5xl rounded-3xl p-6 sm:p-10 z-10 flex flex-col gap-8">
-        
-        <!-- Fejléc: Óra és Dátum -->
-        <header class="flex flex-col sm:flex-row justify-between items-center pb-6 border-b border-white/10 gap-4">
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
-                    Napi Fókusz
-                </h1>
-                <p class="text-slate-400 text-sm sm:text-base mt-1" id="greetingMessage">Készen állsz a mai napra?</p>
-            </div>
-            <div class="text-center sm:text-right">
-                <div class="text-4xl sm:text-5xl font-light tracking-wider font-mono" id="liveClock">00:00</div>
-                <div class="text-slate-400 text-sm sm:text-base mt-1 font-medium tracking-wide uppercase" id="liveDate">Dátum betöltése...</div>
-            </div>
-        </header>
+    <!-- ========== ÜDVÖZLŐ KÉPERNYŐ ========== -->
+    <div id="welcomeView" class="view">
+        <div class="welcome-card glass">
+            <div class="welcome-emoji" id="welcomeEmoji">☀️</div>
+            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2" id="welcomeTitle">
+                Jó reggelt!
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base mb-1" id="welcomeDate">—</p>
+            <p class="quote mt-4 mb-6 px-2" id="welcomeQuote">
+                „A fókusz nem arról szól, hogy mit csinálsz, hanem arról, hogy mit nem."
+            </p>
 
-        <!-- Tartalom oszlopok -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            
-            <!-- BAL OLDAL: Pomodoro Időzítő -->
-            <section class="flex flex-col gap-6">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-stopwatch text-sky-400"></i> Fókusz Időzítő
-                    </h2>
-                    <!-- Mód váltó badge -->
-                    <span id="timerModeBadge" class="px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                        Munka szakasz
-                    </span>
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <div class="stat-pill">
+                    <i class="fa-solid fa-fire text-amber-400"></i>
+                    <span id="streakDisplay">0 nap</span>
                 </div>
+                <div class="stat-pill">
+                    <i class="fa-solid fa-clock text-sky-400"></i>
+                    <span id="todayPomodoros">0 fókusz</span>
+                </div>
+            </div>
 
-                <div class="glass-panel rounded-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden">
-                    <!-- Progress bar háttere -->
-                    <div class="absolute top-0 left-0 w-full h-1 bg-slate-800">
-                        <div id="timerProgress" class="h-full bg-gradient-to-r from-sky-400 to-indigo-500 transition-all duration-1000 ease-linear" style="width: 100%;"></div>
+            <button id="startBtn" class="btn-primary w-full py-3.5 px-6 rounded-2xl text-white font-semibold text-base flex items-center justify-center gap-2">
+                <i class="fa-solid fa-play"></i>
+                Kezdjük a fókuszt
+            </button>
+
+            <p class="text-slate-500 text-xs mt-5">
+                Space = indítás / szünet a dashboardon
+            </p>
+        </div>
+    </div>
+
+    <!-- ========== DASHBOARD ========== -->
+    <div id="dashboardView" class="view hidden-view">
+        <div class="dashboard-inner">
+
+            <!-- Header -->
+            <header class="glass rounded-3xl p-5 sm:p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Napi Fókusz</h1>
+                        <button id="backToWelcome" class="text-slate-500 hover:text-white transition-colors text-sm" title="Vissza az üdvözléshez">
+                            <i class="fa-solid fa-house"></i>
+                        </button>
+                    </div>
+                    <p class="text-slate-400 text-sm mt-1" id="dashGreeting">Tartsd a fókuszt!</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-3xl sm:text-4xl font-light font-mono tracking-wider" id="liveClock">00:00</div>
+                        <div class="text-slate-500 text-xs uppercase tracking-wider mt-0.5" id="liveDate">—</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+                <!-- LEFT: Timer (3 cols) -->
+                <section class="lg:col-span-3 glass rounded-3xl p-6 sm:p-8 flex flex-col items-center">
+                    <div class="flex items-center justify-between w-full mb-6">
+                        <h2 class="text-lg font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-stopwatch text-sky-400"></i>
+                            Fókusz időzítő
+                        </h2>
+                        <span id="modeBadge" class="px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                            Munka
+                        </span>
                     </div>
 
-                    <!-- Kijelző -->
-                    <div id="timeDisplay" class="text-7xl sm:text-8xl font-light font-mono tracking-tighter my-6 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-colors duration-300">
-                        25:00
+                    <!-- Circular timer -->
+                    <div class="timer-ring mb-6">
+                        <svg viewBox="0 0 220 220">
+                            <defs>
+                                <linearGradient id="gradWork" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#38bdf8"/>
+                                    <stop offset="100%" stop-color="#818cf8"/>
+                                </linearGradient>
+                                <linearGradient id="gradBreak" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#34d399"/>
+                                    <stop offset="100%" stop-color="#2dd4bf"/>
+                                </linearGradient>
+                                <linearGradient id="gradLong" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#a78bfa"/>
+                                    <stop offset="100%" stop-color="#c084fc"/>
+                                </linearGradient>
+                            </defs>
+                            <circle class="ring-bg" cx="110" cy="110" r="100"/>
+                            <circle id="ringProgress" class="ring-progress" cx="110" cy="110" r="100"/>
+                        </svg>
+                        <div class="timer-center">
+                            <div id="timeDisplay" class="text-5xl sm:text-6xl font-light font-mono tracking-tighter">25:00</div>
+                            <div id="sessionLabel" class="text-slate-500 text-xs mt-1">1. fókusz</div>
+                        </div>
                     </div>
 
-                    <!-- Gombok -->
-                    <div class="flex gap-4 w-full justify-center mt-4">
-                        <button id="btnStartPause" class="flex-1 max-w-[140px] py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-semibold transition-all shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)] active:scale-95 flex items-center justify-center gap-2">
+                    <!-- Controls -->
+                    <div class="flex gap-3 w-full max-w-xs justify-center mb-6">
+                        <button id="btnStartPause" class="btn-primary flex-1 py-3 rounded-xl text-white font-semibold flex items-center justify-center gap-2">
                             <i class="fa-solid fa-play"></i> Indítás
                         </button>
-                        <button id="btnReset" class="py-3 px-5 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-white font-semibold transition-all border border-slate-600 active:scale-95 flex items-center justify-center">
+                        <button id="btnReset" class="py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all active:scale-95">
                             <i class="fa-solid fa-rotate-right"></i>
                         </button>
+                        <button id="btnSkip" class="py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all active:scale-95" title="Átugrás">
+                            <i class="fa-solid fa-forward"></i>
+                        </button>
                     </div>
-                </div>
 
-                <!-- Mód választó gombok -->
-                <div class="flex gap-2">
-                    <button id="modeWork" class="flex-1 py-2 text-sm font-medium rounded-lg bg-white/10 text-white transition-colors border border-white/5 hover:bg-white/20 active-mode ring-1 ring-sky-400">
-                        25p Munka
-                    </button>
-                    <button id="modeBreak" class="flex-1 py-2 text-sm font-medium rounded-lg bg-transparent text-slate-400 transition-colors border border-transparent hover:bg-white/5">
-                        5p Szünet
-                    </button>
-                </div>
-            </section>
-
-            <!-- JOBB OLDAL: Teendők -->
-            <section class="flex flex-col gap-4 h-[500px]">
-                <h2 class="text-xl font-semibold flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-purple-400"></i> Mai Teendők
-                </h2>
-                
-                <!-- Hozzáadás input -->
-                <form id="todoForm" class="flex gap-2">
-                    <input type="text" id="todoInput" placeholder="Új feladat hozzáadása..." class="flex-1 bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all">
-                    <button type="submit" class="bg-purple-500 hover:bg-purple-400 text-white px-5 py-3 rounded-xl transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] active:scale-95">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </form>
-
-                <!-- Feladatok listája -->
-                <div class="glass-panel flex-1 rounded-2xl p-2 overflow-y-auto" id="todoContainer">
-                    <ul id="todoList" class="flex flex-col gap-1">
-                        <!-- A feladatok ide generálódnak JS által -->
-                    </ul>
-                    
-                    <!-- Üres állapoti üzenet -->
-                    <div id="emptyState" class="h-full flex flex-col items-center justify-center text-slate-500 opacity-50 py-10 hidden">
-                        <i class="fa-regular fa-circle-check text-4xl mb-3"></i>
-                        <p>Nincsenek feladatok.</p>
-                        <p class="text-sm">Pihenhetsz vagy adj hozzá újat!</p>
+                    <!-- Mode selector -->
+                    <div class="flex gap-2 w-full max-w-md">
+                        <button data-mode="work" class="mode-btn active flex-1 py-2.5 text-sm font-medium rounded-xl bg-white/5 text-white border border-white/10 transition-all">
+                            25p Munka
+                        </button>
+                        <button data-mode="break" class="mode-btn flex-1 py-2.5 text-sm font-medium rounded-xl text-slate-400 border border-transparent hover:bg-white/5 transition-all">
+                            5p Szünet
+                        </button>
+                        <button data-mode="long" class="mode-btn flex-1 py-2.5 text-sm font-medium rounded-xl text-slate-400 border border-transparent hover:bg-white/5 transition-all">
+                            15p Hosszú
+                        </button>
                     </div>
-                </div>
-                
-                <!-- Statisztika / Törlés gomb -->
-                <div class="flex justify-between items-center px-2 text-xs text-slate-400">
-                    <span id="taskStats">0 / 0 kész</span>
-                    <button id="clearCompletedBtn" class="hover:text-red-400 transition-colors hidden">Készek törlése</button>
-                </div>
-            </section>
 
+                    <!-- Session stats -->
+                    <div class="flex gap-3 mt-6 flex-wrap justify-center">
+                        <div class="stat-pill">
+                            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                            <span id="completedToday">0 kész ma</span>
+                        </div>
+                        <div class="stat-pill">
+                            <i class="fa-solid fa-hourglass-half text-sky-400"></i>
+                            <span id="totalFocusTime">0 perc fókusz</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RIGHT: Todos (2 cols) -->
+                <section class="lg:col-span-2 glass rounded-3xl p-5 sm:p-6 flex flex-col h-[560px] lg:h-auto">
+                    <h2 class="text-lg font-semibold flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-list-check text-purple-400"></i>
+                        Mai teendők
+                    </h2>
+
+                    <form id="todoForm" class="flex gap-2 mb-4">
+                        <input type="text" id="todoInput" placeholder="Mit kell megcsinálni?" 
+                               class="flex-1 bg-slate-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/40 transition-all"
+                               maxlength="120" autocomplete="off">
+                        <button type="submit" class="bg-purple-500 hover:bg-purple-400 text-white px-4 py-2.5 rounded-xl transition-all shadow-[0_0_18px_rgba(168,85,247,0.3)] active:scale-95">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </form>
+
+                    <div class="glass-soft flex-1 rounded-2xl p-2 overflow-y-auto" id="todoContainer">
+                        <ul id="todoList" class="flex flex-col gap-1"></ul>
+                        <div id="emptyState" class="h-full flex flex-col items-center justify-center text-slate-500 py-12 hidden">
+                            <i class="fa-regular fa-circle-check text-4xl mb-3 opacity-40"></i>
+                            <p class="font-medium">Nincs még feladat</p>
+                            <p class="text-sm opacity-70 mt-1">Írd be az elsőt fent!</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-3 px-1 text-xs text-slate-500">
+                        <span id="taskStats">0 / 0 kész</span>
+                        <button id="clearCompletedBtn" class="hover:text-red-400 transition-colors hidden">
+                            Készek törlése
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer tip -->
+            <p class="text-center text-slate-600 text-xs mt-8">
+                Tip: a Space billentyű indítja / megállítja az időzítőt
+            </p>
         </div>
-    </main>
+    </div>
 
     <script>
-        // --- 1. ÓRA ÉS DÁTUM LOGIKA ---
+        // ========== ADATOK & HELPEREK ==========
+        const QUOTES = [
+            "A fókusz nem arról szól, hogy mit csinálsz, hanem arról, hogy mit nem.",
+            "Egy dologra koncentrálj egyszerre. A többi várhat.",
+            "A kis lépések is előre visznek, ha minden nap megteszed őket.",
+            "Nem kell tökéletesnek lenni. Elég, ha elkezded.",
+            "A legjobb idő a kezdésre mindig most van.",
+            "A produktivitás a prioritásokból születik, nem a listákból.",
+            "25 perc tiszta figyelem többet ér, mint 2 óra félfigyelem.",
+            "Pihenj tudatosan, hogy utána újra erővel dolgozhass."
+        ];
+
+        const WORK = 25 * 60;
+        const SHORT = 5 * 60;
+        const LONG = 15 * 60;
+
+        let mode = 'work';          // work | break | long
+        let timeLeft = WORK;
+        let totalTime = WORK;
+        let isRunning = false;
+        let timer = null;
+        let sessionCount = 1;       // aktuális fókusz sorszám
+        let completedToday = 0;
+        let totalFocusMinutes = 0;
+
+        // localStorage kulcsok
+        const KEYS = {
+            todos: 'nf_todos',
+            stats: 'nf_stats',
+            lastDate: 'nf_lastDate'
+        };
+
+        function todayStr() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function loadStats() {
+            const raw = localStorage.getItem(KEYS.stats);
+            const data = raw ? JSON.parse(raw) : { date: todayStr(), completed: 0, minutes: 0, streak: 0, lastActive: null };
+
+            if (data.date !== todayStr()) {
+                // új nap → reset napi számlálók, streak kezelés
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yStr = yesterday.toISOString().slice(0, 10);
+                if (data.lastActive === yStr || data.date === yStr) {
+                    data.streak = (data.streak || 0) + 1;
+                } else if (data.lastActive !== todayStr()) {
+                    data.streak = 1;
+                }
+                data.date = todayStr();
+                data.completed = 0;
+                data.minutes = 0;
+            }
+            return data;
+        }
+
+        function saveStats() {
+            const data = {
+                date: todayStr(),
+                completed: completedToday,
+                minutes: totalFocusMinutes,
+                streak: stats.streak || 1,
+                lastActive: todayStr()
+            };
+            localStorage.setItem(KEYS.stats, JSON.stringify(data));
+            stats = data;
+        }
+
+        let stats = loadStats();
+        completedToday = stats.completed || 0;
+        totalFocusMinutes = stats.minutes || 0;
+
+        // ========== ÜDVÖZLŐ KÉPERNYŐ ==========
+        function setupWelcome() {
+            const hour = new Date().getHours();
+            const emoji = document.getElementById('welcomeEmoji');
+            const title = document.getElementById('welcomeTitle');
+
+            if (hour >= 5 && hour < 12) {
+                emoji.textContent = '☀️';
+                title.textContent = 'Jó reggelt!';
+            } else if (hour >= 12 && hour < 18) {
+                emoji.textContent = '🌤️';
+                title.textContent = 'Jó napot!';
+            } else {
+                emoji.textContent = '🌙';
+                title.textContent = 'Jó estét!';
+            }
+
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('welcomeDate').textContent = new Date().toLocaleDateString('hu-HU', options);
+
+            document.getElementById('welcomeQuote').textContent = '„' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '"';
+
+            document.getElementById('streakDisplay').textContent = (stats.streak || 0) + ' nap sorozat';
+            document.getElementById('todayPomodoros').textContent = completedToday + ' fókusz ma';
+        }
+
+        function showDashboard() {
+            document.getElementById('welcomeView').classList.add('hidden-view');
+            document.getElementById('dashboardView').classList.remove('hidden-view');
+            updateClock();
+            updateStatsUI();
+        }
+
+        function showWelcome() {
+            document.getElementById('dashboardView').classList.add('hidden-view');
+            document.getElementById('welcomeView').classList.remove('hidden-view');
+            setupWelcome();
+        }
+
+        document.getElementById('startBtn').addEventListener('click', showDashboard);
+        document.getElementById('backToWelcome').addEventListener('click', showWelcome);
+
+        // ========== ÓRA ==========
         function updateClock() {
             const now = new Date();
-            
-            // Óra formázása (HH:MM)
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('liveClock').textContent = `${hours}:${minutes}`;
-            
-            // Dátum formázása (Év. Hónap Nap, Nap neve)
-            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-            const dateStr = now.toLocaleDateString('hu-HU', options);
-            document.getElementById('liveDate').textContent = dateStr;
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('liveClock').textContent = h + ':' + m;
 
-            // Üdvözlés napszak szerint
-            const greeting = document.getElementById('greetingMessage');
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('liveDate').textContent = now.toLocaleDateString('hu-HU', options);
+
             const hour = now.getHours();
-            if (hour >= 5 && hour < 12) greeting.textContent = "Jó reggelt, legyen produktív napod!";
-            else if (hour >= 12 && hour < 18) greeting.textContent = "Jó napot, tartsd a fókuszt!";
-            else greeting.textContent = "Jó estét, lassan ideje pihenni.";
+            const g = document.getElementById('dashGreeting');
+            if (hour >= 5 && hour < 12) g.textContent = 'Jó reggelt, tartsd a fókuszt!';
+            else if (hour >= 12 && hour < 18) g.textContent = 'Jó napot, menj tovább!';
+            else g.textContent = 'Jó estét, lassan pihenj is.';
         }
         setInterval(updateClock, 1000);
-        updateClock(); // Azonnali meghívás
 
-        // --- 2. POMODORO IDŐZÍTŐ LOGIKA ---
-        let timer;
-        let isRunning = false;
-        let isWorkMode = true;
-        
-        const WORK_TIME = 25 * 60; // 25 perc másodpercben
-        const BREAK_TIME = 5 * 60; // 5 perc másodpercben
-        let timeLeft = WORK_TIME;
-        let totalTime = WORK_TIME;
+        // ========== IDŐZÍTŐ ==========
+        const CIRC = 2 * Math.PI * 100; // 628
 
-        const timeDisplay = document.getElementById('timeDisplay');
-        const progressBar = document.getElementById('timerProgress');
-        const btnStartPause = document.getElementById('btnStartPause');
-        const btnReset = document.getElementById('btnReset');
-        const modeWorkBtn = document.getElementById('modeWork');
-        const modeBreakBtn = document.getElementById('modeBreak');
-        const modeBadge = document.getElementById('timerModeBadge');
-
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const sec = s % 60;
+            return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
         }
 
         function updateTimerUI() {
-            timeDisplay.textContent = formatTime(timeLeft);
-            const progressPercent = (timeLeft / totalTime) * 100;
-            progressBar.style.width = `${progressPercent}%`;
-            
-            // Címsor frissítése
-            document.title = `${formatTime(timeLeft)} | ${isWorkMode ? 'Munka' : 'Szünet'} | Napi Fókusz`;
+            document.getElementById('timeDisplay').textContent = formatTime(timeLeft);
+            const progress = timeLeft / totalTime;
+            const offset = CIRC * (1 - progress);
+            const ring = document.getElementById('ringProgress');
+            ring.style.strokeDashoffset = offset;
+
+            // szín a mód szerint
+            if (mode === 'work') ring.setAttribute('stroke', 'url(#gradWork)');
+            else if (mode === 'break') ring.setAttribute('stroke', 'url(#gradBreak)');
+            else ring.setAttribute('stroke', 'url(#gradLong)');
+
+            document.title = formatTime(timeLeft) + ' · ' + (mode === 'work' ? 'Munka' : mode === 'break' ? 'Szünet' : 'Hosszú') + ' · Napi Fókusz';
+            document.getElementById('sessionLabel').textContent = sessionCount + '. fókusz';
         }
 
-        function setMode(workMode) {
-            if (isRunning) toggleTimer(); // Állítsuk meg, ha váltunk
-            isWorkMode = workMode;
-            timeLeft = isWorkMode ? WORK_TIME : BREAK_TIME;
-            totalTime = timeLeft;
-            
-            // Gombok stílusának frissítése
-            if (isWorkMode) {
-                modeWorkBtn.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-white/10 text-white transition-colors border border-white/5 ring-1 ring-sky-400";
-                modeBreakBtn.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-transparent text-slate-400 transition-colors border border-transparent hover:bg-white/5";
-                modeBadge.textContent = "Munka szakasz";
-                modeBadge.className = "px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30";
-                timeDisplay.classList.remove('text-emerald-400');
-                progressBar.classList.replace('from-emerald-400', 'from-sky-400');
-                progressBar.classList.replace('to-teal-500', 'to-indigo-500');
+        function setMode(newMode, reset = true) {
+            if (isRunning) toggleTimer(false);
+            mode = newMode;
+
+            if (mode === 'work') {
+                totalTime = WORK;
+                document.getElementById('modeBadge').textContent = 'Munka';
+                document.getElementById('modeBadge').className = 'px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30';
+            } else if (mode === 'break') {
+                totalTime = SHORT;
+                document.getElementById('modeBadge').textContent = 'Rövid szünet';
+                document.getElementById('modeBadge').className = 'px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
             } else {
-                modeBreakBtn.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-white/10 text-white transition-colors border border-white/5 ring-1 ring-emerald-400";
-                modeWorkBtn.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-transparent text-slate-400 transition-colors border border-transparent hover:bg-white/5";
-                modeBadge.textContent = "Szünet szakasz";
-                modeBadge.className = "px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                timeDisplay.classList.add('text-emerald-400');
-                progressBar.classList.replace('from-sky-400', 'from-emerald-400');
-                progressBar.classList.replace('to-indigo-500', 'to-teal-500');
+                totalTime = LONG;
+                document.getElementById('modeBadge').textContent = 'Hosszú szünet';
+                document.getElementById('modeBadge').className = 'px-3 py-1 text-xs font-semibold rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30';
             }
+
+            if (reset) timeLeft = totalTime;
+
+            // gombok stílusa
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                const isActive = btn.dataset.mode === mode;
+                btn.classList.toggle('active', isActive);
+                btn.classList.toggle('text-white', isActive);
+                btn.classList.toggle('text-slate-400', !isActive);
+                btn.classList.toggle('bg-white/5', isActive);
+                btn.classList.toggle('border-white/10', isActive);
+                btn.classList.toggle('border-transparent', !isActive);
+            });
+
             updateTimerUI();
         }
 
-        function toggleTimer() {
-            if (isRunning) {
+        function toggleTimer(forcePause) {
+            const btn = document.getElementById('btnStartPause');
+
+            if (isRunning || forcePause === false) {
                 clearInterval(timer);
-                btnStartPause.innerHTML = '<i class="fa-solid fa-play"></i> Indítás';
-                btnStartPause.classList.remove('bg-amber-500', 'hover:bg-amber-400', 'shadow-[0_0_20px_rgba(245,158,11,0.3)]');
-                btnStartPause.classList.add('bg-sky-500', 'hover:bg-sky-400', 'shadow-[0_0_20px_rgba(14,165,233,0.3)]');
-            } else {
-                if (timeLeft === 0) {
-                    // Ha lejárt, váltsunk módot és indítsuk újra
-                    setMode(!isWorkMode);
-                }
-                timer = setInterval(() => {
-                    if (timeLeft > 0) {
-                        timeLeft--;
-                        updateTimerUI();
-                    } else {
-                        clearInterval(timer);
-                        isRunning = false;
-                        btnStartPause.innerHTML = '<i class="fa-solid fa-play"></i> Indítás';
-                        // Értesítés szerű üzenet
-                        const msg = document.createElement('div');
-                        msg.className = "fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-4 rounded-xl shadow-2xl border border-white/20 z-50 animate-bounce";
-                        msg.innerHTML = `<i class="fa-solid fa-bell text-amber-400 mr-2"></i> ${isWorkMode ? 'Lejárt a munkaidő! Tarts szünetet.' : 'Vége a szünetnek! Folytasd a munkát.'}`;
-                        document.body.appendChild(msg);
-                        setTimeout(() => msg.remove(), 6000);
-                        document.title = "⏰ Lejárt az idő! | Napi Fókusz";
-                    }
-                }, 1000);
-                btnStartPause.innerHTML = '<i class="fa-solid fa-pause"></i> Szünet';
-                btnStartPause.classList.remove('bg-sky-500', 'hover:bg-sky-400', 'shadow-[0_0_20px_rgba(14,165,233,0.3)]');
-                btnStartPause.classList.add('bg-amber-500', 'hover:bg-amber-400', 'shadow-[0_0_20px_rgba(245,158,11,0.3)]');
+                isRunning = false;
+                btn.innerHTML = '<i class="fa-solid fa-play"></i> Indítás';
+                btn.classList.remove('from-amber-500');
+                return;
             }
-            isRunning = !isRunning;
+
+            if (timeLeft <= 0) {
+                // ha lejárt, váltás
+                if (mode === 'work') {
+                    completedToday++;
+                    totalFocusMinutes += 25;
+                    saveStats();
+                    updateStatsUI();
+                    sessionCount++;
+                    // 4 fókusz után hosszú szünet javaslat
+                    if (sessionCount % 4 === 1 && sessionCount > 1) setMode('long');
+                    else setMode('break');
+                } else {
+                    setMode('work');
+                }
+            }
+
+            isRunning = true;
+            btn.innerHTML = '<i class="fa-solid fa-pause"></i> Szünet';
+
+            timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerUI();
+                } else {
+                    clearInterval(timer);
+                    isRunning = false;
+                    btn.innerHTML = '<i class="fa-solid fa-play"></i> Indítás';
+
+                    // hang + toast
+                    playBeep();
+                    const msg = mode === 'work'
+                        ? 'Lejárt a fókuszidő! Ideje egy kis szünetnek.'
+                        : 'Vége a szünetnek. Folytasd a munkát!';
+                    showToast(msg);
+
+                    if (mode === 'work') {
+                        completedToday++;
+                        totalFocusMinutes += 25;
+                        saveStats();
+                        updateStatsUI();
+                        sessionCount++;
+                    }
+
+                    document.title = '⏰ Lejárt! · Napi Fókusz';
+                }
+            }, 1000);
         }
 
-        btnStartPause.addEventListener('click', toggleTimer);
-        btnReset.addEventListener('click', () => setMode(isWorkMode));
-        modeWorkBtn.addEventListener('click', () => setMode(true));
-        modeBreakBtn.addEventListener('click', () => setMode(false));
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = 880;
+                gain.gain.value = 0.08;
+                osc.start();
+                setTimeout(() => { osc.stop(); ctx.close(); }, 180);
+            } catch (e) {}
+        }
 
-        // --- 3. TO-DO LISTA LOGIKA (LocalStorage-al) ---
-        let todos = JSON.parse(localStorage.getItem('focusTodos')) || [];
-        
-        const todoForm = document.getElementById('todoForm');
-        const todoInput = document.getElementById('todoInput');
-        const todoList = document.getElementById('todoList');
-        const emptyState = document.getElementById('emptyState');
-        const taskStats = document.getElementById('taskStats');
-        const clearCompletedBtn = document.getElementById('clearCompletedBtn');
+        function showToast(text) {
+            const old = document.querySelector('.toast');
+            if (old) old.remove();
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = '<i class="fa-solid fa-bell text-amber-400"></i><span>' + text + '</span>';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 5500);
+        }
+
+        function updateStatsUI() {
+            document.getElementById('completedToday').textContent = completedToday + ' kész ma';
+            document.getElementById('totalFocusTime').textContent = totalFocusMinutes + ' perc fókusz';
+            document.getElementById('todayPomodoros').textContent = completedToday + ' fókusz ma';
+        }
+
+        // gombok
+        document.getElementById('btnStartPause').addEventListener('click', () => toggleTimer());
+        document.getElementById('btnReset').addEventListener('click', () => setMode(mode, true));
+        document.getElementById('btnSkip').addEventListener('click', () => {
+            timeLeft = 0;
+            if (isRunning) toggleTimer();
+            else {
+                // manuális skip
+                if (mode === 'work') {
+                    completedToday++;
+                    totalFocusMinutes += Math.round((totalTime - timeLeft) / 60) || 25;
+                    saveStats();
+                    updateStatsUI();
+                    sessionCount++;
+                    setMode(sessionCount % 4 === 1 && sessionCount > 1 ? 'long' : 'break');
+                } else setMode('work');
+            }
+        });
+
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => setMode(btn.dataset.mode));
+        });
+
+        // Space billentyű
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                if (!document.getElementById('dashboardView').classList.contains('hidden-view')) {
+                    toggleTimer();
+                }
+            }
+        });
+
+        // ========== TEENDŐK ==========
+        let todos = JSON.parse(localStorage.getItem(KEYS.todos) || '[]');
 
         function saveTodos() {
-            localStorage.setItem('focusTodos', JSON.stringify(todos));
+            localStorage.setItem(KEYS.todos, JSON.stringify(todos));
             renderTodos();
         }
 
         function renderTodos() {
-            todoList.innerHTML = '';
-            let completedCount = 0;
+            const list = document.getElementById('todoList');
+            const empty = document.getElementById('emptyState');
+            const clearBtn = document.getElementById('clearCompletedBtn');
+            list.innerHTML = '';
 
+            let done = 0;
             if (todos.length === 0) {
-                emptyState.classList.remove('hidden');
-                clearCompletedBtn.classList.add('hidden');
+                empty.classList.remove('hidden');
+                clearBtn.classList.add('hidden');
             } else {
-                emptyState.classList.add('hidden');
-                
-                todos.forEach((todo, index) => {
-                    if (todo.completed) completedCount++;
-                    
+                empty.classList.add('hidden');
+                todos.forEach((todo, i) => {
+                    if (todo.completed) done++;
                     const li = document.createElement('li');
-                    li.className = "todo-item flex items-center justify-between p-3 rounded-xl border border-white/5 cursor-pointer";
-                    // Beállítjuk a háttérszínt attól függően, hogy kész van-e
-                    li.style.backgroundColor = todo.completed ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)";
-                    
+                    li.className = 'todo-item flex items-center justify-between p-3 rounded-xl border border-white/5';
+                    li.style.background = todo.completed ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)';
                     li.innerHTML = `
-                        <label class="flex items-center gap-3 cursor-pointer flex-1 overflow-hidden">
-                            <input type="checkbox" class="todo-checkbox hidden" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${index})">
-                            <div class="w-5 h-5 rounded border ${todo.completed ? 'bg-purple-500 border-purple-500 text-white flex items-center justify-center' : 'border-slate-500'} transition-all flex-shrink-0">
-                                ${todo.completed ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                        <label class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                            <div class="w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all
+                                ${todo.completed ? 'bg-purple-500 border-purple-500 text-white' : 'border-slate-500'}">
+                                ${todo.completed ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
                             </div>
-                            <span class="truncate ${todo.completed ? 'text-slate-400 line-through' : 'text-slate-200'} select-none transition-all">${todo.text}</span>
+                            <span class="truncate text-sm ${todo.completed ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHtml(todo.text)}</span>
                         </label>
-                        <button onclick="deleteTodo(${index})" class="text-slate-500 hover:text-red-400 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 ml-2">
-                            <i class="fa-regular fa-trash-can"></i>
+                        <button class="text-slate-500 hover:text-red-400 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 ml-1 transition-colors" data-del="${i}">
+                            <i class="fa-regular fa-trash-can text-sm"></i>
                         </button>
                     `;
-                    todoList.appendChild(li);
+                    li.querySelector('label').addEventListener('click', () => {
+                        todos[i].completed = !todos[i].completed;
+                        saveTodos();
+                    });
+                    li.querySelector('[data-del]').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        todos.splice(i, 1);
+                        saveTodos();
+                    });
+                    list.appendChild(li);
                 });
-
-                if (completedCount > 0) {
-                    clearCompletedBtn.classList.remove('hidden');
-                } else {
-                    clearCompletedBtn.classList.add('hidden');
-                }
+                clearBtn.classList.toggle('hidden', done === 0);
             }
-
-            taskStats.textContent = `${completedCount} / ${todos.length} kész`;
+            document.getElementById('taskStats').textContent = done + ' / ' + todos.length + ' kész';
         }
 
-        todoForm.addEventListener('submit', (e) => {
+        function escapeHtml(str) {
+            return str.replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"');
+        }
+
+        document.getElementById('todoForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const text = todoInput.value.trim();
-            if (text !== '') {
-                todos.unshift({ text: text, completed: false }); // Az elejére szúrjuk be
-                todoInput.value = '';
-                saveTodos();
-            }
-        });
-
-        window.toggleTodo = function(index) {
-            todos[index].completed = !todos[index].completed;
-            saveTodos();
-        }
-
-        window.deleteTodo = function(index) {
-            todos.splice(index, 1);
-            saveTodos();
-        }
-
-        clearCompletedBtn.addEventListener('click', () => {
-            todos = todos.filter(todo => !todo.completed);
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            if (!text) return;
+            todos.unshift({ text, completed: false, created: Date.now() });
+            input.value = '';
             saveTodos();
         });
 
-        // Inicializáló render
+        document.getElementById('clearCompletedBtn').addEventListener('click', () => {
+            todos = todos.filter(t => !t.completed);
+            saveTodos();
+        });
+
+        // ========== INDÍTÁS ==========
+        setupWelcome();
+        setMode('work');
         renderTodos();
-        updateTimerUI();
-
+        updateStatsUI();
+        // mindig az üdvözlővel kezdünk – ez adja a „üdvözlő lap” élményt
     </script>
 </body>
 </html>
