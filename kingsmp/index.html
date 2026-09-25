@@ -1,329 +1,604 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="hu">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a1219">
+<meta name="description" content="King Duck SMP – crossplay Minecraft survival. Csatlakozz a kacsához!">
 <title>King Duck SMP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020507}
-body{font-family:Segoe UI,Arial,sans-serif}
-button,input{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-
-#viewport{position:relative;width:100vw;height:100vh;overflow:hidden}
-#stage{position:absolute;width:1648px;height:1024px;transform-origin:0 0;overflow:hidden;background:#111}
-#bg{position:absolute;inset:0;width:1648px;height:1024px;object-fit:fill;user-select:none;-webkit-user-drag:none}
-
-.hitbox{
-  position:absolute;
-  z-index:20;
-  border:0;
-  background:transparent;
-  padding:0;
-  margin:0;
-  color:transparent;
-  font-size:0;
-  display:block;
-  cursor:pointer;
+:root {
+  --bg: #0a1219;
+  --bg2: #0f1a24;
+  --card: #13202c;
+  --gold: #ffd23a;
+  --gold2: #ffbe2e;
+  --text: #f0f4f8;
+  --muted: #8b9aab;
+  --line: rgba(255,255,255,.08);
+  --radius: 16px;
 }
-/* top bar stays as-is and hidden like you said it's good */
-.nav-hitbox{
-  position:absolute;z-index:45;border:0;background:transparent;padding:0;margin:0;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "DM Sans", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
 
-.label-small{font-size:12px}
-
-/* HOME page hitboxes */
-.nav-home{left:216px;top:32px;width:128px;height:59px}
-.nav-ranks{left:344px;top:32px;width:129px;height:59px}
-.nav-rules{left:473px;top:32px;width:128px;height:59px}
-.nav-community{left:601px;top:32px;width:184px;height:59px}
-
-.home-join{left:317px;top:458px;width:399px;height:77px}
-.home-ip{left:317px;top:556px;width:290px;height:56px}
-.home-copy{left:607px;top:556px;width:109px;height:56px}
-.home-discord{left:317px;top:632px;width:399px;height:65px}
-.home-prev{left:537px;top:773px;width:51px;height:104px}
-.home-next{left:1061px;top:773px;width:50px;height:104px}
-.home-ad{left:588px;top:757px;width:474px;height:148px}
-
-/* RANKS page hitboxes */
-.r-buy-juvenile{left:611px;top:796px;width:193px;height:50px}
-.r-buy-adult{left:848px;top:796px;width:193px;height:50px}
-.r-buy-old{left:1083px;top:796px;width:194px;height:50px}
-.r-login{left:1446px;top:70px;width:175px;height:62px}
-.r-ai{left:1434px;top:819px;width:202px;height:75px}
-.r-nav-home{left:215px;top:32px;width:128px;height:59px}
-.r-nav-ranks{left:344px;top:32px;width:129px;height:59px}
-.r-nav-rules{left:473px;top:32px;width:128px;height:59px}
-.r-nav-community{left:601px;top:32px;width:184px;height:59px}
-
-/* Popups */
-.popup{
-  position:absolute;z-index:80;border-radius:16px;
-  background:linear-gradient(180deg,rgba(12,24,35,.99),rgba(5,12,20,.99));
-  border:1px solid rgba(255,215,56,.72);
-  box-shadow:0 22px 55px rgba(0,0,0,.58);color:#fff;
+/* NAV */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(10,18,25,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
 }
-#loginPanel{left:1295px;top:92px;width:325px;padding:16px}
-#loginPanel h3{margin:0 0 4px;font-size:22px}
-#loginPanel p{margin:0 0 9px;color:#c1cad5;font-size:13px}
-#loginPanel input{width:100%;padding:11px 12px;border:1px solid #758395;border-radius:9px;background:#172431;color:#fff;outline:none}
-.gold-btn{width:100%;margin-top:9px;padding:11px;border:0;border-radius:9px;background:linear-gradient(#ffe267,#ffc31d);color:#101923;font-weight:900}
-#loginPanel small{display:block;text-align:center;color:#9eabb7;font-size:11px;margin-top:7px}
-
-#aiPanel{left:1267px;top:332px;width:369px;height:430px;display:flex;flex-direction:column;overflow:hidden}
-#aiPanel header{height:68px;padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between}
-#aiPanel .head b{display:block;font-size:18px} 
-#aiPanel .head small{display:block;color:#b7c0cb;font-size:12px}
-.close{border:0;background:transparent;color:#fff;font-size:26px}
-.messages{flex:1;overflow:auto;padding:11px;display:flex;flex-direction:column;gap:7px}
-.msg{max-width:92%;padding:9px 10px;border-radius:11px;font-size:13px;line-height:1.4}
-.msg.bot{align-self:flex-start;background:#172431} 
-.msg.user{align-self:flex-end;background:#5b4906;border:1px solid rgba(255,215,56,.28)}
-.quick{display:flex;flex-wrap:wrap;gap:5px;padding:0 11px 8px}
-.quick button{border:1px solid rgba(255,215,56,.62);border-radius:999px;background:transparent;color:white;padding:5px 8px;font-size:11px}
-.chat{display:grid;grid-template-columns:1fr 40px;gap:6px;padding:9px 11px;border-top:1px solid rgba(255,255,255,.08)}
-.chat input{min-width:0;border:1px solid #697787;background:#101b26;color:white;border-radius:8px;padding:9px}
-.chat button{border:0;border-radius:8px;background:#ffd638;color:#101923;font-weight:900}
-.ai-footer{padding:0 11px 8px;color:#84919e;font-size:10px}
-
-.custom-page{position:absolute;inset:0;z-index:40;padding:130px 190px 85px;background:linear-gradient(rgba(5,12,18,.42),rgba(5,12,18,.70));color:#fff}
-.card{height:100%;padding:34px;border-radius:22px;background:rgba(6,16,26,.94);border:1px solid rgba(255,255,255,.14);text-align:center}
-.card h1{font-size:48px;margin:5px 0 8px} 
-.lead{font-size:18px;color:#d5dde6;margin:0 0 28px}
-
-.modal{position:absolute;inset:0;z-index:110;background:rgba(0,0,0,.58);display:grid;place-items:center;color:#fff}
-.modal-card{width:430px;padding:24px;border-radius:18px;background:#091521;border:1px solid rgba(255,215,56,.72);text-align:center}
-.toast{position:absolute;z-index:130;left:50%;bottom:66px;transform:translateX(-50%);padding:11px 16px;border-radius:10px;background:#08131d;border:1px solid rgba(255,215,56,.62);color:#fff}
-
-
-#mainTopbar{
-  position:absolute;
-  left:98px;
-  top:32px;
-  width:688px;
-  height:59px;
-  z-index:35;
-  display:grid;
-  grid-template-columns:118px 128px 129px 128px 185px;
-  overflow:hidden;
-  border-radius:16px;
-  color:#f5f7fa;
-  font-family:Segoe UI,Arial,sans-serif;
-  pointer-events:none;
-  background:linear-gradient(90deg,#102536 0%,#173751 100%);
-  border:none;
-  box-shadow:none;
-  filter:none;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
-.topbar-item{
-  position:relative;
-  height:59px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  font-size:18px;
-  font-weight:600;
-  white-space:nowrap;
+.brand svg { width: 36px; height: 36px; flex-shrink: 0; }
+.brand span { color: var(--gold); }
+.nav-links {
+  display: none;
+  gap: 22px;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--muted);
 }
-.topbar-item + .topbar-item::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:17px;
-  width:1px;
-  height:25px;
-  background:rgba(255,255,255,.10);
+.nav-links a:hover { color: var(--gold); }
+.nav-cta {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #0a1219;
+  font-weight: 700;
+  font-size: .85rem;
+  white-space: nowrap;
 }
-.topbar-item.brand{
-  background:rgba(7,18,27,.22);
-  border-radius:16px 0 0 16px;
+.nav-cta:hover { background: #ffe066; }
+.menu-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: 0;
+  padding: 8px;
+  cursor: pointer;
 }
-.topbar-item svg{
-  width:25px;
-  height:25px;
-  fill:currentColor;
-  stroke:currentColor;
-}
-.topbar-item.brand svg{
-  width:44px;
-  height:44px;
-  color:#ffd91f;
-  filter:none;
-}
-#mainTopbar[data-page="home"] .item-home,
-#mainTopbar[data-page="ranks"] .item-ranks,
-#mainTopbar[data-page="rules"] .item-rules,
-#mainTopbar[data-page="community"] .item-community{
-  color:#ffe13c;
-  background:rgba(255,255,255,.055);
-}
-#mainTopbar[data-page="home"] .item-home::after,
-#mainTopbar[data-page="ranks"] .item-ranks::after,
-#mainTopbar[data-page="rules"] .item-rules::after,
-#mainTopbar[data-page="community"] .item-community::after{
-  content:"";
-  position:absolute;
-  left:14px;
-  right:14px;
-  bottom:0;
-  height:3px;
-  border-radius:3px 3px 0 0;
-  background:#ffe13c;
+.menu-btn span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 1px;
 }
 
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(5,10,15,.96);
+  padding: 80px 24px 40px;
+  flex-direction: column;
+  gap: 8px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  padding: 16px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+.mobile-menu .close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: 0;
+  color: var(--text);
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+/* HERO */
+.hero {
+  padding: 48px 20px 56px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255,210,58,.12), transparent),
+    var(--bg);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,210,58,.1);
+  border: 1px solid rgba(255,210,58,.25);
+  color: var(--gold);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.8rem, 12vw, 4.5rem);
+  line-height: .95;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--gold);
+}
+.hero p {
+  max-width: 420px;
+  margin: 0 auto 28px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: .95rem;
+  border: 0;
+  cursor: pointer;
+  transition: transform .15s, background .15s;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  background: var(--gold);
+  color: #0a1219;
+}
+.btn-primary:hover { background: #ffe066; }
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+/* SERVER CARD */
+.server {
+  max-width: 480px;
+  margin: 0 auto 48px;
+  padding: 0 20px;
+}
+.server-card {
+  background: var(--card);
+  border: 1px solid rgba(255,210,58,.3);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+}
+.server-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: rgba(255,210,58,.08);
+  border-bottom: 1px solid rgba(255,210,58,.2);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+}
+.status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3ddc84;
+  box-shadow: 0 0 8px #3ddc84;
+}
+.server-body { padding: 22px 18px; }
+.server-body label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ip-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ip {
+  font-family: ui-monospace, monospace;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--gold);
+  word-break: break-all;
+}
+.copy-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+.server-note {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+/* SECTIONS */
+.section {
+  padding: 48px 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.section-kicker {
+  color: var(--gold);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.section h2 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 6vw, 2.6rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section > p {
+  color: var(--muted);
+  max-width: 480px;
+  margin-bottom: 28px;
+}
+
+/* RANKS */
+.ranks {
+  display: grid;
+  gap: 14px;
+}
+.rank {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.rank h3 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.rank .price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+.rank ul {
+  list-style: none;
+  color: var(--muted);
+  font-size: .9rem;
+}
+.rank ul li { padding: 3px 0; }
+.rank ul li::before { content: "✓ "; color: var(--gold); }
+
+/* FEATURES */
+.features {
+  display: grid;
+  gap: 12px;
+}
+.feature {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.feature h3 {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+.feature p { color: var(--muted); font-size: .9rem; }
+
+/* RULES */
+.rules-list {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+.rules-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .95rem;
+}
+.rules-list li:last-child { border-bottom: 0; }
+.rules-list strong { color: var(--text); }
+
+/* COMMUNITY */
+.community-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* FOOTER */
+footer {
+  padding: 28px 20px 40px;
+  text-align: center;
+  color: var(--muted);
+  font-size: .8rem;
+  border-top: 1px solid var(--line);
+}
+footer a { color: var(--gold); }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  padding: 12px 20px;
+  background: var(--card);
+  border: 1px solid rgba(255,210,58,.4);
+  border-radius: 12px;
+  font-weight: 600;
+  z-index: 100;
+  opacity: 0;
+  transition: .3s;
+  pointer-events: none;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* DESKTOP */
+@media (min-width: 720px) {
+  .nav { padding: 16px 32px; }
+  .nav-links { display: flex; }
+  .menu-btn { display: none; }
+  .hero { padding: 72px 32px 64px; }
+  .server { margin-bottom: 64px; }
+  .section { padding: 64px 32px; }
+  .ranks { grid-template-columns: repeat(3, 1fr); }
+  .features { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 960px) {
+  .features { grid-template-columns: repeat(4, 1fr); }
+}
 </style>
 </head>
 <body>
-<div id="viewport"><main id="stage">
-<img id="bg" src="">
+<header class="nav">
+  <a class="brand" href="#top">
+    <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="38" r="18" fill="#ffd23a"/><path d="M32 6c-2 7-9 12-16 14 5 2 11 7 13 14 2-7 8-12 13-14-7-2-14-7-16-14z" fill="#ffd23a"/><path d="M22 42c3 6 15 6 18 0" stroke="#0a1219" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+    King <span>Duck</span> SMP
+  </a>
+  <nav class="nav-links">
+    <a href="#join">Csatlakozás</a>
+    <a href="#ranks">Rangok</a>
+    <a href="#rules">Szabályok</a>
+    <a href="#community">Közösség</a>
+  </nav>
+  <a class="nav-cta" href="#join">Játssz velünk</a>
+  <button class="menu-btn" id="menuBtn" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</header>
 
-<div id="mainTopbar" data-page="home">
-  <div class="topbar-item brand">
-    <svg viewBox="0 0 64 64"><path d="M32 4c-2 8-10 14-18 16 6 2 12 8 14 16 2-8 8-14 14-16-8-2-16-8-18-16z" fill="#ffd91f"/><circle cx="32" cy="36" r="18" fill="#ffd91f"/><path d="M20 40c4 8 20 8 24 0" stroke="#102536" stroke-width="3" fill="none"/></svg>
-  </div>
-  <div class="topbar-item item-home">
-    <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5Z"/></svg>
-    <span>Home</span>
-  </div>
-  <div class="topbar-item item-ranks">
-    <svg viewBox="0 0 24 24"><path d="M5 16 3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5Zm0 2h14v2H5v-2Z"/></svg>
-    <span>Ranks</span>
-  </div>
-  <div class="topbar-item item-rules">
-    <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm8 1.5V9h5.5L14 3.5ZM8 12h8v2H8v-2Zm0 4h8v2H8v-2Z"/></svg>
-    <span>Rules</span>
-  </div>
-  <div class="topbar-item item-community">
-    <svg viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM2 20v-2c0-3 3-5 7-5s7 2 7 5v2H2Zm14.5 0v-2c0-1.8-.7-3.2-2-4.3 3.5-.3 7.5 1.2 7.5 4.3v2h-5.5Z"/></svg>
-    <span>Community</span>
-  </div>
+<div class="mobile-menu" id="mobileMenu">
+  <button class="close" id="closeMenu">×</button>
+  <a href="#join" data-close>Csatlakozás</a>
+  <a href="#ranks" data-close>Rangok</a>
+  <a href="#rules" data-close>Szabályok</a>
+  <a href="#community" data-close>Közösség</a>
 </div>
 
-<!-- HOME -->
-<section id="homeLayer">
-  <button class="nav-hitbox nav-home" data-page="home" aria-label="Home"></button>
-  <button class="nav-hitbox nav-ranks" data-page="ranks" aria-label="Ranks"></button>
-  <button class="nav-hitbox nav-rules" data-page="rules" aria-label="Rules"></button>
-  <button class="nav-hitbox nav-community" data-page="community" aria-label="Community"></button>
+<main id="top">
+  <section class="hero">
+    <div class="hero-badge">Crossplay · Survival · Community</div>
+    <h1>Rule your<br><em>world.</em></h1>
+    <p>Egy barátságos crossplay survival világ, ahol minden építésnek története van, és a kacsa viseli a koronát.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#join">Belépés a tóba</a>
+      <a class="btn btn-secondary" href="#ranks">Rangok</a>
+    </div>
+  </section>
 
-  <button class="hitbox home-join" id="joinBtn">JOIN</button>
-  <button class="hitbox home-ip" id="ipBtn">IP FIELD</button>
-  <button class="hitbox home-copy" id="copyBtn">COPY</button>
-  <button class="hitbox home-discord" id="discordBtn">DISCORD</button>
-  <button class="hitbox home-prev label-small" id="prevAd">PREV</button>
-  <button class="hitbox home-next label-small" id="nextAd">NEXT</button>
-  <button class="hitbox home-ad" id="ranksAd">AD CARD</button>
-</section>
-
-<!-- RANKS -->
-<section id="ranksLayer" class="hidden">
-  <button class="nav-hitbox r-nav-home" data-page="home" aria-label="Home"></button>
-  <button class="nav-hitbox r-nav-ranks" data-page="ranks" aria-label="Ranks"></button>
-  <button class="nav-hitbox r-nav-rules" data-page="rules" aria-label="Rules"></button>
-  <button class="nav-hitbox r-nav-community" data-page="community" aria-label="Community"></button>
-
-  <button class="hitbox r-buy-juvenile" data-rank="Juvenile Duck" data-price="€0.25">BUY 1</button>
-  <button class="hitbox r-buy-adult" data-rank="Adult Duck" data-price="€0.50">BUY 2</button>
-  <button class="hitbox r-buy-old" data-rank="Old Duck" data-price="€1.00">BUY 3</button>
-  <button class="hitbox r-login" id="loginButton">LOGIN</button>
-  <button class="hitbox r-ai" id="aiButton">AI</button>
-</section>
-
-<section id="rulesLayer" class="custom-page hidden"><div class="card">
-  <h1>Server Rules</h1>
-  <p class="lead">Play fair, respect others, and keep the pond clean.</p>
-  <div style="text-align:left;max-width:520px;margin:0 auto;line-height:1.6;color:#c5d0db;font-size:16px">
-    <p>1. No griefing or stealing from other players.</p>
-    <p>2. Be respectful in chat — no hate, spam or toxicity.</p>
-    <p>3. No cheating, x-ray or unfair mods.</p>
-    <p>4. Keep builds appropriate and family-friendly.</p>
-    <p>5. Follow staff instructions. Have fun!</p>
+  <div class="server" id="join">
+    <div class="server-card">
+      <div class="server-top">
+        <span>Szerver elérés</span>
+        <span class="status">Online</span>
+      </div>
+      <div class="server-body">
+        <label>Szerver IP</label>
+        <div class="ip-row">
+          <span class="ip" id="serverIp">play.kingducksmp.com</span>
+          <button class="copy-btn" id="copyIp" type="button">Másolás</button>
+        </div>
+        <p class="server-note">Java + Bedrock. Másold be az IP-t a Minecraftba és csatlakozz!</p>
+      </div>
+    </div>
   </div>
-</div></section>
-<section id="communityLayer" class="custom-page hidden"><div class="card">
-  <h1>Community</h1>
-  <p class="lead">Join the flock. Discord is the heart of King Duck SMP.</p>
-  <p style="margin-top:28px"><a href="https://discord.gg/g8fuPVUYu" target="_blank" rel="noopener" style="display:inline-block;padding:14px 28px;border-radius:12px;background:linear-gradient(#ffe267,#ffc31d);color:#101923;font-weight:800;text-decoration:none">Open Discord</a></p>
-  <p style="margin-top:18px;color:#9eabb7;font-size:14px">TikTok: @kingducksmp</p>
-</div></section>
 
-<section id="loginPanel" class="popup hidden">
-  <h3>Login</h3>
-  <p>Enter your Minecraft username</p>
-  <input id="username" maxlength="16" placeholder="Minecraft username">
-  <button id="loginGo" class="gold-btn">Continue</button>
-  <small>Username only — no password.</small>
-</section>
+  <section class="section" id="ranks">
+    <p class="section-kicker">Rangok</p>
+    <h2>Válaszd a kacsádat</h2>
+    <p>Támogasd a szervert és kapj extra előnyöket. Nincs pay-to-win.</p>
+    <div class="ranks">
+      <article class="rank">
+        <h3>Juvenile Duck</h3>
+        <div class="price">€0.25</div>
+        <ul>
+          <li>Egyedi prefix</li>
+          <li>Színes chat</li>
+          <li>Alapvető kit</li>
+        </ul>
+        <button class="btn btn-secondary" data-rank="Juvenile Duck" data-price="€0.25">Vásárlás</button>
+      </article>
+      <article class="rank">
+        <h3>Adult Duck</h3>
+        <div class="price">€0.50</div>
+        <ul>
+          <li>Minden Juvenile</li>
+          <li>Több home</li>
+          <li>Pet kacsa</li>
+        </ul>
+        <button class="btn btn-primary" data-rank="Adult Duck" data-price="€0.50">Vásárlás</button>
+      </article>
+      <article class="rank">
+        <h3>Old Duck</h3>
+        <div class="price">€1.00</div>
+        <ul>
+          <li>Minden Adult</li>
+          <li>VIP kit</li>
+          <li>Prioritás queue</li>
+        </ul>
+        <button class="btn btn-secondary" data-rank="Old Duck" data-price="€1.00">Vásárlás</button>
+      </article>
+    </div>
+  </section>
 
-<section id="aiPanel" class="popup hidden">
-  <header>
-    <div class="head"><b>AI Support</b><small>Online</small></div>
-    <button id="closeAi" class="close">×</button>
-  </header>
-  <div id="messages" class="messages"><div class="msg bot">Hi! I can help.</div></div>
-  <div class="quick">
-    <button data-q="How do ranks work?">Ranks</button><button data-q="Payment help">Payment</button>
-  </div>
-  <form id="chatForm" class="chat"><input id="chatInput" placeholder="Type your question..."><button>➤</button></form>
-  <div class="ai-footer">AI Helper demo</div>
-</section>
+  <section class="section">
+    <p class="section-kicker">Funkciók</p>
+    <h2>Több mint egy szerver</h2>
+    <div class="features">
+      <div class="feature">
+        <h3>Java + Bedrock</h3>
+        <p>Egy világ, minden platform. Játssz együtt a barátaiddal.</p>
+      </div>
+      <div class="feature">
+        <h3>Építs szabadon</h3>
+        <p>Parancsok, boltok, TPA és minden, amire szükséged van.</p>
+      </div>
+      <div class="feature">
+        <h3>Aktív közösség</h3>
+        <p>Discord, eventek és segítőkész játékosok.</p>
+      </div>
+      <div class="feature">
+        <h3>Nincs pay-to-win</h3>
+        <p>A rangok csak kozmetikaiak és kényelmi dolgok.</p>
+      </div>
+    </div>
+  </section>
 
-<section id="buyModal" class="modal hidden"><div class="modal-card">
-  <h2 id="rankName">Rank</h2><div id="rankPrice">€0.00</div>
-  <button id="closeBuy" class="gold-btn">OK</button>
-</div></section>
+  <section class="section" id="rules">
+    <p class="section-kicker">Szabályok</p>
+    <h2>Tartsd tisztán a tavat</h2>
+    <ol class="rules-list">
+      <li><strong>1.</strong> Nincs griefelés és lopás más játékosoktól.</li>
+      <li><strong>2.</strong> Légy tisztelettudó a chatben – nincs gyűlölet, spam vagy toxikus viselkedés.</li>
+      <li><strong>3.</strong> Nincs csalás, x-ray vagy unfair modok.</li>
+      <li><strong>4.</strong> Az építmények legyenek megfelelőek és családbarátok.</li>
+      <li><strong>5.</strong> Kövesd a staff utasításait. Jó játékot!</li>
+    </ol>
+  </section>
 
-<div id="toast" class="toast hidden"></div>
-</main></div>
+  <section class="section" id="community">
+    <p class="section-kicker">Közösség</p>
+    <h2>Csatlakozz a rajhoz</h2>
+    <p>A Discord a szívünk. Ott találsz mindent: help, eventek, barátok.</p>
+    <div class="community-actions">
+      <a class="btn btn-primary" href="https://discord.gg/g8fuPVUYu" target="_blank" rel="noopener">Discord</a>
+      <a class="btn btn-secondary" href="https://www.tiktok.com/@kingducksmp" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 King Duck SMP · Made for builders, adventurers & ducks</p>
+</footer>
+
+<div class="toast" id="toast"></div>
 
 <script>
-const W=1648,H=1024,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const stage=$("#stage"), bg=$("#bg");
-const HOME="bg.png";
-const RANKS=HOME;
-function fit(){
-  const s=Math.min(innerWidth/W,innerHeight/H);
-  stage.style.transform=`scale(${s})`;
-  stage.style.left=((innerWidth-W*s)/2)+"px";
-  stage.style.top=((innerHeight-H*s)/2)+"px";
+const toastEl = document.getElementById('toast');
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toastEl.classList.remove('show'), 2000);
 }
-addEventListener("resize",fit);fit();
 
-const layers={home:$("#homeLayer"),ranks:$("#ranksLayer"),rules:$("#rulesLayer"),community:$("#communityLayer")};
-function toast(t){const e=$("#toast");e.textContent=t;e.classList.remove("hidden");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add("hidden"),1700)}
-function closePanels(){$("#loginPanel").classList.add("hidden");$("#aiPanel").classList.add("hidden");$("#buyModal").classList.add("hidden")}
-function page(name){
-  if(name==="ranks") bg.src=RANKS;
-  else bg.src=HOME;
-  Object.values(layers).forEach(l=>l.classList.add("hidden"));
-  layers[name].classList.remove("hidden");
-  $("#mainTopbar").dataset.page=name;
-  closePanels();
-}
-$$("[data-page]").forEach(b=>b.onclick=()=>page(b.dataset.page));
-page("home");
+document.getElementById('copyIp').onclick = () => {
+  const ip = document.getElementById('serverIp').textContent;
+  navigator.clipboard?.writeText(ip).then(() => toast('IP másolva!')).catch(() => toast(ip));
+};
 
-$("#joinBtn").onclick=()=>toast("join");
-$("#ipBtn").onclick=()=>toast("ip");
-$("#copyBtn").onclick=()=>toast("copy");
-$("#discordBtn").onclick=()=>toast("discord");
-$("#prevAd").onclick=()=>toast("prev");
-$("#nextAd").onclick=()=>toast("next");
-$("#ranksAd").onclick=()=>page("ranks");
+document.querySelectorAll('[data-rank]').forEach(btn => {
+  btn.onclick = () => toast(btn.dataset.rank + ' – ' + btn.dataset.price + ' (hamarosan)');
+});
 
-$("#loginButton").onclick=()=>{$("#loginPanel").classList.toggle("hidden");$("#aiPanel").classList.add("hidden")};
-$("#loginGo").onclick=()=>$("#loginPanel").classList.add("hidden");
-$("#aiButton").onclick=()=>{$("#aiPanel").classList.toggle("hidden");$("#loginPanel").classList.add("hidden")};
-$("#closeAi").onclick=()=>$("#aiPanel").classList.add("hidden");
-
-$$("[data-rank]").forEach(b=>b.onclick=()=>{$("#rankName").textContent=b.dataset.rank;$("#rankPrice").textContent=b.dataset.price;$("#buyModal").classList.remove("hidden")});
-$("#closeBuy").onclick=()=>$("#buyModal").classList.add("hidden");
-$("#buyModal").onclick=e=>{if(e.target.id==="buyModal")$("#buyModal").classList.add("hidden")};
+const menuBtn = document.getElementById('menuBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+const closeMenu = document.getElementById('closeMenu');
+menuBtn.onclick = () => mobileMenu.classList.add('open');
+closeMenu.onclick = () => mobileMenu.classList.remove('open');
+mobileMenu.querySelectorAll('[data-close]').forEach(a => {
+  a.onclick = () => mobileMenu.classList.remove('open');
+});
 </script>
 </body>
 </html>
