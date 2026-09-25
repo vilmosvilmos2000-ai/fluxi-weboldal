@@ -1,1 +1,98 @@
-PLACEHOLDER_WILL_BE_REPLACED
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a1219">
+<title>King Duck SMP</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a1219;--card:#13202c;--gold:#ffd23a;--text:#f0f4f8;--muted:#8b9aab;--line:rgba(255,255,255,.08);--radius:16px}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100dvh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:rgba(10,18,25,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:.03em;text-transform:uppercase}
+.brand svg{width:34px;height:34px;flex-shrink:0}.brand span{color:var(--gold)}
+.nav-links{display:none;gap:20px;font-size:.88rem;font-weight:600;color:var(--muted)}.nav-links a:hover{color:var(--gold)}
+.nav-cta{padding:9px 14px;border-radius:999px;background:var(--gold);color:#0a1219;font-weight:700;font-size:.82rem;white-space:nowrap}
+.menu-btn{display:flex;flex-direction:column;gap:5px;background:none;border:0;padding:8px}.menu-btn span{display:block;width:22px;height:2px;background:var(--text);border-radius:1px}
+.mobile-menu{display:none;position:fixed;inset:0;z-index:60;background:rgba(5,10,15,.97);padding:80px 24px 40px;flex-direction:column;gap:4px}
+.mobile-menu.open{display:flex}.mobile-menu a{padding:16px;font-size:1.15rem;font-weight:600;border-bottom:1px solid var(--line)}
+.mobile-menu .close{position:absolute;top:16px;right:16px;background:none;border:0;color:var(--text);font-size:2rem}
+.hero{padding:40px 16px 48px;text-align:center;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(255,210,58,.14),transparent),var(--bg)}
+.hero-badge{display:inline-flex;padding:5px 12px;border-radius:999px;background:rgba(255,210,58,.12);border:1px solid rgba(255,210,58,.28);color:var(--gold);font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+.hero h1{font-family:"Barlow Condensed",sans-serif;font-weight:900;font-size:clamp(2.5rem,11vw,4rem);line-height:.95;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:12px}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p{max-width:380px;margin:0 auto 24px;color:var(--muted);font-size:.98rem}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:12px;font-weight:700;font-size:.92rem;border:0;transition:transform .15s,background .15s}
+.btn:active{transform:scale(.97)}.btn-primary{background:var(--gold);color:#0a1219}.btn-primary:hover{background:#ffe066}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--line)}.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+.server{max-width:480px;margin:0 auto 40px;padding:0 16px}
+.server-card{background:var(--card);border:1px solid rgba(255,210,58,.35);border-radius:var(--radius);overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.server-top{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;background:rgba(255,210,58,.09);border-bottom:1px solid rgba(255,210,58,.22);font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.status{display:flex;align-items:center;gap:6px;color:var(--text)}.status::before{content:"";width:8px;height:8px;border-radius:50%;background:#3ddc84;box-shadow:0 0 8px #3ddc84}
+.server-body{padding:18px 16px}.server-body label{display:block;margin-bottom:6px;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ip-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ip{font-family:ui-monospace,monospace;font-size:1.1rem;font-weight:600;color:var(--gold);word-break:break-all}
+.copy-btn{padding:8px 14px;border-radius:8px;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600}.copy-btn:hover{border-color:var(--gold);color:var(--gold)}
+.server-note{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+.section{padding:40px 16px;max-width:960px;margin:0 auto}
+.section-kicker{color:var(--gold);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.section h2{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:clamp(1.7rem,6vw,2.3rem);line-height:1.05;text-transform:uppercase;margin-bottom:10px}
+.section>p{color:var(--muted);max-width:480px;margin-bottom:22px;font-size:.95rem}
+.ranks{display:grid;gap:12px}.rank{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:10px}
+.rank h3{font-family:"Barlow Condensed",sans-serif;font-size:1.3rem;font-weight:800;text-transform:uppercase}.rank .price{font-size:1.4rem;font-weight:800;color:var(--gold)}
+.rank ul{list-style:none;color:var(--muted);font-size:.88rem}.rank ul li{padding:2px 0}.rank ul li::before{content:"✓ ";color:var(--gold)}
+.features{display:grid;gap:10px}.feature{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px}.feature h3{font-size:1.05rem;margin-bottom:4px}.feature p{color:var(--muted);font-size:.88rem}
+.rules-list{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}.rules-list li{padding:9px 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:.92rem}.rules-list li:last-child{border-bottom:0}.rules-list strong{color:var(--text)}
+.community-actions{display:flex;flex-wrap:wrap;gap:10px}
+footer{padding:24px 16px 36px;text-align:center;color:var(--muted);font-size:.78rem;border-top:1px solid var(--line)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 18px;background:var(--card);border:1px solid rgba(255,210,58,.4);border-radius:12px;font-weight:600;z-index:100;opacity:0;transition:.3s;pointer-events:none;max-width:90vw;text-align:center}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+@media(min-width:720px){.nav{padding:14px 28px}.nav-links{display:flex}.menu-btn{display:none}.hero{padding:64px 28px 56px}.server{margin-bottom:56px}.section{padding:56px 28px}.ranks{grid-template-columns:repeat(3,1fr)}.features{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.features{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header class="nav">
+<a class="brand" href="#top"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="38" r="18" fill="#ffd23a"/><path d="M32 6c-2 7-9 12-16 14 5 2 11 7 13 14 2-7 8-12 13-14-7-2-14-7-16-14z" fill="#ffd23a"/><path d="M22 42c3 6 15 6 18 0" stroke="#0a1219" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>King <span>Duck</span> SMP</a>
+<nav class="nav-links"><a href="#join">Csatlakozás</a><a href="#ranks">Rangok</a><a href="#rules">Szabályok</a><a href="#community">Közösség</a></nav>
+<a class="nav-cta" href="#join">Játssz velünk</a>
+<button class="menu-btn" id="menuBtn" aria-label="Menü"><span></span><span></span><span></span></button>
+</header>
+<div class="mobile-menu" id="mobileMenu"><button class="close" id="closeMenu">×</button><a href="#join" data-close>Csatlakozás</a><a href="#ranks" data-close>Rangok</a><a href="#rules" data-close>Szabályok</a><a href="#community" data-close>Közösség</a></div>
+<main id="top">
+<section class="hero">
+<div class="hero-badge">Crossplay · Survival · Community</div>
+<h1>Rule your<br><em>world.</em></h1>
+<p>Egy barátságos crossplay survival világ, ahol minden építésnek története van, és a kacsa viseli a koronát.</p>
+<div class="hero-actions"><a class="btn btn-primary" href="#join">Belépés a tóba</a><a class="btn btn-secondary" href="#ranks">Rangok</a></div>
+</section>
+<div class="server" id="join"><div class="server-card"><div class="server-top"><span>Szerver elérés</span><span class="status">Online</span></div><div class="server-body"><label>Szerver IP</label><div class="ip-row"><span class="ip" id="serverIp">play.kingducksmp.com</span><button class="copy-btn" id="copyIp" type="button">Másolás</button></div><p class="server-note">Java + Bedrock. Másold be az IP-t a Minecraftba és csatlakozz!</p></div></div></div>
+<section class="section" id="ranks"><p class="section-kicker">Rangok</p><h2>Válaszd a kacsádat</h2><p>Támogasd a szervert és kapj extra előnyöket. Nincs pay-to-win.</p><div class="ranks">
+<article class="rank"><h3>Juvenile Duck</h3><div class="price">€0.25</div><ul><li>Egyedi prefix</li><li>Színes chat</li><li>Alapvető kit</li></ul><button class="btn btn-secondary" data-rank="Juvenile Duck" data-price="€0.25">Vásárlás</button></article>
+<article class="rank"><h3>Adult Duck</h3><div class="price">€0.50</div><ul><li>Minden Juvenile</li><li>Több home</li><li>Pet kacsa</li></ul><button class="btn btn-primary" data-rank="Adult Duck" data-price="€0.50">Vásárlás</button></article>
+<article class="rank"><h3>Old Duck</h3><div class="price">€1.00</div><ul><li>Minden Adult</li><li>VIP kit</li><li>Prioritás queue</li></ul><button class="btn btn-secondary" data-rank="Old Duck" data-price="€1.00">Vásárlás</button></article>
+</div></section>
+<section class="section"><p class="section-kicker">Funkciók</p><h2>Több mint egy szerver</h2><div class="features">
+<div class="feature"><h3>Java + Bedrock</h3><p>Egy világ, minden platform.</p></div>
+<div class="feature"><h3>Építs szabadon</h3><p>Parancsok, boltok, TPA.</p></div>
+<div class="feature"><h3>Aktív közösség</h3><p>Discord, eventek, barátok.</p></div>
+<div class="feature"><h3>Nincs pay-to-win</h3><p>Rangok csak kozmetikaiak.</p></div>
+</div></section>
+<section class="section" id="rules"><p class="section-kicker">Szabályok</p><h2>Tartsd tisztán a tavat</h2><ol class="rules-list"><li><strong>1.</strong> Nincs griefelés és lopás.</li><li><strong>2.</strong> Légy tisztelettudó a chatben.</li><li><strong>3.</strong> Nincs csalás, x-ray.</li><li><strong>4.</strong> Családbarát építmények.</li><li><strong>5.</strong> Kövesd a staffot. Jó játékot!</li></ol></section>
+<section class="section" id="community"><p class="section-kicker">Közösség</p><h2>Csatlakozz a rajhoz</h2><p>A Discord a szívünk.</p><div class="community-actions"><a class="btn btn-primary" href="https://discord.gg/g8fuPVUYu" target="_blank" rel="noopener">Discord</a><a class="btn btn-secondary" href="https://www.tiktok.com/@kingducksmp" target="_blank" rel="noopener">TikTok</a></div></section>
+</main>
+<footer><p>© 2026 King Duck SMP</p></footer>
+<div class="toast" id="toast"></div>
+<script>
+const t=document.getElementById('toast');function toast(m){t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2000)}
+document.getElementById('copyIp').onclick=()=>{const ip=document.getElementById('serverIp').textContent;navigator.clipboard?.writeText(ip).then(()=>toast('IP másolva!')).catch(()=>toast(ip))};
+document.querySelectorAll('[data-rank]').forEach(b=>b.onclick=()=>toast(b.dataset.rank+' – '+b.dataset.price+' (hamarosan)'));
+const mm=document.getElementById('mobileMenu');
+document.getElementById('menuBtn').onclick=()=>mm.classList.add('open');
+document.getElementById('closeMenu').onclick=()=>mm.classList.remove('open');
+mm.querySelectorAll('[data-close]').forEach(a=>a.onclick=()=>mm.classList.remove('open'));
+</script>
+</body>
+</html>
