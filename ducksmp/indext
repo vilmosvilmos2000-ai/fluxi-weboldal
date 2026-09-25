@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#0e0d0b">
+	<meta name="description" content="Master Duck SMP - a crossplay Minecraft survival world for builders, adventurers and legends.">
+	<title>Master Duck SMP | Enter the pond</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--ink: #0e0d0b;
+			--ink-soft: #171512;
+			--cream: #f5efdf;
+			--muted: #a9a397;
+			--gold: #ffbe2e;
+			--gold-bright: #ffd66a;
+			--orange: #ef702d;
+			--line: rgba(245, 239, 223, .14);
+			--mono: "DM Mono", monospace;
+			--display: "Barlow Condensed", Impact, sans-serif;
+		}
+
+		* { box-sizing: border-box; }
+		html { scroll-behavior: smooth; }
+		body {
+			margin: 0;
+			color: var(--cream);
+			background: var(--ink);
+			font-family: var(--display);
+			overflow-x: hidden;
+		}
+		body::before {
+			content: "";
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			opacity: .25;
+			background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+			background-size: 32px 32px;
+			mask-image: linear-gradient(to bottom, black, transparent 75%);
+		}
+		a { color: inherit; text-decoration: none; }
+		button { font: inherit; }
+
+		.topline {
+			height: 5px;
+			background: linear-gradient(90deg, var(--orange), var(--gold), var(--gold-bright), var(--orange));
+		}
+		.nav {
+			position: relative;
+			z-index: 2;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			max-width: 1240px;
+			margin: 0 auto;
+			padding: 28px 34px;
+		}
+		.brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .05em; }
+		.brand-mark { color: var(--gold); font-size: 25px; line-height: 1; }
+		.brand-name { font-size: 19px; text-transform: uppercase; }
+		.brand-name span { color: var(--gold); }
+		.nav-links { display: flex; gap: 30px; color: var(--muted); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+		.nav-links a { transition: color .2s ease; }
+		.nav-links a:hover { color: var(--gold); }
+		.social-links { display: flex; align-items: center; gap: 8px; }
+		.social-links a { border: 1px solid var(--line); padding: 10px 12px; color: var(--cream); font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; transition: .2s ease; }
+		.social-links a:hover { border-color: var(--gold); color: var(--gold); }
+		.language-switch { border: 1px solid var(--gold); padding: 10px 12px; background: var(--gold); color: var(--ink); cursor: pointer; font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; transition: .2s ease; }
+		.language-switch:hover { background: var(--gold-bright); transform: translateY(-2px); }
+		.nav-cta { border: 1px solid var(--line); padding: 11px 16px; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; transition: .2s ease; }
+		.nav-cta:hover { border-color: var(--gold); color: var(--gold); }
+
+		.hero {
+			position: relative;
+			display: grid;
+			grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
+			align-items: center;
+			gap: 30px;
+			max-width: 1240px;
+			min-height: 690px;
+			margin: 0 auto;
+			padding: 46px 34px 95px;
+		}
+		.hero-copy { position: relative; z-index: 1; animation: rise .8s .1s both; }
+		.eyebrow { display: flex; align-items: center; gap: 10px; color: var(--gold); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+		.eyebrow::before { content: ""; width: 34px; height: 1px; background: var(--gold); }
+		h1 { max-width: 690px; margin: 21px 0 18px; font-size: clamp(72px, 10.5vw, 144px); font-weight: 900; line-height: .79; letter-spacing: -.045em; text-transform: uppercase; }
+		h1 em { color: var(--gold); font-style: normal; }
+		.hero-text { max-width: 450px; margin: 0; color: var(--muted); font-size: 20px; line-height: 1.2; letter-spacing: .01em; }
+		.actions { display: flex; align-items: center; gap: 18px; margin-top: 35px; }
+		.button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 20px; border: 1px solid var(--gold); background: var(--gold); color: var(--ink); font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: transform .2s ease, background .2s ease; }
+		.button:hover { transform: translateY(-3px); background: var(--gold-bright); }
+		.button.secondary { border-color: var(--line); background: transparent; color: var(--cream); }
+		.button.secondary:hover { border-color: var(--gold); color: var(--gold); }
+		.hero-art { position: relative; display: flex; justify-content: center; animation: float-in 1s .25s both; }
+		.hero-art::before { content: ""; position: absolute; width: 430px; height: 430px; border: 1px solid rgba(255, 190, 46, .18); border-radius: 50%; box-shadow: 0 0 100px rgba(239, 112, 45, .15); }
+		.hero-art img { position: relative; width: min(100%, 510px); aspect-ratio: 1; object-fit: cover; mix-blend-mode: screen; filter: saturate(1.1) contrast(1.05); clip-path: polygon(17% 4%, 84% 4%, 100% 18%, 96% 87%, 80% 100%, 17% 97%, 0 82%, 3% 18%); }
+		.stamp { position: absolute; right: 4%; bottom: 8%; display: grid; place-items: center; width: 102px; height: 102px; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); background: var(--ink); font-family: var(--mono); font-size: 10px; line-height: 1.4; text-align: center; text-transform: uppercase; transform: rotate(13deg); }
+		.stamp strong { display: block; color: var(--cream); font-family: var(--display); font-size: 23px; line-height: .8; }
+
+		.ticker { border-block: 1px solid var(--line); overflow: hidden; white-space: nowrap; background: var(--gold); color: var(--ink); }
+		.ticker-track { display: inline-flex; gap: 24px; padding: 12px 0; animation: ticker 22s linear infinite; font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+		.ticker-track span::after { content: "✦"; margin-left: 24px; }
+
+		.section { max-width: 1240px; margin: 0 auto; padding: 120px 34px; }
+		.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 35px; margin-bottom: 44px; }
+		.section-kicker { margin: 0 0 9px; color: var(--orange); font-family: var(--mono); font-size: 11px; letter-spacing: .13em; text-transform: uppercase; }
+		h2 { margin: 0; font-size: clamp(47px, 6vw, 83px); line-height: .84; letter-spacing: -.03em; text-transform: uppercase; }
+		.section-intro { max-width: 290px; margin: 0 0 3px; color: var(--muted); font-size: 17px; line-height: 1.1; }
+		.features { display: grid; grid-template-columns: 1.15fr .85fr .85fr; gap: 12px; }
+		.feature { min-height: 220px; padding: 27px; border: 1px solid var(--line); background: rgba(255,255,255,.025); transition: background .2s ease, transform .2s ease; }
+		.feature:hover { background: rgba(255, 190, 46, .08); transform: translateY(-5px); }
+		.feature.large { grid-row: span 2; min-height: 452px; padding: 0; overflow: hidden; background: linear-gradient(145deg, rgba(239,112,45,.18), rgba(255,190,46,.03) 55%), url('image.png') center / 72% auto no-repeat, var(--ink-soft); }
+		.feature.large:hover { background-size: 76%; }
+		.feature.large .feature-overlay { position: absolute; inset: auto 0 0; padding: 27px; background: linear-gradient(transparent, rgba(14,13,11,.96)); }
+		.feature.large { position: relative; }
+		.feature-number { display: block; margin-bottom: 25px; color: var(--gold); font-family: var(--mono); font-size: 12px; }
+		.feature h3 { margin: 0 0 11px; font-size: 30px; line-height: .9; text-transform: uppercase; }
+		.feature p { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.05; }
+
+		.join-band { position: relative; overflow: hidden; border-block: 1px solid var(--line); background: var(--ink-soft); }
+		.join-band::after { content: "DUCK"; position: absolute; right: -12px; bottom: -50px; color: rgba(255,190,46,.04); font-size: 220px; font-weight: 900; line-height: .8; }
+		.join-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 60px; max-width: 1240px; margin: 0 auto; padding: 100px 34px; }
+		.join-copy h2 { max-width: 510px; }
+		.join-copy p { max-width: 420px; color: var(--muted); font-size: 18px; line-height: 1.1; }
+		.server-card { border: 1px solid var(--gold); background: rgba(14,13,11,.7); box-shadow: 10px 10px 0 var(--gold); }
+		.server-card-top { display: flex; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(255,190,46,.35); color: var(--gold); font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+		.status { display: inline-flex; align-items: center; gap: 7px; color: var(--cream); }
+		.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 10px var(--orange); }
+		.server-card-body { padding: 30px 25px 26px; }
+		.server-card-body label { display: block; margin-bottom: 10px; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+		.ip-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+		.ip { color: var(--gold-bright); font-family: var(--mono); font-size: clamp(20px, 3vw, 30px); font-weight: 500; letter-spacing: .02em; }
+		.copy-btn { flex: 0 0 auto; border: 1px solid var(--line); padding: 10px 12px; background: transparent; color: var(--cream); cursor: pointer; font-family: var(--mono); font-size: 10px; text-transform: uppercase; transition: .2s ease; }
+		.copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+		.server-note { margin: 20px 0 0; padding-top: 17px; border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; }
+
+		footer { display: flex; justify-content: space-between; gap: 20px; max-width: 1240px; margin: 0 auto; padding: 27px 34px 35px; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+		footer span:first-child { color: var(--gold); }
+		.footer-links { display: flex; gap: 18px; }
+		.footer-links a { transition: color .2s ease; }
+		.footer-links a:hover { color: var(--gold); }
+		[data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+		[data-reveal].visible { opacity: 1; transform: translateY(0); }
+		@keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+		@keyframes float-in { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+		@keyframes ticker { to { transform: translateX(-50%); } }
+		@media (max-width: 800px) {
+			.nav { padding: 22px 20px; }
+			.nav-links { display: none; }
+			.nav-cta { display: none; }
+			.hero { grid-template-columns: 1fr; min-height: auto; padding: 45px 20px 80px; }
+			.hero-art { order: -1; margin-bottom: 15px; }
+			.hero-art img { width: 75%; }
+			.hero-art::before { width: 260px; height: 260px; }
+			.stamp { right: 4%; bottom: 0; transform: rotate(10deg) scale(.8); }
+			h1 { font-size: clamp(70px, 21vw, 110px); }
+			.hero-text { font-size: 18px; }
+			.section { padding: 80px 20px; }
+			.section-heading { display: block; margin-bottom: 28px; }
+			.section-intro { margin-top: 18px; }
+			.features { grid-template-columns: 1fr 1fr; }
+			.feature.large { grid-column: span 2; grid-row: auto; min-height: 390px; }
+			.join-inner { grid-template-columns: 1fr; gap: 48px; padding: 80px 20px; }
+			.server-card { box-shadow: 6px 6px 0 var(--gold); }
+			footer { padding: 25px 20px 30px; font-size: 9px; }
+		}
+		@media (max-width: 460px) {
+			.nav { flex-wrap: wrap; row-gap: 14px; }
+			.brand-name { font-size: 16px; }
+			.social-links a { padding: 8px 8px; font-size: 9px; }
+			.actions { align-items: stretch; flex-direction: column; }
+			.actions .button { width: 100%; }
+			.features { grid-template-columns: 1fr; }
+			.feature.large { grid-column: auto; }
+			.ip-row { align-items: flex-start; flex-direction: column; }
+			.copy-btn { width: 100%; }
+			footer { align-items: flex-start; flex-direction: column; }
+		}
+	</style>
+</head>
+<body>
+	<div class="topline"></div>
+	<header class="nav">
+		<a class="brand" href="#top" aria-label="Master Duck SMP home"><span class="brand-mark">♛</span><span class="brand-name">Master <span>Duck</span> SMP</span></a>
+		<nav class="nav-links" aria-label="Main navigation">
+			<a href="#world">The world</a>
+			<a href="#features">Features</a>
+			<a href="#join">Join us</a>
+		</nav>
+		<div class="social-links" aria-label="Social links">
+			<a href="https://discord.gg/g8fuPVUYu" target="_blank" rel="noopener noreferrer">Discord ↗</a>
+			<a href="https://www.tiktok.com/@kingducksmp?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener noreferrer">TikTok ↗</a>
+		</div>
+		<button class="language-switch" id="language-switch" type="button" aria-label="Switch language">HU / EN</button>
+		<a class="nav-cta" href="#join">Play with us ↗</a>
+	</header>
+
+	<main id="top">
+		<section class="hero" id="world">
+			<div class="hero-copy">
+				<div class="eyebrow">The pond is waiting</div>
+				<h1>Rule your<br><em>world.</em></h1>
+				<p class="hero-text">A crossplay survival world where every build has a story, every player leaves a mark, and the duck wears the crown.</p>
+				<div class="actions">
+					<a class="button" href="#join">Enter the pond <span>↗</span></a>
+					<a class="button secondary" href="#features">Discover SMP</a>
+				</div>
+			</div>
+			<div class="hero-art">
+				<img src="image.png" alt="Pixel art golden duck wearing a crown">
+				<div class="stamp"><strong>0–24</strong>online<br>energy</div>
+			</div>
+		</section>
+
+		<div class="ticker" aria-hidden="true"><div class="ticker-track"><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span></div></div>
+
+		<section class="section" id="features">
+			<div class="section-heading" data-reveal>
+				<div><p class="section-kicker">Built for the bold</p><h2>More than<br>a server.</h2></div>
+				<p class="section-intro">Your next chapter starts here. Bring your friends, your wildest plans and a little bit of chaos.</p>
+			</div>
+			<div class="features">
+				<article class="feature large" data-reveal>
+					<div class="feature-overlay"><span class="feature-number">01 / THE VIBE</span><h3>Your server.<br>Your rules.</h3><p>A friendly, active world with room for your biggest ideas.</p></div>
+				</article>
+				<article class="feature" data-reveal><span class="feature-number">02 / CONNECT</span><h3>Java +<br>Bedrock</h3><p>One pond, every platform. Play together without the walls.</p></article>
+				<article class="feature" data-reveal><span class="feature-number">03 / CREATE</span><h3>Build<br>without limits</h3><p>Commands, shops, TPA and all the tools to make a home.</p></article>
+				<article class="feature" data-reveal><span class="feature-number">04 / SUPPORT</span><h3>Always<br>something on</h3><p>AI support bots and an active community keep the world moving.</p></article>
+			</div>
+		</section>
+
+		<section class="join-band" id="join">
+			<div class="join-inner">
+				<div class="join-copy" data-reveal><p class="section-kicker">Your invitation</p><h2>Meet us<br>at the pond.</h2><p>The gates are being polished. Follow along and be first in line when the Master Duck SMP goes live.</p></div>
+				<div class="server-card" data-reveal>
+					<div class="server-card-top"><span>Server access</span><span class="status">Coming soon</span></div>
+					<div class="server-card-body"><label>Server IP / Address</label><div class="ip-row"><span class="ip" id="server-ip">COMING SOON</span><button class="copy-btn" id="copy-ip" type="button">Copy IP</button></div><p class="server-note">The address will appear here when the gates officially open. Keep your eyes on the nest.</p></div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer><span>© 2026 Master Duck SMP</span><span>Made for builders, adventurers & ducks</span><div class="footer-links"><a href="https://discord.gg/g8fuPVUYu" target="_blank" rel="noopener noreferrer">Discord ↗</a><a href="https://www.tiktok.com/@kingducksmp?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener noreferrer">TikTok ↗</a></div></footer>
+	<script>
+		const revealItems = document.querySelectorAll('[data-reveal]');
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					entry.target.classList.add('visible');
+					observer.unobserve(entry.target);
+				}
+			});
+		}, { threshold: 0.16 });
+		revealItems.forEach((item) => observer.observe(item));
+
+		document.getElementById('copy-ip').addEventListener('click', (event) => {
+			const button = event.currentTarget;
+			navigator.clipboard?.writeText('COMING SOON');
+			button.textContent = currentLanguage === 'hu' ? 'Hamarosan' : 'Coming soon';
+			setTimeout(() => { button.textContent = currentLanguage === 'hu' ? 'IP másolása' : 'Copy IP'; }, 1800);
+		});
+
+		const languageSwitch = document.getElementById('language-switch');
+		let currentLanguage = 'en';
+		const translations = {
+			en: {
+				'.nav-links a:nth-child(1)': 'The world', '.nav-links a:nth-child(2)': 'Features', '.nav-links a:nth-child(3)': 'Join us', '.nav-cta': 'Play with us ↗',
+				'.eyebrow': 'The pond is waiting', 'h1': 'Rule your<br><em>world.</em>', '.hero-text': 'A crossplay survival world where every build has a story, every player leaves a mark, and the duck wears the crown.', '.actions .button:first-child': 'Enter the pond <span>↗</span>', '.actions .button.secondary': 'Discover SMP',
+				'.section-kicker': 'Built for the bold', 'h2': 'More than<br>a server.', '.section-intro': 'Your next chapter starts here. Bring your friends, your wildest plans and a little bit of chaos.',
+				'.feature.large .feature-number': '01 / THE VIBE', '.feature.large h3': 'Your server.<br>Your rules.', '.feature.large p': 'A friendly, active world with room for your biggest ideas.',
+				'.feature:nth-child(2) .feature-number': '02 / CONNECT', '.feature:nth-child(2) h3': 'Java +<br>Bedrock', '.feature:nth-child(2) p': 'One pond, every platform. Play together without the walls.',
+				'.feature:nth-child(3) .feature-number': '03 / CREATE', '.feature:nth-child(3) h3': 'Build<br>without limits', '.feature:nth-child(3) p': 'Commands, shops, TPA and all the tools to make a home.',
+				'.feature:nth-child(4) .feature-number': '04 / SUPPORT', '.feature:nth-child(4) h3': 'Always<br>something on', '.feature:nth-child(4) p': 'AI support bots and an active community keep the world moving.',
+				'.join-copy .section-kicker': 'Your invitation', '.join-copy h2': 'Meet us<br>at the pond.', '.join-copy p:last-child': 'The gates are being polished. Follow along and be first in line when the Master Duck SMP goes live.', '.server-card-top span:first-child': 'Server access', '.status': 'Coming soon', '.server-card-body label': 'Server IP / Address', '.server-note': 'The address will appear here when the gates officially open. Keep your eyes on the nest.', '.copy-btn': 'Copy IP',
+				'footer span:nth-child(2)': 'Made for builders, adventurers & ducks'
+			},
+			hu: {
+				'.nav-links a:nth-child(1)': 'A világ', '.nav-links a:nth-child(2)': 'Funkciók', '.nav-links a:nth-child(3)': 'Csatlakozz', '.nav-cta': 'Játssz velünk ↗',
+				'.eyebrow': 'A tó vár rád', 'h1': 'Urald a<br><em>világod.</em>', '.hero-text': 'Egy crossplay túlélővilág, ahol minden építménynek története van, minden játékos nyomot hagy, és a kacsa viseli a koronát.', '.actions .button:first-child': 'Lépj be a tóba <span>↗</span>', '.actions .button.secondary': 'Fedezd fel',
+				'.section-kicker': 'A bátraknak készült', 'h2': 'Több mint<br>egy szerver.', '.section-intro': 'A következő fejezeted itt kezdődik. Hozd a barátaidat, a legvadabb terveidet és egy kis káoszt.',
+				'.feature.large .feature-number': '01 / HANGULAT', '.feature.large h3': 'A szervered.<br>A szabályaid.', '.feature.large p': 'Barátságos, aktív világ, ahol a legnagyobb ötleteidnek is van helye.',
+				'.feature:nth-child(2) .feature-number': '02 / KAPCSOLÓDÁS', '.feature:nth-child(2) h3': 'Java +<br>Bedrock', '.feature:nth-child(2) p': 'Egy tó, minden platform. Játsszatok együtt korlátok nélkül.',
+				'.feature:nth-child(3) .feature-number': '03 / ALKOSS', '.feature:nth-child(3) h3': 'Építs<br>határok nélkül', '.feature:nth-child(3) p': 'Parancsok, boltok, TPA és minden eszköz az otthonod megteremtéséhez.',
+				'.feature:nth-child(4) .feature-number': '04 / TÁMOGATÁS', '.feature:nth-child(4) h3': 'Mindig<br>történik valami', '.feature:nth-child(4) p': 'AI-segítő botok és aktív közösség tartja mozgásban a világot.',
+				'.join-copy .section-kicker': 'A meghívód', '.join-copy h2': 'Találkozzunk<br>a tónál.', '.join-copy p:last-child': 'A kapukat még csiszoljuk. Kövess minket, és legyél az elsők között, amikor a Master Duck SMP megnyílik.', '.server-card-top span:first-child': 'Szerver hozzáférés', '.status': 'Hamarosan', '.server-card-body label': 'Szerver IP / Cím', '.server-note': 'A cím akkor jelenik meg itt, amikor a kapuk hivatalosan megnyílnak. Tartsd szemmel a fészket.', '.copy-btn': 'IP másolása',
+				'footer span:nth-child(2)': 'Építőknek, kalandoroknak és kacsáknak'
+			}
+		};
+		languageSwitch.addEventListener('click', () => {
+			currentLanguage = currentLanguage === 'en' ? 'hu' : 'en';
+			Object.entries(translations[currentLanguage]).forEach(([selector, text]) => {
+				document.querySelectorAll(selector).forEach((element) => { element.innerHTML = text; });
+			});
+			languageSwitch.textContent = currentLanguage === 'en' ? 'HU / EN' : 'EN / HU';
+			document.documentElement.lang = currentLanguage;
+		});
+	</script>
+</body>
+</html>
