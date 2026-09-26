@@ -97,13 +97,13 @@
 		.button.secondary { border-color: var(--line); background: transparent; color: var(--cream); }
 		.button.secondary:hover { border-color: var(--gold); color: var(--gold); }
 		.hero-art { position: relative; display: flex; justify-content: center; animation: float-in 1s .25s both; }
-		.hero-art::before { content: ""; position: absolute; width: 430px; height: 430px; border: 1px solid rgba(255, 190, 46, .18); border-radius: 50%; box-shadow: 0 0 100px rgba(239, 112, 45, .15); }
 		.hero-art img { position: relative; width: min(100%, 510px); aspect-ratio: 1; object-fit: cover; mix-blend-mode: screen; filter: saturate(1.1) contrast(1.05); clip-path: polygon(17% 4%, 84% 4%, 100% 18%, 96% 87%, 80% 100%, 17% 97%, 0 82%, 3% 18%); }
 		.stamp { position: absolute; right: 4%; bottom: 8%; display: grid; place-items: center; width: 102px; height: 102px; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); background: var(--ink); font-family: var(--mono); font-size: 10px; line-height: 1.4; text-align: center; text-transform: uppercase; transform: rotate(13deg); }
 		.stamp strong { display: block; color: var(--cream); font-family: var(--display); font-size: 23px; line-height: .8; }
 
 		.ticker { border-block: 1px solid var(--line); overflow: hidden; white-space: nowrap; background: var(--gold); color: var(--ink); }
-		.ticker-track { display: inline-flex; gap: 24px; padding: 12px 0; animation: ticker 22s linear infinite; font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+		.ticker-track { display: flex; width: max-content; gap: 24px; padding: 12px 0; animation: ticker 22s linear infinite; font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+		.ticker-track span { flex: 0 0 auto; }
 		.ticker-track span::after { content: "✦"; margin-left: 24px; }
 
 		.section { max-width: 1240px; margin: 0 auto; padding: 120px 34px; }
@@ -148,7 +148,7 @@
 		[data-reveal].visible { opacity: 1; transform: translateY(0); }
 		@keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
 		@keyframes float-in { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
-		@keyframes ticker { to { transform: translateX(-50%); } }
+		@keyframes ticker { to { transform: translateX(-16.6667%); } }
 		@media (max-width: 800px) {
 			.nav { padding: 22px 20px; }
 			.nav-links { display: none; }
@@ -217,7 +217,7 @@
 			</div>
 		</section>
 
-		<div class="ticker" aria-hidden="true"><div class="ticker-track"><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span></div></div>
+		<div class="ticker" aria-hidden="true"><div class="ticker-track"><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span><span>Survival</span><span>Crossplay</span><span>Community</span><span>No pay to win</span></div></div>
 
 		<section class="section" id="features">
 			<div class="section-heading" data-reveal>
