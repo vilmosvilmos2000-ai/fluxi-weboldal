@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Szebb Kréta</title>
+<style>
+  :root{
+    --bg:#21242b;
+    --bg-img:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,.045), transparent 40%),
+      radial-gradient(circle at 80% 85%, rgba(127,168,255,.05), transparent 45%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,.014) 0 2px, transparent 2px 9px),
+      repeating-linear-gradient(105deg, rgba(0,0,0,.05) 0 1px, transparent 1px 11px);
+    --card:rgba(255,255,255,.06);
+    --card-border:rgba(255,255,255,.12);
+    --text:#f4f6fa;
+    --muted:#aab1bd;
+    --accent:#7fa8ff;
+    --green:#4de092;
+    --red:#ff7b82;
+    --orange:#ffc26b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    color:var(--text);
+    background-color:var(--bg);
+    background-image:var(--bg-img);
+    overflow-x:hidden;
+    transition:background-color .3s ease;
+  }
+  body.t-fekete{--bg:#000;--bg-img:none}
+  body.t-csikos{
+    --bg:#1d2026;
+    --bg-img:
+      radial-gradient(circle at 20% 15%, rgba(127,168,255,.07), transparent 40%),
+      radial-gradient(circle at 80% 85%, rgba(255,194,107,.06), transparent 45%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 26px),
+      repeating-linear-gradient(105deg, rgba(0,0,0,.08) 0 1px, transparent 1px 31px);
+  }
+  body.t-pottyos{
+    --bg:#191c23;
+    --bg-img:
+      radial-gradient(circle at 50% 0%, rgba(127,168,255,.09), transparent 45%),
+      repeating-radial-gradient(circle, rgba(255,255,255,.06) 0 1.2px, transparent 1.2px 13px),
+      repeating-radial-gradient(circle at 7px 7px, rgba(0,0,0,.10) 0 1.2px, transparent 1.2px 13px);
+  }
+  body.t-racs{
+    --bg:#181a20;
+    --bg-img:
+      radial-gradient(circle at 50% 40%, rgba(127,168,255,.07), transparent 55%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 40px);
+  }
+  body.t-hullam{
+    --bg:#16181d;
+    --bg-img:
+      repeating-radial-gradient(circle at 50% 130%, rgba(127,168,255,.12) 0 18px, transparent 18px 44px),
+      repeating-radial-gradient(ellipse at 50% -20%, rgba(255,255,255,.03) 0 24px, transparent 24px 64px),
+      radial-gradient(circle at 50% 0%, rgba(127,168,255,.05), transparent 50%);
+  }
+  /* ================= LANDING ================= */
+  #landing{
+    position:fixed;inset:0;z-index:100;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background-image:url('okos.png');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    transition:opacity .8s ease, visibility .8s;
+  }
+  #landing.hide{opacity:0;visibility:hidden;pointer-events:none}
+  .clock-units{display:flex;align-items:center;gap:6px}
+  .clock{
+    font-weight:300;
+    font-size:clamp(56px,12vw,150px);
+    line-height:1;
+    letter-spacing:2px;
+    color:#fff;
+    text-shadow:0 6px 30px rgba(0,0,0,.5);
+    font-variant-numeric:tabular-nums;
+  }
+  .clock .colon{font-weight:200;color:rgba(255,255,255,.65);animation:blink 1.6s steps(1) infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+  #date{
+    margin-top:22px;
+    font-size:clamp(15px,2.4vw,21px);
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color:rgba(255,255,255,.78);
+    font-weight:300;
+  }
+  .glass-btn{
+    margin-top:64px;
+    padding:18px 52px;
+    font-size:18px;
+    letter-spacing:2px;
+    font-weight:500;
+    color:#fff;
+    background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.06));
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:60px;
+    backdrop-filter:blur(14px);
+    box-shadow:0 12px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.25);
+    cursor:pointer;
+    transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+    animation:float 3.2s ease-in-out infinite;
+  }
+  .glass-btn:hover{
+    transform:translateY(-2px) scale(1.04);
+    background:linear-gradient(135deg,rgba(255,255,255,.24),rgba(255,255,255,.1));
+    box-shadow:0 18px 55px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-8px)}
+  }
+  /* ================= APP ================= */
+  #app{display:none;min-height:100vh;padding:0 0 60px}
+  #app.show{display:block;animation:fadeUp .7s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  header{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:16px clamp(16px,4vw,48px);
+    background:rgba(22,24,29,.78);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--card-border);
+  }
+  .logo{font-size:20px;font-weight:700}
+  .logo span{color:var(--accent)}
+  .who{
+    display:flex;flex-direction:column;align-items:flex-end;gap:2px;
+    font-size:12.5px;color:var(--muted);
+  }
+  .who b{color:var(--text);font-weight:600}
+  nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  nav button{
+    background:transparent;border:none;color:var(--muted);
+    font-size:14.5px;padding:9px 16px;border-radius:24px;cursor:pointer;
+    transition:color .2s, background .2s;
+    font-family:inherit;
+  }
+  nav button:hover{color:#fff;background:rgba(255,255,255,.07)}
+  nav button.active{color:#fff;background:rgba(127,168,255,.18);box-shadow:inset 0 0 0 1px rgba(127,168,255,.35)}
+  header .icon-btn{
+    background:transparent;border:1px solid var(--card-border);color:var(--muted);
+    width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+    transition:color .2s,border-color .2s;
+    font-family:inherit;
+  }
+  header .icon-btn:hover{color:#fff;border-color:rgba(255,255,255,.35)}
+  main{max-width:1080px;margin:36px auto 0;padding:0 clamp(16px,4vw,48px)}
+  .tab{display:none;flex-direction:column;gap:22px}
+  .tab.show{display:flex}
+  .tab-head h1{font-size:26px;font-weight:600}
+  .tab-head p{color:var(--muted);margin-top:4px;font-size:14.5px}
+  .week-nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .week-nav button{
+    background:rgba(255,255,255,.06);border:1px solid var(--card-border);color:var(--text);
+    padding:8px 16px;border-radius:22px;cursor:pointer;font-family:inherit;font-size:13.5px;
+    transition:background .2s,border-color .2s;user-select:none;
+  }
+  .week-nav button:hover:not(:disabled){background:rgba(127,168,255,.2);border-color:rgba(127,168,255,.45)}
+  .week-nav button:disabled{opacity:.35;cursor:default}
+  .week-nav #this-week{
+    background:rgba(127,168,255,.18);border-color:rgba(127,168,255,.4);
+    padding:8px 22px;font-weight:600;
+  }
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:18px;
+    backdrop-filter:blur(8px);
+    transition:transform .2s, border-color .2s;
+  }
+  .card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.22)}
+  .card .tag{
+    display:inline-block;font-size:11px;font-weight:600;letter-spacing:1px;
+    text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-bottom:12px;
+  }
+  .card h3{font-size:16.5px;font-weight:600;margin-bottom:5px}
+  .card .sub{color:var(--muted);font-size:13px}
+  .card .body{margin-top:8px;font-size:14px;line-height:1.55}
+  .card .body small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+  .card .body a{color:var(--accent);text-decoration:underline}
+  .card .body p{margin:7px 0}
+  .card .body ul,.card .body ol{margin:6px 0;padding-left:22px}
+  .card .body li{margin:3px 0}
+  .card .body h1,.card .body h2,.card .body h3,.card .body h4{font-size:15.5px;font-weight:600;margin:8px 0 4px}
+  .day-sect{margin-bottom:8px}
+  .day-sect > .day-name{
+    font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);
+    padding:8px 4px 10px;display:flex;align-items:center;gap:10px;
+  }
+  .day-sect > .day-name::after{content:'';flex:1;height:1px;background:var(--card-border)}
+  .day-sect > .day-name.today{color:var(--accent);font-weight:700}
+  .day-row{
+    display:flex;align-items:center;gap:16px;padding:14px 18px;
+    background:var(--card);border:1px solid var(--card-border);border-radius:14px;margin-bottom:8px;
+    flex-wrap:wrap;
+  }
+  .day-row .time{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600;min-width:88px}
+  .day-row .subject{font-weight:600}
+  .day-row .room{color:var(--muted);font-size:13px;margin-left:auto;text-align:right}
+  .day-row .now{outline:1px solid var(--accent);outline-offset:3px}
+  .pill{margin-left:12px;font-size:11px;padding:3px 9px;border-radius:12px;white-space:nowrap}
+  .pill.green{color:var(--green);background:rgba(77,224,146,.14)}
+  .pill.red{color:var(--red);background:rgba(255,123,130,.14)}
+  .pill.orange{color:var(--orange);background:rgba(255,194,107,.14)}
+  .pill.blue{color:var(--accent);background:rgba(127,168,255,.14)}
+  .grade{font-size:15px;font-weight:700;min-width:26px;text-align:center;padding:5px 0;border-radius:8px}
+  .g1{background:rgba(255,123,130,.16);color:var(--red)}
+  .g2{background:rgba(255,145,100,.16);color:#ff9b76}
+  .g3{background:rgba(255,194,107,.16);color:var(--orange)}
+  .g4{background:rgba(129,207,255,.16);color:#81cfff}
+  .g5{background:rgba(77,224,146,.16);color:var(--green)}
+  .g0{background:rgba(255,255,255,.1);color:var(--muted)}
+  .muted{color:var(--muted)}
+  .empty{
+    text-align:center;color:var(--muted);padding:40px 20px;font-size:15px;
+    border:1px dashed rgba(255,255,255,.15);border-radius:16px;
+  }
+  .spinner{
+    text-align:center;color:var(--muted);padding:50px 20px;font-size:15px;
+  }
+  .spinner .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin:0 3px;animation:pulse 1s infinite}
+  .spinner .dot:nth-child(2){animation-delay:.2s}
+  .spinner .dot:nth-child(3){animation-delay:.4s}
+  @keyframes pulse{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+  footer{
+    margin-top:50px;text-align:center;color:rgba(255,255,255,.35);
+    font-size:12.5px;letter-spacing:1px;
+  }
+  /* ================= LOGIN ================= */
+  #login-wrap{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:20px}
+  #login-wrap.show{display:flex}
+  #login-card{
+    width:100%;max-width:420px;
+    background:rgba(28,30,37,.92);
+    border:1px solid var(--card-border);
+    border-radius:20px;
+    padding:34px 30px;
+    backdrop-filter:blur(16px);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  #login-card h2{font-size:20px;font-weight:700;margin-bottom:4px}
+  #login-card .hint{color:var(--muted);font-size:13px;margin-bottom:22px}
+  #login-card label{display:block;font-size:12px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin:14px 0 6px}
+  #login-card input{
+    width:100%;background:rgba(255,255,255,.06);border:1px solid var(--card-border);
+    border-radius:10px;padding:12px 14px;color:var(--text);font-size:15px;font-family:inherit;
+    outline:none;transition:border-color .2s;
+  }
+  #login-card input:focus{border-color:var(--accent)}
+  .search-wrap{position:relative}
+  .results{
+    position:absolute;top:110%;left:0;right:0;z-index:95;
+    background:rgba(24,26,33,.98);border:1px solid var(--card-border);border-radius:12px;
+    max-height:220px;overflow:auto;display:none;
+  }
+  .results.show{display:block}
+  .results button{
+    display:block;width:100%;text-align:left;padding:10px 14px;background:transparent;border:none;
+    color:var(--text);font-size:13.5px;cursor:pointer;font-family:inherit;border-bottom:1px solid rgba(255,255,255,.05);
+  }
+  .results button:hover{background:rgba(127,168,255,.14)}
+  .login-btn{
+    width:100%;margin-top:24px;padding:14px;border:none;border-radius:12px;cursor:pointer;
+    background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:16px;font-weight:600;
+    font-family:inherit;transition:opacity .2s;
+  }
+  .login-btn:hover{opacity:.85}
+  .login-btn:disabled{opacity:.5;cursor:wait}
+  #login-err{color:var(--red);font-size:13px;min-height:18px;margin-top:12px;text-align:center}
+  #login-ok{color:var(--green);font-size:13px;margin-top:12px;text-align:center}
+  /* ================= BEÁLLÍTÁSOK ================= */
+  .modal{
+    position:fixed;inset:0;z-index:120;display:none;
+    align-items:center;justify-content:center;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(6px);
+  }
+  .modal.show{display:flex}
+  .modal-card{
+    width:min(440px,92vw);max-height:86vh;overflow:auto;
+    background:rgba(23,26,32,.97);border:1px solid var(--card-border);border-radius:18px;
+    padding:22px;box-shadow:0 20px 70px rgba(0,0,0,.55);
+  }
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .modal-head h2{font-size:19px}
+  .set-sec{margin-bottom:22px}
+  .set-sec:last-child{margin-bottom:0}
+  .set-sec h3{
+    font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;
+  }
+  .theme-row,.accent-row{display:flex;flex-wrap:wrap;gap:8px}
+  .swatch{
+    border:1px solid var(--card-border);background:rgba(255,255,255,.05);color:var(--text);
+    border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;
+    transition:background .2s,border-color .2s,transform .15s;
+  }
+  .swatch:hover{background:rgba(255,255,255,.1);transform:translateY(-1px)}
+  .swatch.active{background:rgba(127,168,255,.22);border-color:rgba(127,168,255,.6)}
+  .abtn{
+    width:36px;height:36px;border-radius:50%;border:2px solid transparent;cursor:pointer;
+    transition:transform .15s,box-shadow .2s;
+  }
+  .abtn:hover{transform:scale(1.12)}
+  .abtn.active{box-shadow:0 0 0 2px var(--card-bg,#0f1116),0 0 0 4px var(--c)}
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING ============ -->
+<div id="landing">
+  <div class="clock-units">
+    <div class="clock" id="lhh">--</div><div class="clock colon">:</div>
+    <div class="clock" id="lmm">--</div>
+  </div>
+  <div id="date">— —</div>
+  <button class="glass-btn" onclick="enterApp()">Belépés</button>
+</div>
+
+<!-- ============ BEJELENTKEZÉS ============ -->
+<div id="login-wrap">
+  <div id="login-card">
+    <h2>Kapcsolódás Kréta<span style="color:var(--accent)">-hoz</span></h2>
+    <div class="hint" id="login-hint">Add meg az iskoládat, a felhasználóneved és a jelszavad.</div>
+    <label>Iskola</label>
+    <div class="search-wrap">
+      <input id="school-input" placeholder="Az iskola neve…" autocomplete="off">
+      <div class="results" id="school-results"></div>
+    </div>
+    <label>Felhasználónév (okt. azonosító)</label>
+    <input id="user-input" autocomplete="username">
+    <label>Jelszó</label>
+    <input id="pass-input" type="password" autocomplete="current-password">
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Csatlakozás</button>
+    <div id="login-err"></div>
+    <div id="login-ok"></div>
+  </div>
+</div>
+
+<!-- ============ ALKALMAZÁS ============ -->
+<div id="app">
+  <header>
+    <div class="logo">Szebb<span>Kréta</span></div>
+    <div class="who" id="who"><span>Nincs kapcsolat</span><span class="muted">–</span></div>
+    <nav>
+      <button class="active" data-tab="timetable" onclick="showTab('timetable',this)">Órarend</button>
+      <button data-tab="homework" onclick="showTab('homework',this)">Dogák</button>
+      <button data-tab="news" onclick="showTab('news',this)">Bejelentések</button>
+      <button data-tab="grades" onclick="showTab('grades',this)">Jegyek</button>
+    </nav>
+    <button class="icon-btn" title="Beállítások" onclick="openSettings()">&#x2699;</button>
+    <button class="icon-btn" title="Frissítés" onclick="refreshAll()">&#x21bb;</button>
+    <button class="icon-btn" title="Kilépés" onclick="doLogout()">&#x23FB;</button>
+  </header>
+
+  <main>
+
+    <!-- ÓRAREND -->
+    <section class="tab show" id="timetable">
+      <div class="tab-head">
+        <h1>Órarend</h1>
+        <p id="weekday-label">Mai nap</p>
+      </div>
+      <div class="week-nav">
+        <button id="prev-week" onclick="stepWeek(-1)">&#x25C0; Előző</button>
+        <button id="this-week" onclick="jumpToday()">Ma</button>
+        <button id="next-week" onclick="stepWeek(1)">Következő &#x25B6;</button>
+      </div>
+      <div id="timetable-box"></div>
+    </section>
+
+    <!-- DOGÁK -->
+    <section class="tab" id="homework">
+      <div class="tab-head"><h1>Dogák és feladatok</h1><p>Közelgő számonkérések és kötelező feladatok</p></div>
+      <div id="homework-box"></div>
+    </section>
+
+    <!-- BEJELENTÉSEK -->
+    <section class="tab" id="news">
+      <div class="tab-head"><h1>Bejelentések</h1><p>Legfrissebb hírek az iskolától</p></div>
+      <div id="news-box"></div>
+    </section>
+
+    <!-- JEGYEK -->
+    <section class="tab" id="grades">
+      <div class="tab-head"><h1>Jegyek</h1><p>Összesítés tantárgyanként</p></div>
+      <div id="grades-box"></div>
+    </section>
+
+  </main>
+
+  <footer>SzebbKréta · élő Kréta-kapcsolat</footer>
+</div>
+
+<!-- ============ BEÁLLÍTÁSOK ============ -->
+<div class="modal" id="settings-modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>Beállítások</h2>
+      <button class="icon-btn" title="Bezárás" onclick="closeSettings()">&#x2715;</button>
+    </div>
+    <div class="set-sec">
+      <h3>Háttér</h3>
+      <div class="theme-row" id="theme-row">
+        <button class="swatch" data-theme="alap" onclick="setTheme('alap')">Alap</button>
+        <button class="swatch" data-theme="fekete" onclick="setTheme('fekete')">Fekete</button>
+        <button class="swatch" data-theme="csikos" onclick="setTheme('csikos')">Csíkos</button>
+        <button class="swatch" data-theme="pottyos" onclick="setTheme('pottyos')">Pöttyös</button>
+        <button class="swatch" data-theme="racs" onclick="setTheme('racs')">Rács</button>
+        <button class="swatch" data-theme="hullam" onclick="setTheme('hullam')">Hullám</button>
+      </div>
+    </div>
+    <div class="set-sec">
+      <h3>Kiemelő szín</h3>
+      <div class="accent-row" id="accent-row">
+        <button class="abtn" style="--c:#7fa8ff" data-accent="#7fa8ff" title="Kék" onclick="setAccent('#7fa8ff')"></button>
+        <button class="abtn" style="--c:#b78aff" data-accent="#b78aff" title="Lila" onclick="setAccent('#b78aff')"></button>
+        <button class="abtn" style="--c:#ff8ac2" data-accent="#ff8ac2" title="Rózsaszín" onclick="setAccent('#ff8ac2')"></button>
+        <button class="abtn" style="--c:#4de092" data-accent="#4de092" title="Zöld" onclick="setAccent('#4de092')"></button>
+        <button class="abtn" style="--c:#ffc26b" data-accent="#ffc26b" title="Narancs" onclick="setAccent('#ffc26b')"></button>
+        <button class="abtn" style="--c:#ff7b82" data-accent="#ff7b82" title="Piros" onclick="setAccent('#ff7b82')"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var SERVER_UP = false;
+
+function $(id){ return document.getElementById(id); }
+
+/* ---------- óra a landingre ---------- */
+var lhh=$('lhh'), lmm=$('lmm'), dte=$('date');
+function tick(){
+  var n=new Date();
+  lhh.textContent=('0'+n.getHours()).slice(-2);
+  lmm.textContent=('0'+n.getMinutes()).slice(-2);
+  dte.textContent=n.toLocaleDateString('hu-HU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+tick(); setInterval(tick,1000);
+
+$('weekday-label').textContent='Mai nap – '+new Date().toLocaleDateString('hu-HU',{weekday:'long'});
+
+function enterApp(){
+  $('landing').classList.add('hide');
+  $('app').classList.add('show');
+  boot();
+}
+
+function showTab(id,btn){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('show')});
+  document.querySelectorAll('nav button').forEach(function(b){b.classList.remove('active')});
+  $(id).classList.add('show');
+  btn.classList.add('active');
+}
+
+/* ---------- kapcsolat ---------- */
+function boot(){
+  fetch('/api/status').then(function(r){ return r.json(); }).then(function(st){
+    SERVER_UP = true;
+    if (st.logged_in) { afterLogin(); refreshAll(); }
+    else { showLogin('Kapcsolódás a Kréta-fiókodhoz.'); }
+  }).catch(function(){
+    SERVER_UP = false;
+    showLogin('Szerver nem elérhető – futtasd a <b>start.bat</b>-ot, majd frissíts!');
+    loadDemo();
+  });
+}
+
+function showLogin(msg){
+  $('who').innerHTML='<span>Nincs kapcsolat</span><span class="muted">–</span>';
+  $('login-hint').innerHTML=msg;
+  $('login-wrap').classList.add('show');
+}
+
+function hideLogin(){ $('login-wrap').classList.remove('show'); }
+
+function setErr(t){ $('login-err').textContent=t||''; }
+function setOk(t){ $('login-ok').textContent=t||''; }
+
+/* ---------- iskola keresés ---------- */
+var deb=null;
+$('school-input').addEventListener('input', function(){
+  var v=this.value.trim();
+  clearTimeout(deb);
+  if(v.length<2){ $('school-results').classList.remove('show'); return; }
+  deb=setTimeout(function(){ searchSchools(v); }, 300);
+});
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.search-wrap')) $('school-results').classList.remove('show');
+});
+
+function searchSchools(q){
+  fetch('/api/search?q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(list){
+    var box=$('school-results');
+    box.innerHTML='';
+    if(!list.length){ box.style.display=''; box.classList.remove('show'); return; }
+    list.forEach(function(it){
+      var b=document.createElement('button');
+      b.type='button';
+      b.textContent=it.name;
+      b.onclick=function(){ pickSchool(it); };
+      box.appendChild(b);
+    });
+    box.classList.add('show');
+  }).catch(function(){
+    setErr('Nem sikerült betölteni az iskolákat.');
+  });
+}
+
+function pickSchool(it){
+  $('school-input').value=it.name;
+  $('school-input').dataset.uid=it.uid;
+  $('school-results').classList.remove('show');
+  setErr('');
+}
+
+function pickBestSchool(){
+  var inp=$('school-input');
+  var buttons=$('school-results').querySelectorAll('button');
+  var txt=inp.value.trim();
+  var first=null, exact=null;
+  buttons.forEach(function(b){
+    if(!first) first=b;
+    if(b.textContent.trim()===txt) exact=b;
+  });
+  if(exact){ exact.click(); return true; }
+  if(buttons.length===1){ first.click(); return true; }
+  return false;
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter' && e.target.id==='school-input'){
+    var b=$('school-results').querySelector('button');
+    if(b){ e.preventDefault(); b.click(); }
+  }
+  if(e.key==='Enter' && (e.target.id==='user-input'||e.target.id==='pass-input')){
+    e.preventDefault();
+    doLogin();
+  }
+});
+
+/* ---------- bejelentkezés ---------- */
+function doLogin(){
+  var user=$('user-input').value.trim();
+  var pass=$('pass-input').value;
+  if(!user){ setErr('Írd be a felhasználónevedet!'); return; }
+  if(!pass){ setErr('Írd be a jelszavadat!'); return; }
+  var uid=$('school-input').dataset.uid;
+  if(!uid){
+    if(!pickBestSchool()){
+      setErr('Válaszd ki az iskolát a legördülő listából! Beírt iskola: '+
+            ($('school-input').value.trim()||'ismeretlen'));
+      if($('school-input').value.trim().length>=2) searchSchools($('school-input').value.trim());
+      return;
+    }
+    uid=$('school-input').dataset.uid;
+  }
+  setErr(''); setOk(''); $('login-btn').disabled=true;
+  setOk('Csatlakozás…');
+  fetch('/api/login',{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({institute_uid:uid,username:user,password:pass})
+  }).then(function(r){
+    return r.json().then(function(data){ return {ok:r.ok,data:data}; });
+  }).then(function(res){
+    $('login-btn').disabled=false;
+    if(res.ok){
+      setOk('');
+      afterLogin();
+      refreshAll();
+    } else {
+      setErr(res.data.detail || 'Hibás bejelentkezés.');
+      $('pass-input').value='';
+    }
+  }).catch(function(){
+    $('login-btn').disabled=false;
+    setErr('Szerverhiba – fut a start.bat?');
+  });
+}
+
+function afterLogin(){
+  hideLogin();
+  fetch('/api/whoami').then(function(r){return r.json();}).then(function(w){
+    var n=w.student&&w.student.name ? w.student.name : 'Tanuló';
+    var inst=w.student&&w.student.institute ? w.student.institute : '';
+    $('who').innerHTML='<b>'+n+'</b><span>'+inst+'</span>';
+  }).catch(function(){});
+}
+
+function doLogout(){
+  fetch('/api/logout',{method:'POST'}).catch(function(){});
+  showLogin('Kapcsolódás a Kréta-fiókodhoz.');
+  refreshAll(true);
+}
+
+/* ---------- adat lekérés ---------- */
+function loading(box){ return '<div class="spinner"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp; betöltés…</div>'; }
+function emptyBox(msg){ return '<div class="empty">'+msg+'</div>'; }
+
+function refreshAll(demoOnly){
+  demoOnly = demoOnly===true;
+  $('timetable-box').innerHTML=loading('Órarend');
+  $('homework-box').innerHTML=loading('Dogák');
+  $('news-box').innerHTML=loading('Bejelentések');
+  $('grades-box').innerHTML=loading('Jegyek');
+  apiGet('/api/timetable', renderTimetable, 'timetable-box');
+  apiGet('/api/homework', renderHomework, 'homework-box');
+  apiGet('/api/news', renderNews, 'news-box');
+  apiGet('/api/grades', renderGrades, 'grades-box');
+}
+
+function apiGet(url, render, boxId){
+  fetch(url).then(function(r){
+    if(r.status===401){ throw {code:401}; }
+    return r.text().then(function(t){
+      var data;
+      try{ data=JSON.parse(t); }catch(_){ data=null; }
+      if(!r.ok){
+        throw {code:r.status, detail:(data&&data.detail)||('HTTP '+r.status)};
+      }
+      return data;
+    });
+  }).then(function(data){
+    render(data, $(boxId));
+  }).catch(function(e){
+    if(e&&e.code===401){
+      $(boxId).innerHTML=emptyBox('A munkamenet lejárt. Jelentkezz be újra.');
+      showLogin('Újra kell kapcsolódni a Kréta-fiókodhoz.');
+      return;
+    }
+    var msg=(e&&e.detail)?e.detail:'Adatlekérés hibás – Kréta elérhetetlen?';
+    $(boxId).innerHTML=emptyBox(msg);
+  });
+}
+
+/* ---------- formázok ---------- */
+function dstr(iso){
+  if(!iso) return '';
+  var d=new Date(iso);
+  if(isNaN(d)) return String(iso);
+  return d.toLocaleDateString('hu-HU',{year:'numeric',month:'2-digit',day:'2-digit'});
+}
+function datetime(iso){
+  if(!iso) return '';
+  var d=new Date(iso);
+  if(isNaN(d)) return String(iso);
+  return d.toLocaleDateString('hu-HU',{month:'short',day:'numeric'})+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+}
+function esc(s){
+  s=String(s==null?'':s);
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+var RICH_TAGS={P:1,BR:1,B:1,STRONG:1,I:1,EM:1,U:1,S:1,H1:1,H2:1,H3:1,H4:1,UL:1,OL:1,LI:1,A:1,SPAN:1,SUB:1,SUP:1,SMALL:1,BLOCKQUOTE:1};
+function rich(html){
+  if(!html) return '';
+  var doc=new DOMParser().parseFromString(String(html),'text/html');
+  (function walk(node){
+    var kids=Array.prototype.slice.call(node.childNodes);
+    kids.forEach(function(n){
+      if(n.nodeType===1){
+        var tag=n.tagName.toUpperCase();
+        if(!RICH_TAGS[tag]){
+          var frag=document.createDocumentFragment();
+          while(n.firstChild) frag.appendChild(n.firstChild);
+          if(n.parentNode) n.parentNode.replaceChild(frag,n);
+          walk(frag);
+          return;
+        }
+        if(tag==='A'){
+          var h=n.getAttribute('href')||'';
+          for(var i=n.attributes.length-1;i>=0;i--) n.removeAttribute(n.attributes[i].name);
+          if(/^(https?:|mailto:|#)/i.test(h)) n.setAttribute('href',h);
+          n.setAttribute('rel','noopener noreferrer');
+        }else{
+          for(var i=n.attributes.length-1;i>=0;i--) n.removeAttribute(n.attributes[i].name);
+        }
+        walk(n);
+      }
+    });
+  })(doc.body);
+  return doc.body.innerHTML;
+}
+function gradeClass(n){
+  if(n==null) return 'g0';
+  if(n>=4.5) return 'g5';
+  if(n>=3.5) return 'g4';
+  if(n>=2.5) return 'g3';
+  if(n>=1.5) return 'g2';
+  return 'g1';
+}
+
+/* ---------- ÓRAREND ---------- */
+var TT={data:null,offset:0};
+function dateISO(d){
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+}
+function weekStart(offset){
+  var d=new Date(); d.setHours(0,0,0,0);
+  var day=(d.getDay()+6)%7;
+  d.setDate(d.getDate()-day+offset*7);
+  return d;
+}
+function stepWeek(dir){
+  TT.offset+=dir;
+  drawTimetable();
+}
+function jumpToday(){ TT.offset=0; drawTimetable(); }
+function renderTimetable(data, box){
+  TT.data=data;
+  drawTimetable();
+}
+function drawTimetable(){
+  var box=$('timetable-box');
+  var lessons=(TT.data&&TT.data.lessons)||[];
+  var monday=weekStart(TT.offset);
+  var sunday=new Date(monday); sunday.setDate(sunday.getDate()+6);
+  var ps=monday.getTime()/86400000, pe=sunday.getTime()/86400000;
+  var week=lessons.filter(function(l){
+    var t=new Date(l.date+'T00:00:00').getTime()/86400000;
+    return t>=ps&&t<=pe;
+  });
+  var label=$('weekday-label');
+  label.textContent='Heti órarend · '+monday.toLocaleDateString('hu-HU',{year:'numeric',month:'2-digit',day:'2-digit'})+' – '+sunday.toLocaleDateString('hu-HU',{month:'2-digit',day:'2-digit'});
+  var prev=$('prev-week'), next=$('next-week');
+  if(lessons.length&&week.length){
+    var dates=lessons.map(function(l){ return new Date(l.date+'T00:00:00').getTime()/86400000; });
+    var mn=Math.min.apply(null,dates), mx=Math.max.apply(null,dates);
+    var firstW=Math.floor(Math.floor((mn- Math.floor(new Date().getTime()/86400000 - (new Date().getDay()+6)%7))/7));
+    prev.disabled=(TT.offset<=firstW);
+    next.disabled=(TT.offset>=Math.floor((mx- Math.floor(new Date().getTime()/86400000 - (new Date().getDay()+6)%7))/7));
+  } else {
+    prev.disabled=false; next.disabled=false;
+  }
+  if(!week.length){ box.innerHTML=emptyBox('Ebben a héten nincs órád az elérhető időszakban.'); return; }
+  var days={'1':'Hétfő','2':'Kedd','3':'Szerda','4':'Csütörtök','5':'Péntek','6':'Szombat','0':'Vasárnap'};
+  var keyed={};
+  week.forEach(function(l){ keyed[l.date]=keyed[l.date]||[]; keyed[l.date].push(l); });
+  Object.keys(keyed).forEach(function(date){
+    keyed[date].sort(function(a,b){ return (a.lesson_number||999)-(b.lesson_number||999); });
+  });
+  var todayStr=dateISO(new Date());
+  var now=new Date();
+  var html='';
+  Object.keys(keyed).sort().forEach(function(date){
+    var isToday=date===todayStr;
+    var dd=new Date(date+'T00:00:00');
+    html+='<div class="day-sect"><div class="day-name'+(isToday?' today':'')+'">'+days[String(dd.getDay())]+' · '+dstr(date)+(isToday?' · MAI':'')+'</div>';
+    keyed[date].forEach(function(l){
+      var live=isToday&&l.start&&l.end&&(now.toTimeString().slice(0,5)>=l.start)&&(now.toTimeString().slice(0,5)<=l.end);
+      html+='<div class="day-row'+(live?' now':'')+'">';
+      html+='<div class="time">'+(l.lesson_number||'?')+'.</div>';
+      html+='<div class="time">'+esc(l.start||'--')+'–'+esc(l.end||'--')+'</div>';
+      html+='<div class="subject">'+esc(l.subject||'Ismeretlen')+'</div>';
+      if(l.teacher) html+='<div class="muted" style="font-size:12.5px">'+esc(l.teacher)+'</div>';
+      if(l.test_uid) html+='<span class="pill red">doga</span>';
+      if(l.homework_uid) html+='<span class="pill orange">házi</span>';
+      html+='<div class="room">'+esc(l.classroom||'')+(l.state?' · '+esc(l.state):'')+'</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+  });
+  box.innerHTML=html;
+}
+
+/* ---------- DOGÁK ---------- */
+function renderHomework(data, box){
+  var tests=data.tests||[];
+  var tasks=data.tasks||[];
+  if(!tests.length&&!tasks.length){ box.innerHTML=emptyBox('Jelenleg nincs közelgő doga vagy feladat.'); return; }
+  var html='<div class="grid">';
+  tests.forEach(function(t){
+    html+='<div class="card"><span class="tag" style="color:var(--red);background:rgba(255,123,130,.14)">DOGA</span>';
+    html+='<h3>'+esc(t.subject||'Ismeretlen')+'</h3>';
+    html+='<div class="sub">'+esc(t.theme||'')+'</div>';
+    html+='<div class="body">'+datetime(t.date)
+      +(t.class_number?' <span class="muted">('+t.class_number+'. óra)</span>':'')
+      +'</div>';
+    html+='<small>'+(t.teacher?esc(t.teacher)+' · ':'')+(t.mode?esc(t.mode):'')+'</small>';
+    html+='</div>';
+  });
+  tasks.forEach(function(h){
+    html+='<div class="card"><span class="tag" style="color:var(--accent);background:rgba(127,168,255,.14)">HÁZI</span>';
+    html+='<h3>'+esc(h.subject||'Ismeretlen')+'</h3>';
+    html+='<div class="body">'+rich(h.text||'Nincs leírás')+'</div>';
+    html+='<div class="sub"><span class="pill '+(h.deadline?'orange':'muted')+'">határidő: '+(h.deadline?dstr(h.deadline):'nincs')+'</span></div>';
+    if(h.teacher) html+='<small>'+esc(h.teacher)+'</small>';
+    html+='</div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+}
+
+/* ---------- BEJELENTÉSEK ---------- */
+function renderNews(data, box){
+  var items=data.items||[];
+  if(!items.length){ box.innerHTML=emptyBox('Nincs bejelentés a faliújságon.'); return; }
+  var html='<div class="grid">';
+  items.forEach(function(n){
+    html+='<div class="card">';
+    if(n.made_by) html+='<span class="tag" style="color:var(--orange);background:rgba(255,194,107,.14)">'+esc(n.made_by)+'</span>';
+    html+='<h3>'+esc(n.title||'Bejelentés')+'</h3>';
+    html+='<div class="body">'+rich(n.content||'')+'</div>';
+    html+='<div class="sub">'+(n.start||n.end?('<span class="pill muted">'+dstr(n.start)+' – '+dstr(n.end)+'</span>'):'')+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+}
+
+/* ---------- JEGYEK ---------- */
+function renderGrades(data, box){
+  var subjects=data.subjects||[];
+  if(!subjects.length){ box.innerHTML=emptyBox('Még nincsenek beírt jegyek.'); return; }
+  var html='<div class="grid">';
+  subjects.sort(function(a,b){ return (b.average||0)-(a.average||0); });
+  subjects.forEach(function(s){
+    html+='<div class="card"><h3>'+esc(s.subject)+'</h3>';
+    html+='<div class="grade-row" style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">';
+    s.grades.forEach(function(g){
+      html+='<span class="grade '+gradeClass(g.number)+'" title="'+esc(g.theme||'')+'>'+esc(g.value||'?')+'</span>';
+    });
+    html+='</div>';
+    html+='<div class="sub">Átlag: <b>'+((s.average!=null)?s.average.toFixed(2).replace('.',','):'–')+'</b>'
+      +'<span class="muted"> · '+s.grades.length+' jegy</span></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+}
+
+/* ---------- BEÁLLÍTÁSOK ---------- */
+var THEME_KEYS=['alap','fekete','csikos','pottyos','racs','hullam'];
+function openSettings(){ $('settings-modal').classList.add('show'); }
+function closeSettings(){ $('settings-modal').classList.remove('show'); }
+function setTheme(t){
+  var b=document.body;
+  THEME_KEYS.forEach(function(k){ b.classList.remove('t-'+k); });
+  if(t!=='alap') b.classList.add('t-'+t);
+  localStorage.setItem('szk-theme',t);
+  var row=$('theme-row').querySelectorAll('.swatch');
+  for(var i=0;i<row.length;i++) row[i].classList.toggle('active',row[i].getAttribute('data-theme')===t);
+}
+function setAccent(c){
+  document.documentElement.style.setProperty('--accent',c);
+  localStorage.setItem('szk-accent',c);
+  var row=$('accent-row').querySelectorAll('.abtn');
+  for(var i=0;i<row.length;i++) row[i].classList.toggle('active',row[i].getAttribute('data-accent')===c.toLowerCase());
+}
+(function initSettings(){
+  setTheme(localStorage.getItem('szk-theme')||'alap');
+  setAccent(localStorage.getItem('szk-accent')||'#7fa8ff');
+})();
+
+/* ---------- DEMO (szerver nélkül) ---------- */
+function loadDemo(){
+  $('timetable-box').innerHTML=
+    '<div class="day-sect"><div class="day-name today">Hétfő · MAI</div>'+
+    [['1','07:30','08:15','Matematika','A-102'],['2','08:20','09:05','Magyar irodalom','A-204'],['3','09:15','10:00','Angol nyelv','C-301']].map(function(r){
+      return '<div class="day-row"><div class="time">'+r[0]+'.</div><div class="time">'+r[1]+'–'+r[2]+'</div><div class="subject">'+r[3]+'</div><div class="room">'+r[4]+'</div></div>';
+    }).join('')+'</div>'
+    +'<div class="empty">Demó mód – futtasd a start.bat-ot az élő Kréta-adatokhoz.</div>';
+  $('homework-box').innerHTML='<div class="empty">Demó mód – élő dogák a szerver indítása után.</div>';
+  $('news-box').innerHTML='<div class="empty">Demó mód – élő bejelentések a szerver indítása után.</div>';
+  $('grades-box').innerHTML='<div class="empty">Demó mód – élő jegyek a szerver indítása után.</div>';
+}
+</script>
+</body>
+</html>
