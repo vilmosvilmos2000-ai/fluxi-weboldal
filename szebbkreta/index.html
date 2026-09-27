@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SzebbKréta – Letöltés</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{--bg:#11141a;--card:#1a1f27;--txt:#f2f5fa;--muted:#a8b0bd;--acc:#4e7dff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 20% 10%, rgba(78,125,255,.14), transparent 40%),
+               radial-gradient(circle at 80% 90%, rgba(78,125,255,.08), transparent 45%),
+               var(--bg);
+    min-height:100vh;color:var(--txt);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  .card{
+    width:min(620px,100%);background:var(--card);border:1px solid rgba(255,255,255,.1);
+    border-radius:22px;padding:38px 34px;box-shadow:0 24px 70px rgba(0,0,0,.5);
+  }
+  .icon{width:76px;height:76px;border-radius:20px;background:linear-gradient(135deg,#4e7dff,#7a5cff);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;
+    color:#fff;margin-bottom:18px;box-shadow:0 10px 30px rgba(78,125,255,.4)}
+  h1{font-size:28px;font-weight:800;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:26px}
+  .dl{
+    display:block;text-align:center;text-decoration:none;
+    background:linear-gradient(135deg,#4e7dff,#7a5cff);color:#fff;
+    font-size:17px;font-weight:700;padding:16px;border-radius:14px;margin-bottom:10px;
+    box-shadow:0 10px 30px rgba(78,125,255,.35);transition:transform .15s,box-shadow .15s;
+  }
+  .dl:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(78,125,255,.45)}
+  .size{text-align:center;color:var(--muted);font-size:12.5px;margin-bottom:26px}
+  h2{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+  ol{margin-left:18px;color:var(--txt);font-size:14.5px;line-height:1.7}
+  .note{
+    margin-top:24px;padding:14px 16px;border:1px solid rgba(255,194,107,.3);
+    border-radius:12px;background:rgba(255,194,107,.07);color:#ffd9a0;font-size:13.5px;line-height:1.5;
+  }
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">SZ</div>
+  <h1>SzebbKréta</h1>
+  <div class="sub">Szebb órarend, dogák, bejelentések és jegyek – közvetlenül a Kréta-rendszeredből.</div>
+
+  <a class="dl" href="SzebbKretaSetup.exe" download>⬇ &nbsp;Telepítő letöltése (17,9 MB)</a>
+  <div class="size">Windows 10 / 11 · nem kell hozzá rendszergazda · magyar app</div>
+
+  <h2>Telepítés után</h2>
+  <ol>
+    <li>Indítsd el a <b>SzebbKréta</b> parancsikont (Start menü vagy asztal).</li>
+    <li>Automatikusan megnyílik a böngésző, és elindul a szép felület.</li>
+    <li>Jelentkezz be a Kréta-iskolád, felhasználóneved és jelszavad megadásával.</li>
+  </ol>
+
+  <div class="note">⚠️ A Windows ismeretlen kiadóra figyelmeztethet a telepítőnél – ebben az esetben kattints a
+  „További információ” elemre, majd a „Futtatás mindenképp” gombra.</div>
+
+  <div class="foot">SzebbKréta · a Kréta-zónás munka anélkül, hogy felnyílnád a Kréta oldalát</div>
+</div>
+</body>
+</html>
