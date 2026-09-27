@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vilmos Client – Minecraft launcher letöltés</title>
 <meta name="description" content="Vilmos Client – a saját Minecraft launcher fiókkal, beépített Java-val és teljesítmény- és QoL modokkal. Töltsd le Windowsra.">
-<meta name="theme-color" content="#1b2614">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2339a02a'/%3E%3Cpath d='M16 16h8v8h-8zM24 24h8v8h-8zM32 16h8v8h-8zM24 32h8v8h-8zM40 24h8v8h-8zM32 40h8v8h-8z' fill='%23ffffff'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#171133">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c5cff'/%3E%3Cpath d='M16 16h8v8h-8zM24 24h8v8h-8zM32 16h8v8h-8zM24 32h8v8h-8zM40 24h8v8h-8zM32 40h8v8h-8z' fill='%23ffffff'/%3E%3C/svg%3E">
 <style>
   :root{
-    --bg:#101408;--bg2:#151d0e;--panel:#1b2513;--line:rgba(255,255,255,.09);
-    --txt:#eef5e4;--muted:#9fb08c;--mine:#39a02a;--mine2:#2e7d23;--gold:#ffb300;--stone:#6b6b6b;
+    --bg:#0f0d1e;--bg2:#16112b;--panel:#1d1834;--line:rgba(255,255,255,.10);
+    --txt:#f2effd;--muted:#a8a3c9;--mine:#7c5cff;--mine2:#4e7dff;--gold:#a78bfa;--stone:#6b6b6b;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -18,8 +18,8 @@
     font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
     color:var(--txt);
     background:
-      radial-gradient(1100px 520px at 75% -10%, rgba(57,160,42,.22), transparent 60%),
-      radial-gradient(900px 500px at 8% 110%, rgba(255,179,0,.08), transparent 55%),
+      radial-gradient(1100px 520px at 75% -10%, rgba(124,92,255,.26), transparent 60%),
+      radial-gradient(900px 500px at 8% 110%, rgba(78,125,255,.14), transparent 55%),
       repeating-linear-gradient(0deg, rgba(0,0,0,.045) 0 4px, rgba(0,0,0,0) 4px 8px),
       linear-gradient(180deg,var(--bg),var(--bg2));
     min-height:100vh;
@@ -30,29 +30,29 @@
   header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px}
   .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:17px;letter-spacing:.5px;text-decoration:none}
   .brand .cube{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--mine),var(--mine2));
-    display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:6px;box-shadow:0 6px 18px rgba(57,160,42,.4)}
+    display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:6px;box-shadow:0 6px 18px rgba(124,92,255,.4)}
   .brand .cube i{background:#fff;border-radius:2px;display:block}
   .back{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;border:1px solid var(--line);
     padding:8px 14px;border-radius:10px;transition:.2s;background:rgba(255,255,255,.03)}
   .back:hover{color:var(--txt);background:rgba(255,255,255,.08);transform:translateY(-1px)}
 
   .hero{text-align:center;padding:56px 22px 46px}
-  .hero .badge{display:inline-flex;align-items:center;gap:7px;color:var(--gold);border:1px solid rgba(255,179,0,.35);
-    background:rgba(255,179,0,.08);font-size:12.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  .hero .badge{display:inline-flex;align-items:center;gap:7px;color:var(--gold);border:1px solid rgba(150,185,255,.4);
+    background:rgba(124,92,255,.14);font-size:12.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
     padding:6px 14px;border-radius:999px;margin-bottom:22px}
   .hero h1{font-size:clamp(34px,7vw,58px);font-weight:900;letter-spacing:1px;line-height:1.05;
     background:linear-gradient(180deg,#fff,var(--mine));-webkit-background-clip:text;background-clip:text;color:transparent}
   .hero .pixel{width:88px;height:88px;margin:26px auto 6px;border-radius:18px;
     background:linear-gradient(135deg,var(--mine),var(--mine2));
     display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
-    gap:4px;padding:12px;box-shadow:0 18px 45px rgba(57,160,42,.45)}
+    gap:4px;padding:12px;box-shadow:0 18px 45px rgba(124,92,255,.45)}
   .hero .pixel i{background:#fff;border-radius:3px}
   .hero p.sub{color:var(--muted);max-width:560px;margin:16px auto 34px;font-size:16.5px;line-height:1.6}
 
   .dl{display:inline-flex;align-items:center;gap:14px;text-decoration:none;text-align:left;
     background:linear-gradient(135deg,var(--mine),var(--mine2));color:#fff;
-    padding:18px 30px;border-radius:16px;box-shadow:0 16px 40px rgba(57,160,42,.45);transition:.18s}
-  .dl:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(57,160,42,.55)}
+    padding:18px 30px;border-radius:16px;box-shadow:0 16px 40px rgba(124,92,255,.45);transition:.18s}
+  .dl:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(124,92,255,.55)}
   .dl:active{transform:translateY(0)}
   .dl .dl-ico{font-size:26px}
   .dl .dl-t{font-weight:800;font-size:17px}
@@ -67,7 +67,7 @@
 
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;transition:.2s}
-  .card:hover{transform:translateY(-3px);border-color:rgba(57,160,42,.45)}
+  .card:hover{transform:translateY(-3px);border-color:rgba(124,92,255,.45)}
   .card .ic{font-size:24px;margin-bottom:10px}
   .card h4{font-size:15.5px;font-weight:700;margin-bottom:6px}
   .card p{color:var(--muted);font-size:13.5px;line-height:1.55}
@@ -75,7 +75,7 @@
   .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
   .step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative}
   .step .n{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--mine),var(--mine2));
-    display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:12px;box-shadow:0 6px 14px rgba(57,160,42,.35)}
+    display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:12px;box-shadow:0 6px 14px rgba(124,92,255,.35)}
   .step h4{font-size:14.5px;font-weight:700;margin-bottom:6px}
   .step p{color:var(--muted);font-size:13px;line-height:1.55}
 
@@ -103,15 +103,15 @@
 
 <div class="wrap">
   <div class="hero">
-    <div class="badge">⚡ 26.3 · Fabric</div>
+    <div class="badge">⚡ Minden verzió · Fabric</div>
     <div class="pixel"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <h1>VILMOS&nbsp;CLIENT</h1>
-    <p class="sub">A saját Minecraft launcher – Microsoft-fiókos belépéssel, beépített Java 25-tel és fájlméretre igazított, gyors futással. Teljesítmény- és hasznossági (QoL) modok azonnal bekapcsolva.</p>
+    <p class="sub">A saját Minecraft launcher – minden verzióhoz elérhető, és mindig a legújabbra frissül. Microsoft-fiókos belépés, beépített Java-val és fájlméretre igazított, gyors futással. Teljesítmény- és hasznossági (QoL) modok azonnal bekapcsolva.</p>
     <a class="dl" href="VilmosClient-install.exe" download>
       <span class="dl-ico">⬇</span>
       <span><span class="dl-t">Telepítő letöltése</span><br><span class="dl-s">VilmosClient-install.exe · 47,8 MB</span></span>
     </a>
-    <div class="meta">Windows 10 / 11 · <b>rendszergazda nélkül</b> · magyar app · első indításnál letölti a játékot (kb. 1,1 GB)</div>
+    <div class="meta">Windows 10 / 11 · <b>rendszergazda nélkül</b> · magyar app · első indításnál letölti a játék legújabb verzióját</div>
   </div>
 
   <section>
@@ -132,7 +132,7 @@
     <div class="steps">
       <div class="step"><div class="n">1</div><h4>Töltsd le</h4><p>Kattints a letöltésre, és futtasd a <b>VilmosClient-install.exe</b>-t.</p></div>
       <div class="step"><div class="n">2</div><h4>Telepítő</h4><p>Pár másodperc, és kész az asztali + Start menü parancsikon.</p></div>
-      <div class="step"><div class="n">3</div><h4>Játssz</h4><p>Első indításkor letölti a Minecraft 26.3-at, majd Microsoft-fiókkal belépsz.</p></div>
+      <div class="step"><div class="n">3</div><h4>Játssz</h4><p>Első indításkor letölti Minecraft (legújabb verzió, jelenleg 26.3), majd Microsoft-fiókkal belépsz.</p></div>
     </div>
   </section>
 
@@ -151,7 +151,7 @@
 </div>
 
 <footer>
-  <div><b>VILMOS CLIENT</b> · <a href="/">fluxi.hu</a> · Minecraft 26.3</div>
+  <div><b>VILMOS CLIENT</b> · <a href="/">fluxi.hu</a> · Minden Minecraft-verzió</div>
   <div style="margin-top:8px;font-size:12px">Nem hivatalos launcher. Nem áll kapcsolatban a Mojang / Microsoft céggel.</div>
 </footer>
 
