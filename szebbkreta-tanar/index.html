@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SzebbKréta Tanár – Letöltés</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{--bg:#14120d;--card:#1d1a14;--txt:#f5f1e6;--muted:#b7ad99;--acc:#ffcf3f}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 20% 10%, rgba(255,207,63,.14), transparent 40%),
+               radial-gradient(circle at 80% 90%, rgba(255,159,26,.09), transparent 45%),
+               var(--bg);
+    min-height:100vh;color:var(--txt);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  .card{
+    width:min(620px,100%);background:var(--card);border:1px solid rgba(255,207,63,.18);
+    border-radius:22px;padding:38px 34px;box-shadow:0 24px 70px rgba(0,0,0,.5);
+  }
+  .icon{
+    width:76px;height:76px;border-radius:20px;background:linear-gradient(135deg,#ffd23f,#ff9f1a);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;
+    color:#241c00;margin-bottom:18px;box-shadow:0 10px 30px rgba(255,207,63,.4);
+  }
+  h1{font-size:28px;font-weight:800;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:26px}
+  .dl{
+    display:block;text-align:center;text-decoration:none;
+    background:linear-gradient(135deg,#ffd23f,#ff9f1a);color:#241c00;
+    font-size:17px;font-weight:800;padding:16px;border-radius:14px;margin-bottom:10px;
+    box-shadow:0 10px 30px rgba(255,207,63,.35);transition:transform .15s,box-shadow .15s;
+  }
+  .dl:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(255,207,63,.45)}
+  .size{text-align:center;color:var(--muted);font-size:12.5px;margin-bottom:26px}
+  h2{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+  ol{margin-left:18px;color:var(--txt);font-size:14.5px;line-height:1.7}
+  .note{
+    margin-top:24px;padding:14px 16px;border:1px solid rgba(255,207,63,.3);
+    border-radius:12px;background:rgba(255,207,63,.07);color:#ffd9a0;font-size:13.5px;line-height:1.5;
+  }
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+  .foot a{color:var(--acc);text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">T</div>
+  <h1>SzebbKréta Tanár</h1>
+  <div class="sub">Tanári órarend, osztályok, jegyek és hiányzások – sárga, kényelmes felületen.</div>
+
+  <a class="dl" href="SzebbKretaTanarSetup.exe" download>⬇ &nbsp;Tanári telepítő letöltése (17,9 MB)</a>
+  <div class="size">Windows 10 / 11 · nem kell hozzá rendszergazda · magyar app</div>
+
+  <h2>Telepítés után</h2>
+  <ol>
+    <li>Indítsd el a <b>SzebbKréta Tanár</b> parancsikont (Start menü vagy asztal).</li>
+    <li>Automatikusan megnyílik a böngésző a sárga tanári felülettel.</li>
+    <li>Jelentkezz be a tanári Kréta-felhasználóneveddel és jelszavaddal.</li>
+  </ol>
+
+  <div class="note">⚠️ A Windows ismeretlen kiadóra figyelmeztethet a telepítőnél – ebben az esetben kattints a
+  „További információ” elemre, majd a „Futtatás mindenképp” gombra. Jelenleg demó-adatokkal működik a jegyek és
+  hiányzások része, amíg a valódi tanári csatlakozást be nem állítjuk.</div>
+
+  <div class="foot">SzebbKréta Tanár · <a href="../szebbkreta/">→ átváltás a diák SzebbKréta-ra</a></div>
+</div>
+</body>
+</html>
