@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoHuman Robotics | Humanoid Robot Gyár</title>
+    <meta name="description" content="NeoHuman Robotics – humanoid robotok tervezése és gyártása. Alkatrészek, aktuátorok, szenzorok és AI rendszerek.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --card: rgba(16, 24, 40, 0.85);
+            --border: rgba(56, 189, 248, 0.15);
+            --cyan: #22d3ee;
+            --blue: #3b82f6;
+            --purple: #a78bfa;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --glow: 0 0 30px rgba(34, 211, 238, 0.25);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .logo, .tech-title {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            transition: box-shadow 0.3s;
+        }
+
+        header.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.4); }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--cyan);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span { color: #fff; }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--cyan); }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--cyan), var(--blue));
+            color: #0a0e17 !important;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--cyan);
+            cursor: pointer;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+            background:
+                radial-gradient(ellipse 70% 50% at 50% 20%, rgba(34, 211, 238, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+        }
+
+        .hero-content { max-width: 800px; position: relative; z-index: 2; }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            color: var(--cyan);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 30%, var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--muted);
+            max-width: 560px;
+            margin: 0 auto 36px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 26px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cyan), var(--blue));
+            color: #0a0e17;
+            box-shadow: var(--glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px rgba(34, 211, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--cyan);
+            border: 1.5px solid rgba(34, 211, 238, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(34, 211, 238, 0.08);
+            border-color: var(--cyan);
+        }
+
+        /* Grid lines background effect */
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent);
+        }
+
+        /* Sections */
+        section { padding: 90px 24px; }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* About */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .about-text h3 {
+            font-size: 1.4rem;
+            color: var(--cyan);
+            margin-bottom: 16px;
+        }
+
+        .about-text p {
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 28px;
+        }
+
+        .stat {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stat .num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+
+        .stat .label {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .about-visual {
+            background: linear-gradient(145deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            height: 360px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7rem;
+            box-shadow: var(--glow);
+            position: relative;
+        }
+
+        /* Robots */
+        .robots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .robot-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .robot-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(34, 211, 238, 0.4);
+            box-shadow: var(--glow);
+        }
+
+        .robot-img {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            background: linear-gradient(145deg, rgba(34, 211, 238, 0.08), rgba(59, 130, 246, 0.05));
+        }
+
+        .robot-body { padding: 22px; }
+
+        .robot-body h3 {
+            font-size: 1.15rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .robot-body p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .robot-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--cyan);
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        /* Parts section – main request */
+        .parts {
+            background: linear-gradient(180deg, transparent, rgba(34, 211, 238, 0.03));
+        }
+
+        .parts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .part-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            gap: 18px;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+
+        .part-card:hover {
+            border-color: rgba(34, 211, 238, 0.35);
+            transform: translateY(-3px);
+        }
+
+        .part-icon {
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            background: rgba(34, 211, 238, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+
+        .part-info h3 {
+            font-size: 1.05rem;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .part-info .code {
+            font-size: 0.75rem;
+            color: var(--cyan);
+            font-family: monospace;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .part-info p {
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* Contact */
+        .contact-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-box h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: var(--cyan);
+        }
+
+        .contact-box p {
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .contact-details span {
+            color: var(--text);
+        }
+
+        /* Footer */
+        footer {
+            background: #060a12;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 32px 24px;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            .about-grid { grid-template-columns: 1fr; }
+            .about-visual { height: 260px; font-size: 5rem; }
+            .stats { grid-template-columns: 1fr 1fr 1fr; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%; left: 0; right: 0;
+                background: #0c1220;
+                flex-direction: column;
+                padding: 20px;
+                gap: 14px;
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-links.open { display: flex; }
+            .menu-toggle { display: block; }
+        }
+
+        @media (max-width: 500px) {
+            .parts-grid { grid-template-columns: 1fr; }
+            .part-card { flex-direction: column; }
+            .stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <nav class="nav">
+            <a href="#" class="logo">⚡ Neo<span>Human</span></a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Menü">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#rolunk">Rólunk</a></li>
+                <li><a href="#robotok">Robotok</a></li>
+                <li><a href="#alkatreszek">Alkatrészek</a></li>
+                <li><a href="#kapcsolat" class="nav-cta">Kapcsolat</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="grid-bg"></div>
+        <div class="hero-content">
+            <div class="hero-badge">Humanoid Robot Gyár</div>
+            <h1>A jövő embere<br>a mi gyárunkban születik</h1>
+            <p>Világszínvonalú humanoid robotok tervezése, fejlesztése és sorozatgyártása. Precíziós alkatrészek, fejlett AI és ipari minőség.</p>
+            <div class="hero-buttons">
+                <a href="#alkatreszek" class="btn btn-primary">Alkatrészek katalógus →</a>
+                <a href="#robotok" class="btn btn-secondary">Robot modellek</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="rolunk">
+        <div class="container">
+            <div class="section-header">
+                <h2>A gyár</h2>
+                <p>Ahol a mesterséges intelligencia találkozik a precíziós mérnöki munkával.</p>
+            </div>
+            <div class="about-grid">
+                <div class="about-text">
+                    <h3>NeoHuman Robotics</h3>
+                    <p>2021 óta fejlesztünk és gyártunk humanoid robotokat ipari, kutatási és szolgáltatói felhasználásra. Gyárunkban a legmodernebb CNC gépek, 3D nyomtatók és tiszta terek biztosítják a prémium minőséget.</p>
+                    <p>Minden robotunk saját fejlesztésű aktuátorokkal, szenzorokkal és AI vezérléssel készül – teljes mértékben Magyarországon.</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="num">48+</div>
+                            <div class="label">Robot modell</div>
+                        </div>
+                        <div class="stat">
+                            <div class="num">12k</div>
+                            <div class="label">Alkatrész / hónap</div>
+                        </div>
+                        <div class="stat">
+                            <div class="num">99.7%</div>
+                            <div class="label">Minőség</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">🤖</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="robotok">
+        <div class="container">
+            <div class="section-header">
+                <h2>Humanoid modellek</h2>
+                <p>Különböző méretű és funkciójú robotok a legkülönfélébb feladatokhoz.</p>
+            </div>
+            <div class="robots-grid">
+                <div class="robot-card">
+                    <div class="robot-img">🦾</div>
+                    <div class="robot-body">
+                        <h3>NH-1 Atlas</h3>
+                        <p>Teljes méretű humanoid, kétlábú járás, precíziós manipuláció. Ipari és kutatási célokra.</p>
+                        <div class="robot-tags">
+                            <span class="tag">170 cm</span>
+                            <span class="tag">65 kg</span>
+                            <span class="tag">28 DoF</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="robot-card">
+                    <div class="robot-img">🦿</div>
+                    <div class="robot-body">
+                        <h3>NH-S Scout</h3>
+                        <p>Könnyű, gyors humanoid. Biztonsági járőrözés, raktári logisztika és beléptetés.</p>
+                        <div class="robot-tags">
+                            <span class="tag">145 cm</span>
+                            <span class="tag">38 kg</span>
+                            <span class="tag">22 DoF</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="robot-card">
+                    <div class="robot-img">🧠</div>
+                    <div class="robot-body">
+                        <h3>NH-X Nova</h3>
+                        <p>Prémium kutatási platform fejlett AI maggal és moduláris felépítéssel.</p>
+                        <div class="robot-tags">
+                            <span class="tag">180 cm</span>
+                            <span class="tag">72 kg</span>
+                            <span class="tag">32 DoF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="alkatreszek" class="parts">
+        <div class="container">
+            <div class="section-header">
+                <h2>Alkatrészek katalógus</h2>
+                <p>Minden alkatrész, amire egy humanoid robotnak szüksége van – részletes leírásokkal.</p>
+            </div>
+            <div class="parts-grid">
+
+                <div class="part-card">
+                    <div class="part-icon">⚙️</div>
+                    <div class="part-info">
+                        <h3>Harmonic Drive aktuátor</h3>
+                        <span class="code">NH-ACT-HD-120</span>
+                        <p>Nagy nyomatékú, zéró-játékú aktuátor. 120 Nm csúcsnyomaték, 0.01° pozicionálási pontosság. Váll, könyök és térd ízületekhez optimalizálva.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">🔌</div>
+                    <div class="part-info">
+                        <h3>BLDC motor + encoder</h3>
+                        <span class="code">NH-MOT-BLDC-48</span>
+                        <p>48 V brushless DC motor integrált 18 bites abszolút encoderrel. 3000 RPM, 4.5 Nm folyamatos nyomaték. Alacsony zajszintű működés.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">👁️</div>
+                    <div class="part-info">
+                        <h3>Stereo mélységkamera</h3>
+                        <span class="code">NH-CAM-STEREO-X2</span>
+                        <p>Dual 12 MP szenzor, 120° látószög, valós idejű mélységtérkép 30 FPS-sel. LiDAR támogatással kiegészíthető. Arc- és tárgyfelismeréshez.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">🤚</div>
+                    <div class="part-info">
+                        <h3>5 ujjas robotkéz</h3>
+                        <span class="code">NH-HAND-DEX-5</span>
+                        <p>Teljesen antropomorf kéz 15 szabadságfokkal. Érzékeny érintőérzékelők az ujjbegyeken. Max. 15 kg fogóerő, precíziós fogás.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">🔋</div>
+                    <div class="part-info">
+                        <h3>Li-ion akkumulátor csomag</h3>
+                        <span class="code">NH-BAT-48V-20AH</span>
+                        <p>48 V / 20 Ah nagy sűrűségű lítium-ion akkumulátor. 4–6 óra üzemidő, gyors töltés (1.5 óra). Beépített BMS és hőkezelés.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">🧠</div>
+                    <div class="part-info">
+                        <h3>AI vezérlőegység</h3>
+                        <span class="code">NH-CPU-NEURAL-7</span>
+                        <p>NVIDIA Jetson alapú edge AI modul. 100+ TOPS teljesítmény, valós idejű látásfeldolgozás, mozgástervezés és beszédfelismerés.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">📡</div>
+                    <div class="part-info">
+                        <h3>IMU + erőérzékelő</h3>
+                        <span class="code">NH-SENS-IMU-F6</span>
+                        <p>6 tengelyes inerciális mérőegység + 6 tengelyes erő/nyomaték szenzor. Egyensúlytartás és precíz erőszabályozás a végtagokon.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">🦴</div>
+                    <div class="part-info">
+                        <h3>Titán ötvözet csontváz</h3>
+                        <span class="code">NH-FRAME-TI-AL</span>
+                        <p>Könnyű, nagy szilárdságú titán-alumínium váz. CNC megmunkálva, 3D nyomtatott csatlakozókkal. Súlycsökkentés 35%-kal az acélhoz képest.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">🔊</div>
+                    <div class="part-info">
+                        <h3>Hang + beszéd modul</h3>
+                        <span class="code">NH-AUD-TTS-PRO</span>
+                        <p>Irányított mikrofon tömb + természetes beszédszintézis. 12 nyelven beszél, zajszűréssel. Valós idejű párbeszédkészség.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">🛡️</div>
+                    <div class="part-info">
+                        <h3>Védőburkolat panel</h3>
+                        <span class="code">NH-SHELL-ABS-UV</span>
+                        <p>UV-álló, ütésálló ABS + PC kompozit panelek. Cserélhető, színvariációkkal. IP54 védettség a belső elektronikának.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">⚡</div>
+                    <div class="part-info">
+                        <h3>Motorvezérlő PCB</h3>
+                        <span class="code">NH-PCB-FOC-8CH</span>
+                        <p>8 csatornás FOC (Field Oriented Control) motorvezérlő. CAN-busz kommunikáció, 1000 Hz vezérlési frekvencia, túláram- és hővédelem.</p>
+                    </div>
+                </div>
+
+                <div class="part-card">
+                    <div class="part-icon">🦵</div>
+                    <div class="part-info">
+                        <h3>Rugós energia-visszanyerő</h3>
+                        <span class="code">NH-LEG-SPRING-K2</span>
+                        <p>Passzív rugós rendszer a lábakban. Járás közben energia-visszanyerés, 18%-kal alacsonyabb fogyasztás. Természetesebb járásdinamika.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="kapcsolat">
+        <div class="container">
+            <div class="contact-box">
+                <h3>Lépj kapcsolatba velünk</h3>
+                <p>Érdekel a humanoid technológia vagy alkatrészeket szeretnél rendelni? Írj nekünk!</p>
+                <div class="contact-details">
+                    <span>📍 1117 Budapest, Robotgyár út 8.</span>
+                    <span>📞 +36 1 555 0199</span>
+                    <span>✉️ info@neohuman.hu</span>
+                    <span>🌐 www.neohuman.hu</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 NeoHuman Robotics · Készítette a <a href="/">fluxi.hu</a></p>
+    </footer>
+
+    <script>
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 20);
+        });
+
+        const toggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        toggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+        navLinks.querySelectorAll('a').forEach(l => l.addEventListener('click', () => navLinks.classList.remove('open')));
+    </script>
+</body>
+</html>
