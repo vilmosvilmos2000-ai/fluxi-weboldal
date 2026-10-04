@@ -37,7 +37,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Header */
         header {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -104,7 +103,6 @@
             cursor: pointer;
         }
 
-        /* Hero */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -195,7 +193,6 @@
             border-color: var(--cyan);
         }
 
-        /* Grid lines background effect */
         .grid-bg {
             position: absolute;
             inset: 0;
@@ -207,7 +204,6 @@
             mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent);
         }
 
-        /* Sections */
         section { padding: 90px 24px; }
 
         .container { max-width: 1200px; margin: 0 auto; }
@@ -230,7 +226,6 @@
             margin: 0 auto;
         }
 
-        /* About */
         .about-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -278,19 +273,19 @@
         }
 
         .about-visual {
-            background: linear-gradient(145deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.1));
-            border: 1px solid var(--border);
             border-radius: 24px;
             height: 360px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 7rem;
+            overflow: hidden;
             box-shadow: var(--glow);
-            position: relative;
+            border: 1px solid var(--border);
         }
 
-        /* Robots */
+        .about-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .robots-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -312,12 +307,20 @@
         }
 
         .robot-img {
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4.5rem;
-            background: linear-gradient(145deg, rgba(34, 211, 238, 0.08), rgba(59, 130, 246, 0.05));
+            height: 180px;
+            overflow: hidden;
+            background: #0c1220;
+        }
+
+        .robot-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+        .robot-card:hover .robot-img img {
+            transform: scale(1.05);
         }
 
         .robot-body { padding: 22px; }
@@ -349,7 +352,6 @@
             font-weight: 500;
         }
 
-        /* Parts section – main request */
         .parts {
             background: linear-gradient(180deg, transparent, rgba(34, 211, 238, 0.03));
         }
@@ -407,7 +409,6 @@
             line-height: 1.5;
         }
 
-        /* Contact */
         .contact-box {
             background: var(--card);
             border: 1px solid var(--border);
@@ -440,7 +441,6 @@
             color: var(--text);
         }
 
-        /* Footer */
         footer {
             background: #060a12;
             border-top: 1px solid var(--border);
@@ -455,10 +455,9 @@
             text-decoration: none;
         }
 
-        /* Responsive */
         @media (max-width: 850px) {
             .about-grid { grid-template-columns: 1fr; }
-            .about-visual { height: 260px; font-size: 5rem; }
+            .about-visual { height: 260px; }
             .stats { grid-template-columns: 1fr 1fr 1fr; }
             .nav-links {
                 display: none;
@@ -534,7 +533,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="about-visual">🤖</div>
+                <div class="about-visual">
+                    <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80" alt="Humanoid robot" loading="lazy">
+                </div>
             </div>
         </div>
     </section>
@@ -547,7 +548,9 @@
             </div>
             <div class="robots-grid">
                 <div class="robot-card">
-                    <div class="robot-img">🦾</div>
+                    <div class="robot-img">
+                        <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=600&q=80" alt="NH-1 Atlas humanoid" loading="lazy">
+                    </div>
                     <div class="robot-body">
                         <h3>NH-1 Atlas</h3>
                         <p>Teljes méretű humanoid, kétlábú járás, precíziós manipuláció. Ipari és kutatási célokra.</p>
@@ -559,7 +562,9 @@
                     </div>
                 </div>
                 <div class="robot-card">
-                    <div class="robot-img">🦿</div>
+                    <div class="robot-img">
+                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&q=80" alt="NH-S Scout" loading="lazy">
+                    </div>
                     <div class="robot-body">
                         <h3>NH-S Scout</h3>
                         <p>Könnyű, gyors humanoid. Biztonsági járőrözés, raktári logisztika és beléptetés.</p>
@@ -571,7 +576,9 @@
                     </div>
                 </div>
                 <div class="robot-card">
-                    <div class="robot-img">🧠</div>
+                    <div class="robot-img">
+                        <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&q=80" alt="NH-X Nova" loading="lazy">
+                    </div>
                     <div class="robot-body">
                         <h3>NH-X Nova</h3>
                         <p>Prémium kutatási platform fejlett AI maggal és moduláris felépítéssel.</p>
@@ -722,7 +729,7 @@
     </section>
 
     <footer>
-        <p>© 2026 NeoHuman Robotics · Készítette a <a href="/">fluxi.hu</a></p>
+        <p>© 2026 NeoHuman Robotics · Készítette a <a href="/">fluxi.hu</a> · Képek: Unsplash (szabad felhasználás)</p>
     </footer>
 
     <script>
