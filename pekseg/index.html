@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Napsütés Pékség | Friss kenyér minden nap</title>
+    <meta name="description" content="Napsütés Pékség – hagyományos kézműves kenyerek, friss sütemények és torták. Mindennap frissen sütve.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FFF8F0;
+            --warm-white: #FDF6EC;
+            --brown: #5C3A21;
+            --dark-brown: #3D2414;
+            --caramel: #C47A3A;
+            --orange: #E07A3D;
+            --soft-orange: #F4A261;
+            --text: #2C1A0E;
+            --muted: #7A5C45;
+            --card-bg: rgba(255, 248, 240, 0.92);
+            --shadow: 0 12px 40px rgba(92, 58, 33, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--warm-white);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, .logo {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255, 248, 240, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(92, 58, 33, 0.08);
+            transition: box-shadow 0.3s;
+        }
+
+        header.scrolled {
+            box-shadow: 0 4px 20px rgba(92, 58, 33, 0.08);
+        }
+
+        .nav {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: var(--brown);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--orange);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--orange);
+        }
+
+        .nav-cta {
+            background: var(--orange);
+            color: white !important;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: var(--caramel);
+            transform: translateY(-1px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--brown);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 92vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 0%, rgba(224, 122, 61, 0.15) 0%, transparent 60%),
+                linear-gradient(180deg, #FFF8F0 0%, #FDF6EC 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 720px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(224, 122, 61, 0.12);
+            color: var(--orange);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.6rem, 6vw, 4.2rem);
+            font-weight: 700;
+            color: var(--dark-brown);
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--orange);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--muted);
+            max-width: 520px;
+            margin: 0 auto 36px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.25s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            box-shadow: 0 8px 24px rgba(224, 122, 61, 0.35);
+        }
+
+        .btn-primary:hover {
+            background: var(--caramel);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(224, 122, 61, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--brown);
+            border: 1.5px solid rgba(92, 58, 33, 0.15);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        /* Floating shapes */
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.12;
+            pointer-events: none;
+        }
+
+        .shape-1 {
+            width: 320px;
+            height: 320px;
+            background: var(--orange);
+            top: -80px;
+            right: -60px;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--caramel);
+            bottom: 40px;
+            left: -40px;
+        }
+
+        /* Sections */
+        section {
+            padding: 90px 24px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.6rem);
+            color: var(--dark-brown);
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            font-size: 1.1rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* About */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .about-text h3 {
+            font-size: 1.6rem;
+            color: var(--brown);
+            margin-bottom: 16px;
+        }
+
+        .about-text p {
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 28px;
+        }
+
+        .feature {
+            background: white;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(92, 58, 33, 0.06);
+        }
+
+        .feature .icon {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .feature h4 {
+            font-size: 0.95rem;
+            color: var(--brown);
+            margin-bottom: 4px;
+        }
+
+        .feature p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .about-visual {
+            background: linear-gradient(145deg, #F4A261, #E07A3D);
+            border-radius: 28px;
+            height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            box-shadow: 0 20px 50px rgba(224, 122, 61, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Products */
+        .products {
+            background: #FFF8F0;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 24px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(92, 58, 33, 0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(92, 58, 33, 0.15);
+        }
+
+        .product-img {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            background: linear-gradient(145deg, #FFF8F0, #F4E4D0);
+        }
+
+        .product-body {
+            padding: 22px;
+        }
+
+        .product-body h3 {
+            font-size: 1.15rem;
+            color: var(--brown);
+            margin-bottom: 6px;
+        }
+
+        .product-body p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: var(--orange);
+            font-size: 1.1rem;
+        }
+
+        /* Hours + Contact */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 24px;
+            padding: 36px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(92, 58, 33, 0.06);
+        }
+
+        .info-card h3 {
+            font-size: 1.4rem;
+            color: var(--brown);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hours-list {
+            list-style: none;
+        }
+
+        .hours-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(92, 58, 33, 0.08);
+            font-size: 0.95rem;
+        }
+
+        .hours-list li:last-child {
+            border-bottom: none;
+        }
+
+        .hours-list .day {
+            color: var(--muted);
+        }
+
+        .hours-list .time {
+            font-weight: 600;
+            color: var(--brown);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .contact-item .icon {
+            font-size: 1.3rem;
+            margin-top: 2px;
+        }
+
+        .contact-item strong {
+            display: block;
+            color: var(--brown);
+            margin-bottom: 2px;
+        }
+
+        .contact-item span {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-brown);
+            color: #E8D5C4;
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        footer a {
+            color: var(--soft-orange);
+            text-decoration: none;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .about-grid,
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-visual {
+                height: 280px;
+                font-size: 4.5rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--cream);
+                flex-direction: column;
+                padding: 20px;
+                gap: 16px;
+                border-bottom: 1px solid rgba(92, 58, 33, 0.1);
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .hero {
+                padding-top: 100px;
+            }
+
+            .about-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <nav class="nav">
+            <a href="#" class="logo">Napsütés <span>Pékség</span></a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Menü">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#rolunk">Rólunk</a></li>
+                <li><a href="#termekek">Termékek</a></li>
+                <li><a href="#nyitvatartas">Nyitvatartás</a></li>
+                <li><a href="#kapcsolat" class="nav-cta">Kapcsolat</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="hero-content">
+            <div class="hero-badge">🥖 Frissen sütve mindennap</div>
+            <h1>A kenyér, amit <span>szeretsz</span></h1>
+            <p>Hagyományos receptjeink, helyi alapanyagok és sok szeretet. Minden reggel friss, ropogós kenyér vár.</p>
+            <div class="hero-buttons">
+                <a href="#termekek" class="btn btn-primary">Termékeink →</a>
+                <a href="#kapcsolat" class="btn btn-secondary">Látogass el hozzánk</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="rolunk">
+        <div class="container">
+            <div class="section-header">
+                <h2>Rólunk</h2>
+                <p>Családi pékség 1998 óta – a minőség és a hagyomány jegyében.</p>
+            </div>
+            <div class="about-grid">
+                <div class="about-text">
+                    <h3>Szenvedéllyel sütünk</h3>
+                    <p>A Napsütés Pékségben minden kenyeret kézzel dagasztunk, lassan kelesztünk és fatüzelésű kemencében sütünk. Így születik meg az a különleges íz és aroma, amit a vásárlóink imádnak.</p>
+                    <p>Helyi malomból származó lisztet, természetes kovászt és tiszta vizet használunk – semmi felesleges adalékanyagot.</p>
+                    <div class="about-features">
+                        <div class="feature">
+                            <div class="icon">🌾</div>
+                            <h4>Helyi alapanyag</h4>
+                            <p>Magyar liszt, helyi méz</p>
+                        </div>
+                        <div class="feature">
+                            <div class="icon">🔥</div>
+                            <h4>Fatüzelésű kemence</h4>
+                            <p>Hagyományos ízvilág</p>
+                        </div>
+                        <div class="feature">
+                            <div class="icon">👨‍🍳</div>
+                            <h4>Kézműves munka</h4>
+                            <p>Minden nap frissen</p>
+                        </div>
+                        <div class="feature">
+                            <div class="icon">❤️</div>
+                            <h4>Családi recept</h4>
+                            <p>Generációk óta</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">🍞</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="termekek" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2>Termékeink</h2>
+                <p>Válogatás a legnépszerűbb kenyereinkből és süteményeinkből.</p>
+            </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-img">🥖</div>
+                    <div class="product-body">
+                        <h3>Kovászos kenyér</h3>
+                        <p>Klasszikus, ropogós héjú, puha belsejű kenyér.</p>
+                        <div class="product-price">890 Ft</div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img">🍞</div>
+                    <div class="product-body">
+                        <h3>Teljes kiőrlésű</h3>
+                        <p>Magas rosttartalmú, egészséges választás.</p>
+                        <div class="product-price">990 Ft</div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img">🥐</div>
+                    <div class="product-body">
+                        <h3>Vajaskifli</h3>
+                        <p>Frissen sült, aranyló, omlós kifli.</p>
+                        <div class="product-price">180 Ft</div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img">🧁</div>
+                    <div class="product-body">
+                        <h3>Csokis muffin</h3>
+                        <p>Puha tészta, olvasztott csokidarabokkal.</p>
+                        <div class="product-price">420 Ft</div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img">🍰</div>
+                    <div class="product-body">
+                        <h3>Sacher torta</h3>
+                        <p>Klasszikus csokoládés torta, barackízzel.</p>
+                        <div class="product-price">4200 Ft</div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img">🥨</div>
+                    <div class="product-body">
+                        <h3>Sósperec</h3>
+                        <p>Ropogós, sós, tökéletes snack.</p>
+                        <div class="product-price">250 Ft</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="nyitvatartas">
+        <div class="container">
+            <div class="section-header">
+                <h2>Nyitvatartás & Kapcsolat</h2>
+                <p>Várunk szeretettel minden nap!</p>
+            </div>
+            <div class="info-grid">
+                <div class="info-card" id="kapcsolat">
+                    <h3>📍 Elérhetőség</h3>
+                    <div class="contact-item">
+                        <div class="icon">🏠</div>
+                        <div>
+                            <strong>Cím</strong>
+                            <span>1234 Budapest, Pékség utca 12.</span>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">📞</div>
+                        <div>
+                            <strong>Telefon</strong>
+                            <span>+36 30 123 4567</span>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon">✉️</div>
+                        <div>
+                            <strong>E-mail</strong>
+                            <span>info@napsutes-pekseg.hu</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>🕐 Nyitvatartás</h3>
+                    <ul class="hours-list">
+                        <li><span class="day">Hétfő – Péntek</span><span class="time">6:00 – 18:00</span></li>
+                        <li><span class="day">Szombat</span><span class="time">6:00 – 14:00</span></li>
+                        <li><span class="day">Vasárnap</span><span class="time">7:00 – 12:00</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Napsütés Pékség · Készítette a <a href="/">fluxi.hu</a></p>
+    </footer>
+
+    <script>
+        // Sticky header
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 20);
+        });
+
+        // Mobile menu
+        const toggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        toggle.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+        });
+
+        // Close menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => navLinks.classList.remove('open'));
+        });
+    </script>
+</body>
+</html>
