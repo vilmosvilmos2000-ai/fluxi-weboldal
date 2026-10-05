@@ -1,461 +1,87 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vilmos Client – Minecraft launcher letöltés</title>
-<meta name="description" content="Vilmos Client – a saját Minecraft launcher 51 moddal, ingyenes demóval, offline indítással és beépített Java-val. Töltsd le Windowsra.">
-<meta name="theme-color" content="#0a0820">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a855f7'/%3E%3Ctext x='32' y='45' font-family='Segoe UI,sans-serif' font-size='38' font-weight='bold' text-anchor='middle' fill='%23fff'%3EV%3C/text%3E%3C/svg%3E">
-<style>
-  :root{
-    --bg:#07061a;--panel:rgba(38,40,86,.42);--panel2:rgba(30,32,70,.55);
-    --line:rgba(150,160,255,.16);--line2:rgba(150,160,255,.30);
-    --txt:#f1f4ff;--muted:#a6aed9;
-    --a1:#5b6cf7;--a2:#a855f7;--a3:#4cd2fa;--pink:#cb91ff;
-    --good:#3ae7a0;--warn:#facd50;--danger:#ff6484;
-    --radius:22px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:86px}
-  body{
-    font-family:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;
-    color:var(--txt);min-height:100vh;line-height:1.55;overflow-x:hidden;
-    background:var(--bg);
-  }
-  body::before{
-    content:"";position:fixed;inset:-20%;z-index:-2;pointer-events:none;
-    background:
-      radial-gradient(760px 520px at 18% 12%, rgba(168,85,247,.42), transparent 62%),
-      radial-gradient(820px 560px at 84% 4%, rgba(91,108,247,.40), transparent 60%),
-      radial-gradient(900px 620px at 50% 108%, rgba(76,210,250,.20), transparent 62%),
-      linear-gradient(180deg,#0b0926,#06051a 60%,#050414);
-  }
-  body::after{
-    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
-    background-image:
-      radial-gradient(1px 1px at 18% 22%, rgba(255,255,255,.55), transparent),
-      radial-gradient(1px 1px at 72% 12%, rgba(255,255,255,.40), transparent),
-      radial-gradient(1px 1px at 40% 68%, rgba(255,255,255,.35), transparent),
-      radial-gradient(1px 1px at 88% 62%, rgba(255,255,255,.45), transparent),
-      radial-gradient(1px 1px at 8% 82%, rgba(255,255,255,.30), transparent);
-    background-size:520px 520px,640px 640px,700px 700px,460px 460px,580px 580px;
-    animation:twinkle 9s ease-in-out infinite alternate;
-  }
-  @keyframes twinkle{from{opacity:.32}to{opacity:.62}}
-  a{color:inherit}
-  .wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crystal Client - moved</title>
+    <link rel="canonical" href="/crystalclient/">
+    <meta http-equiv="refresh" content="0; url=/crystalclient/">
+    <meta name="robots" content="noindex">
+    <style>
+        :root {
+            color-scheme: dark
+        }
 
-  /* ---------- nav ---------- */
-  header{
-    position:sticky;top:0;z-index:50;backdrop-filter:blur(18px) saturate(140%);
-    -webkit-backdrop-filter:blur(18px) saturate(140%);
-    background:linear-gradient(180deg,rgba(10,9,32,.86),rgba(10,9,32,.42));
-    border-bottom:1px solid var(--line);
-  }
-  .nav{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 0}
-  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2.4px;font-size:14px;text-decoration:none}
-  .mark{
-    width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
-    font-weight:900;font-size:19px;background:linear-gradient(135deg,var(--a2),var(--a1));
-    box-shadow:0 10px 26px rgba(168,85,247,.45),inset 0 1px 0 rgba(255,255,255,.4);
-  }
-  .links{display:flex;align-items:center;gap:6px}
-  .links a{
-    text-decoration:none;color:var(--muted);font-size:14px;font-weight:600;padding:9px 14px;border-radius:12px;
-    transition:.18s;
-  }
-  .links a:hover{color:var(--txt);background:rgba(255,255,255,.08)}
-  .btn{
-    display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:14.5px;
-    padding:11px 20px;border-radius:14px;color:#fff;position:relative;overflow:hidden;
-    background:linear-gradient(135deg,var(--a1),var(--a2));
-    box-shadow:0 12px 30px rgba(124,92,247,.42),inset 0 1px 0 rgba(255,255,255,.35);
-    transition:transform .18s,box-shadow .18s;
-  }
-  .btn:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(168,85,247,.55),inset 0 1px 0 rgba(255,255,255,.45)}
-  .btn::after{
-    content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.42),transparent);
-    animation:sweep 4.2s ease-in-out infinite;
-  }
-  @keyframes sweep{0%{left:-60%}55%,100%{left:130%}}
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            color: #f1f4ff;
+            background:
+                radial-gradient(760px 520px at 18% 12%, rgba(168, 85, 247, .42)),
+                radial-gradient(820px 560px at 84% 4%, rgba(91, 108, 247, .40)),
+                radial-gradient(900px 620px at 50% 108%, rgba(76, 210, 250, .20)),
+                linear-gradient(180deg, #0b0926, #06051a 60%, #050414);
+        }
 
-  /* ---------- hero ---------- */
-  .hero{padding:74px 0 40px;text-align:center}
-  .chip{
-    display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:800;letter-spacing:2px;
-    text-transform:uppercase;color:var(--pink);padding:8px 16px;border-radius:999px;
-    background:rgba(168,85,247,.14);border:1px solid rgba(203,145,255,.34);
-  }
-  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 12px var(--good)}
-  h1{
-    margin:22px 0 0;font-size:clamp(40px,8.4vw,76px);line-height:1.02;font-weight:900;letter-spacing:-1px;
-    background:linear-gradient(180deg,#fff 20%,#c9b8ff 62%,var(--a2));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 12px 34px rgba(124,92,247,.35));
-  }
-  .hero p{max-width:660px;margin:20px auto 0;color:var(--muted);font-size:17px}
-  .cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center;margin-top:34px}
-  .dl{
-    display:inline-flex;align-items:center;gap:16px;text-align:left;padding:18px 30px;border-radius:20px;color:#fff;
-    background:linear-gradient(135deg,var(--a1),var(--a2));text-decoration:none;position:relative;overflow:hidden;
-    box-shadow:0 20px 46px rgba(124,92,247,.5),inset 0 1px 0 rgba(255,255,255,.4);
-    transition:transform .2s,box-shadow .2s;
-  }
-  .dl:hover{transform:translateY(-3px);box-shadow:0 26px 58px rgba(168,85,247,.6),inset 0 1px 0 rgba(255,255,255,.5)}
-  .dl::after{
-    content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
-    animation:sweep 3.6s ease-in-out infinite;
-  }
-  .dl .ico{font-size:28px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
-  .dl .t{font-weight:900;font-size:18px;letter-spacing:.2px}
-  .dl .s{font-size:12.5px;font-weight:700;opacity:.88}
-  .ghost{
-    display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:14.5px;
-    padding:16px 22px;border-radius:18px;color:var(--txt);border:1px solid var(--line2);
-    background:rgba(255,255,255,.05);transition:.18s;
-  }
-  .ghost:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
-  .fine{margin-top:20px;color:var(--muted);font-size:13.5px}
-  .fine b{color:var(--txt)}
+        .box {
+            max-width: 460px;
+            padding: 34px 38px;
+            text-align: center;
+            border-radius: 22px;
+            border: 1px solid rgba(150, 160, 255, .3);
+            background: linear-gradient(180deg, rgba(45, 46, 98, .55), rgba(22, 21, 56, .65));
+        }
 
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:46px}
-  .stat{
-    background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 16px;text-align:center;
-    backdrop-filter:blur(10px);transition:.2s;
-  }
-  .stat:hover{transform:translateY(-3px);border-color:var(--line2)}
-  .stat b{display:block;font-size:26px;font-weight:900;letter-spacing:-.5px;
-    background:linear-gradient(135deg,#fff,var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .stat span{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.6px}
+        .mark {
+            width: 54px;
+            height: 54px;
+            margin: 0 auto 16px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #a855f7, #5b6cf7);
+            box-shadow: 0 10px 30px rgba(124, 92, 246, .45)
+        }
 
-  /* ---------- app mockup ---------- */
-  .shot{
-    margin:56px auto 0;max-width:1000px;border-radius:24px;overflow:hidden;position:relative;
-    border:1px solid var(--line2);
-    background:linear-gradient(180deg,rgba(28,26,66,.92),rgba(12,11,34,.96));
-    box-shadow:0 40px 90px rgba(3,2,14,.65),0 0 0 1px rgba(255,255,255,.04) inset;
-  }
-  .shot::before{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(600px 260px at 78% -10%,rgba(168,85,247,.35),transparent 70%),
-               radial-gradient(500px 240px at 6% 6%,rgba(91,108,247,.3),transparent 70%);
-  }
-  .shot-bar{
-    display:flex;align-items:center;gap:14px;padding:11px 14px;position:relative;
-    border-bottom:1px solid var(--line);background:rgba(12,11,32,.7);
-  }
-  .shot-bar .t{font-weight:800;letter-spacing:2.6px;font-size:12.5px;color:var(--txt)}
-  .shot-bar .sub{font-size:11.5px;color:var(--a3);font-weight:700;letter-spacing:.4px}
-  .wins{margin-left:auto;display:flex;gap:4px}
-  .wins i{width:30px;height:20px;border-radius:7px;display:grid;place-items:center;font-style:normal;font-size:11px;color:var(--muted)}
-  .wins i:hover{background:rgba(255,255,255,.12);color:#fff}
-  .wins i:last-child:hover{background:#e8434f;color:#fff}
-  .shot-body{display:grid;grid-template-columns:186px 1fr;position:relative}
-  .side{padding:20px 14px;border-right:1px solid var(--line);background:rgba(16,15,42,.55)}
-  .side .lbl{font-size:10.5px;font-weight:800;letter-spacing:2.4px;color:var(--pink);margin-bottom:12px}
-  .navi{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:6px}
-  .navi.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;box-shadow:0 10px 24px rgba(124,92,247,.4)}
-  .navi .sq{width:17px;height:17px;border-radius:6px;background:currentColor;opacity:.9}
-  .side .info{margin-top:26px;padding:13px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-size:11.5px;color:var(--muted)}
-  .main{padding:26px 28px 30px;display:grid;gap:16px}
-  .m-title{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap}
-  .m-title h3{font-size:24px;font-weight:900;letter-spacing:-.4px}
-  .m-title span{font-size:13px;color:var(--muted)}
-  .badges{display:flex;gap:8px;flex-wrap:wrap}
-  .badges em{
-    font-style:normal;font-size:11px;font-weight:800;letter-spacing:1.4px;padding:6px 12px;border-radius:999px;
-    border:1px solid currentColor;color:var(--a3);background:rgba(76,210,250,.1)
-  }
-  .badges em:nth-child(2){color:var(--pink);background:rgba(168,85,247,.12)}
-  .badges em:nth-child(3){color:var(--good);background:rgba(58,231,160,.12)}
-  .panel{
-    border-radius:20px;border:1px solid var(--line2);padding:20px;position:relative;
-    background:linear-gradient(180deg,rgba(45,46,98,.55),rgba(22,21,56,.65));
-    box-shadow:0 26px 60px rgba(4,3,18,.5);
-  }
-  .panel .cap{font-size:10.5px;font-weight:800;letter-spacing:2.6px;color:var(--pink);margin-bottom:10px}
-  .select{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-radius:14px;
-    background:rgba(10,10,30,.75);border:1px solid rgba(150,160,255,.2);font-size:14px;font-weight:600;
-  }
-  .select i{font-style:normal;color:var(--muted)}
-  .play{
-    margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;padding:17px;border-radius:18px;
-    font-weight:900;font-size:17px;letter-spacing:1px;color:#fff;position:relative;overflow:hidden;
-    background:linear-gradient(135deg,var(--a1),var(--a2));
-    box-shadow:0 18px 44px rgba(124,92,247,.45),inset 0 1px 0 rgba(255,255,255,.4);
-  }
-  .play::after{
-    content:"";position:absolute;top:0;left:-60%;width:36%;height:100%;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
-    animation:sweep 3.4s ease-in-out infinite;
-  }
-  .modes{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
-  .mode{
-    flex:1;min-width:150px;padding:12px 16px;border-radius:14px;font-size:13px;font-weight:800;text-align:center;
-    color:var(--txt);border:1px solid var(--line2);background:rgba(255,255,255,.05)
-  }
-  .mode.demo{background:linear-gradient(135deg,rgba(124,92,246,.5),rgba(168,85,247,.5));border-color:transparent}
-  .bar{height:9px;border-radius:99px;background:rgba(9,9,28,.8);border:1px solid rgba(255,255,255,.1);margin-top:16px;overflow:hidden}
-  .bar i{display:block;height:100%;width:38%;border-radius:99px;background:linear-gradient(90deg,var(--a2),var(--a1))}
-  .fcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-  .fcard{
-    border-radius:16px;border:1px solid var(--line);padding:14px;background:rgba(255,255,255,.045);transition:.2s
-  }
-  .fcard:hover{transform:translateY(-3px);border-color:rgba(168,85,247,.5)}
-  .fcard .ic{
-    width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px;margin-bottom:9px;
-    background:linear-gradient(135deg,rgba(124,92,246,.55),rgba(168,85,247,.35));color:#fff;
-  }
-  .fcard b{font-size:13.5px;display:block;margin-bottom:4px}
-  .fcard span{font-size:12px;color:var(--muted)}
+        h1 {
+            margin: 0 0 10px;
+            font-size: 24px;
+            letter-spacing: 1px
+        }
 
-  /* ---------- sections ---------- */
-  section{padding:66px 0}
-  .eyebrow{font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--a3);margin-bottom:10px}
-  h2{font-size:clamp(26px,4.6vw,38px);font-weight:900;letter-spacing:-.6px;margin-bottom:10px}
-  .lead{color:var(--muted);max-width:620px;font-size:15.5px}
+        p {
+            margin: 0 0 20px;
+            color: #a6aed9;
+            line-height: 1.6
+        }
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:30px}
-  .card{
-    position:relative;padding:22px;border-radius:var(--radius);border:1px solid var(--line);
-    background:linear-gradient(180deg,var(--panel),rgba(16,15,44,.5));backdrop-filter:blur(10px);
-    transition:transform .22s,border-color .22s,box-shadow .22s;overflow:hidden;
-  }
-  .card::before{
-    content:"";position:absolute;inset:0;opacity:0;transition:opacity .22s;
-    background:radial-gradient(420px 180px at 20% 0%,rgba(168,85,247,.22),transparent 70%);
-  }
-  .card:hover{transform:translateY(-4px);border-color:var(--line2);box-shadow:0 24px 54px rgba(4,3,18,.5)}
-  .card:hover::before{opacity:1}
-  .card .ic{
-    width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;margin-bottom:13px;
-    background:linear-gradient(135deg,rgba(124,92,246,.6),rgba(168,85,247,.32));color:#fff;
-    box-shadow:0 10px 24px rgba(124,92,247,.3),inset 0 1px 0 rgba(255,255,255,.3);
-  }
-  .card h3{font-size:16px;font-weight:800;margin-bottom:7px}
-  .card p{color:var(--muted);font-size:13.8px}
-
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:30px;position:relative}
-  .step{
-    padding:24px;border-radius:var(--radius);border:1px solid var(--line);position:relative;
-    background:linear-gradient(180deg,var(--panel2),rgba(14,13,40,.5));
-  }
-  .step .n{
-    width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:900;font-size:16px;
-    background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;margin-bottom:14px;
-    box-shadow:0 10px 24px rgba(124,92,247,.4)
-  }
-  .step h3{font-size:15.5px;font-weight:800;margin-bottom:6px}
-  .step p{color:var(--muted);font-size:13.6px}
-
-  .cols{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin-top:30px}
-  @media(max-width:820px){.cols{grid-template-columns:1fr}}
-  .req{border-radius:var(--radius);border:1px solid var(--line);overflow:hidden;background:rgba(16,15,44,.5)}
-  .req div{display:flex;justify-content:space-between;gap:18px;padding:15px 20px;border-bottom:1px solid var(--line);font-size:14px}
-  .req div:last-child{border-bottom:none}
-  .req div span{color:var(--muted);text-align:right}
-  .note{
-    border-radius:var(--radius);padding:22px;border:1px solid rgba(250,205,80,.34);background:rgba(250,205,80,.07);
-    color:#ffe7ad;font-size:14px
-  }
-  .note b{color:#fff}
-  .faq{margin-top:22px;display:grid;gap:10px}
-  details{border-radius:16px;border:1px solid var(--line);background:rgba(16,15,44,.5);overflow:hidden}
-  summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;gap:12px}
-  summary::-webkit-details-marker{display:none}
-  summary::after{content:"+";color:var(--a3);font-weight:900}
-  details[open] summary::after{content:"–"}
-  details p{padding:0 18px 16px;color:var(--muted);font-size:13.8px}
-
-  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
-  .reveal.in{opacity:1;transform:none}
-
-  footer{margin-top:20px;padding:34px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
-  footer b{color:var(--txt);letter-spacing:2px}
-  footer .row{display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:space-between;align-items:center}
-  footer a{color:var(--muted)}
-  footer a:hover{color:var(--txt)}
-
-  @media(max-width:720px){
-    .links a:not(.btn){display:none}
-    .shot-body{grid-template-columns:1fr}
-    .side{border-right:none;border-bottom:1px solid var(--line);display:flex;gap:8px;overflow-x:auto}
-    .side .lbl,.side .info{display:none}
-    .navi{white-space:nowrap;margin-bottom:0}
-    .hero{padding:52px 0 26px}
-  }
-  @media(prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-    .reveal{opacity:1;transform:none}
-  }
-</style>
+        a.btn {
+            display: inline-block;
+            padding: 12px 22px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #5b6cf7, #a855f7);
+            box-shadow: 0 8px 26px rgba(91, 108, 247, .35)
+        }
+    </style>
 </head>
+
 <body>
-
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="/vilmosclient/"><span class="mark">V</span><span>VILMOS&nbsp;CLIENT</span></a>
-    <nav class="links">
-      <a href="#funkciok">Funkciók</a>
-      <a href="#telepites">Telepítés</a>
-      <a href="#kovetelmenyek">Követelmények</a>
-      <a class="btn" href="VilmosClient-install.exe" download>⬇ Letöltés</a>
-    </nav>
-  </div>
-</header>
-
-<div class="wrap">
-
-  <div class="hero">
-    <span class="chip"><span class="dot"></span> Fabric · 51 mod · 26.3</span>
-    <h1>VILMOS&nbsp;CLIENT</h1>
-    <p>A saját Minecraft launcher, ami nem egy üres játékot indít: beépített Java, Microsoft-fiókos belépés, offline mód, ingyenes demó – és 51 teljesítmény- és hasznossági (QoL) mod, ami az első indítás pillanatától bekapcsol.</p>
-    <div class="cta">
-      <a class="dl" href="VilmosClient-install.exe" download>
-        <span class="ico">⬇</span>
-        <span><span class="t">Telepítő letöltése</span><br><span class="s">VilmosClient-install.exe · 47,9 MB</span></span>
-      </a>
-      <a class="ghost" href="#funkciok">Mit tartalmaz? ↓</a>
+    <div class="box">
+        <div class="mark">C</div>
+        <h1>CRYSTAL CLIENT</h1>
+        <p>This launcher is now called Crystal Client. The download page has moved to a new address.</p>
+        <a class="btn" href="/crystalclient/">Open the Crystal Client page</a>
     </div>
-    <p class="fine">Windows 10 / 11 · <b>rendszergazda nélkül</b> · magyar felület · az első indítás letölti a játék legújabb verzióját</p>
-
-    <div class="stats">
-      <div class="stat"><b>51</b><span>BEÉPÍTETT MOD</span></div>
-      <div class="stat"><b>26.3</b><span>JÁTÉK VERZIÓ</span></div>
-      <div class="stat"><b>JDK 25</b><span>BEÉPÍTETT JAVA</span></div>
-      <div class="stat"><b>offline</b><span>NET NÉLKÜL JÁTSZHATÓ</span></div>
-    </div>
-  </div>
-
-  <div class="shot reveal">
-    <div class="shot-bar">
-      <span class="t">VILMOS CLIENT</span>
-      <span class="sub">Minecraft · Java Edition launcher</span>
-      <span class="wins"><i>–</i><i>▢</i><i>✕</i></span>
-    </div>
-    <div class="shot-body">
-      <div class="side">
-        <div class="lbl">MENÜ</div>
-        <div class="navi on"><span class="sq"></span>Kezdőlap</div>
-        <div class="navi"><span class="sq"></span>Beállítások</div>
-        <div class="navi"><span class="sq"></span>Fiók</div>
-        <div class="info">A játék a hivatalos Mojang szerverekről töltődik le. A fiók Microsoft-rendszerben igazolódik.</div>
-      </div>
-      <div class="main">
-        <div class="m-title">
-          <h3>Játék</h3>
-          <div class="badges"><em>51 MOD</em><em>FABRIC</em><em>OFFLINE</em></div>
-        </div>
-        <div class="panel">
-          <div class="cap">VERZIÓ</div>
-          <div class="select"><span>Legújabb kiadás</span><i>▾</i></div>
-          <div class="play">▶ JÁTÉK INDÍTÁSA</div>
-          <div class="modes"><div class="mode">Offline indítás</div><div class="mode demo">Ingyenes demó</div></div>
-          <div class="bar"><i></i></div>
-        </div>
-        <div class="fcards">
-          <div class="fcard"><div class="ic">⚡</div><b>Nagy FPS</b><span>Optimalizált JVM kapcsolók</span></div>
-          <div class="fcard"><div class="ic">🛡</div><b>Biztonságos fiók</b><span>Hivatalos Microsoft-bejelentkezés</span></div>
-          <div class="fcard"><div class="ic">⬇</div><b>Gyors letöltés</b><span>Párhuzamos fájlmásolás</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<section id="funkciok">
-  <div class="wrap">
-    <div class="eyebrow reveal">Funkciók</div>
-    <h2 class="reveal">Minden, ami egy modern Minecraft-élményhez kell</h2>
-    <p class="lead reveal">A launcher a játék fájljait, a Java-t és a modokat is kezeli – neked csak meg kell nyomni egy gombot.</p>
-    <div class="grid">
-      <div class="card reveal"><div class="ic">🚀</div><h3>Sodium + Lithium</h3><p>Radikálisan több FPS, gyorsabb világ-működés, plusz néhány extra beállítás, amit máshol nem kapsz.</p></div>
-      <div class="card reveal"><div class="ic">🌄</div><h3>Iris Shaders</h3><p>Teljes shader-támogatás (BSL, Complementary, Sildur's…), ray-traced beállításokkal, de ízléses teljesítménnyel.</p></div>
-      <div class="card reveal"><div class="ic">🗺️</div><h3>Xaero térképek</h3><p>Minimap és világtérkép útvonal- és waypoint-jelöléssel, teljesen testreszabható HUD-dal.</p></div>
-      <div class="card reveal"><div class="ic">📐</div><h3>Litematica + MiniHUD</h3><p>Építési tervek kijelöléssel és rétegenként, élő statisztikákkal a képernyőn.</p></div>
-      <div class="card reveal"><div class="ic">🖱️</div><h3>Freelook + keystrokes</h3><p>Körbenézhetsz mozgás közben, a gombjaid és az FPS a képernyőn látszik.</p></div>
-      <div class="card reveal"><div class="ic">💬</div><h3>Chat + chat-heads</h3><p>Fejecskék a beszélőknél, parancs-előnézet és egy sokkal kényelmesebb cset felület.</p></div>
-      <div class="card reveal"><div class="ic">🎒</div><h3>Inventory és GUI</h3><p>Egy kattintással elrendezett, önműködően rendeződő és villámgyorsan böngészhető inventory.</p></div>
-      <div class="card reveal"><div class="ic">🔋</div><h3>Dynamic FPS</h3><p>Háttérben alacsonyabb FPS, így kevesebb géphasználat, kevesebb zaj és hosszabb üzemidő.</p></div>
-      <div class="card reveal"><div class="ic">👁️</div><h3>AppleSkin + játékadatok</h3><p>Étel- és állapotinformációk, hasznos játékbeli adatok egy helyen.</p></div>
-      <div class="card reveal"><div class="ic">🎬</div><h3>Ingyenes demó</h3><p>Fiók és vásárlás nélkül kipróbálhatod a launchert és a modokat: az <b>Ingyenes demó</b> gomb a bejelentkezés mellett található.</p></div>
-      <div class="card reveal"><div class="ic">📴</div><h3>Offline indítás</h3><p>Játssz a legutóbbi mentett fiókkal internet nélkül is – a token biztonságosan helyben marad.</p></div>
-      <div class="card reveal"><div class="ic">🖥️</div><h3>Mod Menu + beállítások</h3><p>Minden mod listázva és konfigurálható, a RAM, felbontás és JVM kapcsolók egy helyen állíthatók.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="telepites">
-  <div class="wrap">
-    <div class="eyebrow reveal">Telepítés</div>
-    <h2 class="reveal">Három lépés, és játszol</h2>
-    <div class="steps">
-      <div class="step reveal"><div class="n">1</div><h3>Töltsd le</h3><p>Kattints a nagy letöltés gombra, és futtasd a <b>VilmosClient-install.exe</b> fájlt.</p></div>
-      <div class="step reveal"><div class="n">2</div><h3>Telepíts</h3><p>Pár másodperc, és kész az asztali és a Start menü parancsikonja. Nem kell rendszergazda jog.</p></div>
-      <div class="step reveal"><div class="n">3</div><h3>Indíts</h3><p>Az első indítás letölti a játékot és a modokat, majd Microsoft-fiókkal belépsz – vagy azonnal megnyomod az <b>Ingyenes demó</b> gombot.</p></div>
-    </div>
-
-    <div class="cols">
-      <div class="req reveal">
-        <div>Rendszer <span>Windows 10 / 11 (64 bites)</span></div>
-        <div>Memória <span>minimum 8 GB (ajánlott 16 GB)</span></div>
-        <div>Szabad tárhely <span>kb. 1,5 GB a játékkal együtt</span></div>
-        <div>Grafika <span>Vulkan vagy OpenGL 3.2+ (XP-n sosem)</span></div>
-        <div>Java <span>nem kell telepíteni, a beépített JDK 25 használódik</span></div>
-      </div>
-      <div class="note reveal">
-        ⚠️ A Windows ismeretlen kiadóra figyelmeztethet a telepítőnél. Ez a SmartScreen szokásos viselkedése egy friss aláírás nélküli fájlnál: kattints a <b>További információ</b>, majd a <b>Futtatás mindenképp</b> gombra.<br><br>
-        A Vilmos Client <b>nem tartalmaz</b> hacket, cheatet vagy értékelési rendszer megkerülését célzó funkciót, és a játék szabályainak és elvárásainak megfelelően működik.
-      </div>
-    </div>
-
-    <div class="faq">
-      <details class="reveal"><summary> Kell valamit telepítenem a Minecrafthez?</summary><p>Nem. A telepítő a beépített JDK 25-öt használja, a játék fájljait és a Fabric modokat a launcher tölti le. A Minecraft saját fizetős fiókja csak a nem demós játékhoz kell.</p></details>
-      <details class="reveal"><summary> Működik internet nélkül?</summary><p>Igen. Ha egyszer bejelentkeztél, az <b>Offline indítás</b> gomb a mentett fiókkal játszik – a játékfájlok és a modok ilyenkor is helyben vannak.</p></details>
-      <details class="reveal"><summary> Mi az a demó, és meddig használható?</summary><p>Az <b>Ingyenes demó</b> a Minecraft hivatalos próbaidőszaka: 5 játéknap, egyszerűs játék, fiók és vásárlás nélkül. Teljes funkcionalitású játékhoz és minden régi verzióhoz saját, megvásárolt fiókkal tudsz játszani.</p></details>
-      <details class="reveal"><summary> Frissülnek a modok?</summary><p>Igen. A launcher induláskor rákérdez a Mojang és a Fabric szerverére, és letölti az aktuális verziókat. A csomag játékverzióhoz van kötve, nem a gépedhez.</p></details>
-      <details class="reveal"><summary> Hova telepít a program?</summary><p>A <b>%LOCALAPPDATA%\VilmosClient</b> mappába, felhasználói fiók alatt – ehhez nem kell admin jog, és nem szennyezi a Program Files-t.</p></details>
-    </div>
-  </div>
-</section>
-
-<section id="kovetelmenyek">
-  <div class="wrap">
-    <div class="eyebrow reveal">Kész?</div>
-    <h2 class="reveal">Töltsd le, és már a kezdőképernyőn vagy</h2>
-    <div class="cta reveal">
-      <a class="dl" href="VilmosClient-install.exe" download>
-        <span class="ico">⬇</span>
-        <span><span class="t">VilmosClient-install.exe</span><br><span class="s">47,9 MB · Windows 10 / 11</span></span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap row">
-    <div><b>VILMOS CLIENT</b> · <a href="/">fluxi.hu</a></div>
-    <div>Nem hivatalos launcher. Nem áll kapcsolatban a Mojang / Microsoft céggel.</div>
-  </div>
-</footer>
-
-</div>
-
-<script>
-(function(){
-  var items = document.querySelectorAll('.reveal');
-  if(!('IntersectionObserver' in window)){ for(var i=0;i<items.length;i++) items[i].classList.add('in'); return; }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-    });
-  },{rootMargin:'0px 0px -8% 0px',threshold:0.06});
-  for(var i=0;i<items.length;i++) io.observe(items[i]);
-})();
-</script>
 </body>
+
 </html>
