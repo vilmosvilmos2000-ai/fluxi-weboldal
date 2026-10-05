@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macska flash</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #050810;
+            color: #f1f5f9;
+            font-family: system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 { font-size: 1.8rem; margin-bottom: 12px; }
+        p { color: #94a3b8; margin-bottom: 24px; max-width: 420px; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+        button:hover { background: #2563eb; transform: scale(1.03); }
+        button:active { transform: scale(0.98); }
+
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            inset: 0;
+        }
+        #counter {
+            position: absolute;
+            bottom: 20px;
+            right: 24px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            z-index: 10;
+            text-shadow: 0 1px 4px #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Macska flash</h1>
+    <p>13 másodpercig ~130 random macskás kép villog a képernyőn, aztán magától eltűnik. Semmi zárolás, semmi vírus – csak egy ártalmatlan vicc.</p>
+    <button id="startBtn">Indítás</button>
+
+    <div id="overlay">
+        <img id="catImg" alt="macska" src="">
+        <div id="counter">13.0 s</div>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('overlay');
+        const catImg = document.getElementById('catImg');
+        const counter = document.getElementById('counter');
+        const startBtn = document.getElementById('startBtn');
+
+        // Random cat from Cataas (unique each time)
+        function randomCatUrl() {
+            return 'https://cataas.com/cat?' + Date.now() + Math.random().toString(36).slice(2);
+        }
+
+        startBtn.addEventListener('click', () => {
+            overlay.style.display = 'flex';
+            let remaining = 13.0;
+            let count = 0;
+            const totalImages = 130;
+            const intervalMs = (13 * 1000) / totalImages; // ~100 ms
+
+            // Preload first image
+            catImg.src = randomCatUrl();
+
+            const interval = setInterval(() => {
+                count++;
+                remaining = Math.max(0, 13 - (count * intervalMs / 1000));
+                counter.textContent = remaining.toFixed(1) + ' s';
+
+                // Change image
+                catImg.src = randomCatUrl();
+
+                if (count >= totalImages) {
+                    clearInterval(interval);
+                    // Fade out
+                    overlay.style.transition = 'opacity 0.4s';
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        overlay.style.opacity = '1';
+                        overlay.style.transition = '';
+                        counter.textContent = '13.0 s';
+                    }, 400);
+                }
+            }, intervalMs);
+        });
+    </script>
+</body>
+</html>
