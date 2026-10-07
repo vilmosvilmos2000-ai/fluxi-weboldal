@@ -6,7 +6,7 @@
 <title>Crystal Client – Minecraft launcher letöltés</title>
 <meta name="description" content="Crystal Client – a saját Minecraft launcher 40+ moddal, ingyenes demóval, offline indítással és beépített Java-val. Töltsd le Windowsra.">
 <meta name="theme-color" content="#0a0820">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a855f7'/%3E%3Ctext x='32' y='45' font-family='Segoe UI,sans-serif' font-size='38' font-weight='bold' text-anchor='middle' fill='%23fff'%3EC%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="icon.png">
 <style>
   :root{
     --bg:#07061a;--panel:rgba(38,40,86,.42);--panel2:rgba(30,32,70,.55);
@@ -56,9 +56,9 @@
   .nav{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 0}
   .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2.4px;font-size:14px;text-decoration:none}
   .mark{
-    width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
-    font-weight:900;font-size:19px;background:linear-gradient(135deg,var(--a2),var(--a1));
-    box-shadow:0 10px 26px rgba(168,85,247,.45),inset 0 1px 0 rgba(255,255,255,.4);
+    width:40px;height:40px;border-radius:12px;display:block;object-fit:cover;
+    background:linear-gradient(135deg,var(--a2),var(--a1));
+    box-shadow:0 10px 26px rgba(168,85,247,.45);
   }
   .links{display:flex;align-items:center;gap:6px}
   .links a{
@@ -298,7 +298,7 @@
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="/vilmosclient/"><span class="mark">C</span><span>CRYSTAL&nbsp;CLIENT</span></a>
+    <a class="brand" href="/vilmosclient/"><img class="mark" src="icon.png" alt=""><span>CRYSTAL&nbsp;CLIENT</span></a>
     <nav class="links">
       <a href="#funkciok">Funkciók</a>
       <a href="#telepites">Telepítés</a>
