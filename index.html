@@ -1,375 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fluxi.hu</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --accent: #3b82f6;
-            --accent2: #2563eb;
-            --accent-rgb: 59, 130, 246;
-            --bg: #050810;
-            --card: rgba(12, 18, 35, 0.7);
-            --border: rgba(148, 163, 184, 0.1);
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fluxi.hu – játékok, AI és tanulás egy helyen</title>
+<meta name="description" content="Játékok, AI-kísérletek, tanulós oldalak és minden más egy helyen. Válassz egy témát, és ugorj be.">
+<meta name="theme-color" content="#f5f2ff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌀%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17143a;--paper:#f5f2ff;
+  --violet:#6d4aff;--cyan:#19d3da;--sun:#ffc93c;--pink:#ff5fa2;
+  --font:"Bricolage Grotesque",ui-rounded,"Segoe UI",system-ui,sans-serif;
+  --lap:44px;--pad:clamp(20px,5vw,72px);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{font-family:var(--font);background:var(--ink);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+ul{padding:0;list-style:none}
+a{color:inherit}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+/* Hero */
+.hero{position:relative;overflow:hidden;background:var(--paper);padding:clamp(28px,6vw,64px) var(--pad) calc(var(--lap) + clamp(40px,8vw,96px))}
+.hero-in{position:relative;z-index:1;max-width:1100px;margin:0 auto}
+.logo{font-size:clamp(4.5rem,21vw,13rem);font-weight:800;font-variation-settings:"wdth" 75;letter-spacing:-.04em;line-height:.88}
+.lead{max-width:30ch;margin-top:26px;font-size:clamp(1.2rem,3vw,1.7rem);font-weight:500;line-height:1.3}
+.jump{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.jump a{display:inline-block;padding:10px 18px;background:#fff;border:2.5px solid var(--ink);border-radius:999px;box-shadow:3px 3px 0 var(--ink);font-weight:700;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.jump a:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
+.jump a:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.jump a:focus-visible{outline:4px solid var(--violet);outline-offset:3px}
 
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: var(--bg);
-            color: #f1f5f9;
-            line-height: 1.5;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
+.blobs{position:absolute;inset:0;pointer-events:none}
+.blob{position:absolute;aspect-ratio:1;mix-blend-mode:multiply;animation:morph 11s ease-in-out infinite alternate,drift 17s ease-in-out infinite alternate}
+.b1{width:min(52vw,520px);right:-6vw;top:-4vw;background:var(--violet)}
+.b2{width:min(40vw,400px);right:12vw;top:14vw;background:var(--cyan);animation-delay:-4s,-6s}
+.b3{width:min(34vw,340px);right:-2vw;top:22vw;background:var(--pink);animation-delay:-8s,-3s}
+@keyframes morph{
+  0%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}
+  50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%}
+  100%{border-radius:50% 50% 40% 60%/40% 70% 30% 60%}
+}
+@keyframes drift{from{transform:translate(0,0) rotate(0)}to{transform:translate(-6vw,4vw) rotate(40deg)}}
+@media(max-width:639px){
+  .b1{width:42vw;top:-6vw}.b2{width:32vw;right:24vw;top:8vw}.b3{width:28vw;top:12vw}
+}
 
-        /* Canvas particles */
-        #particles {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
+/* Sections: stacked, colour-blocked sheets */
+.band{position:relative;margin-top:calc(var(--lap) * -1);padding:calc(var(--lap) + 32px) var(--pad) calc(var(--lap) + 40px);border-radius:var(--lap) var(--lap) 0 0;background:var(--band);color:var(--on)}
+.band>*{max-width:1100px;margin-inline:auto}
+.games{--band:var(--violet);--on:#fff;--ring:#fff}
+.ai{--band:var(--cyan);--on:var(--ink);--ring:var(--ink)}
+.learn{--band:var(--sun);--on:var(--ink);--ring:var(--ink)}
+.other{--band:var(--pink);--on:var(--ink);--ring:var(--ink)}
 
-        .bg-glow {
-            position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(ellipse 80% 50% at 20% 0%, rgba(59,130,246,0.15) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 40% at 85% 90%, rgba(37,99,235,0.1) 0%, transparent 50%);
-            z-index: 0;
-            pointer-events: none;
-            animation: glowShift 14s ease-in-out infinite alternate;
-        }
+.section-title{font-size:clamp(2.2rem,6vw,4rem);font-weight:800;font-variation-settings:"wdth" 80;letter-spacing:-.03em;line-height:1}
+.sub{margin-top:10px;max-width:46ch;font-size:1.125rem}
 
-        @keyframes glowShift {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
+.grid{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-flow:dense;gap:14px;margin-top:32px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}}
 
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 60px 24px 50px;
-        }
+/* Tiles = buttons */
+.tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:132px;padding:18px;background:#fff;color:var(--ink);text-decoration:none;border:2.5px solid var(--ink);border-radius:22px;box-shadow:4px 4px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.tile:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+.tile:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.tile:focus-visible{outline:4px solid var(--ring);outline-offset:4px}
+.wide{grid-column:span 2;border-radius:34px;padding:22px}
+.ico{display:grid;place-items:center;width:48px;height:48px;background:var(--band);border:2.5px solid var(--ink);border-radius:50%;font-size:1.5rem;line-height:1;transition:transform .2s}
+.tile:hover .ico{transform:rotate(-12deg) scale(1.08)}
+.txt b{display:block;font-size:1.2rem;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.wide .txt b{font-size:1.6rem}
+.txt small{display:block;margin-top:4px;font-size:.85rem;color:#5b5880;word-break:break-all}
+.ext::after{content:"↗";position:absolute;top:14px;right:16px;font-weight:700}
+.soon{background:rgba(255,255,255,.55);border-style:dashed}
+.tag{position:absolute;top:14px;right:14px;padding:3px 10px;background:var(--ink);color:#fff;border-radius:999px;font-size:.75rem;font-weight:700}
 
-        /* Hero */
-        .hero {
-            text-align: center;
-            padding: 30px 0 60px;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.15s;
-        }
+/* Footer */
+.foot{position:relative;margin-top:calc(var(--lap) * -1);padding:calc(var(--lap) + 24px) var(--pad) 44px;border-radius:var(--lap) var(--lap) 0 0;background:var(--ink);color:var(--paper);font-weight:500}
+.foot p{max-width:1100px;margin:0 auto}
 
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .logo {
-            font-size: 4rem;
-            font-weight: 800;
-            letter-spacing: -3px;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #bfdbfe, #3b82f6 45%, #1d4ed8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: logoPulse 4s ease-in-out infinite;
-        }
-
-        @keyframes logoPulse {
-            0%, 100% { filter: drop-shadow(0 0 12px rgba(59,130,246,0.3)); }
-            50% { filter: drop-shadow(0 0 28px rgba(59,130,246,0.55)); }
-        }
-
-        .hero p {
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-
-        /* Sections */
-        .section-title {
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1.8px;
-            color: var(--text-dim);
-            margin: 52px 0 18px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(148,163,184,0.08);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            transform: translateY(16px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-
-        .section-title.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(148,163,184,0.15), transparent);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 14px;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 22px 20px;
-            text-decoration: none;
-            color: #f1f5f9;
-            display: flex;
-            flex-direction: column;
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(28px) scale(0.96);
-            transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1),
-                        transform 0.55s cubic-bezier(0.16,1,0.3,1),
-                        border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .card.visible {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(145deg, rgba(59,130,246,0.15), transparent 55%);
-            opacity: 0;
-            transition: opacity 0.35s;
-            pointer-events: none;
-        }
-
-        .card::after {
-            content: '';
-            position: absolute;
-            top: -40%;
-            left: -60%;
-            width: 50%;
-            height: 180%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
-            transform: skewX(-20deg);
-            transition: left 0.55s ease;
-            pointer-events: none;
-        }
-
-        .card:hover {
-            border-color: rgba(59,130,246,0.55);
-            transform: translateY(-8px) scale(1.03);
-            box-shadow:
-                0 20px 50px rgba(0,0,0,0.5),
-                0 0 0 1px rgba(59,130,246,0.25),
-                0 0 50px rgba(59,130,246,0.2);
-        }
-
-        .card:hover::before { opacity: 1; }
-        .card:hover::after { left: 130%; }
-
-        .card .icon {
-            font-size: 1.9rem;
-            margin-bottom: 12px;
-            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-        }
-
-        .card:hover .icon {
-            transform: scale(1.2) rotate(-8deg);
-        }
-
-        .card h3 {
-            font-size: 0.98rem;
-            font-weight: 650;
-            margin-bottom: 5px;
-            transition: color 0.25s;
-        }
-
-        .card:hover h3 { color: #93c5fd; }
-
-        .card p {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            flex: 1;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 80px 0 30px;
-            color: #334155;
-            font-size: 0.78rem;
-            opacity: 0;
-            transition: opacity 0.7s ease;
-        }
-
-        .footer.visible { opacity: 1; }
-
-        @media (max-width: 540px) {
-            .container { padding: 40px 16px; }
-            .logo { font-size: 2.8rem; }
-            .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 11px; }
-            .card { padding: 18px 15px; border-radius: 14px; }
-            .card .icon { font-size: 1.5rem; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation: none !important;
-                transition-duration: 0.01ms !important;
-            }
-            .card, .section-title, .hero, .footer {
-                opacity: 1 !important;
-                transform: none !important;
-            }
-        }
-    </style>
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+}
+</style>
 </head>
 <body>
-    <canvas id="particles"></canvas>
-    <div class="bg-glow"></div>
 
-    <div class="container">
-        <div class="hero">
-            <div class="logo">fluxi</div>
-            <p>Minden egy helyen.</p>
-        </div>
+<header class="hero">
+  <div class="blobs" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i></div>
+  <div class="hero-in">
+    <h1 class="logo">fluxi.hu</h1>
+    <p class="lead">Játékok, AI-kísérletek és tanulós oldalak egy helyen. Válassz egy témát, és ugorj be.</p>
+    <ul class="jump">
+      <li><a href="#jatekok">Játékok</a></li>
+      <li><a href="#ai">AI & Technológia</a></li>
+      <li><a href="#tanulas">Tanulás</a></li>
+      <li><a href="#egyeb">Egyéb</a></li>
+    </ul>
+  </div>
+</header>
 
-        <div class="section-title">Játékok</div>
-        <div class="grid">
-            <a href="/jatek1" class="card"><div class="icon">🎮</div><h3>shout learn</h3><p>FPS játék</p></a>
-            <a href="/jatek2" class="card"><div class="icon">🎮</div><h3>TERMÉSZETI TÚLÉLŐ</h3><p>természetben FPS játék</p></a>
-            <a href="/jatek3" class="card"><div class="icon">🕹️</div><h3>game hub</h3><p>minden játék egy helyen</p></a>
-            <a href="/crystalclient/" class="card"><div class="icon">⛏️</div><h3>Crystal Client</h3><p>Minecraft launcher · 40 mods · offline play</p></a>
-        </div>
+<main>
 
-        <div class="section-title">Hamarosan AI & Technológia</div>
-        <div class="grid">
-            <a href="/vilmosgpt/" class="card"><div class="icon">🤖</div><h3>Vilmos GPT 0.4</h3><p>ai.html</p></a>
-            <a href="https://vilmosgpt.lovable.app/" class="card"><div class="icon">🤖</div><h3>Vilmos Gpt 1.0 beta</h3><p>beta verzió</p></a>
-            <a href="https://vilmosgpt-ou6h09.public.builtwithrocket.new" class="card"><div class="icon">🤖</div><h3>Vilmos GPT 0.7</h3><p>0.7 verzió</p></a>
-            <a href="/aiplus" class="card"><div class="icon">🧠</div><h3>AI Plus</h3><p>aiplus.html</p></a>
-            <a href="/aiprograming" class="card"><div class="icon">💻</div><h3>AI Programming</h3><p>aiprograming.html</p></a>
-            <a href="/test/" class="card"><div class="icon">⚡</div><h3>AI Példa</h3><p>programozás AI példa</p></a>
-            <a href="/okos" class="card"><div class="icon">📚</div><h3>Okos</h3><p>HTML, CSS, JS kódok</p></a>
-            <a href="/marketing" class="card"><div class="icon">📊</div><h3>Marketing</h3><p>marketing.html</p></a>
-            <a href="/shop" class="card"><div class="icon">🛒</div><h3>Shop</h3><p>shop.html</p></a>
-            <a href="/robotgyar/" class="card"><div class="icon">🤖</div><h3>NeoHuman Robotics</h3><p>humanoid robot gyár + alkatrészek</p></a>
-        </div>
+<section class="band games" id="jatekok" aria-labelledby="t-jatekok">
+  <h2 class="section-title" id="t-jatekok">Játékok</h2>
+  <p class="sub">Indíts el egy játékot, és játssz, amíg jól esik.</p>
+  <div class="grid">
+    <a class="tile" href="/jatek1"><span class="ico">📣</span><span class="txt"><b>Shout Learn</b><small>/jatek1</small></span></a>
+    <a class="tile" href="/jatek2"><span class="ico">🌲</span><span class="txt"><b>Természeti Túlélő</b><small>/jatek2</small></span></a>
+    <a class="tile wide" href="/jatek3"><span class="ico">🕹️</span><span class="txt"><b>Game Hub</b><small>/jatek3</small></span></a>
+    <a class="tile" href="/crystalclient/"><span class="ico">💎</span><span class="txt"><b>Crystal Client</b><small>/crystalclient/</small></span></a>
+  </div>
+</section>
 
-        <div class="section-title">Tanulás</div>
-        <div class="grid">
-            <a href="/egri/" class="card"><div class="icon">🍐</div><h3>Egri</h3><p>egricsillagok tanulás</p></a>
-            <a href="/probavizsga/" class="card"><div class="icon">📝</div><h3>Próba vizsga</h3><p>probavizsga</p></a>
-        </div>
+<section class="band ai" id="ai" aria-labelledby="t-ai">
+  <h2 class="section-title" id="t-ai">Hamarosan AI & Technológia</h2>
+  <p class="sub">AI-eszközök és kísérletek. Ami még épül, azon Hamarosan jelzés van.</p>
+  <div class="grid">
+    <a class="tile wide" href="/vilmosgpt/"><span class="ico">🤖</span><span class="txt"><b>Vilmos GPT 0.4</b><small>/vilmosgpt/</small></span></a>
+    <a class="tile ext" href="https://vilmosgpt.lovable.app/" target="_blank" rel="noopener noreferrer" title="Külső oldal"><span class="ico">💜</span><span class="txt"><b>Vilmos GPT (Lovable)</b><small>vilmosgpt.lovable.app</small></span></a>
+    <a class="tile ext" href="https://vilmosgpt-ou6h09.public.builtwithrocket.new" target="_blank" rel="noopener noreferrer" title="Külső oldal"><span class="ico">🚀</span><span class="txt"><b>Vilmos GPT (Rocket)</b><small>builtwithrocket.new</small></span></a>
+    <a class="tile" href="/test/"><span class="ico">🧪</span><span class="txt"><b>AI Példa</b><small>/test/</small></span></a>
+    <a class="tile" href="/robotgyar/"><span class="ico">🦾</span><span class="txt"><b>NeoHuman Robotics</b><small>/robotgyar/</small></span></a>
+    <a class="tile soon" href="/aiplus"><span class="tag">Hamarosan</span><span class="ico">✨</span><span class="txt"><b>AI Plus</b><small>/aiplus</small></span></a>
+    <a class="tile soon" href="/aiprograming"><span class="tag">Hamarosan</span><span class="ico">💻</span><span class="txt"><b>AI Programozás</b><small>/aiprograming</small></span></a>
+    <a class="tile soon" href="/okos"><span class="tag">Hamarosan</span><span class="ico">💡</span><span class="txt"><b>Okos</b><small>/okos</small></span></a>
+    <a class="tile soon" href="/marketing"><span class="tag">Hamarosan</span><span class="ico">📈</span><span class="txt"><b>Marketing</b><small>/marketing</small></span></a>
+    <a class="tile soon" href="/shop"><span class="tag">Hamarosan</span><span class="ico">🛒</span><span class="txt"><b>Shop</b><small>/shop</small></span></a>
+  </div>
+</section>
 
-        <div class="section-title">Egyéb</div>
-        <div class="grid">
-            <a href="/stilus/" class="card"><div class="icon">🎨</div><h3>Stílus</h3><p>3d</p></a>
-            <a href="/particle/" class="card"><div class="icon">✨</div><h3>Particle</h3><p>interaktív particle</p></a>
-            <a href="/kocka/" class="card"><div class="icon">🧊</div><h3>Kocka</h3><p>tesztelheted a géped</p></a>
-            <a href="/case/" class="card"><div class="icon">📁</div><h3>Case</h3><p>ládanyitogatás</p></a>
-            <a href="/fruits/" class="card"><div class="icon">🍎</div><h3>Fruits</h3><p>gyümölcsök</p></a>
-            <a href="/fokusz/" class="card"><div class="icon">⏱️</div><h3>Napi Fókusz</h3><p>Pomodoro + teendőlista</p></a>
-            <a href="/pekseg/" class="card"><div class="icon">🥖</div><h3>Napsütés Pékség</h3><p>friss kenyér & sütemény</p></a>
-            <a href="/macsek/" class="card"><div class="icon">🐱</div><h3>Macska flash</h3><p>13 mp macskás képek</p></a>
-        </div>
+<section class="band learn" id="tanulas" aria-labelledby="t-tanulas">
+  <h2 class="section-title" id="t-tanulas">Tanulás</h2>
+  <p class="sub">Gyakorolj, és készülj fel magabiztosan.</p>
+  <div class="grid">
+    <a class="tile" href="/egri/"><span class="ico">🏰</span><span class="txt"><b>Egri</b><small>/egri/</small></span></a>
+    <a class="tile" href="/probavizsga/"><span class="ico">📝</span><span class="txt"><b>Próbavizsga</b><small>/probavizsga/</small></span></a>
+  </div>
+</section>
 
-        <div class="footer">&copy; 2026 fluxi.hu</div>
-    </div>
+<section class="band other" id="egyeb" aria-labelledby="t-egyeb">
+  <h2 class="section-title" id="t-egyeb">Egyéb</h2>
+  <p class="sub">Minden, ami máshová nem fért.</p>
+  <div class="grid">
+    <a class="tile" href="/stilus/"><span class="ico">🎨</span><span class="txt"><b>Stílus</b><small>/stilus/</small></span></a>
+    <a class="tile" href="/particle/"><span class="ico">🌌</span><span class="txt"><b>Particle</b><small>/particle/</small></span></a>
+    <a class="tile" href="/kocka/"><span class="ico">🎲</span><span class="txt"><b>Kocka</b><small>/kocka/</small></span></a>
+    <a class="tile" href="/case/"><span class="ico">💼</span><span class="txt"><b>Case</b><small>/case/</small></span></a>
+    <a class="tile" href="/fruits/"><span class="ico">🍉</span><span class="txt"><b>Fruits</b><small>/fruits/</small></span></a>
+    <a class="tile" href="/fokusz/"><span class="ico">🎯</span><span class="txt"><b>Fókusz</b><small>/fokusz/</small></span></a>
+    <a class="tile" href="/pekseg/"><span class="ico">🥐</span><span class="txt"><b>Pékség</b><small>/pekseg/</small></span></a>
+    <a class="tile" href="/macsek/"><span class="ico">🐱</span><span class="txt"><b>Macsek</b><small>/macsek/</small></span></a>
+  </div>
+</section>
 
-    <script>
-        // Particles
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let w, h;
+</main>
 
-        function resize() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
+<footer class="foot">
+  <p>© 2026 fluxi.hu</p>
+</footer>
 
-        class Particle {
-            constructor() {
-                this.reset(true);
-            }
-            reset(init) {
-                this.x = Math.random() * w;
-                this.y = init ? Math.random() * h : h + 10;
-                this.size = Math.random() * 1.8 + 0.4;
-                this.speedY = Math.random() * 0.35 + 0.08;
-                this.speedX = (Math.random() - 0.5) * 0.25;
-                this.opacity = Math.random() * 0.4 + 0.1;
-            }
-            update() {
-                this.y -= this.speedY;
-                this.x += this.speedX;
-                if (this.y < -10) this.reset(false);
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(147, 197, 253, ${this.opacity})`;
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < 55; i++) particles.push(new Particle());
-
-        function animate() {
-            ctx.clearRect(0, 0, w, h);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // Scroll reveal
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, i) => {
-                if (entry.isIntersecting) {
-                    const el = entry.target;
-                    if (el.classList.contains('card')) {
-                        const cards = [...el.parentElement.children];
-                        const idx = cards.indexOf(el);
-                        setTimeout(() => el.classList.add('visible'), idx * 70);
-                    } else {
-                        el.classList.add('visible');
-                    }
-                    observer.unobserve(el);
-                }
-            });
-        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
-        document.querySelectorAll('.section-title, .card, .footer').forEach(el => observer.observe(el));
-    </script>
 </body>
 </html>
