@@ -1,284 +1,242 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <title>Zombi Túlélő - Zöld Mezők</title>
-    <style>
-        body { margin: 0; overflow: hidden; background-color: #87CEEB; font-family: 'Segoe UI', sans-serif; }
-        #hud {
-            position: absolute; bottom: 30px; left: 30px; color: #ffffff;
-            font-size: 28px; font-weight: bold; text-shadow: 2px 2px 5px #000;
-            pointer-events: none; z-index: 5;
-        }
-        #crosshair {
-            position: absolute; top: 50%; left: 50%; width: 12px; height: 12px;
-            border: 2px solid white; border-radius: 50%;
-            transform: translate(-50%, -50%); pointer-events: none;
-        }
-        #ui {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: none; flex-direction: column;
-            justify-content: center; align-items: center; color: white; z-index: 20;
-        }
-        #start-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, #87CEEB 0%, #228B22 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;
-            cursor: pointer; z-index: 30;
-        }
-        button { 
-            padding: 15px 40px; font-size: 22px; cursor: pointer; 
-            background: #2e7d32; color: white; border: none; border-radius: 5px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZombiCraft – Zöld mezők</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0e12;--panel:#111318;--line:#2a2d35;--tx:#f2f3f5;--mut:#8b8f99;--blue:#2f6bff;--amber:#f5a623;--purple:#8b5cf6;--teal:#2dd4a0;--red:#ef4444;
+--mono:'JetBrains Mono',ui-monospace,Consolas,monospace;--sans:Inter,'Segoe UI',system-ui,sans-serif;color-scheme:dark;box-sizing:border-box;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--sans)}
+canvas{display:block;position:absolute;inset:0}
+.m{font-family:var(--mono);text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:500}
+.b{display:inline-block;font:700 12px var(--mono);padding:5px 8px;color:#fff;background:var(--blue)}
+.tag{display:inline-block;font:500 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;padding:5px 8px;border:1px solid currentColor}
+.craft{color:var(--teal)}
+#bar{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;
+padding:0 24px;background:rgba(13,14,18,.92);border-bottom:1px solid var(--line);z-index:10;pointer-events:none}
+#bar .l{display:flex;align-items:center;gap:22px}
+.logo{font:700 20px var(--sans);letter-spacing:.04em}
+.chip{padding:7px 10px;color:var(--mut)} .chip.on{background:#fff;color:#000}
+#hud{position:fixed;left:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(3,150px);
+background:rgba(13,14,18,.9);border:1px solid var(--line);z-index:5;pointer-events:none}
+.cell{padding:12px 14px;border-right:1px solid var(--line)} .cell:last-child{border:0}
+.cell .m{color:var(--mut);font-size:11px;margin-left:8px}
+.cell .v{font:700 30px var(--sans);margin-top:10px}
+#bw{height:3px;background:var(--line);margin-top:8px} #bf{height:100%;width:100%;background:var(--teal)}
+#xh{position:fixed;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border:1.5px solid #fff;mix-blend-mode:difference;pointer-events:none;z-index:4}
+#xh:after{content:"";position:absolute;inset:4px;background:#fff}
+#ov{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/100% 25%,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/12.5% 100%,rgba(13,14,18,.93)}
+.card{width:min(520px,92vw);background:var(--panel);border:1px solid var(--line)}
+.card .top{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);color:var(--mut)}
+.card .body{padding:26px 20px 8px}
+h1{margin:0;font:700 44px/1.1 var(--sans);letter-spacing:-.01em}
+#sub{color:var(--mut);margin:10px 0 20px;font-size:16px}
+.keys{border-top:1px solid var(--line);margin-top:22px}
+.keys div{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);color:var(--mut)}
+.keys b{color:var(--tx);font-weight:500}
+.act{padding:20px}
+button{width:100%;padding:16px;font:700 13px var(--mono);letter-spacing:.2em;text-transform:uppercase;background:#fff;color:#000;border:0;border-radius:0;cursor:pointer}
+button:hover{background:#d9dbe0} button:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+@media(max-width:560px){#hud{grid-template-columns:repeat(3,1fr);right:12px;left:12px}h1{font-size:34px}}
+</style>
 </head>
 <body>
+<div id="bar"><div class="l"><span class="logo">ZOMBI<span class="craft">CRAFT</span></span><span class="m chip on">Játék</span><span class="m chip">Túlélő mód</span></div><span class="m chip">Zöld mezők</span></div>
 
-<div id="start-screen" onclick="startGame()">
-    <h1 style="font-size: 50px; text-shadow: 2px 2px 10px #000;">TERMÉSZETI TÚLÉLŐ</h1>
-    <p>Kattints a vadászat megkezdéséhez!</p>
+<div id="hud">
+ <div class="cell"><span class="b">01</span><span class="m">Élet</span><div class="v" id="hp">100</div><div id="bw"><div id="bf"></div></div></div>
+ <div class="cell"><span class="b" style="background:var(--amber);color:#000">02</span><span class="m">Pont</span><div class="v" id="score">0</div></div>
+ <div class="cell"><span class="b" style="background:var(--purple)">03</span><span class="m">Zombik</span><div class="v" id="zc">0</div></div>
+</div>
+<div id="xh"></div>
+
+<div id="ov">
+ <div class="card">
+  <div class="top m"><span class="b" id="badge">01</span><span>Túlélő mód · v1.0</span></div>
+  <div class="body">
+   <span class="tag" id="tag">Készen áll</span>
+   <h1 id="title" style="margin-top:16px"></h1>
+   <p id="sub"></p>
+   <div class="keys m"><div><b>WASD</b><span>Mozgás</span></div><div><b>Egér</b><span>Körbenézés</span></div><div><b>Bal gomb</b><span>Lövés</span></div><div><b>Esc</b><span>Szünet</span></div></div>
+  </div>
+  <div class="act"><button id="btn" onclick="start()">Indítás</button></div>
+ </div>
 </div>
 
-<div id="hud">Élet: <span id="hp">100</span> | Pont: <span id="score">0</span></div>
-<div id="crosshair"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $ = id => document.getElementById(id), V = THREE.Vector3;
+let scene, camera, renderer, clock, gun;
+let zombies = [], bullets = [], hp = 100, score = 0, state = 'menu';
+let yaw = 0, pitch = 0, cd = 0, spawnT = 1;
+const keys = {}, tmp = new V(), zc = new V();
+const bGeo = new THREE.SphereGeometry(.05, 8, 8), bMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+const zBody = new THREE.BoxGeometry(.6, 1.4, .4), zHead = new THREE.BoxGeometry(.4, .4, .4);
+const zBodyM = new THREE.MeshStandardMaterial({ color: 0x388e3c }), zHeadM = new THREE.MeshStandardMaterial({ color: 0x66bb6a });
 
-<div id="ui">
-    <h1>ELVÉRZETTÉL A MEZŐN</h1>
-    <p id="final-score"></p>
-    <button onclick="resetGame()">ÚJRAÉLEDÉS</button>
-</div>
-
-<script type="importmap">
-    { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-
-let scene, camera, renderer, clock;
-let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-let velocity = new THREE.Vector3();
-let zombies = [], bullets = [];
-let hp = 100, score = 0, isDead = false;
-let gun;
+const SCREENS = {
+  menu:  ['01', 'ZOMBI<span class="craft">CRAFT</span>', 'Védd meg magad a zöld mezőn: lődd le a zombikat, és maradj életben.', 'Készen áll', 'var(--teal)', 'Indítás'],
+  pause: ['02', 'SZÜNET', 'A játék áll. Folytasd ott, ahol abbahagytad.', 'Szüneteltetve', 'var(--amber)', 'Folytatás'],
+  dead:  ['03', 'ELVÉRZETTÉL', '', 'Játék vége', 'var(--red)', 'Újraéledés']
+};
+function showScreen(k) {
+  const s = SCREENS[k];
+  $('badge').textContent = s[0]; $('title').innerHTML = s[1];
+  $('sub').textContent = k === 'dead' ? 'Elért pontszám: ' + score : s[2];
+  const t = $('tag'); t.textContent = s[3]; t.style.color = s[4];
+  $('btn').textContent = s[5]; $('ov').style.display = 'flex';
+}
 
 function init() {
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87CEEB); // Égszínkék
-    scene.fog = new THREE.Fog(0x87CEEB, 10, 150);
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x87CEEB);
+  scene.fog = new THREE.Fog(0x87CEEB, 10, 150);
+  camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, .1, 1000);
+  camera.rotation.order = 'YXZ';                       // javítva: nincs "dőlés" fordulásnál
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.prepend(renderer.domElement);
+  clock = new THREE.Clock();
 
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    document.body.appendChild(renderer.domElement);
+  scene.add(new THREE.AmbientLight(0xffffff, .7));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+  sun.position.set(50, 100, 50); scene.add(sun);
 
-    clock = new THREE.Clock();
+  const c = document.createElement('canvas'); c.width = c.height = 512;
+  const g = c.getContext('2d');
+  g.fillStyle = '#2e7d32'; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 5000; i++) { g.fillStyle = `rgba(0,${100 + Math.random() * 155 | 0},0,0.3)`; g.fillRect(Math.random() * 512, Math.random() * 512, 4, 4); }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(100, 100);
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshStandardMaterial({ map: tex }));
+  floor.rotation.x = -Math.PI / 2; scene.add(floor);
 
-    // Világos reggeli fények
-    const ambient = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambient);
+  const trunkG = new THREE.CylinderGeometry(.2, .2, 2), leafG = new THREE.ConeGeometry(1.5, 4, 8);
+  const trunkM = new THREE.MeshStandardMaterial({ color: 0x5D4037 }), leafM = new THREE.MeshStandardMaterial({ color: 0x1B5E20 });
+  for (let i = 0; i < 100; i++) {
+    const x = (Math.random() - .5) * 400, z = (Math.random() - .5) * 400;
+    if (Math.abs(x) < 10 && Math.abs(z) < 25) continue;   // ne a kezdőpontra kerüljön
+    const t = new THREE.Group(), tr = new THREE.Mesh(trunkG, trunkM), lf = new THREE.Mesh(leafG, leafM);
+    tr.position.y = 1; lf.position.y = 3.5; t.add(tr, lf); t.position.set(x, 0, z); scene.add(t);
+  }
 
-    const sun = new THREE.DirectionalLight(0xffffff, 1.2);
-    sun.position.set(50, 100, 50);
-    sun.castShadow = true;
-    scene.add(sun);
+  gun = new THREE.Mesh(new THREE.BoxGeometry(.12, .18, .6), new THREE.MeshStandardMaterial({ color: 0x222222 }));
+  gun.position.set(.4, -.4, -.6); camera.add(gun); scene.add(camera);
 
-    // Hatalmas zöld mező
-    const floorSize = 1000;
-    const canvas = document.createElement('canvas');
-    canvas.width = 512; canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#2e7d32'; // Sötétzöld alapszín
-    ctx.fillRect(0,0,512,512);
-    for(let i=0; i<5000; i++) {
-        ctx.fillStyle = `rgba(0,${100 + Math.random()*155},0,0.3)`;
-        ctx.fillRect(Math.random()*512, Math.random()*512, 4, 4);
-    }
-    const grassTex = new THREE.CanvasTexture(canvas);
-    grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping;
-    grassTex.repeat.set(100, 100);
+  addEventListener('keydown', e => { keys[e.code] = true; if (e.code === 'Escape' && state === 'play') pause(); });
+  addEventListener('keyup', e => keys[e.code] = false);
+  addEventListener('mousemove', e => {
+    if (state !== 'play') return;
+    yaw -= e.movementX * .002;
+    pitch = Math.max(-1.5, Math.min(1.5, pitch - e.movementY * .002));
+  });
+  addEventListener('mousedown', () => { if (state === 'play') shoot(); });
+  addEventListener('blur', () => { if (state === 'play') pause(); });
+  document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && state === 'play') pause(); });
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
 
-    const floorGeo = new THREE.PlaneGeometry(floorSize, floorSize);
-    const floorMat = new THREE.MeshStandardMaterial({ map: grassTex });
-    const floor = new THREE.Mesh(floorGeo, floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    scene.add(floor);
-
-    // Fák készítése véletlenszerűen
-    for(let i=0; i<100; i++) {
-        createTree();
-    }
-
-    // Pisztoly
-    const gunGeo = new THREE.BoxGeometry(0.12, 0.18, 0.6);
-    const gunMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
-    gun = new THREE.Mesh(gunGeo, gunMat);
-    gun.position.set(0.4, -0.4, -0.6);
-    camera.add(gun);
-    scene.add(camera);
-
-    setupInput();
-    resetGame();
-    animate();
+  reset(); showScreen('menu'); animate();
 }
 
-function createTree() {
-    const treeGroup = new THREE.Group();
-    // Törzs
-    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 2), new THREE.MeshStandardMaterial({ color: 0x5D4037 }));
-    trunk.position.y = 1;
-    treeGroup.add(trunk);
-    // Lomb
-    const leaves = new THREE.Mesh(new THREE.ConeGeometry(1.5, 4, 8), new THREE.MeshStandardMaterial({ color: 0x1B5E20 }));
-    leaves.position.y = 3.5;
-    treeGroup.add(leaves);
-
-    const x = (Math.random() - 0.5) * 400;
-    const z = (Math.random() - 0.5) * 400;
-    if (Math.abs(x) < 10 && Math.abs(z) < 10) return; // Ne a játékosra tegye
-    treeGroup.position.set(x, 0, z);
-    scene.add(treeGroup);
+function reset() {
+  hp = 100; score = 0; spawnT = 1;
+  zombies.forEach(z => scene.remove(z.mesh)); zombies = [];
+  bullets.forEach(b => scene.remove(b)); bullets = [];
+  camera.position.set(0, 1.6, 10); yaw = pitch = 0;
 }
-
-function setupInput() {
-    document.addEventListener('keydown', (e) => handleKey(e.code, true));
-    document.addEventListener('keyup', (e) => handleKey(e.code, false));
-    document.addEventListener('mousemove', (e) => {
-        if (document.pointerLockElement) {
-            camera.rotation.y -= e.movementX * 0.002;
-            camera.rotation.x -= e.movementY * 0.002;
-            camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
-        }
-    });
-    document.addEventListener('mousedown', shoot);
+window.start = function () {
+  if (state !== 'pause') reset();                      // javítva: újraéledés után azonnal lehet játszani
+  state = 'play'; $('ov').style.display = 'none';
+  try { const p = document.body.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+};
+function pause() {
+  state = 'pause'; for (const k in keys) keys[k] = false;   // javítva: szünetben a zombik is megállnak
+  showScreen('pause');
 }
-
-function handleKey(code, val) {
-    if (code === 'KeyW') moveForward = val;
-    if (code === 'KeyS') moveBackward = val;
-    if (code === 'KeyA') moveLeft = val;
-    if (code === 'KeyD') moveRight = val;
+function die() {
+  state = 'dead'; document.exitPointerLock(); showScreen('dead');
 }
 
 function shoot() {
-    if (isDead || !document.pointerLockElement) return;
-    
-    gun.position.z = -0.5; // Visszarúgás
-    setTimeout(() => gun.position.z = -0.6, 50);
-
-    const bGeo = new THREE.SphereGeometry(0.05, 8, 8);
-    const bMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
-    const bullet = new THREE.Mesh(bGeo, bMat);
-    bullet.position.copy(camera.position);
-    
-    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-    bullet.userData.vel = dir.multiplyScalar(1.5);
-    bullets.push(bullet);
-    scene.add(bullet);
+  if (cd > 0) return; cd = .15;
+  gun.position.z = -.5; setTimeout(() => gun.position.z = -.6, 50);
+  const b = new THREE.Mesh(bGeo, bMat);                // közös geometria: nincs memóriaszivárgás
+  b.position.copy(camera.position);
+  b.userData.vel = new V(0, 0, -1).applyQuaternion(camera.quaternion).multiplyScalar(90);
+  b.userData.life = 1.5;
+  bullets.push(b); scene.add(b);
 }
 
 function spawnZombie() {
-    const group = new THREE.Group();
-    // Test
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.4, 0.4), new THREE.MeshStandardMaterial({ color: 0x388e3c }));
-    body.position.y = 0.7;
-    group.add(body);
-    // Fej
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), new THREE.MeshStandardMaterial({ color: 0x66bb6a }));
-    head.position.y = 1.6;
-    group.add(head);
-
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 40 + Math.random() * 20;
-    group.position.set(Math.cos(angle)*dist, 0, Math.sin(angle)*dist);
-    
-    zombies.push({ mesh: group, hp: 2 });
-    scene.add(group);
+  const m = new THREE.Group(), body = new THREE.Mesh(zBody, zBodyM), head = new THREE.Mesh(zHead, zHeadM);
+  body.position.y = .7; head.position.y = 1.6; m.add(body, head);
+  const a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 20;   // javítva: a játékos körül jelennek meg
+  m.position.set(
+    Math.max(-490, Math.min(490, camera.position.x + Math.cos(a) * d)), 0,
+    Math.max(-490, Math.min(490, camera.position.z + Math.sin(a) * d)));
+  zombies.push({ mesh: m, hp: 2 }); scene.add(m);
 }
 
 function animate() {
-    requestAnimationFrame(animate);
-    const delta = clock.getDelta();
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), .05);          // javítva: képkocka-független sebesség
 
-    if (!isDead && document.pointerLockElement) {
-        const speed = 12.0 * delta;
-        if (moveForward) camera.translateZ(-speed);
-        if (moveBackward) camera.translateZ(speed);
-        if (moveLeft) camera.translateX(-speed);
-        if (moveRight) camera.translateX(speed);
-        camera.position.y = 1.6;
+  if (state === 'play') {
+    cd -= dt;
+    camera.rotation.set(pitch, yaw, 0);
+    const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0), r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
+    const l = Math.hypot(f, r) || 1, sp = 12 * dt / l, sy = Math.sin(yaw), cy = Math.cos(yaw);
+    camera.position.x = Math.max(-490, Math.min(490, camera.position.x + (-sy * f + cy * r) * sp));
+    camera.position.z = Math.max(-490, Math.min(490, camera.position.z + (-cy * f - sy * r) * sp));
+    camera.position.y = 1.6;
+
+    // golyók: hátulról előre, 3 részlépésben (nincs átlövés, nincs rossz splice)
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const b = bullets[i]; let hit = false;
+      for (let s = 0; s < 3 && !hit; s++) {
+        b.position.addScaledVector(b.userData.vel, dt / 3);
+        for (let j = zombies.length - 1; j >= 0; j--) {
+          const z = zombies[j];
+          zc.set(z.mesh.position.x, 1, z.mesh.position.z);
+          if (b.position.distanceTo(zc) < 1) {
+            hit = true;
+            if (--z.hp <= 0) { scene.remove(z.mesh); zombies.splice(j, 1); score += 10; }
+            break;
+          }
+        }
+      }
+      if (hit || (b.userData.life -= dt) <= 0) { scene.remove(b); bullets.splice(i, 1); }
     }
 
-    // Golyók kezelése
-    bullets.forEach((b, i) => {
-        b.position.add(b.userData.vel);
-        if(b.position.distanceTo(camera.position) > 100) {
-            scene.remove(b); bullets.splice(i, 1);
-        }
-        zombies.forEach((z, zi) => {
-            if(b.position.distanceTo(z.mesh.position.clone().add(new THREE.Vector3(0,1,0))) < 1) {
-                z.hp--;
-                scene.remove(b); bullets.splice(i, 1);
-                if(z.hp <= 0) {
-                    scene.remove(z.mesh); zombies.splice(zi, 1);
-                    score += 10;
-                    document.getElementById('score').innerText = score;
-                }
-            }
-        });
-    });
+    // zombik
+    const speed = 3.6 + Math.min(score / 100, 2);
+    for (const z of zombies) {
+      tmp.subVectors(camera.position, z.mesh.position); tmp.y = 0;
+      const dist = tmp.length();
+      if (dist > 1.2) z.mesh.position.addScaledVector(tmp, speed * dt / dist);
+      z.mesh.lookAt(camera.position.x, 0, camera.position.z);
+      if (dist < 1.5) hp -= 20 * dt;
+    }
+    if (hp <= 0) { hp = 0; die(); }
 
-    // Zombik mozgatása
-    zombies.forEach(z => {
-        const dir = new THREE.Vector3().subVectors(camera.position, z.mesh.position);
-        dir.y = 0;
-        z.mesh.position.add(dir.normalize().multiplyScalar(0.06));
-        z.mesh.lookAt(camera.position.x, 0, camera.position.z);
+    spawnT -= dt;
+    if (spawnT <= 0 && zombies.length < 20) { spawnZombie(); spawnT = Math.max(.4, 1.2 - score / 400); }
+  }
 
-        if(z.mesh.position.distanceTo(camera.position) < 1.5 && !isDead) {
-            hp -= 0.5;
-            document.getElementById('hp').innerText = Math.ceil(hp);
-            if(hp <= 0) die();
-        }
-    });
-
-    if(Math.random() < 0.02 && zombies.length < 20) spawnZombie();
-
-    renderer.render(scene, camera);
+  $('hp').textContent = Math.ceil(hp); $('score').textContent = score; $('zc').textContent = zombies.length;
+  $('bf').style.width = hp + '%'; $('bf').style.background = hp < 30 ? 'var(--red)' : 'var(--teal)';
+  renderer.render(scene, camera);
 }
-
-function die() {
-    isDead = true;
-    document.exitPointerLock();
-    document.getElementById('ui').style.display = 'flex';
-    document.getElementById('final-score').innerText = "Elért pontszám: " + score;
-}
-
-window.startGame = function() {
-    document.getElementById('start-screen').style.display = 'none';
-    document.body.requestPointerLock();
-}
-
-window.resetGame = function() {
-    hp = 100; score = 0; isDead = false;
-    document.getElementById('hp').innerText = hp;
-    document.getElementById('score').innerText = score;
-    document.getElementById('ui').style.display = 'none';
-    zombies.forEach(z => scene.remove(z.mesh));
-    zombies = [];
-    bullets.forEach(b => scene.remove(b));
-    bullets = [];
-    camera.position.set(0, 1.6, 10);
-}
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
 
 init();
 </script>
