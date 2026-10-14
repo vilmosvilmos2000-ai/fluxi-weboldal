@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matyika – mennyire hülye</title>
+<meta name="description" content="Ez a kép megmutatja, milyen hülye tud lenni az ember, ha nem figyel.">
+<meta name="theme-color" content="#f5f2ff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤡%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17143a;--paper:#f5f2ff;
+  --violet:#6d4aff;--cyan:#19d3da;--sun:#ffc93c;--pink:#ff5fa2;
+  --font:"Bricolage Grotesque",ui-rounded,"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+body{
+  font-family:var(--font);
+  background:var(--ink);
+  color:var(--paper);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  text-align:center;
+  line-height:1.4;
+}
+.card{
+  background:var(--paper);
+  color:var(--ink);
+  border:3px solid var(--ink);
+  border-radius:28px;
+  box-shadow:8px 8px 0 var(--violet);
+  padding:28px 24px 32px;
+  max-width:420px;
+  width:100%;
+}
+h1{
+  font-size:clamp(1.8rem,6vw,2.4rem);
+  font-weight:800;
+  letter-spacing:-.03em;
+  margin-bottom:8px;
+}
+.sub{
+  color:#5b5880;
+  font-size:1.05rem;
+  margin-bottom:22px;
+}
+.img-wrap{
+  position:relative;
+  border:3px solid var(--ink);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:4px 4px 0 var(--pink);
+  margin-bottom:20px;
+}
+.img-wrap img{
+  display:block;
+  width:100%;
+  height:auto;
+  vertical-align:middle;
+}
+.badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:var(--sun);
+  color:var(--ink);
+  font-weight:800;
+  font-size:.85rem;
+  padding:6px 12px;
+  border-radius:999px;
+  border:2px solid var(--ink);
+  box-shadow:2px 2px 0 var(--ink);
+}
+.score{
+  font-size:clamp(2.5rem,10vw,3.5rem);
+  font-weight:800;
+  color:var(--violet);
+  line-height:1;
+  margin:8px 0 4px;
+}
+.score span{font-size:.55em;opacity:.7}
+.desc{
+  font-size:1rem;
+  color:#5b5880;
+  margin-bottom:24px;
+}
+.back{
+  display:inline-block;
+  padding:12px 22px;
+  background:#fff;
+  border:2.5px solid var(--ink);
+  border-radius:999px;
+  box-shadow:3px 3px 0 var(--ink);
+  font-weight:700;
+  text-decoration:none;
+  color:var(--ink);
+  transition:transform .15s,box-shadow .15s;
+}
+.back:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
+.back:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+footer{margin-top:28px;opacity:.6;font-size:.9rem}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Matyika</h1>
+    <p class="sub">Hivatalos hülyeség-mérő</p>
+    <div class="img-wrap">
+      <span class="badge">ÉLŐBIZONYÍTÉK</span>
+      <img src="matyika.jpg" alt="Matyika a könyvtárban, maximális koncentrációval" width="600" height="800">
+    </div>
+    <div class="score">97<span>/100</span></div>
+    <p class="desc">Ez a kép egyértelműen bizonyítja: ha valaki így néz, akkor vagy nagyon mélyen gondolkodik… vagy teljesen eltévedt a saját fejében. A könyvtár háttér csak erősíti a hatást.</p>
+    <a class="back" href="/">← Vissza a fluxi.hu-ra</a>
+  </div>
+  <footer>© 2026 fluxi.hu · Matyika special</footer>
+</body>
+</html>
