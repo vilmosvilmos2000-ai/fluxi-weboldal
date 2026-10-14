@@ -1,671 +1,228 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fruit Masterclass 3D</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,900&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0c0c0c;
-        }
-
-        body { 
-            margin: 0; background-color: var(--bg-color); color: white; 
-            font-family: 'Inter', sans-serif; overflow-x: hidden; 
-            transition: background 1s ease;
-        }
-        
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; outline: none; }
-
-        main { position: relative; z-index: 2; }
-
-        section {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 0 10%;
-            perspective: 1000px;
-        }
-
-        .content-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            padding: 3rem;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 500px;
-            transform-style: preserve-3d;
-            transition: transform 0.3s ease;
-        }
-
-        section:nth-child(even) { justify-content: flex-end; }
-        section:nth-child(even) .content-card { text-align: right; border-right: 4px solid var(--accent, #ff2e63); }
-        section:nth-child(odd) .content-card { border-left: 4px solid var(--accent, #ff2e63); }
-
-        h1 { 
-            font-family: 'Playfair Display', serif; 
-            font-size: clamp(2.5rem, 5vw, 4rem); 
-            margin: 0 0 1rem 0; line-height: 1.1;
-        }
-        
-        p { font-size: 1.1rem; color: #ccc; line-height: 1.7; margin-bottom: 2rem; }
-
-        .tag {
-            display: inline-block;
-            padding: 5px 15px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-        }
-
-        #loader {
-            position: fixed; inset: 0; background: #000; z-index: 1000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        #loader h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
-            font-style: italic;
-            background: linear-gradient(90deg, #ff2e63, #ff9d00, #72cc50, #4e34e1, #ff2e63);
-            background-size: 300% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease infinite;
-            margin-bottom: 10px;
-        }
-        #loader .subtitle {
-            color: #555;
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-top: 15px;
-        }
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        .progress-bar { width: 200px; height: 2px; background: #333; margin-top: 20px; position: relative; }
-        .progress-fill { width: 0%; height: 100%; background: #ff2e63; transition: width 0.5s; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fruit Masterclass 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+@property --accent{syntax:'<color>';inherits:true;initial-value:#ff2e63}
+@property --gx{syntax:'<percentage>';inherits:true;initial-value:72%}
+:root{color-scheme:dark;--accent:#ff2e63;--gx:72%;transition:--accent 1s ease,--gx 1s ease;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:#0a0a0a;background:color-mix(in srgb,var(--accent) 9%,#070707);color:#fff;font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;overflow-x:hidden}
+.glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(55% 62% at var(--gx) 48%,color-mix(in srgb,var(--accent) 40%,transparent),transparent 72%)}
+canvas{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+main{position:relative;z-index:2}
+section{height:100vh;height:100svh;display:flex;align-items:center;padding:0 9%}
+section:nth-child(even){justify-content:flex-end}
+.card{max-width:480px;padding:2.8rem;border-radius:28px;background:rgba(255,255,255,.045);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.1);border-top:1px solid rgba(255,255,255,.22);box-shadow:0 30px 80px rgba(0,0,0,.45);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:2.8rem;bottom:2.8rem;width:4px;border-radius:0 4px 4px 0;background:var(--c)}
+section:nth-child(even) .card{text-align:right}
+section:nth-child(even) .card::before{left:auto;right:0;border-radius:4px 0 0 4px}
+.tag{display:inline-block;padding:.35rem 1rem;border-radius:99px;font-size:.82rem;font-weight:600;letter-spacing:.04em;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 35%,transparent);margin-bottom:1.1rem}
+h1{font-family:'Playfair Display',Georgia,serif;font-weight:900;font-size:clamp(2.4rem,5vw,3.9rem);line-height:1.04;margin:0 0 1.1rem;letter-spacing:-.01em}
+p{font-size:1.08rem;line-height:1.75;color:#cfcfcf;font-weight:300;margin:0}
+.brand{position:fixed;z-index:3;left:max(22px,3vw);top:calc(env(safe-area-inset-top,0px) + 20px);font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:900;font-size:1.15rem;color:#fff;opacity:.85}
+.dots{position:fixed;z-index:3;right:max(14px,2.2vw);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px}
+.dots button{width:10px;height:10px;padding:0;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:transparent;cursor:pointer;transition:all .4s}
+.dots button.on{background:var(--accent);border-color:var(--accent);transform:scale(1.5)}
+.dots button:focus-visible{outline:2px solid #fff;outline-offset:4px}
+.hint{position:fixed;z-index:3;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 22px);font-size:.85rem;color:#aaa;transition:opacity .5s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.hint i{width:1px;height:34px;background:linear-gradient(#fff,transparent);animation:drip 1.8s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+#loader{position:fixed;inset:0;background:#000;z-index:1000;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:opacity .9s}
+#loader h1{font-style:italic;font-size:clamp(3rem,9vw,6rem);margin:0 0 10px;background:linear-gradient(90deg,#ff2e63,#ff9d00,#72cc50,#4e34e1,#ff2e63);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gs 3s ease infinite}
+@keyframes gs{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+.bar{width:200px;height:2px;background:#333;margin-top:18px}
+.bar div{width:0;height:100%;background:#ff2e63;transition:width .7s}
+#loader small{color:#777;font-size:.85rem;margin-top:16px}
+@media(max-width:799px){
+ section{align-items:flex-end;padding:0 5% 7vh}
+ section:nth-child(even){justify-content:flex-start}
+ .card{max-width:none;padding:1.6rem 1.6rem 1.6rem 1.9rem}
+ .card::before{top:1.6rem;bottom:1.6rem}
+ section:nth-child(even) .card{text-align:left}
+ section:nth-child(even) .card::before{right:auto;left:0;border-radius:0 4px 4px 0}
+ h1{font-size:2.1rem}p{font-size:1rem;line-height:1.6}
+ .hint{display:none}
+}
+@media(prefers-reduced-motion:reduce){.hint i,#loader h1{animation:none}}
+</style>
 </head>
 <body>
+<div id="loader"><h1>Fruits</h1><div class="bar"><div id="fill"></div></div><small>Made by Fluxi Studio</small></div>
+<div class="glow"></div>
+<canvas id="bg"></canvas>
+<div class="brand">Fruit Masterclass</div>
+<nav class="dots" aria-label="Gyümölcsök">
+ <button class="on" aria-label="Kerti szamóca"></button><button aria-label="Valencia narancs"></button><button aria-label="Granny Smith"></button><button aria-label="Vadon termett áfonya"></button>
+</nav>
+<div class="hint">Görgess<i></i></div>
 
-    <div id="loader">
-        <h1>Fruits</h1>
-        <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
-        <div class="subtitle">Made by Fluxi Studio</div>
-    </div>
+<main>
+ <section style="--c:#ff2e63"><div class="card"><span class="tag">Prémium Selection</span><h1>Kerti Szamóca</h1><p>Kézzel válogatott, napérlelte szemek. A textúra és az édesség tökéletes egyensúlya minden egyes harapásnál.</p></div></section>
+ <section style="--c:#ff9d00"><div class="card"><span class="tag">Citrus Fresh</span><h1>Valencia Narancs</h1><p>A mediterrán nap ereje egyetlen gyümölcsbe zárva. Intenzív illóolajok és frissítő savasság.</p></div></section>
+ <section style="--c:#72cc50"><div class="card"><span class="tag">Organic Gold</span><h1>Granny Smith</h1><p>Roppanós héj, lédús belső. Az alma, amely a tiszta energiát és a természetes egyensúlyt jelképezi.</p></div></section>
+ <section style="--c:#7d6bff"><div class="card"><span class="tag">Superfood</span><h1>Vadon Termett Áfonya</h1><p>Mélykék elegancia és antioxidáns erő. Az erdő legféltettebb kincse, modern tálalásban.</p></div></section>
+</main>
 
-    <canvas id="bg"></canvas>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s), V=(x,y,z)=>new THREE.Vector3(x,y,z);
+const accents=['#ff2e63','#ff9d00','#72cc50','#7d6bff'];
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas:$('#bg'),antialias:true,alpha:true})}catch(e){$('#loader').remove();throw e}
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.1;
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,100);
+camera.position.z=12;
 
-    <main>
-        <section id="strawberry">
-            <div class="content-card">
-                <span class="tag" style="color: #ff2e63;">Prémium Selection</span>
-                <h1>Kerti Szamóca</h1>
-                <p>Kézzel válogatott, napérlelte szemek. A textúra és az édesség tökéletes egyensúlya minden egyes harapásnál.</p>
-                <small>01 / 04</small>
-            </div>
-        </section>
+/* Stúdió-környezet a tükröződésekhez */
+const envScene=new THREE.Scene();
+envScene.background=new THREE.Color(.12,.12,.14);
+[[0,8,0,12,.5,12,3],[8,2,6,.5,6,6,4],[-8,3,-4,.5,6,8,2.5],[0,-6,6,10,.5,3,1.4]].forEach(([x,y,z,w,h,d,i])=>{
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshBasicMaterial({color:new THREE.Color(i,i,i)}));
+  m.position.set(x,y,z);envScene.add(m);
+});
+scene.environment=new THREE.PMREMGenerator(renderer).fromScene(envScene,.04).texture;
 
-        <section id="orange">
-            <div class="content-card">
-                <span class="tag" style="color: #ff9d00;">Citrus Fresh</span>
-                <h1>Valencia Narancs</h1>
-                <p>A mediterrán nap ereje egyetlen gyümölcsbe zárva. Intenzív illóolajok és frissítő savasság.</p>
-                <small>02 / 04</small>
-            </div>
-        </section>
+const key=new THREE.DirectionalLight(0xfff2e6,2);key.position.set(6,8,8);scene.add(key);
+const rim=new THREE.DirectionalLight(0xff2e63,3);rim.position.set(-6,2,-8);scene.add(rim);
+const ml=new THREE.PointLight(0xffffff,1.2,40);ml.position.set(0,0,8);scene.add(ml);
 
-        <section id="apple">
-            <div class="content-card">
-                <span class="tag" style="color: #72cc50;">Organic Gold</span>
-                <h1>Granny Smith</h1>
-                <p>Roppanós héj, lédús belső. Az alma, amely a tiszta energiát és a természetes egyensúlyt jelképezi.</p>
-                <small>03 / 04</small>
-            </div>
-        </section>
+/* Segédek */
+function shape(geo,fn){const p=geo.attributes.position,v=new THREE.Vector3();
+  for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);fn(v);p.setXYZ(i,v.x,v.y,v.z)}
+  geo.computeVertexNormals();return geo}
+function noiseTex(n,size,rep,r0,r1){
+  const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');
+  x.fillStyle='#888';x.fillRect(0,0,size,size);
+  for(let i=0;i<n;i++){const px=Math.random()*size,py=Math.random()*size,r=r0+Math.random()*(r1-r0),g=x.createRadialGradient(px,py,0,px,py,r);
+    g.addColorStop(0,'#000');g.addColorStop(1,'rgba(136,136,136,0)');x.fillStyle=g;x.beginPath();x.arc(px,py,r,0,7);x.fill()}
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep,rep/2);return t}
+function leaf(len,w,mat){const s=new THREE.Shape();s.moveTo(0,0);
+  s.bezierCurveTo(w,len*.25,w*.8,len*.7,0,len);s.bezierCurveTo(-w*.8,len*.7,-w,len*.25,0,0);
+  return new THREE.Mesh(new THREE.ShapeGeometry(s,10),mat)}
+function crown(n,y,len,w,mat,droop){const g=new THREE.Group();
+  for(let i=0;i<n;i++){const p=new THREE.Group(),l=leaf(len,w,mat);l.rotation.x=droop;p.add(l);p.rotation.y=i/n*Math.PI*2;g.add(p)}
+  g.position.y=y;return g}
+function stem(pts,r,y,mat){const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),12,r,8),mat);m.position.y=y;return m}
+const green=c=>new THREE.MeshStandardMaterial({color:c,roughness:.5,side:THREE.DoubleSide});
 
-        <section id="blueberry">
-            <div class="content-card">
-                <span class="tag" style="color: #4e34e1;">Superfood</span>
-                <h1>Vadon Termett Áfonya</h1>
-                <p>Mélykék elegancia és antioxidáns erő. Az erdő legféltettebb kincse, modern tálalásban.</p>
-                <small>04 / 04</small>
-            </div>
-        </section>
-    </main>
+/* Szamóca */
+function strawberry(){
+  const g=new THREE.Group(),H=5.2,R=t=>2.3*Math.pow(Math.sin(Math.PI*Math.pow(t,1.6)),.55);
+  const pts=[];for(let i=0;i<=80;i++){const t=i/80;pts.push(new THREE.Vector2(Math.max(R(t),.001),(t-.5)*H))}
+  const geo=new THREE.LatheGeometry(pts,128),p=geo.attributes.position,col=new THREE.Color(),c=[];
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),t=y/H+.5,n=.5+.5*Math.sin(x*2.3+z*1.7+y);
+    col.setHSL(.012*n+.02*(1-t),.9,.34+.13*(1-t)*(1-t)-.07*t*t*t+.04*n);c.push(col.r,col.g,col.b)}
+  geo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
+  g.add(new THREE.Mesh(geo,new THREE.MeshPhysicalMaterial({vertexColors:true,roughness:.28,clearcoat:1,clearcoatRoughness:.12})));
+  const N=620,ge=new THREE.SphereGeometry(1,10,8),
+   sd=new THREE.InstancedMesh(ge,new THREE.MeshPhysicalMaterial({color:0xf2d070,roughness:.35,clearcoat:.6}),N),
+   pit=new THREE.InstancedMesh(ge,new THREE.MeshStandardMaterial({color:0x7a0818,roughness:.8}),N),d=new THREE.Object3D();
+  let n=0;while(n<N){const t=.05+Math.random()*.9;if(Math.random()>R(t)/2.3)continue;
+    const a=Math.random()*6.283,r=R(t),x=r*Math.cos(a),z=r*Math.sin(a),y=(t-.5)*H;
+    d.position.set(x*.995,y,z*.995);d.scale.set(.09,.125,.03);d.lookAt(x*2,y,z*2);d.updateMatrix();pit.setMatrixAt(n,d.matrix);
+    d.position.set(x,y,z);d.scale.set(.045,.075,.04);d.updateMatrix();sd.setMatrixAt(n++,d.matrix)}
+  g.add(pit,sd);
+  const lm=green(0x2e9a3c),c1=crown(9,H/2-.08,1.25,.36,lm,1.78),c2=crown(6,H/2-.03,.85,.27,lm,1.5);c2.rotation.y=.35;
+  g.add(c1,c2,stem([V(0,0,0),V(.05,.4,0),V(.25,.85,.05)],.07,H/2-.1,green(0x4a7a2a)));
+  g.rotation.x=.25;return g}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+/* Narancs */
+function orange(){
+  const g=new THREE.Group(),geo=shape(new THREE.SphereGeometry(2.3,128,96),v=>{v.y*=.93}),p=geo.attributes.position,col=new THREE.Color(),c=[];
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),n=.5+.5*Math.sin(x*1.9+z*1.3)*Math.cos(y*2.1+x);
+    col.setHSL(.075+.012*n,.97,.5+.05*n-.07*Math.max(0,y/2.1-.6));c.push(col.r,col.g,col.b)}
+  geo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
+  g.add(new THREE.Mesh(geo,new THREE.MeshPhysicalMaterial({vertexColors:true,roughness:.42,clearcoat:.35,clearcoatRoughness:.45,bumpMap:noiseTex(14000,1024,6,1.2,3),bumpScale:2.2})));
+  g.add(crown(5,2.09,.55,.18,green(0x4a7a25),1.6));
+  const nub=new THREE.Mesh(new THREE.SphereGeometry(.14,12,12),green(0x4a7a25));nub.position.y=2.12;nub.scale.y=.6;g.add(nub);
+  /* Narancskarika */
+  const sl=new THREE.Group(),Rr=1.15,cy=(r,h,m)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,64),m);o.rotation.x=Math.PI/2;return o};
+  sl.add(cy(Rr,.24,new THREE.MeshStandardMaterial({color:0xff8a1c,roughness:.5})),cy(Rr*.93,.26,new THREE.MeshStandardMaterial({color:0xfff1c9,roughness:.8})));
+  const jm=new THREE.MeshPhysicalMaterial({color:0xffa31a,roughness:.25,clearcoat:1,emissive:0xff7a00,emissiveIntensity:.3});
+  for(let i=0;i<10;i++){const a0=i/10*6.283+.05,a1=(i+1)/10*6.283-.05,s=new THREE.Shape();
+    s.moveTo(Math.cos(a0)*.08,Math.sin(a0)*.08);s.absarc(0,0,Rr*.86,a0,a1,false);s.lineTo(Math.cos(a1)*.08,Math.sin(a1)*.08);
+    const m=new THREE.Mesh(new THREE.ExtrudeGeometry(s,{depth:.28,bevelEnabled:false}),jm);m.position.z=-.14;sl.add(m)}
+  sl.position.set(2.7,-1.5,1.9);sl.rotation.set(-.2,-.5,.15);g.add(sl);
+  return g}
 
-    <script>
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#bg'), antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.3;
-        renderer.outputEncoding = THREE.sRGBEncoding;
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+/* Granny Smith alma */
+function apple(){
+  const g=new THREE.Group(),sh=v=>{const r=Math.hypot(v.x,v.z),k=1+.1*(v.y/2.3);
+    v.x*=k;v.z*=k;v.y*=.92;
+    if(v.y>0)v.y-=.55*Math.exp(-r*r/.5)*(v.y/2.1);else v.y+=.3*Math.exp(-r*r/.4)*(-v.y/2.1)};
+  const geo=shape(new THREE.SphereGeometry(2.3,128,96),sh),p=geo.attributes.position,col=new THREE.Color(),c=[];
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),n=.5+.5*Math.sin(x*1.7+z*1.1)*Math.cos(y*1.5+x);
+    col.setHSL(.24+.05*n,.62,.4+.1*n+.04*(y/2.3));c.push(col.r,col.g,col.b)}
+  geo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
+  g.add(new THREE.Mesh(geo,new THREE.MeshPhysicalMaterial({vertexColors:true,roughness:.25,clearcoat:1,clearcoatRoughness:.1})));
+  const N=450,sp=new THREE.InstancedMesh(new THREE.SphereGeometry(1,6,4),new THREE.MeshStandardMaterial({color:0xe9efb0,roughness:.6}),N),d=new THREE.Object3D(),q=V(0,0,0);
+  for(let i=0;i<N;i++){q.setFromSphericalCoords(2.305,Math.acos(1-2*Math.random()),Math.random()*6.283);sh(q);
+    d.position.copy(q);d.scale.set(.032,.032,.012);d.lookAt(q.x*2,q.y*2,q.z*2);d.updateMatrix();sp.setMatrixAt(i,d.matrix)}
+  g.add(sp);
+  g.add(stem([V(0,0,0),V(.05,.6,0),V(.28,1.1,0)],.06,1.45,green(0x5a4028)));
+  const lp=new THREE.Group(),lf=leaf(1.3,.45,green(0x3a8a2a));lf.rotation.x=1.3;lp.add(lf);lp.position.set(.15,2.2,0);lp.rotation.y=.7;g.add(lp);
+  g.rotation.x=.2;return g}
 
-        const fruitGroup = new THREE.Group();
-        scene.add(fruitGroup);
+/* Áfonya */
+function blueberries(){
+  const geo=shape(new THREE.SphereGeometry(1,64,48),v=>{v.y*=.88}),
+  skin=new THREE.MeshPhysicalMaterial({color:0x2a3fa6,roughness:.4,clearcoat:.4,clearcoatRoughness:.4,bumpMap:noiseTex(900,512,3,2,4),bumpScale:.4}),
+  bloomM=new THREE.MeshStandardMaterial({color:0x9fb2ff,roughness:1,transparent:true,opacity:.22,depthWrite:false}),
+  dark=new THREE.MeshStandardMaterial({color:0x2a2418,roughness:.8});
+  const one=new THREE.Group();
+  one.add(new THREE.Mesh(geo,skin));
+  const bl=new THREE.Mesh(geo,bloomM);bl.scale.set(1.012,1.012*.88/.88,1.012);one.add(bl);
+  const ring=new THREE.Mesh(new THREE.CylinderGeometry(.24,.28,.06,18),dark);ring.position.y=.84;one.add(ring);
+  for(let i=0;i<5;i++){const p=new THREE.Group(),c=new THREE.Mesh(new THREE.ConeGeometry(.12,.38,3),dark);
+    c.position.set(.2,.9,0);c.rotation.z=-.7;p.add(c);p.rotation.y=i/5*6.283;one.add(p)}
+  const g=new THREE.Group();
+  [[1.5,0,.3,0],[1.1,-1.9,-.5,.8],[.95,1.7,-.8,-.3]].forEach(([s,x,y,z])=>{
+    const b=one.clone();b.scale.setScalar(s);b.position.set(x,y,z);b.rotation.set(Math.random()*.9,Math.random()*6.3,Math.random()*.9);g.add(b)});
+  return g}
 
-        function getPointOnSphere(r, theta, phi) {
-            return {
-                x: r * Math.sin(phi) * Math.cos(theta),
-                y: r * Math.cos(phi),
-                z: r * Math.sin(phi) * Math.sin(theta)
-            };
-        }
+const fruits=[strawberry(),orange(),apple(),blueberries()];
+fruits.forEach((f,i)=>{f.userData.side=i%2?-1:1;f.scale.setScalar(0);scene.add(f)});
 
-        /* ============ STRAWBERRY ============ */
-        function createStrawberry() {
-            const g = new THREE.Group();
-            const pts = [];
-            for (let i = 0; i <= 40; i++) {
-                const t = i / 40;
-                let r = Math.sin(t * Math.PI) * (1 - t * 0.35) * 2.4;
-                if (t > 0.85) r *= 1 - (t - 0.85) * 3;
-                r = Math.max(r, 0.01);
-                pts.push(new THREE.Vector2(r, (t - 0.5) * 5.5));
-            }
-            const bodyGeo = new THREE.LatheGeometry(pts, 64);
-            const bodyMat = new THREE.MeshPhysicalMaterial({
-                color: 0xd41535, roughness: 0.32, clearcoat: 0.9,
-                clearcoatRoughness: 0.1, metalness: 0.0, reflectivity: 1,
-                sheen: 1.0, sheenRoughness: 0.4, sheenColor: new THREE.Color(0xff4466)
-            });
-            g.add(new THREE.Mesh(bodyGeo, bodyMat));
+/* Animáció */
+const rm=matchMedia('(prefers-reduced-motion:reduce)').matches,dots=[...document.querySelectorAll('.dots button')];
+let sp=0,mx=0,my=0,tx=0,ty=0,t=0,cur=-1;
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;ml.position.set(mx*18,-my*12,8)});
+dots.forEach((b,i)=>b.onclick=()=>scrollTo({top:i*innerHeight,behavior:rm?'auto':'smooth'}));
+function frame(){
+  requestAnimationFrame(frame);
+  if(!rm)t+=.01;
+  const m=innerWidth<800;
+  sp+=(scrollY/innerHeight-sp)*.08;tx+=(mx-tx)*.05;ty+=(my-ty)*.05;
+  fruits.forEach((f,i)=>{
+    const d=sp-i,a=Math.max(0,1-Math.abs(d)*1.15),e=a*a*(3-2*a);
+    f.visible=e>.002;if(!f.visible)return;
+    f.scale.setScalar((m?.62:1)*e);
+    f.position.set(m?0:f.userData.side*3.3,(m?1.7:0)+Math.sin(t*1.3+i)*.15+d*3,0);
+    f.rotation.y=t*.5+sp*1.6+tx*.8;
+    f.rotation.x=(i==0?.25:i==2?.2:.1)+ty*.4;
+  });
+  const idx=Math.max(0,Math.min(3,Math.round(sp)));
+  if(idx!==cur){cur=idx;
+    const r=document.documentElement.style;
+    r.setProperty('--accent',accents[idx]);r.setProperty('--gx',m?'50%':(idx%2?'28%':'72%'));
+    rim.color.set(accents[idx]);dots.forEach((b,i)=>b.classList.toggle('on',i===idx))}
+  $('.hint').style.opacity=scrollY>40?0:1;
+  renderer.render(scene,camera);
+}
+frame();
 
-            // 1200+ seeds using InstancedMesh
-            const seedGeo = new THREE.SphereGeometry(0.055, 6, 6);
-            const seedMat = new THREE.MeshStandardMaterial({ color: 0xf0d848, roughness: 0.5, metalness: 0.3 });
-            const seedCount = 1300;
-            const seeds = new THREE.InstancedMesh(seedGeo, seedMat, seedCount);
-            const dummy = new THREE.Object3D();
-            let placed = 0;
-            while (placed < seedCount) {
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.random() * Math.PI * 0.82 + 0.15;
-                const t = phi / Math.PI;
-                let rr = Math.sin(t * Math.PI) * (1 - t * 0.35) * 2.35;
-                if (t > 0.85) rr *= 1 - (t - 0.85) * 3;
-                rr = Math.max(rr, 0.01);
-                const p = getPointOnSphere(rr, theta, phi);
-                if (Math.abs(p.y) < 2.5 && rr > 0.3) {
-                    dummy.position.set(p.x, p.y, p.z);
-                    dummy.lookAt(0, p.y, 0);
-                    dummy.updateMatrix();
-                    seeds.setMatrixAt(placed, dummy.matrix);
-                    placed++;
-                }
-            }
-            seeds.instanceMatrix.needsUpdate = true;
-            g.add(seeds);
-
-            // Seed dimples (darker indent around each seed) - 600 extra surface bumps
-            const bumpGeo = new THREE.SphereGeometry(0.08, 4, 4);
-            const bumpMat = new THREE.MeshStandardMaterial({ color: 0xaa1025, roughness: 0.7, transparent: true, opacity: 0.4 });
-            for (let i = 0; i < 600; i++) {
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.random() * Math.PI * 0.82 + 0.15;
-                const t = phi / Math.PI;
-                let rr = Math.sin(t * Math.PI) * (1 - t * 0.35) * 2.42;
-                if (t > 0.85) rr *= 1 - (t - 0.85) * 3;
-                if (rr > 0.5) {
-                    const p = getPointOnSphere(rr, theta, phi);
-                    if (Math.abs(p.y) < 2.5) {
-                        const b = new THREE.Mesh(bumpGeo, bumpMat);
-                        b.position.set(p.x, p.y, p.z);
-                        b.lookAt(0, p.y, 0);
-                        g.add(b);
-                    }
-                }
-            }
-
-            // 8 realistic leaves with curvature
-            const leafMat = new THREE.MeshStandardMaterial({ color: 0x2d8a2d, roughness: 0.55, side: THREE.DoubleSide });
-            for (let i = 0; i < 8; i++) {
-                const shape = new THREE.Shape();
-                shape.moveTo(0, 0);
-                shape.bezierCurveTo(0.2, 0.5, 0.5, 0.8, 0.15, 1.4);
-                shape.bezierCurveTo(0, 1.5, -0.15, 1.4, -0.15, 1.4);
-                shape.bezierCurveTo(-0.5, 0.8, -0.2, 0.5, 0, 0);
-                const leafGeo = new THREE.ShapeGeometry(shape, 8);
-                const leaf = new THREE.Mesh(leafGeo, leafMat);
-                const a = (i / 8) * Math.PI * 2;
-                leaf.position.set(Math.cos(a) * 0.9, 2.6, Math.sin(a) * 0.9);
-                leaf.rotation.set(-0.5, a + Math.PI, 0.1 * Math.sin(i));
-                leaf.scale.set(0.7, 0.7, 0.7);
-                g.add(leaf);
-            }
-
-            // Stem with slight curve
-            const stemPts = [];
-            for (let i = 0; i <= 10; i++) {
-                const t = i / 10;
-                stemPts.push(new THREE.Vector3(Math.sin(t * 0.5) * 0.05, t * 0.8, Math.cos(t * 0.3) * 0.03));
-            }
-            const stemCurve = new THREE.CatmullRomCurve3(stemPts);
-            const stemGeo = new THREE.TubeGeometry(stemCurve, 10, 0.06, 8, false);
-            const stemMat = new THREE.MeshStandardMaterial({ color: 0x3a5a2a, roughness: 0.85 });
-            const stem = new THREE.Mesh(stemGeo, stemMat);
-            stem.position.y = 2.5;
-            g.add(stem);
-
-            // Tiny hairs on surface
-            const hairGeo = new THREE.CylinderGeometry(0.008, 0.003, 0.12, 3);
-            const hairMat = new THREE.MeshStandardMaterial({ color: 0xccaa88, transparent: true, opacity: 0.5 });
-            for (let i = 0; i < 400; i++) {
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.random() * Math.PI * 0.7 + 0.2;
-                const t = phi / Math.PI;
-                let rr = Math.sin(t * Math.PI) * (1 - t * 0.35) * 2.48;
-                if (rr > 0.8) {
-                    const p = getPointOnSphere(rr, theta, phi);
-                    if (Math.abs(p.y) < 2.2) {
-                        const h = new THREE.Mesh(hairGeo, hairMat);
-                        h.position.set(p.x, p.y, p.z);
-                        h.lookAt(p.x * 2, p.y * 2, p.z * 2);
-                        g.add(h);
-                    }
-                }
-            }
-
-            g.scale.set(1.0, 1.0, 1.0);
-            return g;
-        }
-
-        /* ============ ORANGE ============ */
-        function createOrange() {
-            const g = new THREE.Group();
-            const bodyGeo = new THREE.SphereGeometry(2.4, 96, 96);
-            const pos = bodyGeo.attributes.position;
-            for (let i = 0; i < pos.count; i++) {
-                const y = pos.getY(i);
-                let x = pos.getX(i), z = pos.getZ(i);
-                pos.setY(i, y * 0.88);
-                // Subtle natural bumps
-                const noise = Math.sin(x * 15) * Math.cos(z * 15) * 0.02 + Math.sin(y * 20) * 0.01;
-                const r = Math.sqrt(x * x + z * z);
-                if (r > 0) {
-                    pos.setX(i, x + (x / r) * noise);
-                    pos.setZ(i, z + (z / r) * noise);
-                }
-            }
-            bodyGeo.computeVertexNormals();
-            const bodyMat = new THREE.MeshPhysicalMaterial({
-                color: 0xf28c28, roughness: 0.55, clearcoat: 0.35,
-                clearcoatRoughness: 0.35, metalness: 0.0, reflectivity: 0.8,
-                sheen: 0.5, sheenColor: new THREE.Color(0xffaa44), sheenRoughness: 0.6
-            });
-            g.add(new THREE.Mesh(bodyGeo, bodyMat));
-
-            // 1500+ peel pores using InstancedMesh
-            const poreGeo = new THREE.SphereGeometry(0.035, 4, 4);
-            const poreMat = new THREE.MeshStandardMaterial({ color: 0xd07018, roughness: 0.9 });
-            const poreCount = 1500;
-            const pores = new THREE.InstancedMesh(poreGeo, poreMat, poreCount);
-            const dummy = new THREE.Object3D();
-            for (let i = 0; i < poreCount; i++) {
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.random() * Math.PI;
-                const p = getPointOnSphere(2.43, theta, phi);
-                dummy.position.set(p.x, p.y * 0.88, p.z);
-                dummy.lookAt(0, 0, 0);
-                dummy.scale.setScalar(0.8 + Math.random() * 0.4);
-                dummy.updateMatrix();
-                pores.setMatrixAt(i, dummy.matrix);
-            }
-            pores.instanceMatrix.needsUpdate = true;
-            g.add(pores);
-
-            // Lighter patches (realistic color variation)
-            const patchGeo = new THREE.SphereGeometry(0.6, 8, 8);
-            for (let i = 0; i < 25; i++) {
-                const patchMat = new THREE.MeshStandardMaterial({
-                    color: new THREE.Color().setHSL(0.08, 0.7 + Math.random() * 0.2, 0.55 + Math.random() * 0.15),
-                    roughness: 0.6, transparent: true, opacity: 0.2 + Math.random() * 0.15
-                });
-                const patch = new THREE.Mesh(patchGeo, patchMat);
-                const a = Math.random() * Math.PI * 2, b = Math.random() * Math.PI;
-                patch.position.set(2.0 * Math.sin(b) * Math.cos(a), 2.0 * Math.cos(b) * 0.88, 2.0 * Math.sin(b) * Math.sin(a));
-                patch.scale.setScalar(0.5 + Math.random() * 0.8);
-                g.add(patch);
-            }
-
-            // Calyx (green star)
-            const calyxMat = new THREE.MeshStandardMaterial({ color: 0x4a7025, roughness: 0.65 });
-            for (let i = 0; i < 5; i++) {
-                const shape = new THREE.Shape();
-                shape.moveTo(0, 0);
-                shape.lineTo(0.12, 0.35);
-                shape.lineTo(0, 0.55);
-                shape.lineTo(-0.12, 0.35);
-                shape.closePath();
-                const leafGeo = new THREE.ShapeGeometry(shape);
-                const leaf = new THREE.Mesh(leafGeo, calyxMat);
-                const a = (i / 5) * Math.PI * 2;
-                leaf.position.set(Math.cos(a) * 0.15, 2.12, Math.sin(a) * 0.15);
-                leaf.rotation.set(-0.4, a + Math.PI / 2, 0);
-                leaf.scale.set(1.2, 1.2, 1.2);
-                g.add(leaf);
-            }
-            // Calyx center bump
-            const cBump = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), calyxMat);
-            cBump.position.y = 2.12;
-            cBump.scale.y = 0.5;
-            g.add(cBump);
-
-            // Navel on bottom
-            const navelGeo = new THREE.SphereGeometry(0.3, 12, 12);
-            const navelMat = new THREE.MeshStandardMaterial({ color: 0xc07020, roughness: 0.7 });
-            const navel = new THREE.Mesh(navelGeo, navelMat);
-            navel.position.y = -2.1;
-            navel.scale.set(1, 0.4, 1);
-            g.add(navel);
-
-            return g;
-        }
-
-        /* ============ APPLE ============ */
-        function createApple() {
-            const g = new THREE.Group();
-            const bodyGeo = new THREE.SphereGeometry(2.4, 96, 96);
-            const pos = bodyGeo.attributes.position;
-            for (let i = 0; i < pos.count; i++) {
-                let x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-                const factor = 1 + 0.12 * Math.cos(y / 2.4 * Math.PI);
-                pos.setX(i, x * factor);
-                pos.setZ(i, z * factor);
-                const topDist = Math.abs(y - 2.4);
-                const botDist = Math.abs(y + 2.4);
-                if (topDist < 0.7) {
-                    const indent = (0.7 - topDist) * 0.35;
-                    const rr = Math.sqrt(x * x + z * z);
-                    if (rr > 0.01) { pos.setX(i, x - (x / rr) * indent); pos.setZ(i, z - (z / rr) * indent); }
-                }
-                if (botDist < 0.5) {
-                    const indent = (0.5 - botDist) * 0.2;
-                    const rr = Math.sqrt(x * x + z * z);
-                    if (rr > 0.01) { pos.setX(i, x - (x / rr) * indent); pos.setZ(i, z - (z / rr) * indent); }
-                }
-                // Subtle lumps
-                const lump = Math.sin(x * 12 + z * 8) * 0.015 + Math.cos(y * 10) * 0.01;
-                const rr = Math.sqrt(pos.getX(i) * pos.getX(i) + pos.getZ(i) * pos.getZ(i));
-                if (rr > 0.01) {
-                    pos.setX(i, pos.getX(i) + (pos.getX(i) / rr) * lump);
-                    pos.setZ(i, pos.getZ(i) + (pos.getZ(i) / rr) * lump);
-                }
-            }
-            bodyGeo.computeVertexNormals();
-            const bodyMat = new THREE.MeshPhysicalMaterial({
-                color: 0xc41528, roughness: 0.22, clearcoat: 1.0,
-                clearcoatRoughness: 0.06, metalness: 0.0, reflectivity: 1,
-                sheen: 0.8, sheenRoughness: 0.3, sheenColor: new THREE.Color(0xff3355)
-            });
-            g.add(new THREE.Mesh(bodyGeo, bodyMat));
-
-            // 800+ color speckles
-            const specGeo = new THREE.SphereGeometry(0.04, 4, 4);
-            for (let i = 0; i < 800; i++) {
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.random() * Math.PI;
-                const p = getPointOnSphere(2.42, theta, phi);
-                const hue = Math.random() < 0.6 ? 0.0 : 0.12;
-                const specMat = new THREE.MeshStandardMaterial({
-                    color: new THREE.Color().setHSL(hue, 0.8, 0.35 + Math.random() * 0.2),
-                    roughness: 0.4, transparent: true, opacity: 0.15 + Math.random() * 0.2
-                });
-                const spec = new THREE.Mesh(specGeo, specMat);
-                spec.position.set(p.x * factor_at_y(p.y), p.y, p.z * factor_at_y(p.y));
-                g.add(spec);
-            }
-
-            // Yellow-green blush patches
-            for (let i = 0; i < 15; i++) {
-                const blushGeo = new THREE.SphereGeometry(0.4 + Math.random() * 0.4, 8, 8);
-                const blushMat = new THREE.MeshStandardMaterial({
-                    color: new THREE.Color().setHSL(0.22 + Math.random() * 0.05, 0.6, 0.45),
-                    roughness: 0.3, transparent: true, opacity: 0.2
-                });
-                const blush = new THREE.Mesh(blushGeo, blushMat);
-                const a = Math.random() * Math.PI * 2, b = Math.random() * Math.PI * 0.7 + 0.15;
-                blush.position.set(2.0 * Math.sin(b) * Math.cos(a), 2.0 * Math.cos(b), 2.0 * Math.sin(b) * Math.sin(a));
-                g.add(blush);
-            }
-
-            // Stem - realistic curved
-            const stemPts2 = [];
-            for (let i = 0; i <= 12; i++) {
-                const t = i / 12;
-                stemPts2.push(new THREE.Vector3(Math.sin(t * 1.2) * 0.08, t * 1.0, Math.cos(t * 0.8) * 0.04));
-            }
-            const stemCurve = new THREE.CatmullRomCurve3(stemPts2);
-            const stemGeo = new THREE.TubeGeometry(stemCurve, 12, 0.05, 8, false);
-            const stemMat = new THREE.MeshStandardMaterial({ color: 0x4a3020, roughness: 0.9, metalness: 0.1 });
-            const stem = new THREE.Mesh(stemGeo, stemMat);
-            stem.position.y = 2.5;
-            g.add(stem);
-
-            // Leaf with veins
-            const leafShape = new THREE.Shape();
-            leafShape.moveTo(0, 0);
-            leafShape.bezierCurveTo(0.3, 0.4, 0.6, 0.5, 1.0, 0.15);
-            leafShape.bezierCurveTo(0.7, -0.05, 0.3, -0.1, 0, 0);
-            const leafGeo = new THREE.ShapeGeometry(leafShape, 12);
-            const leafMat = new THREE.MeshStandardMaterial({ color: 0x3a7a2a, roughness: 0.45, side: THREE.DoubleSide });
-            const leaf = new THREE.Mesh(leafGeo, leafMat);
-            leaf.position.set(0.4, 2.9, 0);
-            leaf.rotation.set(0.4, 0.6, 0.15);
-            leaf.scale.set(1.3, 1.3, 1.3);
-            g.add(leaf);
-
-            // Second smaller leaf
-            const leaf2 = new THREE.Mesh(leafGeo, leafMat);
-            leaf2.position.set(-0.3, 2.85, 0.2);
-            leaf2.rotation.set(0.2, -0.8, -0.1);
-            leaf2.scale.set(0.8, 0.8, 0.8);
-            g.add(leaf2);
-
-            function factor_at_y(y) { return 1 + 0.12 * Math.cos(y / 2.4 * Math.PI); }
-
-            return g;
-        }
-
-        /* ============ BLUEBERRY ============ */
-        function createBlueberry() {
-            const g = new THREE.Group();
-            const bodyGeo = new THREE.SphereGeometry(2.0, 96, 96);
-            const pos = bodyGeo.attributes.position;
-            for (let i = 0; i < pos.count; i++) {
-                const y = pos.getY(i);
-                let x = pos.getX(i), z = pos.getZ(i);
-                pos.setY(i, y * 0.86);
-                // Subtle natural bumps
-                const bump = Math.sin(x * 18) * Math.cos(z * 14) * 0.01;
-                const r = Math.sqrt(x * x + z * z);
-                if (r > 0.01) {
-                    pos.setX(i, x + (x / r) * bump);
-                    pos.setZ(i, z + (z / r) * bump);
-                }
-            }
-            bodyGeo.computeVertexNormals();
-            const bodyMat = new THREE.MeshPhysicalMaterial({
-                color: 0x2038a8, roughness: 0.28, clearcoat: 0.7,
-                clearcoatRoughness: 0.15, metalness: 0.02, reflectivity: 0.9,
-                sheen: 1.0, sheenRoughness: 0.5, sheenColor: new THREE.Color(0x5566cc)
-            });
-            g.add(new THREE.Mesh(bodyGeo, bodyMat));
-
-            // Bloom/frost layer (waxy coating) - 1000+ micro particles
-            const frostGeo = new THREE.SphereGeometry(0.025, 4, 4);
-            const frostMat = new THREE.MeshStandardMaterial({ color: 0x8899dd, roughness: 0.95, transparent: true, opacity: 0.35 });
-            for (let i = 0; i < 1200; i++) {
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.random() * Math.PI;
-                const p = getPointOnSphere(2.04, theta, phi);
-                const f = new THREE.Mesh(frostGeo, frostMat);
-                f.position.set(p.x, p.y * 0.86, p.z);
-                f.lookAt(0, 0, 0);
-                f.scale.setScalar(0.6 + Math.random() * 0.8);
-                g.add(f);
-            }
-
-            // Darker natural patches
-            for (let i = 0; i < 20; i++) {
-                const patchGeo = new THREE.SphereGeometry(0.2 + Math.random() * 0.3, 8, 8);
-                const patchMat = new THREE.MeshStandardMaterial({
-                    color: 0x15206a, roughness: 0.35, transparent: true, opacity: 0.2 + Math.random() * 0.15
-                });
-                const patch = new THREE.Mesh(patchGeo, patchMat);
-                const a = Math.random() * Math.PI * 2, b = Math.random() * Math.PI * 0.6 + 0.2;
-                patch.position.set(1.7 * Math.sin(b) * Math.cos(a), 1.7 * Math.cos(b) * 0.86, 1.7 * Math.sin(b) * Math.sin(a));
-                g.add(patch);
-            }
-
-            // Crown/calyx - detailed star
-            const crownMat = new THREE.MeshStandardMaterial({ color: 0x3a2a1a, roughness: 0.75 });
-            for (let i = 0; i < 5; i++) {
-                const petalShape = new THREE.Shape();
-                petalShape.moveTo(0, 0);
-                petalShape.bezierCurveTo(0.08, 0.15, 0.12, 0.3, 0.05, 0.45);
-                petalShape.bezierCurveTo(0, 0.5, -0.05, 0.45, -0.05, 0.45);
-                petalShape.bezierCurveTo(-0.12, 0.3, -0.08, 0.15, 0, 0);
-                const petalGeo = new THREE.ShapeGeometry(petalShape, 6);
-                const petal = new THREE.Mesh(petalGeo, crownMat);
-                const a = (i / 5) * Math.PI * 2;
-                petal.position.set(Math.cos(a) * 0.2, 1.72, Math.sin(a) * 0.2);
-                petal.rotation.set(-0.5, a + Math.PI / 2, 0);
-                petal.scale.set(1.5, 1.5, 1.5);
-                g.add(petal);
-            }
-            // Crown center
-            const crownCenter = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.1, 0.1, 10), crownMat);
-            crownCenter.position.y = 1.74;
-            g.add(crownCenter);
-
-            // Tiny stem scar
-            const scarGeo = new THREE.SphereGeometry(0.06, 6, 6);
-            const scarMat = new THREE.MeshStandardMaterial({ color: 0x2a3a1a, roughness: 0.9 });
-            const scar = new THREE.Mesh(scarGeo, scarMat);
-            scar.position.y = 1.82;
-            scar.scale.y = 0.3;
-            g.add(scar);
-
-            g.scale.set(1.2, 1.2, 1.2);
-            return g;
-        }
-
-        // Create all fruits
-        const strawberry = createStrawberry();
-        const orange = createOrange();
-        const apple = createApple();
-        const blueberry = createBlueberry();
-
-        strawberry.visible = true;
-        orange.visible = false;
-        apple.visible = false;
-        blueberry.visible = false;
-
-        fruitGroup.add(strawberry);
-        fruitGroup.add(orange);
-        fruitGroup.add(apple);
-        fruitGroup.add(blueberry);
-
-        // LIGHTING - cinematic 5-point
-        scene.add(new THREE.AmbientLight(0xfff8f0, 0.35));
-
-        const keyLight = new THREE.DirectionalLight(0xfff0e0, 3.0);
-        keyLight.position.set(8, 12, 8);
-        keyLight.castShadow = true;
-        scene.add(keyLight);
-
-        const fillLight = new THREE.DirectionalLight(0xe0e8ff, 1.5);
-        fillLight.position.set(-10, 6, -8);
-        scene.add(fillLight);
-
-        const rimLight = new THREE.DirectionalLight(0xffd0a0, 2.0);
-        rimLight.position.set(0, -5, -12);
-        scene.add(rimLight);
-
-        const topLight = new THREE.PointLight(0xffffff, 1.0, 40);
-        topLight.position.set(0, 15, 0);
-        scene.add(topLight);
-
-        const mouseLight = new THREE.PointLight(0xffffff, 0.6, 30);
-        scene.add(mouseLight);
-
-        camera.position.z = 9;
-
-        // GSAP scroll
-        gsap.registerPlugin(ScrollTrigger);
-        const tl = gsap.timeline({
-            scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1.5 }
-        });
-
-        tl.call(() => { strawberry.visible = false; orange.visible = true; }, null, 0.5)
-          .to(orange.position, { x: 3, y: 0, z: -2 }, 0.5)
-          .to(document.body, { backgroundColor: "#1a1200" }, 0.5);
-
-        tl.call(() => { orange.visible = false; apple.visible = true; }, null, 1.5)
-          .to(apple.position, { x: -3, y: 0, z: 0 }, 1.5)
-          .to(document.body, { backgroundColor: "#0b1a00" }, 1.5);
-
-        tl.call(() => { apple.visible = false; blueberry.visible = true; }, null, 2.5)
-          .to(blueberry.position, { x: 0, y: 0, z: 2 }, 2.5)
-          .to(document.body, { backgroundColor: "#05001a" }, 2.5);
-
-        window.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth - 0.5) * 20;
-            const y = -(e.clientY / window.innerHeight - 0.5) * 20;
-            mouseLight.position.set(x, y, 10);
-            gsap.to(".content-card", {
-                rotateY: (e.clientX / window.innerWidth - 0.5) * 8,
-                rotateX: -(e.clientY / window.innerHeight - 0.5) * 8,
-                duration: 0.8
-            });
-        });
-
-        let time = 0;
-        function animate() {
-            requestAnimationFrame(animate);
-            time += 0.008;
-            fruitGroup.rotation.y += 0.004;
-            fruitGroup.children.forEach(f => {
-                if (f.visible) {
-                    f.rotation.y += 0.003;
-                    f.position.y = Math.sin(time) * 0.15;
-                }
-            });
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('load', () => {
-            document.getElementById('fill').style.width = '100%';
-            setTimeout(() => {
-                gsap.to("#loader", { opacity: 0, duration: 1, onComplete: () => {
-                    document.getElementById('loader').remove();
-                    animate();
-                }});
-            }, 600);
-        });
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);cur=-1});
+addEventListener('load',()=>{$('#fill').style.width='100%';setTimeout(()=>{const l=$('#loader');l.style.opacity=0;setTimeout(()=>l.remove(),900)},700)});
+</script>
 </body>
 </html>
