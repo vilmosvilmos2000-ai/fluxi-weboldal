@@ -1,438 +1,219 @@
 <!DOCTYPE html>
-<html lang="hu" class="dark">
+<html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Card - Smart Wallet Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkbg: '#121614',
-                        panelbg: '#1a211d',
-                        bordercolor: '#28342c',
-                        mint: {
-                            300: '#b3f5c2',
-                            400: '#8ce6a6',
-                            500: '#52d67a'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #121614;
-            color: #e5e7eb;
-            overflow-x: hidden;
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #121614; }
-        ::-webkit-scrollbar-thumb { background: #28342c; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #b3f5c2; }
-
-        .glass-panel {
-            background: #1a211d;
-            border: 1px solid #28342c;
-            border-radius: 1.5rem;
-        }
-
-        .wallet-container {
-            position: relative;
-            width: 300px;
-            height: 250px;
-            margin: 0 auto;
-            perspective: 1000px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            cursor: pointer;
-        }
-
-        .wallet-back {
-            position: absolute;
-            bottom: 0;
-            width: 290px;
-            height: 200px;
-            background: linear-gradient(145deg, #1e2822, #131b17);
-            border: 1px solid #28342c;
-            border-radius: 24px 24px 50px 50px;
-            z-index: 5;
-            box-shadow: inset 0 25px 35px rgba(0,0,0,0.6);
-        }
-
-        .pocket {
-            position: absolute;
-            bottom: 0;
-            width: 290px;
-            height: 150px;
-            z-index: 40;
-            background: linear-gradient(180deg, rgba(26, 33, 29, 0.95), rgba(18, 22, 20, 0.98));
-            border-radius: 0 0 45px 45px;
-            border: 1px solid #28342c;
-            border-top: 2px solid #b3f5c2;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(12px);
-            display: flex;
-            justify-content: center;
-            padding-top: 20px;
-        }
-
-        .digital-card {
-            position: absolute;
-            width: 260px;
-            height: 150px;
-            bottom: 50px;
-            border-radius: 16px;
-            padding: 16px;
-            color: #121614;
-            background: linear-gradient(135deg, #b3f5c2 0%, #72d993 100%);
-            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 10px 25px rgba(0, 0, 0, 0.5);
-            z-index: 20;
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
-        }
-
-        .wallet-container:hover .digital-card {
-            transform: translateY(-80px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(179, 245, 194, 0.3);
-            z-index: 50;
-        }
-
-        .chip {
-            width: 35px;
-            height: 25px;
-            background: linear-gradient(135deg, #1e2822, #111713);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pénz Követés Egyszerűen</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4ef;--panel:#fff;--deep:#e0ebe3;--line:#d3e0d7;--text:#14201a;--muted:#5a6b60;--acc:#1c9a52;--ink:#fff;--exp:#cf3248;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121614;--panel:#1a211d;--deep:#131b17;--line:#28342c;--text:#e8ece9;--muted:#8d9b92;--acc:#b3f5c2;--ink:#121614;--exp:#fb7185}}
+:root[data-theme="dark"]{--bg:#121614;--panel:#1a211d;--deep:#131b17;--line:#28342c;--text:#e8ece9;--muted:#8d9b92;--acc:#b3f5c2;--ink:#121614;--exp:#fb7185}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.5 'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1080px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{font-size:18px;font-weight:800;margin:0;letter-spacing:-.01em}
+.sub{margin:0;font-size:12px;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin-right:6px}
+main{max-width:1080px;margin:0 auto;padding:20px 16px 40px;display:grid;gap:20px}
+@media(min-width:900px){main{grid-template-columns:5fr 7fr;align-items:start}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px}
+h2{font-size:15px;font-weight:800;margin:0 0 14px}
+.col{display:grid;gap:20px}
+.wallet{position:relative;width:300px;max-width:100%;height:240px;margin:8px auto 0;cursor:pointer;border:0;background:none;padding:0;display:block}
+.back{position:absolute;left:5px;bottom:0;width:290px;height:190px;border-radius:24px 24px 48px 48px;background:var(--deep);border:1px solid var(--line)}
+.card{position:absolute;left:20px;bottom:46px;width:260px;height:150px;border-radius:16px;padding:16px;text-align:left;color:#14201a;background:linear-gradient(135deg,#b3f5c2,#6fd490);box-shadow:0 8px 22px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.34,1.4,.64,1)}
+.card b{font-weight:800}
+.card .lbl{font-size:11px;opacity:.75;margin-top:46px}
+.card .amt{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.chip{position:absolute;right:16px;top:16px;width:34px;height:24px;border-radius:6px;background:#1e2822;opacity:.85}
+.pocket{position:absolute;left:5px;bottom:0;width:290px;height:128px;border-radius:0 0 46px 46px;background:var(--panel);border:1px solid var(--line);border-top:2px solid var(--acc);padding-top:16px;text-align:center}
+.pocket small{color:var(--muted);font-size:12px}
+.pocket div{font-weight:800;color:var(--acc);filter:brightness(.9)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]) .pocket div{color:var(--text)}}
+.wallet.open .card{transform:translateY(-78px) scale(1.04)}
+@media(hover:hover){.wallet:hover .card{transform:translateY(-78px) scale(1.04)}}
+.hint{text-align:center;color:var(--muted);font-size:12px;margin:14px 0 0}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat span{display:block;font-size:12px;color:var(--muted)}
+.stat strong{font-size:16px;font-weight:800}
+.inc{color:var(--acc)}.exp{color:var(--exp)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]) .inc{color:#12794010;color:#127940}}
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:0 0 6px}
+input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:16px}
+input:focus{border-color:var(--acc);outline:none}
+.field{margin-bottom:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 16px}
+.q{border:1px solid var(--line);background:none;border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}
+.q:hover{border-color:var(--acc)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{border:1px solid;border-radius:12px;padding:12px;font-weight:700;cursor:pointer;background:none;transition:background .15s}
+.btn.i{border-color:var(--acc);background:var(--acc);color:var(--ink)}
+.btn.e{border-color:var(--exp);color:var(--exp)}
+.btn.e:hover,.btn.danger:hover{background:color-mix(in srgb,var(--exp) 12%,transparent)}
+.btn.i:hover{filter:brightness(1.08)}
+.btn.danger{width:100%;border-color:var(--line);color:var(--exp);font-size:13px}
+.btn.danger.sure{border-color:var(--exp);background:var(--exp);color:#fff}
+.note{font-size:12px;color:var(--muted);margin:10px 0 0;text-align:center}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.head h2{margin:0}
+.tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
+.tab{border:0;background:none;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.tab[aria-pressed="true"]{background:var(--acc);color:var(--ink)}
+#list{display:grid;gap:8px;max-height:560px;overflow-y:auto}
+.tx{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,currentColor 12%,transparent)}
+.tx .m{flex:1;min-width:0}
+.tx .n{font-weight:700;overflow-wrap:anywhere}
+.tx .d{font-size:12px;color:var(--muted)}
+.tx .v{font-weight:800;white-space:nowrap}
+.x{flex:none;width:32px;height:32px;border:0;border-radius:8px;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center}
+.x:hover{background:color-mix(in srgb,var(--exp) 14%,transparent);color:var(--exp)}
+.empty{padding:36px 8px;text-align:center;color:var(--muted)}
+#toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--acc);color:var(--ink);padding:10px 18px;border-radius:12px;font-weight:700;font-size:14px;transition:.25s;z-index:20;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}#toast.err{background:var(--exp);color:#fff}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
-<body class="min-h-screen pb-12 flex flex-col">
+<body>
+<header><div class="bar">
+<div><h1>Pénz Követés Egyszerűen</h1><p class="sub">Az adataid csak ezen az eszközön vannak</p></div>
+<span class="sub"><span class="dot"></span>Aktív</span>
+</div></header>
 
-    <nav class="glass-panel mx-4 mt-4 mb-8 px-6 py-4 rounded-2xl border border-bordercolor sticky top-4 z-50 shadow-2xl shadow-black/50">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-mint-300 flex items-center justify-center shadow-lg shadow-mint-300/20">
-                    <i class="fa-solid fa-wallet text-lg text-darkbg"></i>
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-lg leading-tight text-white tracking-tight">Pénz Követés Egyszerüen
-                    <p class="text-xs text-mint-300/70 font-semibold">Local Device Storage</p>
-                </div>
-            </div>
-            <div class="text-xs px-3 py-1.5 rounded-full bg-mint-300/10 border border-mint-300/20 text-mint-300 font-bold flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-mint-300 animate-pulse"></div> Active
-            </div>
-        </div>
-    </nav>
+<main>
+<div class="col">
+<section class="panel">
+<button class="wallet" id="wallet" aria-expanded="false" aria-label="Kártya kihúzása és visszatétele">
+<span class="back"></span>
+<span class="card"><b>Digital Card</b><span class="chip"></span><div class="lbl">Elérhető egyenleg</div><div class="amt bal">0 Ft</div></span>
+<span class="pocket"><small>Tárca állapota</small><div class="bal">0 Ft</div></span>
+</button>
+<p class="hint">Koppints a tárcára, és kihúzod a kártyát</p>
+</section>
 
-    <div id="toast" class="fixed top-24 right-4 z-50 transform translate-x-full opacity-0 transition-all duration-300 bg-mint-300 text-darkbg px-5 py-3 rounded-xl font-bold shadow-2xl flex items-center gap-3">
-        <i class="fa-solid fa-circle-check"></i>
-        <span id="toast-msg">Sikeres!</span>
-    </div>
+<section class="panel">
+<div class="stats">
+<div class="stat"><span>Bevételek</span><strong class="inc" id="sInc">0 Ft</strong></div>
+<div class="stat"><span>Kiadások</span><strong class="exp" id="sExp">0 Ft</strong></div>
+</div>
+</section>
 
-    <main class="max-w-6xl mx-auto w-full px-4 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <div class="lg:col-span-5 flex flex-col gap-6">
-            
-            <!-- 3D Wallet Display -->
-            <div class="glass-panel p-6 flex flex-col items-center justify-center pt-10 pb-6">
-                <div class="wallet-container">
-                    <div class="wallet-back"></div>
-                    
-                    <div class="digital-card">
-                        <div class="flex justify-between items-start h-full flex-col">
-                            <div class="w-full flex justify-between items-center">
-                                <span class="font-bold text-sm tracking-widest uppercase">Digital Card</span>
-                                <div class="chip"></div>
-                            </div>
-                            <div class="w-full">
-                                <p class="text-[10px] font-bold uppercase opacity-75 mb-1">Elérhető Egyenleg</p>
-                                <p class="text-xl font-black tracking-tight card-balance-display">0 Ft</p>
-                            </div>
-                        </div>
-                    </div>
+<section class="panel">
+<h2>Új tranzakció</h2>
+<div class="field"><label for="txName">Megnevezés</label><input id="txName" maxlength="60" placeholder="pl. Zsebpénz, Játék" autocomplete="off"></div>
+<div class="field"><label for="txAmount">Összeg (Ft)</label><input id="txAmount" type="number" inputmode="numeric" min="1" placeholder="0"></div>
+<div class="chips" id="chips"><button class="q" data-v="500">500</button><button class="q" data-v="1000">1 000</button><button class="q" data-v="5000">5 000</button><button class="q" data-v="10000">10 000</button></div>
+<div class="two">
+<button class="btn i" id="bInc">Bevétel hozzáadása</button>
+<button class="btn e" id="bExp">Kiadás levonása</button>
+</div>
+</section>
 
-                    <div class="pocket">
-                        <div class="text-center mt-2">
-                            <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Tárca Állapota</p>
-                            <p class="text-mint-300 font-bold mt-1 card-balance-display">0 Ft</p>
-                        </div>
-                    </div>
-                </div>
-                <p class="text-xs text-slate-500 font-medium mt-6 text-center">
-                    <i class="fa-solid fa-arrow-pointer text-mint-300/50 mr-1"></i> Húzd ide az egeret a kártya megtekintéséhez
-                </p>
-            </div>
+<section class="panel">
+<button class="btn danger" id="clear">Az eszköz adatainak törlése</button>
+<p class="note">Véglegesen törli az egyenleget és az előzményeket erről az eszközről.</p>
+</section>
+</div>
 
-            <div class="glass-panel p-6">
-                <h2 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-money-bill-transfer text-mint-300"></i> Új Tranzakció
-                </h2>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Megnevezés</label>
-                        <input type="text" id="txName" placeholder="pl. Zsebpénz, Játék..." class="w-full bg-[#121614] border border-bordercolor rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-mint-300 transition-colors">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Összeg (Ft)</label>
-                        <input type="number" id="txAmount" placeholder="0" class="w-full bg-[#121614] border border-bordercolor rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-mint-300 transition-colors">
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3 pt-2">
-                        <button onclick="handleTransaction('income')" class="bg-mint-300/10 hover:bg-mint-300/20 text-mint-300 border border-mint-300/30 py-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-plus"></i> Bevétel
-                        </button>
-                        <button onclick="handleTransaction('expense')" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 py-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-minus"></i> Kiadás
-                        </button>
-                    </div>
-                </div>
-            </div>
+<section class="panel">
+<div class="head">
+<h2>Előzmények <span class="sub" id="count"></span></h2>
+<div class="tabs" id="tabs">
+<button class="tab" data-f="all" aria-pressed="true">Mind</button>
+<button class="tab" data-f="income" aria-pressed="false">Bevétel</button>
+<button class="tab" data-f="expense" aria-pressed="false">Kiadás</button>
+</div>
+</div>
+<div id="list"></div>
+</section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
 
-            <div class="glass-panel p-6 border-rose-900/30">
-                <button onclick="clearDeviceData()" class="w-full py-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold text-xs transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-trash"></i> Eszköz Adatainak Törlése
-                </button>
-                <p class="text-[10px] text-slate-500 text-center mt-3 leading-relaxed">
-                    Ez a gomb véglegesen törli a kártya egyenlegét és az előzményeket erről a konkrét eszközről.
-                </p>
-            </div>
-        </div>
+<script>
+const KEY='digital_wallet_device_data_v2';
+let tx=[],filter='all',clearTimer=null,toastTimer=null;
+const $=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('hu-HU',{style:'currency',currency:'HUF',maximumFractionDigits:0}).format(n);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c]));
+const sum=t=>tx.filter(x=>x.type===t).reduce((a,x)=>a+x.amount,0);
+const balance=()=>sum('income')-sum('expense');
+const when=id=>new Date(id).toLocaleString('hu-HU',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 
-        <div class="lg:col-span-7 flex flex-col h-full">
-            <div class="glass-panel p-6 flex-1 flex flex-col max-h-[850px]">
-                <div class="flex justify-between items-center mb-6 pb-4 border-b border-bordercolor">
-                    <h2 class="text-sm font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-clock-rotate-left text-mint-300"></i> Tranzakciós Előzmények
-                    </h2>
-                    <span class="text-xs font-semibold text-slate-400 bg-darkbg px-3 py-1 rounded-full border border-bordercolor" id="txCountBadge">0 db</span>
-                </div>
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem(KEY));
+    if(s&&Array.isArray(s.transactions))
+      tx=s.transactions.filter(t=>t&&isFinite(t.amount)&&isFinite(t.id)).map(t=>({id:+t.id,name:String(t.name),amount:+t.amount,type:t.type==='income'?'income':'expense'}));
+  }catch(e){}
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify({balance:balance(),transactions:tx}));}catch(e){}
+}
+function toast(msg,err){
+  const t=$('toast');t.textContent=msg;t.className='show'+(err?' err':'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.className='',2600);
+}
+const upI='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+const dnI='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+const xI='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 
-                <div id="historyList" class="flex-1 overflow-y-auto space-y-3 pr-2">
-                    <!-- Transactions will be injected here via JS -->
-                </div>
-            </div>
-        </div>
-    </main>
+function render(){
+  document.querySelectorAll('.bal').forEach(e=>e.textContent=fmt(balance()));
+  $('sInc').textContent=fmt(sum('income'));$('sExp').textContent=fmt(sum('expense'));
+  const rows=tx.filter(t=>filter==='all'||t.type===filter);
+  $('count').textContent='('+rows.length+' db)';
+  $('list').innerHTML=rows.length?rows.map(t=>{
+    const inc=t.type==='income';
+    return `<div class="tx"><div class="ic ${inc?'inc':'exp'}">${inc?upI:dnI}</div>
+<div class="m"><div class="n">${esc(t.name)}</div><div class="d">${when(t.id)}</div></div>
+<div class="v ${inc?'inc':'exp'}">${inc?'+':'−'}${fmt(t.amount)}</div>
+<button class="x" data-id="${t.id}" aria-label="Tranzakció törlése: ${esc(t.name)}">${xI}</button></div>`;
+  }).join(''):`<div class="empty">${tx.length?'Ebben a nézetben nincs tranzakció.':'Még nincs tranzakció. Adj hozzá egyet a bal oldali űrlapon.'}</div>`;
+}
+function add(type){
+  const name=$('txName').value.trim(),amount=Math.round(parseFloat($('txAmount').value));
+  if(!name)return toast('Add meg, mire szól a tranzakció.',true);
+  if(!isFinite(amount)||amount<=0)return toast('Az összeg legyen nagyobb, mint 0.',true);
+  if(type==='expense'&&amount>balance())return toast('Nincs elég egyenleg: '+fmt(balance())+' van a kártyán.',true);
+  tx.unshift({id:Date.now(),name,amount,type});
+  save();render();
+  $('txName').value='';$('txAmount').value='';
+  toast(type==='income'?'Bevétel hozzáadva':'Kiadás levonva');
+}
+function remove(id){
+  const t=tx.find(x=>x.id===id);if(!t)return;
+  if(t.type==='income'&&balance()-t.amount<0)return toast('Ezt a bevételt nem törölheted, mert az egyenleg negatív lenne.',true);
+  tx=tx.filter(x=>x.id!==id);save();render();toast('Tranzakció törölve');
+}
 
-    <script>
-        // Use a specific key for this wallet instance
-        const STORAGE_KEY = 'digital_wallet_device_data_v2';
-        
-        // Default state
-        let appState = {
-            balance: 0,
-            transactions: []
-        };
-
-        // Initialize application
-        function initApp() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try {
-                    appState = JSON.parse(saved);
-                    // Force balance to be a number just in case old corrupted data exists
-                    appState.balance = Number(appState.balance) || 0; 
-                } catch (e) {
-                    console.error("Hiba az adatok betöltésekor, alaphelyzetbe állítás...", e);
-                    saveData();
-                }
-            } else {
-                saveData(); // Save default if fresh device
-            }
-            renderUI();
-        }
-
-        // Save to device LocalStorage
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-        }
-
-        // Formatting currency perfectly
-        function formatMoney(amount) {
-            return new Intl.NumberFormat('hu-HU', { 
-                style: 'currency', 
-                currency: 'HUF',
-                maximumFractionDigits: 0
-            }).format(amount);
-        }
-
-        // Notification system
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toast-msg');
-            
-            msgEl.innerText = message;
-            
-            if (isError) {
-                toast.classList.replace('bg-mint-300', 'bg-rose-400');
-                toast.classList.replace('text-darkbg', 'text-white');
-            } else {
-                toast.classList.replace('bg-rose-400', 'bg-mint-300');
-                toast.classList.replace('text-white', 'text-darkbg');
-            }
-
-            toast.classList.remove('translate-x-full', 'opacity-0');
-            
-            setTimeout(() => {
-                toast.classList.add('translate-x-full', 'opacity-0');
-            }, 3000);
-        }
-
-        function handleTransaction(type) {
-            const nameInput = document.getElementById('txName');
-            const amountInput = document.getElementById('txAmount');
-            
-            const name = nameInput.value.trim();
-            const rawAmount = amountInput.value;
-
-            // CRITICAL FIX: Explicitly parse to Float/Number to prevent string concatenation
-            const amount = parseFloat(rawAmount);
-
-            // Validation
-            if (!name) {
-                showToast('Kérlek adj meg egy megnevezést!', true);
-                return;
-            }
-            if (isNaN(amount) || amount <= 0) {
-                showToast('Érvényes, 0-nál nagyobb összeget adj meg!', true);
-                return;
-            }
-            if (type === 'expense' && appState.balance < amount) {
-                showToast('Nincs elegendő fedezet a tranzakcióhoz!', true);
-                return;
-            }
-
-            // Execute Math safely
-            if (type === 'income') {
-                appState.balance += amount; // Now this is mathematical addition, not string merging
-            } else {
-                appState.balance -= amount;
-            }
-
-            // Create transaction record
-            const newTx = {
-                id: Date.now(), // Unique ID based on timestamp
-                name: name,
-                amount: amount,
-                type: type,
-                date: new Date().toLocaleString('hu-HU', { 
-                    year: 'numeric', month: '2-digit', day: '2-digit', 
-                    hour: '2-digit', minute:'2-digit' 
-                })
-            };
-
-            // Add to start of array
-            appState.transactions.unshift(newTx);
-            
-            // Save & Update UI
-            saveData();
-            renderUI();
-            
-            // Reset inputs
-            nameInput.value = '';
-            amountInput.value = '';
-            
-            showToast(type === 'income' ? 'Bevétel sikeresen hozzáadva!' : 'Kiadás sikeresen levonva!');
-        }
-
-        // Delete device data completely
-        function clearDeviceData() {
-            localStorage.removeItem(STORAGE_KEY);
-            appState = { balance: 0, transactions: [] };
-            renderUI();
-            showToast('Eszköz adatai sikeresen törölve!', true);
-        }
-
-        // Remove a single transaction
-        function removeTx(id) {
-            const txIndex = appState.transactions.findIndex(t => t.id === id);
-            if (txIndex === -1) return;
-            
-            const tx = appState.transactions[txIndex];
-            
-            // Reverse the balance impact
-            if (tx.type === 'income') {
-                appState.balance -= tx.amount;
-            } else {
-                appState.balance += tx.amount;
-            }
-            
-            // Remove from array
-            appState.transactions.splice(txIndex, 1);
-            
-            saveData();
-            renderUI();
-            showToast('Tranzakció törölve');
-        }
-
-        function renderUI() {
-            // 1. Update all balance displays
-            const formattedBalance = formatMoney(appState.balance);
-            document.querySelectorAll('.card-balance-display').forEach(el => {
-                el.innerText = formattedBalance;
-            });
-
-            // 2. Update list
-            const list = document.getElementById('historyList');
-            document.getElementById('txCountBadge').innerText = `${appState.transactions.length} db`;
-            list.innerHTML = '';
-
-            if (appState.transactions.length === 0) {
-                list.innerHTML = `
-                    <div class="h-40 flex flex-col items-center justify-center text-slate-500 opacity-60">
-                        <i class="fa-solid fa-receipt text-4xl mb-3"></i>
-                        <p class="text-sm font-semibold">Nincsenek még tranzakciók.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // Loop and render elements
-            appState.transactions.forEach(tx => {
-                const isInc = tx.type === 'income';
-                const color = isInc ? 'text-mint-300' : 'text-rose-400';
-                const bg = isInc ? 'bg-mint-300/10' : 'bg-rose-500/10';
-                const icon = isInc ? 'fa-arrow-down' : 'fa-arrow-up';
-                const prefix = isInc ? '+' : '-';
-
-                const div = document.createElement('div');
-                div.className = 'flex items-center justify-between bg-darkbg p-4 rounded-2xl border border-bordercolor group';
-                
-                div.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl ${bg} ${color} flex items-center justify-center">
-                            <i class="fa-solid ${icon}"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-white">${tx.name}</p>
-                            <p class="text-[10px] font-semibold text-slate-500 mt-0.5">${tx.date}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <p class="font-extrabold text-sm ${color}">${prefix}${formatMoney(tx.amount)}</p>
-                        <button onclick="removeTx(${tx.id})" class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-rose-500 hover:text-white">
-                            <i class="fa-solid fa-xmark text-xs"></i>
-                        </button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        // Start app on load
-        window.addEventListener('DOMContentLoaded', initApp);
-    </script>
+$('bInc').onclick=()=>add('income');
+$('bExp').onclick=()=>add('expense');
+$('txAmount').addEventListener('keydown',e=>{if(e.key==='Enter')$('txName').value.trim()?add('income'):$('txName').focus();});
+$('chips').onclick=e=>{const v=e.target.dataset.v;if(v){$('txAmount').value=v;$('txAmount').focus();}};
+$('list').onclick=e=>{const b=e.target.closest('.x');if(b)remove(+b.dataset.id);};
+$('tabs').onclick=e=>{
+  const f=e.target.dataset.f;if(!f)return;filter=f;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===f));render();
+};
+$('wallet').onclick=()=>{const w=$('wallet');w.setAttribute('aria-expanded',w.classList.toggle('open'));};
+$('clear').onclick=()=>{
+  const b=$('clear');
+  if(!b.classList.contains('sure')){
+    b.classList.add('sure');b.textContent='Biztosan? Koppints még egyszer';
+    clearTimer=setTimeout(()=>{b.classList.remove('sure');b.textContent='Az eszköz adatainak törlése';},4000);return;
+  }
+  clearTimeout(clearTimer);b.classList.remove('sure');b.textContent='Az eszköz adatainak törlése';
+  tx=[];try{localStorage.removeItem(KEY);}catch(e){}
+  render();toast('Az adatok törölve',true);
+};
+load();render();
+</script>
 </body>
 </html>
