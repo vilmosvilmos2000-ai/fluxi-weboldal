@@ -1,317 +1,226 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameHub Pro</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        :root { --p: #ff3e3e; --bg: #0d0d12; --card: #1a1a24; --text: #eee; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; display: flex; }
-        
-        /* SIDEBAR */
-        #sidebar { width: 260px; background: var(--card); border-right: 2px solid #333; height: 100vh; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
-        .stat { background: #000; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--p); }
-        .stat span { color: var(--p); font-weight: bold; }
-
-        /* MAIN CONTENT */
-        #main { flex-grow: 1; padding: 30px; overflow-y: auto; height: 100vh; box-sizing: border-box; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; border: 1px solid #333; position: relative; }
-        .card:hover { transform: translateY(-5px); border-color: var(--p); box-shadow: 0 0 20px rgba(255,62,62,0.2); }
-        .card .icon { font-size: 50px; margin-bottom: 10px; }
-        .badge { position: absolute; top: 10px; right: 10px; background: var(--p); font-size: 10px; padding: 3px 7px; border-radius: 5px; }
-        .badge-link { background: #4CAF50; } /* Zöld badge a külső linkekhez */
-
-        /* GAME OVERLAY */
-        #game-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; }
-        #game-header { background: #1a1a1a; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--p); }
-        #canvas-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        
-        .btn { background: var(--p); color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn:hover { opacity: 0.8; }
-        input { background: #333; border: 1px solid var(--p); color: white; padding: 10px; border-radius: 5px; width: 100px; text-align: center; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GameHub Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#101116;--pn:#16171d;--ln:#2a2b33;--tx:#f4f4f6;--mut:#9a9ca7;--a:#2f7bff;--sa:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mo:"JetBrains Mono",ui-monospace,Consolas,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}html,body{height:100%}
+body{margin:0;font:15px/1.5 var(--sa);color:var(--tx);background:var(--bg);overflow:hidden}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#app{display:flex;flex-direction:column;height:100%}
+.mono,.lk,.tabs button,.btn,.toast,.hint,small,#q,#gh h2{font-family:var(--mo);text-transform:uppercase;letter-spacing:.14em;font-size:11px}
+.mut{color:var(--mut)}
+header{position:relative;display:flex;align-items:center;height:64px;border-bottom:1px solid var(--ln);flex:none}
+.logo{display:flex;align-items:center;height:100%;padding:0 28px;border-right:1px solid var(--ln);font:800 22px/1 var(--sa);letter-spacing:.1em}.logo b{color:var(--a);font-weight:800;margin-left:.35em}
+.nav{display:flex;align-items:center;gap:16px;padding:0 24px}.pill{background:#fff;color:#000;padding:7px 11px;font:700 12px var(--mo);letter-spacing:.14em}
+.me{margin-left:auto;display:flex;height:100%}.me>*{display:flex;align-items:center;gap:10px;padding:0 20px;border-left:1px solid var(--ln)}
+.av{width:34px;height:34px;background:var(--a);color:#fff;display:grid;place-items:center;font:800 16px var(--mo)}#un{font-weight:700;line-height:1.2}small{color:var(--mut);display:block}
+.cc{font:700 14px var(--mo)}
+.lk{background:none;border:0;border-left:1px solid var(--ln);color:var(--mut);padding:0 22px;cursor:pointer;font-weight:700}.lk:hover{color:#fff}
+.bar{position:absolute;left:0;right:0;bottom:-1px;height:2px}.bar i{display:block;height:100%;width:0;background:var(--a);transition:width .3s}
+.tools{display:flex;align-items:center;gap:12px;padding:22px 28px;flex:none;flex-wrap:wrap}
+.tabs{display:flex;border:1px solid var(--ln);max-width:100%;overflow-x:auto}
+.tabs button{background:none;border:0;border-right:1px solid var(--ln);color:var(--mut);padding:14px 16px;cursor:pointer;font-weight:700;white-space:nowrap}.tabs button:last-child{border:0}.tabs button:hover{color:#fff}
+.tabs button.on{background:#fff;color:#000}.tabs button span{opacity:.55;margin-left:7px}
+#q{margin-left:auto;width:min(100%,300px);text-align:left;font-size:12px;padding:14px 16px;letter-spacing:.06em;font-weight:500;text-transform:none}
+main{flex:1;min-height:0;overflow:auto;padding:0 28px 28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));border-top:1px solid var(--ln);border-left:1px solid var(--ln)}
+.card{display:flex;flex-direction:column;border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);transition:background .15s}.card:hover{background:var(--pn)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px 26px;border-bottom:1px solid var(--ln)}
+.no{padding:6px 9px;color:#0b0b10;font:700 12px var(--mo);letter-spacing:.1em}
+.cb{display:flex;flex-direction:column;gap:18px;padding:26px;flex:1}
+.hd{display:flex;gap:16px;align-items:center}.ic{width:62px;height:62px;border-radius:12px;display:grid;place-items:center;font-size:34px;flex:none}
+.nm{font-size:25px;font-weight:800;letter-spacing:-.02em;line-height:1.15}.nm em{font:700 10px var(--mo);font-style:normal;letter-spacing:.1em;border:1px solid var(--ln);padding:2px 6px;margin-left:8px;vertical-align:middle;color:#f5a524}
+.ds{color:var(--mut);font-size:15px}
+.st{align-self:flex-start;border:1px solid var(--ln);padding:5px 8px;font:700 11px var(--mo);letter-spacing:.12em;color:#4da3ff}.st.g{color:#3ddc9a}
+.mt{color:var(--mut);font-size:14px;margin-top:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#0b0b10;border:1px solid #fff;border-radius:0;padding:16px 22px;font-weight:700;cursor:pointer;text-decoration:none;transition:.15s}
+.btn:hover{background:#d8d9df}.btn:active{transform:translateY(1px)}.btn.ghost{background:transparent;color:var(--tx);border-color:var(--ln)}.btn.ghost:hover{border-color:#fff}.btn.ghost.on{background:#fff;color:#000;border-color:#fff}
+.card .btn{width:100%}
+.empty{grid-column:1/-1;padding:40px 26px;color:var(--mut);border-right:1px solid var(--ln);border-bottom:1px solid var(--ln)}
+footer{flex:none;display:flex;justify-content:space-between;gap:12px;padding:14px 28px;border-top:1px solid var(--ln);color:var(--mut)}
+h2{margin:0;font-size:16px}
+input{background:var(--pn);border:1px solid var(--ln);color:var(--tx);border-radius:0;padding:12px;font:inherit;font-size:20px;width:170px;text-align:center}input:focus{outline:0;border-color:#fff}
+#gv{display:none;position:fixed;inset:0;z-index:50;flex-direction:column;background:var(--bg);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#gh{display:flex;justify-content:space-between;align-items:center;height:64px;padding:0 0 0 28px;border-bottom:1px solid var(--ln)}#gh h2{font-weight:700;font-size:13px}#gh .btn{height:100%}
+#box{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;text-align:center;overflow:auto;position:relative}
+#box.b3{padding:0;gap:0;overflow:hidden;touch-action:none}#box canvas{display:block}
+.big{font-size:clamp(26px,5vw,44px);font-weight:800;line-height:1.2;letter-spacing:-.02em}.sub{color:var(--mut)}p{margin:0}
+.coin{font-size:110px;background:none;border:0;cursor:pointer;transition:transform .08s;user-select:none;line-height:1}.coin:active{transform:scale(.86)}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.die,.bx{font-size:110px;line-height:1}
+.mg{display:grid;grid-template-columns:repeat(4,72px);gap:10px}.mc{height:72px;border-radius:0;border:1px solid transparent;background:var(--a);font-size:32px;cursor:pointer;padding:0}
+.mc span{opacity:0;transition:.2s}.mc.up{background:var(--pn);border-color:var(--ln)}.mc.up span{opacity:1}.mc.ok{background:rgba(61,220,154,.22);border-color:#3ddc9a}
+.sw{width:64px;height:64px;border-radius:0;border:0;cursor:pointer}
+.rx{width:min(100%,720px);min-height:55vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;user-select:none;border:1px solid var(--ln)}
+.rx.red{background:#c0392b;color:#fff}.rx.green{background:#2ecc71;color:#06280f}.rx.idle{background:var(--pn)}
+.arena{position:relative;width:min(100%,720px);height:55vh;background:var(--pn);border:1px solid var(--ln);overflow:hidden}
+.tg{position:absolute;width:46px;height:46px;border-radius:50%;border:0;cursor:crosshair;background:radial-gradient(circle,#fff 0 12%,#ef4b36 13% 40%,#fff 41% 55%,#ef4b36 56%)}
+.hint{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:var(--bg);border:1px solid var(--ln);padding:8px 14px;pointer-events:none;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
+.ov{position:absolute;inset:0;background:rgba(0,0,0,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff}
+#modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);align-items:center;justify-content:center}
+.mb{background:var(--bg);border:1px solid var(--ln);padding:30px;display:flex;flex-direction:column;gap:16px;align-items:center;max-width:90%}
+#toasts{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:200;pointer-events:none}
+.toast{background:#fff;color:#000;padding:12px 18px;font-weight:700;animation:up .25s}@keyframes up{from{opacity:0;transform:translateY(10px)}}
+@media(max-width:800px){header{height:auto;flex-wrap:wrap}.logo{height:56px;padding:0 16px;border:0}.nav{display:none}.me{flex:1 1 100%;height:52px;border-top:1px solid var(--ln)}.me>*{padding:0 14px}.me>:first-child{border-left:0;flex:1}.tools{padding:16px}#q{margin:0;width:100%}main{padding:0 16px 20px}.grid{grid-template-columns:1fr}footer{padding:12px 16px}.lk{padding:0 14px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
-
-    <div id="sidebar">
-        <h2 style="color:var(--p)">GameHub Pro</h2>
-        <div class="stat">Név: <span id="u-name">...</span></div>
-        <div class="stat">Pénz: <span id="u-coins">0</span> 💰</div>
-        <div class="stat">Szint: <span id="u-lvl">1</span> ⭐</div>
-        <hr style="width:100%; border:0; border-top:1px solid #333; margin: 20px 0;">
-        <button class="btn" onclick="resetData()" style="background:#444">Adatok törlése</button>
-    </div>
-
-    <div id="main">
-        <!-- ÚJ RÉSZ: Külső Játékok -->
-        <h1>Játékok</h1>
-        <div class="grid" style="margin-bottom: 40px;">
-            <div class="card" onclick="window.open('https://fluxi.hu/jatek1', '_blank')">
-                <span class="badge badge-link">LINK</span>
-                <div class="icon">🌍</div>
-                <strong>Shoot Learn</strong>
-            </div>
-            <div class="card" onclick="window.open('https://fluxi.hu/jatek2', '_blank')">
-                <span class="badge badge-link">LINK</span>
-                <div class="icon">🎮</div>
-                <strong>természeti tulélő</strong>
-            </div>
-        </div>
-
-        <!-- EREDETI RÉSZ: Belső Mini Játékok -->
-        <h1>mini Játékok <small style="font-size: 0.5em; color: #666;">v3.0.0 BETA</small></h1>
-        <div class="grid" id="game-list"></div>
-    </div>
-
-    <div id="game-view">
-        <div id="game-header">
-            <h2 id="game-title">Játék</h2>
-            <button class="btn" onclick="exitGame()">KILÉPÉS (ESC)</button>
-        </div>
-        <div id="canvas-container"></div>
-    </div>
-
+<div id="app">
+<header>
+<div class="logo">GAMEHUB<b>PRO</b></div>
+<div class="nav"><span class="pill">LAUNCHER</span><span class="mono mut">Mini game suite · Üdv, <span id="hi"></span></span></div>
+<div class="me"><div><div class="av" id="av">?</div><div><div id="un">…</div><small id="lv">Szint 1</small></div></div><div class="cc">💰 <b id="co">0</b></div><button class="lk" id="rs">Adatok törlése</button></div>
+<div class="bar"><i id="xp"></i></div>
+</header>
+<div class="tools"><div class="tabs" id="tabs"></div><input id="q" type="search" placeholder="Játékok keresése" aria-label="Játékok keresése"></div>
+<main><div class="grid" id="gl"></div></main>
+<footer class="mono"><span>GameHub Pro · Játékok és külső linkek</span><span>Adatok: helyben mentve</span></footer>
+</div>
+<div id="gv"><div id="gh"><h2 id="gt">Játék</h2><button class="btn ghost" id="ex">Kilépés (Esc)</button></div><div id="box"></div></div>
+<div id="modal"></div><div id="toasts"></div>
 <script>
-    // --- ADATKEZELÉS ---
-    let user = { name: "Player", coins: 0, lvl: 1, lastUpdate: Date.now() };
+const $=s=>document.querySelector(s),K='r_web_final';
+let U={name:'',coins:0,xp:0,ty:0,cp:1};
+try{Object.assign(U,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
+const lvlOf=x=>Math.floor(Math.sqrt(x/40))+1;
+function save(){try{localStorage.setItem(K,JSON.stringify(U))}catch(e){}ui()}
+function earn(n){const l=lvlOf(U.xp);U.coins+=n;if(n>0)U.xp+=n;save();if(lvlOf(U.xp)>l)toast('⭐ Szintet léptél!')}
+function ui(){const l=lvlOf(U.xp),a=40*(l-1)**2,b=40*l*l;$('#un').textContent=U.name||'…';$('#hi').textContent=U.name;$('#av').textContent=(U.name[0]||'?').toUpperCase();$('#co').textContent=Math.floor(U.coins).toLocaleString('hu-HU');$('#lv').textContent='Szint '+l;$('#xp').style.width=(U.xp-a)/(b-a)*100+'%'}
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;$('#toasts').append(e);setTimeout(()=>e.remove(),2200)}
+function modal(h){const m=$('#modal');m.innerHTML='<div class="mb">'+h+'</div>';m.style.display='flex';return m}
+function askName(){const m=modal('<h2>Hogy hívjanak?</h2><input id="ni" maxlength="16" placeholder="Neved"><button class="btn" id="nb">Kezdés</button>'),go=()=>{U.name=$('#ni').value.trim()||'Játékos';m.style.display='none';save()};$('#nb').onclick=go;$('#ni').onkeydown=e=>e.key=='Enter'&&go();$('#ni').focus()}
+$('#rs').onclick=()=>{const m=modal('<h2>Törölsz mindent?</h2><p class="sub">Ez nem vonható vissza.</p><div class="row"><button class="btn ghost" id="n">Mégse</button><button class="btn" id="y">Törlés</button></div>');$('#n').onclick=()=>m.style.display='none';$('#y').onclick=()=>{try{localStorage.removeItem(K)}catch(e){}location.reload()}};
 
-    function save() { localStorage.setItem('r_web_final', JSON.stringify(user)); updateUI(); }
-    function load() {
-        const d = localStorage.getItem('r_web_final');
-        if(d) user = JSON.parse(d);
-        else user.name = prompt("Hogy hívjanak?") || "Játékos";
-        updateUI();
-    }
-    function updateUI() {
-        document.getElementById('u-name').innerText = user.name;
-        document.getElementById('u-coins').innerText = Math.floor(user.coins);
-        document.getElementById('u-lvl').innerText = user.lvl;
-    }
-    function resetData() { if(confirm("Törölsz mindent?")) { localStorage.clear(); location.reload(); } }
+/* játékkezelő: minden időzítő/eseményfigyelő itt gyűlik, kilépéskor törlődik */
+let kill=[];
+const on=(t,e,f)=>{t.addEventListener(e,f);kill.push(()=>t.removeEventListener(e,f))};
+const later=(f,ms)=>{const i=setTimeout(f,ms);kill.push(()=>clearTimeout(i));return i};
+const every=(f,ms)=>{const i=setInterval(f,ms);kill.push(()=>clearInterval(i));return i};
+const loop=f=>{let r,p=performance.now();const t=n=>{f(Math.max(0,Math.min((n-p)/1000,.05)));p=n;r=requestAnimationFrame(t)};r=requestAnimationFrame(t);kill.push(()=>cancelAnimationFrame(r))};
+const end=(b,h,a)=>{b.innerHTML=h+'<button class="btn" id="ag">Újra ↻</button>';$('#ag').onclick=a};
+function stop(){kill.forEach(f=>f());kill=[];const b=$('#box');b.innerHTML='';b.className=''}
+function launch(id){stop();const g=G.find(x=>x.id==id);$('#gt').textContent=g.i+' '+g.t;$('#gv').style.display='flex';g.f($('#box'),()=>launch(id))}
+function exit(){stop();$('#gv').style.display='none'}
+$('#ex').onclick=exit;document.addEventListener('keydown',e=>{if(e.key=='Escape'&&$('#gv').style.display=='flex')exit()});
 
-    // --- JÁTÉK LISTA ---
-    const games = [
-        { id: 'obby3d', title: "3D Lava Jump", icon: "🌋", type: "3D" },
-        { id: 'space3d', title: "3D Starship", icon: "🚀", type: "3D" },
-        { id: 'clicker', title: "Coin Clicker", icon: "🖱️", type: "2D" },
-        { id: 'math', title: "Quick Math", icon: "🧮", type: "2D" },
-        { id: 'react', title: "Reaction Test", icon: "⚡", type: "2D" },
-        { id: 'guess', title: "Number Hunter", icon: "🎲", type: "2D" },
-        { id: 'box', title: "Skin Unboxer", icon: "📦", type: "2D" },
-        { id: 'memory', title: "Memory Pro", icon: "🧠", type: "2D" },
-        { id: 'tycoon', title: "Auto Tycoon", icon: "🏗️", type: "2D" },
-        { id: 'color', title: "Color Rush", icon: "🌈", type: "2D" },
-        { id: 'dice', title: "Dice Gamble", icon: "🎰", type: "2D" },
-        { id: 'aim', title: "Aim Trainer", icon: "🎯", type: "2D" }
-    ];
+function three(b){const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(70,1,.1,500),r=new THREE.WebGLRenderer({antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,2));b.classList.add('b3');b.append(r.domElement);const rs=()=>{const w=b.clientWidth,h=b.clientHeight;r.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()};rs();on(window,'resize',rs);kill.push(()=>r.dispose());return{sc,cam,r}}
 
-    function init() {
-        load();
-        const container = document.getElementById('game-list');
-        games.forEach(g => {
-            const el = document.createElement('div');
-            el.className = 'card';
-            el.onclick = () => launch(g.id);
-            el.innerHTML = `
-                ${g.type === '3D' ? '<span class="badge">3D</span>' : ''}
-                <div class="icon">${g.icon}</div>
-                <strong>${g.title}</strong>
-            `;
-            container.appendChild(el);
-        });
-    }
+/* 1. 3D Lava Jump */
+function obby(b){const{sc,cam,r}=three(b),N=14,P=[],k={};sc.background=new THREE.Color(0x2a0a08);sc.fog=new THREE.Fog(0x2a0a08,15,60);
+sc.add(new THREE.HemisphereLight(0xffffff,0xff3300,.9));const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(5,10,5);sc.add(dl);
+const lava=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshBasicMaterial({color:0xff4510}));lava.rotation.x=-Math.PI/2;lava.position.y=-3;sc.add(lava);
+for(let i=0;i<N;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(3.4,.5,3.4),new THREE.MeshPhongMaterial({color:i==N-1?0xffd23f:0x4b4f70}));m.position.set(i?Math.sin(i*1.7)*3.2:0,-.25,-i*5.4);sc.add(m);P.push(m.position)}
+const pl=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshPhongMaterial({color:0x3ddc84}));sc.add(pl);
+b.insertAdjacentHTML('beforeend','<div class="hint">WASD / nyilak: mozgás · Szóköz: ugrás · érj az arany lapra!</div>');
+const kd=e=>{k[e.code]=1;if(e.code=='Space'||e.code.startsWith('Arrow'))e.preventDefault()};on(window,'keydown',kd);on(window,'keyup',e=>k[e.code]=0);
+let vy=0,gr=0;const re=()=>{pl.position.set(0,.5,0);vy=0};re();
+loop(dt=>{const p=pl.position,ax=(k.KeyD||k.ArrowRight?1:0)-(k.KeyA||k.ArrowLeft?1:0),az=(k.KeyS||k.ArrowDown?1:0)-(k.KeyW||k.ArrowUp?1:0);
+p.x+=ax*8*dt;p.z+=az*8*dt;if(k.Space&&gr)vy=10;vy-=26*dt;p.y+=vy*dt;gr=0;
+for(const q of P)if(vy<=0&&Math.abs(p.x-q.x)<2.1&&Math.abs(p.z-q.z)<2.1&&p.y-.5<=0&&p.y-.5>-.8){p.y=.5;vy=0;gr=1}
+if(p.y<-5)re();const l=P[N-1];if(gr&&Math.abs(p.x-l.x)<2&&Math.abs(p.z-l.z)<2){earn(120);toast('🏆 Célba értél! +120 💰');re()}
+cam.position.set(p.x*.6,p.y+4.5,p.z+8);cam.lookAt(p.x,p.y,p.z-3);r.render(sc,cam)})}
 
-    // --- JÁTÉK INDÍTÓ ---
-    function launch(id) {
-        document.getElementById('game-view').style.display = 'flex';
-        document.getElementById('game-title').innerText = id.toUpperCase();
-        const container = document.getElementById('canvas-container');
-        container.innerHTML = "";
-        
-        switch(id) {
-            case 'obby3d': startObby3D(container); break;
-            case 'space3d': startSpace3D(container); break;
-            case 'clicker': startClicker(container); break;
-            case 'math': startMath(container); break;
-            case 'react': startReact(container); break;
-            case 'guess': startGuess(container); break;
-            case 'box': startBox(container); break;
-            case 'memory': startMemory(container); break;
-            case 'tycoon': startTycoon(container); break;
-            case 'color': startColor(container); break;
-            case 'dice': startDice(container); break;
-            case 'aim': startAim(container); break;
-        }
-    }
+/* 2. 3D Starship */
+function ship(b,again){const{sc,cam,r}=three(b),pos=new Float32Array(900),g=new THREE.BufferGeometry(),A=[];sc.background=new THREE.Color(0x05050d);cam.position.set(0,0,12);
+sc.add(new THREE.AmbientLight(0x8890ff,.8));const dl=new THREE.DirectionalLight(0xffffff,1);dl.position.set(3,5,8);sc.add(dl);
+for(let i=0;i<900;i+=3){pos[i]=(Math.random()-.5)*90;pos[i+1]=(Math.random()-.5)*60;pos[i+2]=-Math.random()*100}
+g.setAttribute('position',new THREE.BufferAttribute(pos,3));sc.add(new THREE.Points(g,new THREE.PointsMaterial({size:.3})));
+const sh=new THREE.Mesh(new THREE.ConeGeometry(.6,1.8,8),new THREE.MeshPhongMaterial({color:0xff6a3d})),ag=new THREE.IcosahedronGeometry(1,0),am=new THREE.MeshPhongMaterial({color:0x8a7f9a,flatShading:true});sh.rotation.x=-Math.PI/2;sc.add(sh);
+b.insertAdjacentHTML('beforeend','<div class="hint" id="hud">Mozgasd az egeret / ujjadat – kerüld ki a kőzeteket!</div>');
+let tx=0,ty=0,t=0,sp=22,dead=0;const mv=e=>{const R=b.getBoundingClientRect();tx=((e.clientX-R.left)/R.width-.5)*16;ty=-((e.clientY-R.top)/R.height-.5)*10};on(b,'pointermove',mv);on(b,'pointerdown',mv);
+loop(dt=>{if(!dead){t+=dt;sp=22+t*.8;const f=Math.min(1,dt*8);sh.position.x+=(tx-sh.position.x)*f;sh.position.y+=(ty-sh.position.y)*f;
+if(Math.random()<dt*(1.5+t*.05)){const a=new THREE.Mesh(ag,am);a.scale.setScalar(.6+Math.random()*1.1);a.position.set((Math.random()-.5)*16,(Math.random()-.5)*10,-90);sc.add(a);A.push(a)}
+for(let i=A.length-1;i>=0;i--){const a=A[i];a.position.z+=sp*dt;a.rotation.x+=dt;a.rotation.y+=dt*.7;
+if(a.position.z>14){sc.remove(a);A.splice(i,1)}else if(!dead&&a.position.distanceTo(sh.position)<a.scale.x*.9+.5){dead=1;const c=Math.floor(t);earn(c);b.insertAdjacentHTML('beforeend',`<div class="ov"><div class="big">💥 Vége!</div><p>${t.toFixed(1)} mp · +${c} 💰</p><button class="btn" id="ag">Újra ↻</button></div>`);$('#ag').onclick=again}}
+for(let i=2;i<900;i+=3){pos[i]+=sp*.6*dt;if(pos[i]>12)pos[i]-=112}g.attributes.position.needsUpdate=true;$('#hud').textContent='⏱ '+t.toFixed(1)+' mp'}
+r.render(sc,cam)})}
 
-    function exitGame() { 
-        document.getElementById('game-view').style.display = 'none'; 
-        location.reload(); // Egyszerűbb memória takarítás
-    }
+/* 3. Coin Clicker */
+function clicker(b){const c=()=>25*U.cp**2;b.innerHTML='<div class="big" id="ci"></div><button class="coin" id="cb" aria-label="Kattints">💰</button><button class="btn" id="cu"></button>';
+const r=()=>{$('#cu').textContent=`Erősebb kattintás (${U.cp+1}×) · ${c()} 💰`;$('#ci').textContent=`+${U.cp} / kattintás`};r();
+$('#cb').onclick=()=>earn(U.cp);$('#cu').onclick=()=>{if(U.coins<c())return toast('Nincs elég pénzed!');earn(-c());U.cp++;save();r()}}
 
-    // --- JÁTÉKOK LOGIKÁJA ---
+/* 4. Quick Math */
+function math(b){let s=0,a;const q=()=>{const o=['+','−','×'][Math.random()*3|0];let x=1+(Math.random()*(o=='×'?11:49)|0),y=1+(Math.random()*(o=='×'?11:49)|0);if(o=='−'&&x<y)[x,y]=[y,x];a=o=='+'?x+y:o=='−'?x-y:x*y;
+b.innerHTML=`<div class="sub">Széria: ${s} 🔥</div><div class="big">${x} ${o} ${y} = ?</div><input id="i" type="number" inputmode="numeric"><button class="btn" id="ok">OK</button>`;
+const i=$('#i'),go=()=>{if(i.value==='')return;if(+i.value===a){s++;earn(15+s*5);toast('Helyes! 🎉')}else{s=0;toast('Rossz, ez volt: '+a)}q()};$('#ok').onclick=go;i.onkeydown=e=>e.key=='Enter'&&go();i.focus()};q()}
 
-    // 1. 3D OBBY (THREE.JS)
-    function startObby3D(cont) {
-        const scene = new THREE.Scene(); scene.background = new THREE.Color(0x200000);
-        const cam = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer(); renderer.setSize(cont.clientWidth, cont.clientHeight);
-        cont.appendChild(renderer.domElement);
-        
-        const player = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshPhongMaterial({color: 0x00ff00}));
-        player.position.y = 1; scene.add(player);
-        
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshPhongMaterial({color: 0x111111}));
-        floor.rotation.x = -Math.PI/2; scene.add(floor);
+/* 5. Reaction Test */
+function react(b){b.innerHTML='<div class="rx idle" id="rx"></div>';const r=$('#rx');let st=0,t0,to;
+const set=(c,h)=>{r.className='rx '+c;r.innerHTML=h},idle=h=>{st=0;set('idle',h+'<small class="sub">Kattints az indításhoz</small>')};idle('<div class="big">⚡ Reakcióteszt</div>');
+r.onclick=()=>{if(st==0){st=1;set('red','<div class="big">Várj a zöldre…</div>');to=later(()=>{st=2;t0=performance.now();set('green','<div class="big">MOST!</div>')},1500+Math.random()*3000)}
+else if(st==1){clearTimeout(to);idle('<div class="big">Túl korán! 😅</div>')}
+else{const d=Math.round(performance.now()-t0),g=Math.max(0,Math.round((500-d)/5));earn(g);idle(`<div class="big">${d} ms</div><p>+${g} 💰</p>`)}}}
 
-        const light = new THREE.DirectionalLight(0xffffff, 1); light.position.set(5,10,5); scene.add(light);
-        cam.position.set(0, 5, 10); cam.lookAt(player.position);
+/* 6. Number Hunter */
+function guess(b,again){const n=1+(Math.random()*100|0);let t=7;b.innerHTML='<div class="big">Gondoltam egy számra 1–100 között</div><div class="sub" id="gm">7 próbálkozásod van</div><input id="i" type="number" inputmode="numeric"><button class="btn" id="ok">Tipp</button>';
+const i=$('#i'),go=()=>{const v=+i.value;if(!v)return;i.value='';t--;
+if(v==n){const g=t*25+25;earn(g);end(b,`<div class="big">🎉 Eltaláltad: ${n}</div><p>+${g} 💰</p>`,again)}
+else if(!t)end(b,`<div class="big">Vége 😬</div><p>A szám ${n} volt.</p>`,again)
+else $('#gm').textContent=`${v<n?'Nagyobb ⬆️':'Kisebb ⬇️'} · még ${t} próba`};
+$('#ok').onclick=go;i.onkeydown=e=>e.key=='Enter'&&go();i.focus()}
 
-        function anim() { requestAnimationFrame(anim); player.rotation.y += 0.05; renderer.render(scene, cam); }
-        anim();
-        setInterval(() => { user.coins += 0.5; save(); }, 1000);
-    }
+/* 7. Skin Unboxer */
+function box(b){const P=[[10,45,'Átlagos','#9aa'],[30,30,'Ritka','#4da3ff'],[60,15,'Epikus','#b46bff'],[150,8,'Legendás','#ffb020'],[500,2,'Mítoszi','#ff3e3e']];
+b.innerHTML='<div class="bx" id="bx">📦</div><div class="big" id="bt">Mystery Box</div><button class="btn" id="bo">Kinyit · 50 💰</button>';
+$('#bo').onclick=()=>{if(U.coins<50)return toast('Nincs elég pénzed!');earn(-50);let r=Math.random()*100,p;for(p of P)if((r-=p[1])<0)break;earn(p[0]);
+const x=$('#bx');x.textContent='🎁';x.animate([{transform:'scale(1.4) rotate(-12deg)'},{transform:'none'}],{duration:350});$('#bt').innerHTML=`<span style="color:${p[3]}">${p[2]}!</span> +${p[0]} 💰`}}
 
-    // 2. 3D SPACE
-    function startSpace3D(cont) {
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(75, cont.clientWidth/cont.clientHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer(); renderer.setSize(cont.clientWidth, cont.clientHeight);
-        cont.appendChild(renderer.domElement);
-        
-        const stars = new THREE.Group();
-        for(let i=0; i<1000; i++) {
-            const s = new THREE.Mesh(new THREE.SphereGeometry(0.1), new THREE.MeshBasicMaterial({color: 0xffffff}));
-            s.position.set(Math.random()*200-100, Math.random()*200-100, Math.random()*200-100);
-            stars.add(s);
-        }
-        scene.add(stars); cam.position.z = 5;
+/* 8. Memory Pro */
+function memory(b,again){const E=['🍎','🚀','🎸','🐱','🌵','💎','⚡','🍕'],c=[...E,...E].sort(()=>Math.random()-.5);let o=[],m=0,f=0,lock=0;
+b.innerHTML='<div class="sub" id="mv">Lépések: 0</div><div class="mg" id="mg"></div>';
+c.forEach(e=>{const d=document.createElement('button');d.className='mc';d.innerHTML='<span>'+e+'</span>';d.onclick=()=>{if(lock||d.classList.contains('up'))return;d.classList.add('up');o.push(d);
+if(o.length<2)return;m++;$('#mv').textContent='Lépések: '+m;lock=1;const[x,y]=o;
+if(x.textContent==y.textContent){f++;o=[];lock=0;x.classList.add('ok');y.classList.add('ok');if(f==8){const g=Math.max(30,200-m*8);earn(g);later(()=>end(b,`<div class="big">🧠 Kész! ${m} lépés</div><p>+${g} 💰</p>`,again),600)}}
+else later(()=>{x.classList.remove('up');y.classList.remove('up');o=[];lock=0},700)};$('#mg').append(d)})}
 
-        function anim() { requestAnimationFrame(anim); stars.rotation.x += 0.002; renderer.render(scene, cam); }
-        anim();
-        setInterval(() => { user.coins += 1; save(); }, 1000);
-    }
+/* 9. Auto Tycoon */
+function tycoon(b){const c=()=>Math.round(100*1.45**U.ty);b.innerHTML='<div class="big">🏗️ Tycoon</div><div class="sub" id="ti"></div><button class="btn" id="tb"></button>';
+const r=()=>{$('#ti').textContent=`Szint ${U.ty} · +${(U.ty*.5).toFixed(1)} 💰 / mp (a játékon kívül is termel)`;$('#tb').textContent=`Fejlesztés · ${c()} 💰`};r();
+$('#tb').onclick=()=>{if(U.coins<c())return toast('Nincs elég pénzed!');earn(-c());U.ty++;save();r()}}
 
-    // 3. CLICKER
-    function startClicker(cont) {
-        cont.innerHTML = `<h1 id="c-count" style="font-size:100px; cursor:pointer">💰</h1>`;
-        cont.onclick = () => { user.coins++; save(); };
-    }
+/* 10. Color Rush */
+function color(b,again){const C=[['PIROS','#ff4d4d'],['KÉK','#4d8dff'],['SÁRGA','#ffd23f'],['ZÖLD','#3ddc84']];let s=0,t=20,tg,iv;
+const q=()=>{const w=C[Math.random()*4|0];tg=C[Math.random()*4|0];b.innerHTML=`<div class="sub" id="ct"></div><div class="sub">Milyen SZÍNNEL van írva a szó?</div><div class="big" style="color:${tg[1]}">${w[0]}</div><div class="row">${C.map((c,i)=>`<button class="sw" data-i="${i}" style="background:${c[1]}" aria-label="${c[0]}"></button>`).join('')}</div>`;
+b.querySelectorAll('.sw').forEach(x=>x.onclick=()=>{if(C[x.dataset.i]==tg){s++;earn(8)}else s=Math.max(0,s-1);q()});tick()},tick=()=>{const e=$('#ct');if(e)e.textContent=`⏱ ${t} mp · Pont: ${s}`};
+q();iv=every(()=>{t--;tick();if(t<=0){clearInterval(iv);end(b,`<div class="big">⏱ Vége! Pont: ${s}</div><p>+${s*8} 💰 megszerezve</p>`,again)}},1000)}
 
-    // 4. MATH
-    function startMath(cont) {
-        const a = Math.floor(Math.random()*20); const b = Math.floor(Math.random()*20);
-        cont.innerHTML = `<h1>Mennyi: ${a} + ${b}?</h1><input type="number" id="ans"><button class="btn" onclick="checkMath(${a+b})">OK</button>`;
-    }
-    window.checkMath = (res) => {
-        if(document.getElementById('ans').value == res) { user.coins += 50; alert("Helyes! +50 💰"); launch('math'); }
-        else { alert("Rossz!"); launch('math'); }
-        save();
-    }
+/* 11. Dice Gamble */
+function dice(b){const F='⚀⚁⚂⚃⚄⚅';let bet=10;b.innerHTML=`<div class="die" id="d">🎲</div><div class="sub">4-es vagy nagyobb dobásnál a tét ×1,8-szorosa jár vissza</div><div class="row">${[10,50,100].map(x=>`<button class="btn ghost bt" data-b="${x}">${x} 💰</button>`).join('')}</div><button class="btn" id="rl">Dobás</button><div class="big" id="dr"></div>`;
+const bs=b.querySelectorAll('.bt'),sel=()=>bs.forEach(y=>y.classList.toggle('on',+y.dataset.b==bet));sel();bs.forEach(y=>y.onclick=()=>{bet=+y.dataset.b;sel()});
+$('#rl').onclick=()=>{if(U.coins<bet)return toast('Nincs elég pénzed!');earn(-bet);const r=1+(Math.random()*6|0),w=r>3;$('#d').textContent=F[r-1];if(w)earn(Math.round(bet*1.8));$('#dr').textContent=w?`Nyertél! +${Math.round(bet*.8)} 💰`:`Vesztettél −${bet} 💰`}}
 
-    // 5. REACTION
-    function startReact(cont) {
-        cont.innerHTML = "<h1>Várj a ZÖLDRE...</h1>";
-        cont.style.background = "red";
-        setTimeout(() => {
-            cont.style.background = "green";
-            cont.innerHTML = "<h1>MOST KATTINTS!</h1>";
-            const start = Date.now();
-            cont.onclick = () => {
-                const diff = Date.now() - start;
-                user.coins += Math.max(0, 500 - diff);
-                alert(diff + "ms! Kaptál pénzt.");
-                save(); launch('react');
-            };
-        }, 2000 + Math.random()*3000);
-    }
+/* 12. Aim Trainer */
+function aim(b,again){let s=0,t=30,iv;b.innerHTML='<div class="sub" id="ai"></div><div class="arena" id="ar"></div>';const ar=$('#ar'),u=()=>$('#ai').textContent=`⏱ ${t} mp · Találat: ${s}`;u();
+const sp=()=>{ar.innerHTML='';const d=document.createElement('button');d.className='tg';d.style.left=Math.random()*90+'%';d.style.top=Math.random()*88+'%';d.setAttribute('aria-label','Cél');d.onpointerdown=()=>{s++;earn(4);u();sp()};ar.append(d)};sp();
+iv=every(()=>{t--;u();if(t<=0){clearInterval(iv);end(b,`<div class="big">🎯 ${s} találat</div><p>+${s*4} 💰</p>`,again)}},1000)}
 
-    // 6. GUESS
-    function startGuess(cont) {
-        const target = Math.floor(Math.random()*10);
-        cont.innerHTML = `<h1>Gondoltam egy számra 0-9 között.</h1><input type="number" id="g-in"><button class="btn" onclick="checkGuess(${target})">Tipp</button>`;
-    }
-    window.checkGuess = (t) => {
-        if(document.getElementById('g-in').value == t) { user.coins += 100; alert("Nyertél!"); }
-        else alert("Nem! Az a " + t + " volt.");
-        save(); launch('guess');
-    }
-
-    // 7. BOX UNBOXER
-    function startBox(cont) {
-        cont.innerHTML = `<h1>📦 Mystery Box</h1><button class="btn" onclick="openBox()">Kinyit (50 💰)</button>`;
-    }
-    window.openBox = () => {
-        if(user.coins < 50) return alert("Nincs elég pénzed!");
-        user.coins -= 50;
-        const prize = Math.random() > 0.8 ? 500 : 10;
-        user.coins += prize;
-        alert(prize > 50 ? "LEGENDÁS! Kaptál " + prize : "Gagyi... kaptál " + prize);
-        save(); launch('box');
-    }
-
-    // 8. MEMORY
-    function startMemory(cont) {
-        cont.innerHTML = "<h1>Keresd a párokat!</h1>";
-        const grid = document.createElement('div');
-        grid.style.display = "grid"; grid.style.gridTemplateColumns = "repeat(4, 60px)"; grid.style.gap = "10px";
-        for(let i=0; i<8; i++) {
-            const b = document.createElement('button'); b.className="btn"; b.innerText="?";
-            b.onclick = () => { b.innerText = "X"; user.coins += 5; save(); };
-            grid.appendChild(b);
-        }
-        cont.appendChild(grid);
-    }
-
-    // 9. TYCOON
-    function startTycoon(cont) {
-        cont.innerHTML = `<h1>Tycoon Építő</h1><p>Minden másodpercben kapsz pénzt.</p>
-        <button class="btn" onclick="buyTycoon()">Fejlesztés (Ár: ${user.lvl*200})</button>`;
-    }
-    window.buyTycoon = () => {
-        if(user.coins >= user.lvl*200) { user.coins -= user.lvl*200; user.lvl++; save(); launch('tycoon'); }
-    }
-    setInterval(() => { user.coins += (user.lvl * 0.1); updateUI(); }, 1000);
-
-    // 10. COLOR RUSH
-    function startColor(cont) {
-        const colors = ["red", "blue", "yellow", "green"];
-        const target = colors[Math.floor(Math.random()*4)];
-        cont.innerHTML = `<h1 style="color:${colors[Math.floor(Math.random()*4)]}">Kattints a(z) ${target} gombra!</h1>`;
-        colors.forEach(c => {
-            const b = document.createElement('button'); b.style.background = c; b.style.width="50px"; b.style.height="50px";
-            b.onclick = () => { if(c === target) user.coins += 20; save(); launch('color'); };
-            cont.appendChild(b);
-        });
-    }
-
-    // 11. DICE
-    function startDice(cont) {
-        cont.innerHTML = `<h1>Kockadobás</h1><button class="btn" onclick="roll()">Dobás (10 💰)</button>`;
-    }
-    window.roll = () => {
-        if(user.coins < 10) return;
-        user.coins -= 10;
-        const r = Math.ceil(Math.random()*6);
-        if(r > 3) user.coins += 30;
-        alert("Dobás: " + r + (r>3 ? " - NYERTÉL!" : " - VESZTETTÉL"));
-        save(); launch('dice');
-    }
-
-    // 12. AIM TRAINER
-    function startAim(cont) {
-        cont.innerHTML = "<h1>Kattints a körre!</h1>";
-        const target = document.createElement('div');
-        target.style.width="40px"; target.style.height="40px"; target.style.background="red"; target.style.borderRadius="50%";
-        target.style.position="absolute";
-        target.style.top = Math.random()*80 + "%"; target.style.left = Math.random()*80 + "%";
-        target.onclick = () => { user.coins += 10; save(); startAim(cont); };
-        cont.appendChild(target);
-    }
-
-    init();
+const G=[
+{id:'obby',t:'3D Lava Jump',i:'🌋',k:'3D',d:'Ugorj át a láván',f:obby},{id:'ship',t:'3D Starship',i:'🚀',k:'3D',d:'Kerüld ki a kőzeteket',f:ship},
+{id:'clicker',t:'Coin Clicker',i:'🖱️',d:'Kattints és fejlődj',f:clicker},{id:'math',t:'Quick Math',i:'🧮',d:'Számolj gyorsan',f:math},
+{id:'react',t:'Reaction Test',i:'⚡',d:'Mérd a reflexed',f:react},{id:'guess',t:'Number Hunter',i:'🎲',d:'Találd ki a számot',f:guess},
+{id:'box',t:'Skin Unboxer',i:'📦',d:'Nyiss ládákat',f:box},{id:'memory',t:'Memory Pro',i:'🧠',d:'Keresd a párokat',f:memory},
+{id:'tycoon',t:'Auto Tycoon',i:'🏗️',d:'Passzív bevétel',f:tycoon},{id:'color',t:'Color Rush',i:'🌈',d:'Szín vs. szó',f:color},
+{id:'dice',t:'Dice Gamble',i:'🎰',d:'Kockáztass okosan',f:dice},{id:'aim',t:'Aim Trainer',i:'🎯',d:'30 mp, minél több cél',f:aim}];
+const L=[{t:'Shoot Learn',i:'🌍',d:'Külső játék a fluxi.hu oldalon',h:'https://fluxi.hu/jatek1'},{t:'Természeti túlélő',i:'🌲',d:'Külső játék a fluxi.hu oldalon',h:'https://fluxi.hu/jatek2'}];
+const ALL=[...L.map(x=>({...x,c:'link'})),...G.map(x=>({...x,c:x.k?'3d':'mini'}))],PAL=['#2f7bff','#ef4b36','#8b5cf6','#f5a524','#22c08a','#ec4899','#84cc16','#4a63f0','#f97316','#14b8a6','#38a8f0','#06b6d4','#34d399','#e879f9'];
+const TAB=[['all','Összes'],['3d','3D'],['mini','Mini'],['link','Linkek']],KIND={link:'Külső link ↗','3d':'3D játék',mini:'Mini játék'};let flt='all';
+function render(){const q=$('#q').value.trim().toLowerCase(),gl=$('#gl');gl.innerHTML='';
+$('#tabs').innerHTML=TAB.map(t=>`<button class="${t[0]==flt?'on':''}" data-f="${t[0]}">${t[1]}<span>${ALL.filter(g=>t[0]=='all'||g.c==t[0]).length}</span></button>`).join('');
+$('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{flt=b.dataset.f;render()});
+ALL.forEach((g,n)=>{if((flt!='all'&&g.c!=flt)||(q&&!(g.t+' '+g.d).toLowerCase().includes(q)))return;const col=PAL[n%PAL.length],w=g.t.split(' '),e=document.createElement('div');e.className='card';
+e.innerHTML=`<div class="top"><span class="no" style="background:${col}">${String(n+1).padStart(2,'0')}</span><span class="mono mut">${KIND[g.c]}</span></div><div class="cb"><div class="hd"><div class="ic" style="background:${col}">${g.i}</div><div><div class="nm">${w[0]} <span style="color:${col}">${w.slice(1).join(' ')}</span>${g.c=='3d'?'<em>3D</em>':''}</div><div class="ds">${g.d}</div></div></div><span class="st ${g.h?'g':''}">${g.h?'Online':'Játszható'}</span><div class="mt">Típus: ${KIND[g.c].replace(' ↗','')}</div>${g.h?`<a class="btn" href="${g.h}" target="_blank" rel="noopener">Megnyitás ↗</a>`:'<button class="btn">Indítás</button>'}</div>`;
+const bt=e.querySelector('button.btn');if(bt)bt.onclick=()=>launch(g.id);gl.append(e)});
+if(!gl.children.length)gl.innerHTML='<div class="empty mono">Nincs találat.</div>'}
+$('#q').oninput=render;render();
+setInterval(()=>{if(U.ty)earn(U.ty*.5)},1000);
+ui();if(!U.name)askName();
 </script>
 </body>
 </html>
