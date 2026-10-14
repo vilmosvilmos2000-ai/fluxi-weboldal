@@ -5,337 +5,189 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crystal Client – Minecraft launcher download</title>
 <meta name="description" content="Crystal Client – our own Minecraft launcher with 40 mods, offline play and bundled Java. Download for Windows.">
-<meta name="theme-color" content="#0a0820">
+<meta name="theme-color" content="#0d0e12">
 <link rel="icon" type="image/png" href="icon.png">
 <style>
   :root{
-    --bg:#07061a;--panel:rgba(38,40,86,.42);--panel2:rgba(30,32,70,.55);
-    --line:rgba(150,160,255,.16);--line2:rgba(150,160,255,.30);
-    --txt:#f1f4ff;--muted:#a6aed9;
-    --a1:#5b6cf7;--a2:#a855f7;--a3:#4cd2fa;--pink:#cb91ff;
-    --good:#3ae7a0;--warn:#facd50;--danger:#ff6484;
-    --radius:22px;
+    --bg:#0d0e12;--panel:#14161c;--line:#2a2d35;--txt:#f4f5f7;--muted:#8c909b;--acc:#4cd2fa;
+    --c1:#5b6cf7;--c2:#a855f7;--c3:#4cd2fa;--c4:#3ae7a0;--c5:#facd50;--c6:#ff6484;
+    --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    --mono:"JetBrains Mono","Cascadia Mono","SF Mono",ui-monospace,Consolas,monospace;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:86px}
-  body{
-    font-family:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;
-    color:var(--txt);min-height:100vh;line-height:1.55;overflow-x:hidden;
-    background:var(--bg);
-  }
-  body::before{
-    content:"";position:fixed;inset:-20%;z-index:-2;pointer-events:none;
-    background:
-      radial-gradient(760px 520px at 18% 12%, rgba(168,85,247,.42), transparent 62%),
-      radial-gradient(820px 560px at 84% 4%, rgba(91,108,247,.40), transparent 60%),
-      radial-gradient(900px 620px at 50% 108%, rgba(76,210,250,.20), transparent 62%),
-      linear-gradient(180deg,#0b0926,#06051a 60%,#050414);
-  }
-  body::after{
-    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
-    background-image:
-      radial-gradient(1px 1px at 18% 22%, rgba(255,255,255,.55), transparent),
-      radial-gradient(1px 1px at 72% 12%, rgba(255,255,255,.40), transparent),
-      radial-gradient(1px 1px at 40% 68%, rgba(255,255,255,.35), transparent),
-      radial-gradient(1px 1px at 88% 62%, rgba(255,255,255,.45), transparent),
-      radial-gradient(1px 1px at 8% 82%, rgba(255,255,255,.30), transparent);
-    background-size:520px 520px,640px 640px,700px 700px,460px 460px,580px 580px;
-    animation:twinkle 9s ease-in-out infinite alternate;
-  }
-  @keyframes twinkle{from{opacity:.32}to{opacity:.62}}
-  a{color:inherit}
-  .wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+  html{scroll-behavior:smooth;scroll-padding-top:70px}
+  body{background:var(--bg);color:var(--txt);font-family:var(--sans);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+  .dim{font:500 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .wrap{width:min(1120px,100% - 44px);margin-inline:auto}
 
-  /* ---------- nav ---------- */
-  header{
-    position:sticky;top:0;z-index:50;backdrop-filter:blur(18px) saturate(140%);
-    -webkit-backdrop-filter:blur(18px) saturate(140%);
-    background:linear-gradient(180deg,rgba(10,9,32,.86),rgba(10,9,32,.42));
-    border-bottom:1px solid var(--line);
-  }
-  .nav{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 0}
-  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2.4px;font-size:14px;text-decoration:none}
-  .mark{
-    width:40px;height:40px;border-radius:12px;display:block;object-fit:cover;
-    background:linear-gradient(135deg,var(--a2),var(--a1));
-    box-shadow:0 10px 26px rgba(168,85,247,.45);
-  }
-  .links{display:flex;align-items:center;gap:6px}
-  .links a{
-    text-decoration:none;color:var(--muted);font-size:14px;font-weight:600;padding:9px 14px;border-radius:12px;
-    transition:.18s;
-  }
-  .links a:hover{color:var(--txt);background:rgba(255,255,255,.08)}
-  .btn{
-    display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:14.5px;
-    padding:11px 20px;border-radius:14px;color:#fff;position:relative;overflow:hidden;
-    background:linear-gradient(135deg,var(--a1),var(--a2));
-    box-shadow:0 12px 30px rgba(124,92,247,.42),inset 0 1px 0 rgba(255,255,255,.35);
-    transition:transform .18s,box-shadow .18s;
-  }
-  .btn:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(168,85,247,.55),inset 0 1px 0 rgba(255,255,255,.45)}
-  .btn::after{
-    content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.42),transparent);
-    animation:sweep 4.2s ease-in-out infinite;
-  }
-  @keyframes sweep{0%{left:-60%}55%,100%{left:130%}}
+  /* felső sáv */
+  header{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:14px;min-height:51px;padding:0 22px}
+  .brand{align-self:stretch;display:flex;align-items:center;gap:12px;padding-right:18px;border-right:1px solid var(--line);font-size:17px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+  .mark{width:28px;height:28px;border-radius:7px;object-fit:cover;background:var(--c1)}
+  .links{flex:1;display:flex;align-items:center;gap:4px}
+  .links a:not(.btn){font:500 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:8px 10px;transition:color .15s}
+  .links a:not(.btn):hover{color:#fff}
+  .links .btn{margin-left:auto}
 
-  /* ---------- hero ---------- */
-  .hero{padding:74px 0 40px;text-align:center}
-  .chip{
-    display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:800;letter-spacing:2px;
-    text-transform:uppercase;color:var(--pink);padding:8px 16px;border-radius:999px;
-    background:rgba(168,85,247,.14);border:1px solid rgba(203,145,255,.34);
-  }
-  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 12px var(--good)}
-  h1{
-    margin:22px 0 0;font-size:clamp(40px,8.4vw,76px);line-height:1.02;font-weight:900;letter-spacing:-1px;
-    background:linear-gradient(180deg,#fff 20%,#c9b8ff 62%,var(--a2));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 12px 34px rgba(124,92,247,.35));
-  }
-  .hero p{max-width:660px;margin:20px auto 0;color:var(--muted);font-size:17px}
-  .cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center;margin-top:34px}
-  .dl{
-    display:inline-flex;align-items:center;gap:16px;text-align:left;padding:18px 30px;border-radius:20px;color:#fff;
-    background:linear-gradient(135deg,var(--a1),var(--a2));text-decoration:none;position:relative;overflow:hidden;
-    box-shadow:0 20px 46px rgba(124,92,247,.5),inset 0 1px 0 rgba(255,255,255,.4);
-    transition:transform .2s,box-shadow .2s;
-  }
-  .dl:hover{transform:translateY(-3px);box-shadow:0 26px 58px rgba(168,85,247,.6),inset 0 1px 0 rgba(255,255,255,.5)}
-  .dl::after{
-    content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
-    animation:sweep 3.6s ease-in-out infinite;
-  }
-  .dl .ico{font-size:28px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
-  .dl .t{font-weight:900;font-size:18px;letter-spacing:.2px}
-  .dl .s{font-size:12.5px;font-weight:700;opacity:.88}
-  .ghost{
-    display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:14.5px;
-    padding:16px 22px;border-radius:18px;color:var(--txt);border:1px solid var(--line2);
-    background:rgba(255,255,255,.05);transition:.18s;
-  }
-  .ghost:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
-  .fine{margin-top:20px;color:var(--muted);font-size:13.5px}
+  /* gombok */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:var(--bg);border:1px solid #fff;font:700 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:14px 20px;transition:background .15s,color .15s,border-color .15s}
+  .btn:hover{background:transparent;color:#fff}
+  .btn.sm{padding:9px 14px;font-size:11px}
+  .btn.o{background:none;color:var(--txt);border-color:var(--line)}
+  .btn.o:hover{border-color:#fff}
+  .dl{gap:16px;padding:16px 26px;text-align:left}
+  .dl .ico{font-size:22px;line-height:1}
+  .dl .s{display:block;margin-top:3px;font-weight:500;font-size:10.5px;letter-spacing:.1em;opacity:.7}
+
+  /* rács */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));padding:0 1px 1px 0}
+  .grid.g1{grid-template-columns:1fr}
+  .grid.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .cell{display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);margin:0 -1px -1px 0}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:12px;height:42px;padding:0 20px;border-bottom:1px solid var(--line)}
+  .badge{background:var(--c,var(--c1));color:var(--bg);font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 7px;white-space:nowrap}
+  .body{padding:20px;flex:1}
+  .body h3{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:8px}
+  .body p{color:var(--muted);font-size:14px;line-height:1.65}
+  .body p b,.step b{color:var(--txt)}
+  .cyc .cell:nth-child(6n+2) .badge{--c:var(--c2)}
+  .cyc .cell:nth-child(6n+3) .badge{--c:var(--c3)}
+  .cyc .cell:nth-child(6n+4) .badge{--c:var(--c4)}
+  .cyc .cell:nth-child(6n+5) .badge{--c:var(--c5)}
+  .cyc .cell:nth-child(6n+6) .badge{--c:var(--c6)}
+  .sec{margin:46px 0 16px}
+  .sec h2{font-size:clamp(24px,4vw,32px);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:8px 0}
+  .sec .lead{color:var(--muted);max-width:620px;font-size:15.5px}
+  .tag{--c:var(--c3);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 7px;font-style:normal}
+
+  /* hero */
+  .hero{padding:44px 28px 38px}
+  h1{font-size:clamp(36px,7.4vw,72px);font-weight:800;letter-spacing:-.02em;line-height:1.04}
+  h1 span{color:var(--acc)}
+  .hero p.lead{max-width:680px;margin-top:18px;color:var(--muted);font-size:17px}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:28px}
+  .fine{margin-top:18px;color:var(--muted);font-size:13.5px}
   .fine b{color:var(--txt)}
+  .stat{padding:18px 20px}
+  .stat b{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+  .stats{margin-top:22px}
 
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:46px}
-  .stat{
-    background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 16px;text-align:center;
-    backdrop-filter:blur(10px);transition:.2s;
-  }
-  .stat:hover{transform:translateY(-3px);border-color:var(--line2)}
-  .stat b{display:block;font-size:26px;font-weight:900;letter-spacing:-.5px;
-    background:linear-gradient(135deg,#fff,var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .stat span{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.6px}
-
-  /* ---------- app mockup ---------- */
-  .shot{
-    margin:56px auto 0;max-width:1000px;border-radius:24px;overflow:hidden;position:relative;
-    border:1px solid var(--line2);
-    background:linear-gradient(180deg,rgba(28,26,66,.92),rgba(12,11,34,.96));
-    box-shadow:0 40px 90px rgba(3,2,14,.65),0 0 0 1px rgba(255,255,255,.04) inset;
-  }
-  .shot::before{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(600px 260px at 78% -10%,rgba(168,85,247,.35),transparent 70%),
-               radial-gradient(500px 240px at 6% 6%,rgba(91,108,247,.3),transparent 70%);
-  }
-  .shot-bar{
-    display:flex;align-items:center;gap:14px;padding:11px 14px;position:relative;
-    border-bottom:1px solid var(--line);background:rgba(12,11,32,.7);
-  }
-  .shot-bar .t{font-weight:800;letter-spacing:2.6px;font-size:12.5px;color:var(--txt)}
-  .shot-bar .sub{font-size:11.5px;color:var(--a3);font-weight:700;letter-spacing:.4px}
-  .wins{margin-left:auto;display:flex;gap:4px}
-  .wins i{width:30px;height:20px;border-radius:7px;display:grid;place-items:center;font-style:normal;font-size:11px;color:var(--muted)}
-  .wins i:hover{background:rgba(255,255,255,.12);color:#fff}
-  .wins i:last-child:hover{background:#e8434f;color:#fff}
-  .shot-body{display:grid;grid-template-columns:186px 1fr;position:relative}
-  .side{padding:20px 14px;border-right:1px solid var(--line);background:rgba(16,15,42,.55)}
-  .side .lbl{font-size:10.5px;font-weight:800;letter-spacing:2.4px;color:var(--pink);margin-bottom:12px}
-  .navi{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:6px}
-  .navi.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;box-shadow:0 10px 24px rgba(124,92,247,.4)}
-  .navi .sq{width:17px;height:17px;border-radius:6px;background:currentColor;opacity:.9}
-  .side .info{margin-top:26px;padding:13px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-size:11.5px;color:var(--muted)}
-  .main{padding:26px 28px 30px;display:grid;gap:16px}
-  .m-title{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap}
-  .m-title h3{font-size:24px;font-weight:900;letter-spacing:-.4px}
-  .m-title span{font-size:13px;color:var(--muted)}
+  /* app ablak */
+  .shot{margin-top:22px}
+  .bar-top{display:flex;align-items:center;gap:14px;padding:0 14px;height:42px;border-bottom:1px solid var(--line)}
+  .bar-top .t{font:700 12px var(--mono);letter-spacing:.2em}
+  .bar-top .sub{font:500 11px var(--mono);letter-spacing:.1em;color:var(--acc)}
+  .wins{margin-left:auto;display:flex;gap:14px;font:500 12px var(--mono);color:var(--muted)}
+  .shot-body{display:grid;grid-template-columns:186px 1fr}
+  .side{padding:18px 14px;border-right:1px solid var(--line)}
+  .side .lbl{font:500 10.5px var(--mono);letter-spacing:.18em;color:var(--muted);margin-bottom:12px}
+  .navi{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:13.5px;font-weight:600;color:var(--muted);margin-bottom:4px}
+  .navi.on{background:#fff;color:var(--bg)}
+  .navi .sq{width:12px;height:12px;background:currentColor}
+  .side .info{margin-top:22px;padding:12px;border:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+  .main{padding:22px;display:grid;gap:16px;min-width:0}
+  .m-title{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .m-title h3{font-size:22px;font-weight:700}
   .badges{display:flex;gap:8px;flex-wrap:wrap}
-  .badges em{
-    font-style:normal;font-size:11px;font-weight:800;letter-spacing:1.4px;padding:6px 12px;border-radius:999px;
-    border:1px solid currentColor;color:var(--a3);background:rgba(76,210,250,.1)
-  }
-  .badges em:nth-child(2){color:var(--pink);background:rgba(168,85,247,.12)}
-  .badges em:nth-child(3){color:var(--good);background:rgba(58,231,160,.12)}
-  .panel{
-    border-radius:20px;border:1px solid var(--line2);padding:20px;position:relative;
-    background:linear-gradient(180deg,rgba(45,46,98,.55),rgba(22,21,56,.65));
-    box-shadow:0 26px 60px rgba(4,3,18,.5);
-  }
-  .panel .cap{font-size:10.5px;font-weight:800;letter-spacing:2.6px;color:var(--pink);margin-bottom:10px}
-  .select{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-radius:14px;
-    background:rgba(10,10,30,.75);border:1px solid rgba(150,160,255,.2);font-size:14px;font-weight:600;
-  }
+  .panel{border:1px solid var(--line);background:var(--panel);padding:18px}
+  .panel .cap{font:500 10.5px var(--mono);letter-spacing:.18em;color:var(--muted);margin-bottom:10px}
+  .select{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--bg);border:1px solid var(--line);font-size:14px;font-weight:600}
   .select i{font-style:normal;color:var(--muted)}
-  .play{
-    margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;padding:17px;border-radius:18px;
-    font-weight:900;font-size:17px;letter-spacing:1px;color:#fff;position:relative;overflow:hidden;
-    background:linear-gradient(135deg,var(--a1),var(--a2));
-    box-shadow:0 18px 44px rgba(124,92,247,.45),inset 0 1px 0 rgba(255,255,255,.4);
-  }
-  .play::after{
-    content:"";position:absolute;top:0;left:-60%;width:36%;height:100%;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
-    animation:sweep 3.4s ease-in-out infinite;
-  }
-  .modes{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
-  .mode{
-    flex:1;min-width:150px;padding:12px 16px;border-radius:14px;font-size:13px;font-weight:800;text-align:center;
-    color:var(--txt);border:1px solid var(--line2);background:rgba(255,255,255,.05)
-  }
-  .mode.demo{background:linear-gradient(135deg,rgba(124,92,246,.5),rgba(168,85,247,.5));border-color:transparent}
-  .bar{height:9px;border-radius:99px;background:rgba(9,9,28,.8);border:1px solid rgba(255,255,255,.1);margin-top:16px;overflow:hidden}
-  .bar i{display:block;height:100%;width:38%;border-radius:99px;background:linear-gradient(90deg,var(--a2),var(--a1))}
-  .fcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-  .fcard{
-    border-radius:16px;border:1px solid var(--line);padding:14px;background:rgba(255,255,255,.045);transition:.2s
-  }
-  .fcard:hover{transform:translateY(-3px);border-color:rgba(168,85,247,.5)}
-  .fcard .ic{
-    width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px;margin-bottom:9px;
-    background:linear-gradient(135deg,rgba(124,92,246,.55),rgba(168,85,247,.35));color:#fff;
-  }
-  .fcard b{font-size:13.5px;display:block;margin-bottom:4px}
+  .play{margin-top:14px;text-align:center;background:#fff;color:var(--bg);font:700 13px var(--mono);letter-spacing:.14em;padding:15px}
+  .modes{margin-top:12px}
+  .mode{padding:11px 14px;border:1px solid var(--line);text-align:center;font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+  .meter{height:8px;margin-top:14px;border:1px solid var(--line);background:var(--bg)}
+  .meter i{display:block;height:100%;width:38%;background:var(--c1)}
+  .fcard{padding:14px}
+  .fcard .ic{width:12px;height:12px;background:var(--c,var(--c1));margin-bottom:10px}
+  .fcard b{display:block;font-size:13.5px;margin-bottom:3px}
   .fcard span{font-size:12px;color:var(--muted)}
 
-  /* ---------- sections ---------- */
-  section{padding:66px 0}
-  .eyebrow{font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--a3);margin-bottom:10px}
-  h2{font-size:clamp(26px,4.6vw,38px);font-weight:900;letter-spacing:-.6px;margin-bottom:10px}
-  .lead{color:var(--muted);max-width:620px;font-size:15.5px}
-
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:30px}
-  .card{
-    position:relative;padding:22px;border-radius:var(--radius);border:1px solid var(--line);
-    background:linear-gradient(180deg,var(--panel),rgba(16,15,44,.5));backdrop-filter:blur(10px);
-    transition:transform .22s,border-color .22s,box-shadow .22s;overflow:hidden;
-  }
-  .card::before{
-    content:"";position:absolute;inset:0;opacity:0;transition:opacity .22s;
-    background:radial-gradient(420px 180px at 20% 0%,rgba(168,85,247,.22),transparent 70%);
-  }
-  .card:hover{transform:translateY(-4px);border-color:var(--line2);box-shadow:0 24px 54px rgba(4,3,18,.5)}
-  .card:hover::before{opacity:1}
-  .card .ic{
-    width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;margin-bottom:13px;
-    background:linear-gradient(135deg,rgba(124,92,246,.6),rgba(168,85,247,.32));color:#fff;
-    box-shadow:0 10px 24px rgba(124,92,247,.3),inset 0 1px 0 rgba(255,255,255,.3);
-  }
-  .card h3{font-size:16px;font-weight:800;margin-bottom:7px}
-  .card p{color:var(--muted);font-size:13.8px}
-
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:30px;position:relative}
-  .step{
-    padding:24px;border-radius:var(--radius);border:1px solid var(--line);position:relative;
-    background:linear-gradient(180deg,var(--panel2),rgba(14,13,40,.5));
-  }
-  .step .n{
-    width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:900;font-size:16px;
-    background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;margin-bottom:14px;
-    box-shadow:0 10px 24px rgba(124,92,247,.4)
-  }
-  .step h3{font-size:15.5px;font-weight:800;margin-bottom:6px}
-  .step p{color:var(--muted);font-size:13.6px}
-
-  .cols{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin-top:30px}
-  @media(max-width:820px){.cols{grid-template-columns:1fr}}
-  .req{border-radius:var(--radius);border:1px solid var(--line);overflow:hidden;background:rgba(16,15,44,.5)}
-  .req div{display:flex;justify-content:space-between;gap:18px;padding:15px 20px;border-bottom:1px solid var(--line);font-size:14px}
-  .req div:last-child{border-bottom:none}
-  .req div span{color:var(--muted);text-align:right}
-  .note{
-    border-radius:var(--radius);padding:22px;border:1px solid rgba(250,205,80,.34);background:rgba(250,205,80,.07);
-    color:#ffe7ad;font-size:14px
-  }
-  .note b{color:#fff}
-  .faq{margin-top:22px;display:grid;gap:10px}
-  details{border-radius:16px;border:1px solid var(--line);background:rgba(16,15,44,.5);overflow:hidden}
-  summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+  /* telepítés */
+  .step{padding:20px;color:var(--muted);font-size:14px;line-height:1.65}
+  .step h3{color:var(--txt);font-size:17px;font-weight:700;margin-bottom:8px}
+  .cols{display:grid;grid-template-columns:1.05fr .95fr;padding:0 1px 1px 0;margin-top:22px}
+  .req div{display:flex;justify-content:space-between;gap:18px;padding:15px 20px;border-bottom:1px solid var(--line);font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .req div:last-child{border-bottom:0}
+  .req span{font:400 14px var(--sans);letter-spacing:0;text-transform:none;color:var(--txt);text-align:right}
+  .note .body p{color:#c9ccd4}
+  .faq{margin-top:22px}
+  details{border:1px solid var(--line);margin-bottom:-1px}
+  summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px;padding:16px 20px;font-size:15px;font-weight:600;transition:background .15s}
+  summary:hover{background:var(--panel)}
   summary::-webkit-details-marker{display:none}
-  summary::after{content:"+";color:var(--a3);font-weight:900}
+  summary::after{content:"+";font:400 20px/1 var(--mono);color:var(--acc)}
   details[open] summary::after{content:"–"}
-  details p{padding:0 18px 16px;color:var(--muted);font-size:13.8px}
+  details p{padding:0 20px 18px;color:var(--muted);font-size:14px;line-height:1.65}
+  details p b{color:var(--txt)}
+  .final{padding:22px 20px}
 
-  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
-  .reveal.in{opacity:1;transform:none}
+  footer{margin-top:46px;border-top:1px solid var(--line)}
+  footer .row{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;min-height:40px;padding:10px 0}
+  footer a:hover{color:var(--acc)}
+  footer b{color:var(--txt)}
 
-  footer{margin-top:20px;padding:34px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
-  footer b{color:var(--txt);letter-spacing:2px}
-  footer .row{display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:space-between;align-items:center}
-  footer a{color:var(--muted)}
-  footer a:hover{color:var(--txt)}
-
+  @media(max-width:820px){.cols{grid-template-columns:1fr}}
   @media(max-width:720px){
+    .nav{padding:0 14px;gap:10px}
+    .brand{padding-right:12px;font-size:14px}
     .links a:not(.btn){display:none}
+    .hero{padding:30px 20px}
     .shot-body{grid-template-columns:1fr}
-    .side{border-right:none;border-bottom:1px solid var(--line);display:flex;gap:8px;overflow-x:auto}
+    .side{border-right:0;border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto}
     .side .lbl,.side .info{display:none}
     .navi{white-space:nowrap;margin-bottom:0}
-    .hero{padding:52px 0 26px}
-  }
-  @media(prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-    .reveal{opacity:1;transform:none}
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="wrap nav">
+  <div class="nav">
     <a class="brand" href="/crystalclient/"><img class="mark" src="icon.png" alt=""><span>CRYSTAL&nbsp;CLIENT v1</span></a>
     <nav class="links">
       <a href="#features">Features</a>
       <a href="#installation">Installation</a>
       <a href="#requirements">Requirements</a>
-      <a class="btn" href="https://github.com/vilmosvilmos2000-ai/fluxi-weboldal/releases/download/v1.0.0-mods/CrystalClient-Setup.exe">⬇ Download</a>
+      <a class="btn sm" href="https://github.com/vilmosvilmos2000-ai/fluxi-weboldal/releases/download/v1.0.0-mods/CrystalClient-Setup.exe">↓ Download</a>
     </nav>
   </div>
 </header>
 
 <div class="wrap">
 
-  <div class="hero">
-    <span class="chip"><span class="dot"></span> Fabric · 40 mod · 26.2</span>
-    <h1>CRYSTAL&nbsp;CLIENT v1</h1>
-    <p>Our own Minecraft launcher, and it does not start an empty game: bundled Java, Microsoft account sign-in, offline mode, and 40 performance and quality-of-life (QoL) mods that are active from the very first launch.</p>
-    <div class="cta">
-      <a class="dl" href="https://github.com/vilmosvilmos2000-ai/fluxi-weboldal/releases/download/v1.0.0-mods/CrystalClient-Setup.exe">
-        <span class="ico">⬇</span>
-        <span><span class="t">Download the installer</span><br><span class="s">CrystalClient-Setup.exe · 864 MB</span></span>
-      </a>
-      <a class="ghost" href="#features">What's inside? ↓</a>
+  <div class="sec" style="margin-top:22px"></div>
+  <div class="grid g1"><div class="cell">
+    <div class="head"><span class="badge" style="--c:var(--c3)">Fabric · 40 mod · 26.2</span><span class="dim">CrystalClient-Setup.exe</span></div>
+    <div class="hero">
+      <h1>CRYSTAL&nbsp;<span>CLIENT v1</span></h1>
+      <p class="lead">Our own Minecraft launcher, and it does not start an empty game: bundled Java, Microsoft account sign-in, offline mode, and 40 performance and quality-of-life (QoL) mods that are active from the very first launch.</p>
+      <div class="cta">
+        <a class="btn dl" href="https://github.com/vilmosvilmos2000-ai/fluxi-weboldal/releases/download/v1.0.0-mods/CrystalClient-Setup.exe">
+          <span class="ico">↓</span>
+          <span>Download the installer<span class="s">CrystalClient-Setup.exe · 864 MB</span></span>
+        </a>
+        <a class="btn o" href="#features">What's inside? ↓</a>
+      </div>
+      <p class="fine">Windows 10 / 11 · <b>no admin required</b> · English interface · the first launch downloads Minecraft 26.2</p>
     </div>
-    <p class="fine">Windows 10 / 11 · <b>no admin required</b> · English interface · the first launch downloads Minecraft 26.2</p>
+  </div></div>
 
-    <div class="stats">
-      <div class="stat"><b>40</b><span>BUILT-IN MODS</span></div>
-      <div class="stat"><b>26.2</b><span>GAME VERSION</span></div>
-      <div class="stat"><b>JDK 25</b><span>BUNDLED JAVA</span></div>
-      <div class="stat"><b>offline</b><span>PLAYABLE OFFLINE</span></div>
-    </div>
+  <div class="grid stats cyc">
+    <div class="cell"><div class="head"><span class="badge">01</span></div><div class="stat"><b>40</b><span class="dim">Built-in mods</span></div></div>
+    <div class="cell"><div class="head"><span class="badge">02</span></div><div class="stat"><b>26.2</b><span class="dim">Game version</span></div></div>
+    <div class="cell"><div class="head"><span class="badge">03</span></div><div class="stat"><b>JDK 25</b><span class="dim">Bundled Java</span></div></div>
+    <div class="cell"><div class="head"><span class="badge">04</span></div><div class="stat"><b>offline</b><span class="dim">Playable offline</span></div></div>
   </div>
 
-  <div class="shot reveal">
-    <div class="shot-bar">
+  <div class="grid g1 shot"><div class="cell">
+    <div class="bar-top">
       <span class="t">CRYSTAL CLIENT</span>
       <span class="sub">Minecraft · Java Edition launcher</span>
-      <span class="wins"><i>–</i><i>▢</i><i>✕</i></span>
+      <span class="wins"><span>–</span><span>▢</span><span>✕</span></span>
     </div>
     <div class="shot-body">
       <div class="side">
@@ -348,113 +200,108 @@
       <div class="main">
         <div class="m-title">
           <h3>Game</h3>
-          <div class="badges"><em>40 MOD</em><em>FABRIC</em><em>OFFLINE</em></div>
+          <div class="badges"><em class="tag">40 MOD</em><em class="tag" style="--c:var(--c2)">FABRIC</em><em class="tag" style="--c:var(--c4)">OFFLINE</em></div>
         </div>
         <div class="panel">
           <div class="cap">VERSION</div>
           <div class="select"><span>26.2 (locked)</span><i>▾</i></div>
           <div class="play">▶ START GAME</div>
           <div class="modes"><div class="mode">Play offline</div></div>
-          <div class="bar"><i></i></div>
+          <div class="meter"><i></i></div>
         </div>
-        <div class="fcards">
-          <div class="fcard"><div class="ic">⚡</div><b>High FPS</b><span>Optimised JVM flags</span></div>
-          <div class="fcard"><div class="ic">🛡</div><b>Secure account</b><span>Official Microsoft sign-in</span></div>
-          <div class="fcard"><div class="ic">⬇</div><b>Fast downloads</b><span>Parallel file downloads</span></div>
+        <div class="grid">
+          <div class="cell fcard"><div class="ic"></div><b>High FPS</b><span>Optimised JVM flags</span></div>
+          <div class="cell fcard"><div class="ic" style="--c:var(--c2)"></div><b>Secure account</b><span>Official Microsoft sign-in</span></div>
+          <div class="cell fcard"><div class="ic" style="--c:var(--c4)"></div><b>Fast downloads</b><span>Parallel file downloads</span></div>
         </div>
       </div>
     </div>
-  </div>
+  </div></div>
 </div>
 
 <section id="features">
   <div class="wrap">
-    <div class="eyebrow reveal">Features</div>
-    <h2 class="reveal">Everything a modern Minecraft session needs</h2>
-    <p class="lead reveal">The launcher handles the game files, Java and the mods – all you have to do is press a button.</p>
-        <div class="grid">
-      <div class="card reveal"><div class="ic">⚡</div><h3>Sodium + Lithium</h3><p>The biggest FPS jump you can get, plus much faster world simulation and tick rates.</p></div>
-      <div class="card reveal"><div class="ic">🚀</div><h3>ModernFix + FerriteCore</h3><p>Aggressive memory and loading optimisations – smaller RAM use, faster startup, smoother stutter.</p></div>
-      <div class="card reveal"><div class="ic">👁️</div><h3>More Culling + Entity Culling</h3><p>Hides entities, block faces and particles that cannot be seen, so more of your FPS budget goes where you look.</p></div>
-      <div class="card reveal"><div class="ic">🌄</div><h3>EMF + ETF</h3><p>Entity Model Features and Entity Texture Features: full shader support and custom player and mob models and textures.</p></div>
-      <div class="card reveal"><div class="ic">🍎</div><h3>AppleSkin</h3><p>Always shows food, saturation and exhaustion effects, so you stop guessing when you can eat.</p></div>
-      <div class="card reveal"><div class="ic">🎬</div><h3>FancyMenu + Watermedia</h3><p>A custom main menu with your own intro video, played back on the GPU with hardware decoding.</p></div>
-      <div class="card reveal"><div class="ic">⏪</div><h3>Flashback</h3><p>Record, rewind, edit and export gameplay replays, with full camera control.</p></div>
-      <div class="card reveal"><div class="ic">🎭</div><h3>Emotecraft + animations</h3><p>Emotes, custom player animations and an addon to record your own emote clips.</p></div>
-      <div class="card reveal"><div class="ic">🪞</div><h3>Cosmetica</h3><p>Your own skin on your player model, cosmetics in third person, and a clean first-person view.</p></div>
-      <div class="card reveal"><div class="ic">📊</div><h3>HUD suite</h3><p>SpiffyHUD, EvergreenHUD, an armour HUD and a totem counter, all in one tidy overlay.</p></div>
-      <div class="card reveal"><div class="ic">⚙️</div><h3>Mod Menu + one config screen</h3><p>Every mod is listed and configurable in a single place – no hunting through config files.</p></div>
-      <div class="card reveal"><div class="ic">📴</div><h3>Play offline</h3><p>Play with your most recently used account without a connection – the token stays on your own machine.</p></div>
+    <div class="sec">
+      <div class="dim">Features</div>
+      <h2>Everything a modern Minecraft session needs</h2>
+      <p class="lead">The launcher handles the game files, Java and the mods – all you have to do is press a button.</p>
+    </div>
+    <div class="grid cyc">
+      <div class="cell"><div class="head"><span class="badge">01</span></div><div class="body"><h3>Sodium + Lithium</h3><p>The biggest FPS jump you can get, plus much faster world simulation and tick rates.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">02</span></div><div class="body"><h3>ModernFix + FerriteCore</h3><p>Aggressive memory and loading optimisations – smaller RAM use, faster startup, smoother stutter.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">03</span></div><div class="body"><h3>More Culling + Entity Culling</h3><p>Hides entities, block faces and particles that cannot be seen, so more of your FPS budget goes where you look.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">04</span></div><div class="body"><h3>EMF + ETF</h3><p>Entity Model Features and Entity Texture Features: full shader support and custom player and mob models and textures.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">05</span></div><div class="body"><h3>AppleSkin</h3><p>Always shows food, saturation and exhaustion effects, so you stop guessing when you can eat.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">06</span></div><div class="body"><h3>FancyMenu + Watermedia</h3><p>A custom main menu with your own intro video, played back on the GPU with hardware decoding.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">07</span></div><div class="body"><h3>Flashback</h3><p>Record, rewind, edit and export gameplay replays, with full camera control.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">08</span></div><div class="body"><h3>Emotecraft + animations</h3><p>Emotes, custom player animations and an addon to record your own emote clips.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">09</span></div><div class="body"><h3>Cosmetica</h3><p>Your own skin on your player model, cosmetics in third person, and a clean first-person view.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">10</span></div><div class="body"><h3>HUD suite</h3><p>SpiffyHUD, EvergreenHUD, an armour HUD and a totem counter, all in one tidy overlay.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">11</span></div><div class="body"><h3>Mod Menu + one config screen</h3><p>Every mod is listed and configurable in a single place – no hunting through config files.</p></div></div>
+      <div class="cell"><div class="head"><span class="badge">12</span></div><div class="body"><h3>Play offline</h3><p>Play with your most recently used account without a connection – the token stays on your own machine.</p></div></div>
     </div>
   </div>
 </section>
 
 <section id="installation">
   <div class="wrap">
-    <div class="eyebrow reveal">Installation</div>
-    <h2 class="reveal">Three steps and you are playing</h2>
-    <div class="steps">
-      <div class="step reveal"><div class="n">1</div><h3>Download it</h3><p>Click the big download button and run the <b>CrystalClient-Setup.exe</b> file.</p></div>
-      <div class="step reveal"><div class="n">2</div><h3>Install it</h3><p>A couple of seconds and you get a desktop and Start menu shortcut. No admin rights needed.</p></div>
-      <div class="step reveal"><div class="n">3</div><h3>Launch it</h3><p>The first launch downloads the game and the mod loader, then you sign in with your Microsoft account – or hit <b>Play offline</b> straight away.</p></div>
+    <div class="sec">
+      <div class="dim">Installation</div>
+      <h2>Three steps and you are playing</h2>
+    </div>
+    <div class="grid g3 cyc">
+      <div class="cell"><div class="head"><span class="badge">01</span></div><div class="step"><h3>Download it</h3>Click the big download button and run the <b>CrystalClient-Setup.exe</b> file.</div></div>
+      <div class="cell"><div class="head"><span class="badge">02</span></div><div class="step"><h3>Install it</h3>A couple of seconds and you get a desktop and Start menu shortcut. No admin rights needed.</div></div>
+      <div class="cell"><div class="head"><span class="badge">03</span></div><div class="step"><h3>Launch it</h3>The first launch downloads the game and the mod loader, then you sign in with your Microsoft account – or hit <b>Play offline</b> straight away.</div></div>
     </div>
 
     <div class="cols">
-      <div class="req reveal">
+      <div class="cell req">
         <div>System <span>Windows 10 / 11 (64-bit)</span></div>
         <div>Memory <span>minimum 8 GB (16 GB recommended)</span></div>
         <div>Free disk space <span>~1.5 GB including the game</span></div>
         <div>Graphics <span>Vulkan or OpenGL 3.2+</span></div>
         <div>Java <span>nothing to install – the bundled JDK 25 is used</span></div>
       </div>
-      <div class="note reveal">
-        ⚠️ Windows may warn about an unknown publisher when you start the installer. This is normal SmartScreen behaviour for a freshly built, unsigned file: click <b>More info</b>, then <b>Run anyway</b>.<br><br>
-        Crystal Client <b>does not contain</b> hacks, cheats or anything built to bypass the evaluation system, and it works in line with the rules and expectations of the game.
+      <div class="cell note">
+        <div class="head"><span class="badge" style="--c:var(--c5)">Warning</span></div>
+        <div class="body"><p>Windows may warn about an unknown publisher when you start the installer. This is normal SmartScreen behaviour for a freshly built, unsigned file: click <b>More info</b>, then <b>Run anyway</b>.<br><br>
+        Crystal Client <b>does not contain</b> hacks, cheats or anything built to bypass the evaluation system, and it works in line with the rules and expectations of the game.</p></div>
       </div>
     </div>
 
     <div class="faq">
-      <details class="reveal"><summary> Do I need to install anything for Minecraft?</summary><p>No. The installer uses the bundled JDK 25, and the launcher downloads the game files and the Fabric mods.</p></details>
-      <details class="reveal"><summary> Does it work without an internet connection?</summary><p>Yes. Once you have signed in, the <b>Play offline</b> button starts the game with your saved account – the game files and the mods are already on disk by then.</p></details>
-      <details class="reveal"><summary> Do the mods get updated?</summary><p>Yes. On startup the launcher asks Mojang's and Fabric's servers and downloads the current versions. The bundle is tied to a specific game version, not to your PC.</p></details>
-      <details class="reveal"><summary> Where does the program install?</summary><p>Into the <b>%LOCALAPPDATA%\CrystalClient</b> folder, under your user account – no admin rights needed, and it does not touch Program Files.</p></details>
+      <details><summary>Do I need to install anything for Minecraft?</summary><p>No. The installer uses the bundled JDK 25, and the launcher downloads the game files and the Fabric mods.</p></details>
+      <details><summary>Does it work without an internet connection?</summary><p>Yes. Once you have signed in, the <b>Play offline</b> button starts the game with your saved account – the game files and the mods are already on disk by then.</p></details>
+      <details><summary>Do the mods get updated?</summary><p>Yes. On startup the launcher asks Mojang's and Fabric's servers and downloads the current versions. The bundle is tied to a specific game version, not to your PC.</p></details>
+      <details><summary>Where does the program install?</summary><p>Into the <b>%LOCALAPPDATA%\CrystalClient</b> folder, under your user account – no admin rights needed, and it does not touch Program Files.</p></details>
     </div>
   </div>
 </section>
 
 <section id="requirements">
   <div class="wrap">
-    <div class="eyebrow reveal">Ready?</div>
-    <h2 class="reveal">Download it and you are at the main menu</h2>
-    <div class="cta reveal">
-      <a class="dl" href="https://github.com/vilmosvilmos2000-ai/fluxi-weboldal/releases/download/v1.0.0-mods/CrystalClient-Setup.exe">
-        <span class="ico">⬇</span>
-        <span><span class="t">CrystalClient-Setup.exe</span><br><span class="s">864 MB · Windows 10 / 11</span></span>
-      </a>
+    <div class="sec">
+      <div class="dim">Ready?</div>
+      <h2>Download it and you are at the main menu</h2>
     </div>
+    <div class="grid g1"><div class="cell final">
+      <div class="cta" style="margin-top:0">
+        <a class="btn dl" href="https://github.com/vilmosvilmos2000-ai/fluxi-weboldal/releases/download/v1.0.0-mods/CrystalClient-Setup.exe">
+          <span class="ico">↓</span>
+          <span>CrystalClient-Setup.exe<span class="s">864 MB · Windows 10 / 11</span></span>
+        </a>
+      </div>
+    </div></div>
   </div>
 </section>
 
 <footer>
   <div class="wrap row">
-    <div><b>CRYSTAL CLIENT</b> · <a href="/">fluxi.hu</a></div>
-    <div>Unofficial launcher. Not affiliated with Mojang / Microsoft.</div>
+    <span class="dim"><b>CRYSTAL CLIENT</b> · <a href="/">fluxi.hu</a></span>
+    <span class="dim">Unofficial launcher. Not affiliated with Mojang / Microsoft.</span>
   </div>
 </footer>
 
-</div>
-
-<script>
-(function(){
-  var items = document.querySelectorAll('.reveal');
-  if(!('IntersectionObserver' in window)){ for(var i=0;i<items.length;i++) items[i].classList.add('in'); return; }
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-    });
-  },{rootMargin:'0px 0px -8% 0px',threshold:0.06});
-  for(var i=0;i<items.length;i++) io.observe(items[i]);
-})();
-</script>
 </body>
 </html>
