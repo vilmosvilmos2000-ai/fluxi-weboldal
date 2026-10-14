@@ -2,255 +2,188 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <title>shout learn[BETA]</title>
-    <style>
-        :root {
-            --ch-color: #00ff00;
-            --ch-size: 20px;
-            --ch-thickness: 2px;
-            --ch-gap: 5px;
-        }
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; user-select: none; }
-        
-        /* Célkereszt */
-        #crosshair-container {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: var(--ch-size); height: var(--ch-size);
-            pointer-events: none;
-        }
-        .ch-line {
-            position: absolute; background: var(--ch-color);
-        }
-        .v-line { width: var(--ch-thickness); height: 100%; left: 50%; transform: translateX(-50%); }
-        .h-line { width: 100%; height: var(--ch-thickness); top: 50%; transform: translateY(-50%); }
-        .ch-gap-mask {
-            position: absolute; top: 50%; left: 50%;
-            width: var(--ch-gap); height: var(--ch-gap);
-            background: transparent; transform: translate(-50%, -50%);
-        }
-
-        /* HUD */
-        #hud {
-            position: absolute; bottom: 20px; left: 20px;
-            color: white; background: rgba(0,0,0,0.6);
-            padding: 15px; border-left: 5px solid #00bcff;
-        }
-        #weapon-info { position: absolute; bottom: 20px; right: 20px; color: #00bcff; font-size: 24px; font-weight: bold; }
-
-        /* Settings Menü */
-        #settings-panel {
-            position: absolute; top: 50%; right: 20px;
-            transform: translateY(-50%);
-            background: rgba(15, 15, 25, 0.9);
-            color: white; padding: 20px; border-radius: 10px;
-            display: none; border: 1px solid #333;
-        }
-        .setting-item { margin-bottom: 10px; }
-        input[type="range"] { width: 100%; }
-
-        #instructions {
-            position: absolute; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); color: white;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shoot Learn [BETA]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#101116;--pn:#16171d;--ln:#2a2b33;--tx:#f4f4f6;--mut:#9a9ca7;--a:#2f7bff;--r:#ef4b36;--sa:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--mo:"JetBrains Mono",ui-monospace,Consolas,monospace;--cc:#3ddc9a;--cs:12px;--ct:2px;--cg:5px}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--tx);font:15px/1.5 var(--sa);user-select:none}
+canvas{position:fixed;inset:0;display:block}
+.mono,.tabs button,.btn,.pill,small,.rw,.k,.lbl{font-family:var(--mo);text-transform:uppercase;letter-spacing:.14em;font-size:11px}
+.mut{color:var(--mut)}
+.cx{position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none}
+.cx i{position:absolute;background:var(--cc);box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+.cx .u,.cx .d{width:var(--ct);height:var(--cs);left:calc(var(--ct)/-2)}.cx .l,.cx .r{height:var(--ct);width:var(--cs);top:calc(var(--ct)/-2)}
+.cx .u{bottom:var(--cg)}.cx .d{top:var(--cg)}.cx .l{right:var(--cg)}.cx .r{left:var(--cg)}
+#hud{position:fixed;inset:0;z-index:5;pointer-events:none}
+.pn{position:absolute;background:rgba(16,17,22,.82);border:1px solid var(--ln);padding:14px 18px}
+#st{top:20px;left:20px;display:flex;gap:26px}#st b{display:block;font:800 26px/1.1 var(--sa)}
+#hpw{bottom:20px;left:20px;width:260px}#hpw .bar{height:8px;background:var(--ln);margin-top:8px}#hpb{height:100%;width:100%;background:#3ddc9a;transition:width .15s}
+#wp{bottom:20px;right:20px;text-align:right;min-width:210px}#wn{font:800 24px/1.1 var(--sa)}#am{font:700 20px var(--mo);margin:6px 0 10px}
+#sl{display:flex;gap:6px;justify-content:flex-end}#sl span{border:1px solid var(--ln);padding:4px 9px;font:700 11px var(--mo);color:var(--mut)}#sl .on{background:#fff;color:#000;border-color:#fff}
+#bn{position:absolute;top:84px;left:50%;transform:translateX(-50%);font:800 30px var(--sa);letter-spacing:.06em;text-transform:uppercase;opacity:0;transition:opacity .3s;text-shadow:0 2px 12px #000}
+#vg{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(239,75,54,.75));opacity:0}
+#hm{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;opacity:0;transform:rotate(45deg);--c:#fff}#hm.k{--c:var(--r)}
+#hm:before,#hm:after{content:"";position:absolute;background:var(--c);left:12px;top:0;width:2px;height:100%}#hm:after{left:0;top:12px;width:100%;height:2px}
+#ov{position:fixed;inset:0;z-index:20;background:rgba(16,17,22,.94);display:flex;flex-direction:column}
+#ov header{display:flex;align-items:center;height:64px;border-bottom:1px solid var(--ln);flex:none}
+.logo{display:flex;align-items:center;height:100%;padding:0 28px;border-right:1px solid var(--ln);font:800 22px/1 var(--sa);letter-spacing:.1em}.logo b{color:var(--a);margin-left:.1em}
+.pill{background:#fff;color:#000;padding:7px 11px;margin-left:24px;font-weight:700}
+#ov header .mono{margin-left:auto;padding:0 28px;color:var(--mut)}#ov header b{color:var(--tx)}
+.mid{flex:1;min-height:0;overflow:auto;display:flex;justify-content:center;align-items:center;padding:20px}
+.panel{width:min(600px,100%);border:1px solid var(--ln);background:var(--bg)}
+.tabs{display:flex;border-bottom:1px solid var(--ln)}.tabs button{flex:1;background:none;border:0;border-right:1px solid var(--ln);color:var(--mut);padding:15px 10px;cursor:pointer;font-weight:700}.tabs button:last-child{border:0}.tabs button:hover{color:#fff}.tabs .on{background:#fff;color:#000}
+section{padding:30px}h1{margin:0 0 8px;font:800 44px/1.1 var(--sa);letter-spacing:-.02em;text-transform:uppercase}
+.row{display:flex;gap:10px;margin-top:24px}
+.btn{flex:1;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#0b0b10;border:1px solid #fff;padding:17px 22px;font-weight:700;cursor:pointer}.btn:hover{background:#d8d9df}.btn.g{background:none;color:var(--tx);border-color:var(--ln)}.btn.g:hover{border-color:#fff}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.pv{position:relative;height:110px;border:1px solid var(--ln);background:#0b0c10;margin-bottom:12px}
+.rw{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--ln)}.rw span{width:150px;color:var(--mut)}.rw input[type=range]{flex:1;accent-color:#fff}.rw b{width:40px;text-align:right}.rw input[type=color]{background:none;border:1px solid var(--ln);width:44px;height:28px;padding:0}
+.kt{display:grid;grid-template-columns:auto 1fr;gap:0;border-top:1px solid var(--ln)}.kt>*{padding:10px 0;border-bottom:1px solid var(--ln)}.k{font-weight:700;padding-right:24px!important}
+#ov footer{display:flex;justify-content:space-between;padding:14px 28px;border-top:1px solid var(--ln);color:var(--mut);flex:none}
+#tt{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:30;background:#fff;color:#000;padding:12px 18px;font:700 11px var(--mo);letter-spacing:.14em;text-transform:uppercase}
+@media(max-width:700px){h1{font-size:32px}section{padding:20px}.rw span{width:100px}#st{gap:14px}#hpw{width:170px}.logo{padding:0 16px}#ov header .mono{padding:0 14px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
+<div id="hud" hidden>
+<div id="vg"></div><div class="cx"><i class="u"></i><i class="d"></i><i class="l"></i><i class="r"></i></div><div id="hm"></div><div id="bn"></div>
+<div class="pn lbl" id="st"><div>Pont<b id="sc">0</b></div><div>Hullám<b id="wv">0</b></div><div>Ölés<b id="kl">0</b></div></div>
+<div class="pn lbl" id="hpw"><span>Élet <b id="hpn" style="color:#fff">100</b></span><div class="bar"><div id="hpb"></div></div></div>
+<div class="pn" id="wp"><div id="wn">PISTOL</div><div id="am">12 / 12</div><div id="sl"><span>1</span><span>2</span><span>3</span></div></div>
+</div>
 
-    <div id="instructions">
-        <h1>Shout Learn</h1>
-        <p>Kattints a kezdéshez!</p>
-        <p><b>ESC</b>: Menü/Beállítások | <b>1, 2, 3</b>: Fegyverváltás</p>
-    </div>
+<div id="ov">
+<header><div class="logo">SHOOT<b>LEARN</b></div><span class="pill">BETA</span><span class="mono">Legjobb <b id="bs">0</b></span></header>
+<div class="mid"><div class="panel">
+<div class="tabs"><button data-t="play" class="on">Játék</button><button data-t="set">Beállítások</button><button data-t="ctl">Irányítás</button></div>
+<section id="t-play"><h1 id="mt">Shoot Learn</h1><p class="mut" id="md"></p><div class="row"><button class="btn" id="go">Indítás</button><button class="btn g" id="nw" hidden>Új játék</button></div></section>
+<section id="t-set" hidden><div class="pv"><div class="cx"><i class="u"></i><i class="d"></i><i class="l"></i><i class="r"></i></div></div><div id="sets"></div></section>
+<section id="t-ctl" hidden><div class="kt mono">
+<div class="k">W A S D</div><div>Mozgás</div><div class="k">Egér</div><div>Célzás</div><div class="k">Bal gomb</div><div>Lövés (géppuskánál tartható)</div>
+<div class="k">Szóköz</div><div>Ugrás</div><div class="k">Shift</div><div>Sprint</div><div class="k">R</div><div>Újratöltés</div>
+<div class="k">1 · 2 · 3 / görgő</div><div>Fegyverváltás</div><div class="k">Esc</div><div>Szünet / menü</div></div></section>
+</div></div>
+<footer class="mono"><span>Shoot Learn · Bétaverzió</span><span>Fejlövés = dupla sebzés</span></footer>
+</div>
+<div id="tt" hidden></div>
 
-    <div id="crosshair-container">
-        <div class="ch-line v-line"></div>
-        <div class="ch-line h-line"></div>
-    </div>
+<script>
+const $=s=>document.querySelector(s),K='shoot_learn_v2',cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+let C={col:'#3ddc9a',size:12,th:2,gap:5,sens:1,fov:80,vol:.5,best:0};
+try{Object.assign(C,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
+const sv=()=>{try{localStorage.setItem(K,JSON.stringify(C))}catch(e){}};
+function toast(t){const e=$('#tt');e.textContent=t;e.hidden=false;clearTimeout(toast.i);toast.i=setTimeout(()=>e.hidden=true,2600)}
 
-    <div id="hud">
-        <div>HP: <span id="hp">100</span></div>
-        <div>PONT: <span id="score">0</span></div>
-    </div>
+/* hang */
+let ac;const snd=(f,d,t='square',v=.2,f2)=>{if(!C.vol)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;o.type=t;o.frequency.setValueAtTime(f,n);if(f2)o.frequency.exponentialRampToValueAtTime(f2,n+d);g.gain.setValueAtTime(v*C.vol,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+d)}catch(e){}};
 
-    <div id="weapon-info">PISTOL</div>
+/* színtér */
+const sc=new THREE.Scene();sc.background=new THREE.Color(0x07080d);sc.fog=new THREE.Fog(0x07080d,25,90);
+const cam=new THREE.PerspectiveCamera(80,innerWidth/innerHeight,.1,200);cam.rotation.order='YXZ';sc.add(cam);
+const rd=new THREE.WebGLRenderer({antialias:true});rd.setPixelRatio(Math.min(devicePixelRatio,2));rd.setSize(innerWidth,innerHeight);document.body.prepend(rd.domElement);
+addEventListener('resize',()=>{rd.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()});
+sc.add(new THREE.AmbientLight(0xffffff,.55));const dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(10,20,8);sc.add(dl);
+const fl=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshStandardMaterial({color:0x0d0f16}));fl.rotation.x=-Math.PI/2;sc.add(fl);
+const gr=new THREE.GridHelper(96,48,0x2f7bff,0x20232d);gr.position.y=.01;sc.add(gr);
+const wm=new THREE.MeshStandardMaterial({color:0x1a1c26,emissive:0x0a1c40});
+[[0,-48,96,1],[0,48,96,1],[-48,0,1,96],[48,0,1,96]].forEach(([x,z,w,d])=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,5,d),wm);m.position.set(x,2.5,z);sc.add(m)});
+const PL=[[-14,-10],[12,-16],[-22,14],[20,12],[0,-26],[0,24],[-32,-30],[32,30]].map(([x,z])=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,6,18),new THREE.MeshStandardMaterial({color:0x232634,emissive:0x0a1020}));m.position.set(x,3,z);sc.add(m);return m});
 
-    <div id="settings-panel">
-        <h3>Célkereszt Beállítások</h3>
-        <div class="setting-item">
-            Szín: <input type="color" id="chColor" value="#00ff00">
-        </div>
-        <div class="setting-item">
-            Méret: <input type="range" id="chSize" min="5" max="50" value="20">
-        </div>
-        <div class="setting-item">
-            Vastagság: <input type="range" id="chThick" min="1" max="10" value="2">
-        </div>
-        <button onclick="document.body.requestPointerLock()">Vissza a játékba</button>
-    </div>
+/* fegyverek */
+const W=[{n:'PISTOL',c:0x8a90a0,rate:.38,dmg:1,mag:12,rel:1.1,auto:0,sp:0},{n:'RIFLE',c:0x3a3e4c,rate:.095,dmg:.6,mag:30,rel:1.6,auto:1,sp:.016},{n:'SNIPER',c:0x1c1d25,rate:1.1,dmg:5,mag:5,rel:2.2,auto:0,sp:0}];
+const gun=new THREE.Group(),gm=new THREE.MeshStandardMaterial({color:W[0].c});
+const g1=new THREE.Mesh(new THREE.BoxGeometry(.12,.16,.5),gm),g2=new THREE.Mesh(new THREE.BoxGeometry(.05,.05,.3),gm);g2.position.set(0,.04,-.38);
+const mf=new THREE.Mesh(new THREE.SphereGeometry(.07),new THREE.MeshBasicMaterial({color:0xffe08a}));mf.position.set(0,.04,-.6);mf.visible=false;gun.add(g1,g2,mf);gun.position.set(.32,-.3,-.55);cam.add(gun);
 
-    <script type="importmap">
-        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
-    </script>
+/* állapot */
+let st='main',T=0,hp=100,score=0,kills=0,wave=0,left=0,brk=1.2,spT=0,cw=0,ammo=W.map(w=>w.mag),relEnd=0,nextShot=0,kick=0,fire=false,vig=0,hmT=0,bnT=0,yaw=0,pitch=0,py=0,vy=0,mfT=0,last=performance.now();
+const pl={x:0,z:0},bots=[],PR=[];let keys={};
 
-    <script type="module">
-        import * as THREE from 'three';
+/* botok */
+const bg=new THREE.BoxGeometry(1.2,1.8,1.2),hg=new THREE.BoxGeometry(.8,.8,.8);
+function spawn(){const a=Math.random()*6.283,r=24+Math.random()*14,b=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:0xc2183a,emissive:0x550010}),h=new THREE.MeshStandardMaterial({color:0xff5a6e,emissive:0x660014}),bd=new THREE.Mesh(bg,m),hd=new THREE.Mesh(hg,h);
+bd.position.y=.9;hd.position.y=2.2;hd.userData.hs=1;bd.userData.b=hd.userData.b=b;b.add(bd,hd);b.position.set(pl.x+Math.sin(a)*r,0,pl.z+Math.cos(a)*r);fix(b.position,.7);
+b.userData={hp:2+wave*.4,sp:2.2+Math.min(wave,10)*.25,cd:.5,fl:0,m,h};sc.add(b);bots.push(b)}
+function fix(p,r){for(const q of PL){const dx=p.x-q.position.x,dz=p.z-q.position.z,d=Math.hypot(dx,dz),m=1.5+r;if(d<m){const k=d||.01;p.x=q.position.x+dx/k*m;p.z=q.position.z+dz/k*m}}p.x=cl(p.x,-46,46);p.z=cl(p.z,-46,46)}
+function drop(b){sc.remove(b);b.userData.m.dispose();b.userData.h.dispose()}
 
-        // --- Játék Változók ---
-        let score = 0, hp = 100, isLocked = false;
-        const weapons = {
-            1: { name: "PISTOL", color: 0x555555, fireRate: 400, damage: 1 },
-            2: { name: "RIFLE", color: 0x222222, fireRate: 100, damage: 0.5 },
-            3: { name: "SNIPER", color: 0x000000, fireRate: 1000, damage: 5 }
-        };
-        let currentWep = weapons[1];
-        let canShoot = true;
+/* effektek */
+const sg=new THREE.SphereGeometry(.06),sm=new THREE.MeshBasicMaterial({color:0xffe14d}),sk=new THREE.MeshBasicMaterial({color:0xff3a4d});
+function spark(pt,n,mat){for(let i=0;i<n;i++){const m=new THREE.Mesh(sg,mat);m.position.copy(pt);sc.add(m);PR.push({m,t:.4,v:new THREE.Vector3(Math.random()-.5,Math.random()*.8,Math.random()-.5).multiplyScalar(5)})}}
 
-        // --- Three.js Setup ---
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x050510);
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+/* lövés */
+const rc=new THREE.Raycaster();
+function sw(i){cw=i;relEnd=0;gm.color.setHex(W[i].c)}
+function reload(){const w=W[cw];if(relEnd||ammo[cw]>=w.mag)return;relEnd=T+w.rel;rw=cw;snd(300,.15,'square',.12,180)}let rw=0;
+function shoot(){const w=W[cw];if(st!=='play'||T<nextShot||relEnd)return;if(!ammo[cw]){reload();return}
+nextShot=T+w.rate;ammo[cw]--;kick=1;mfT=.05;snd(cw==2?140:cw?200:260,.12,'sawtooth',.22,60);
+rc.setFromCamera(new THREE.Vector2((Math.random()-.5)*w.sp,(Math.random()-.5)*w.sp),cam);
+const h=rc.intersectObjects([...bots,...PL],true)[0];
+if(h&&h.object.userData.b){const b=h.object.userData.b,u=b.userData,hs=h.object.userData.hs;u.hp-=w.dmg*(hs?2:1);u.fl=.08;spark(h.point,4,sm);hmT=.12;$('#hm').className='';snd(hs?900:600,.06,'square',.15);
+if(u.hp<=0){spark(b.position.clone().setY(1.5),14,sk);bots.splice(bots.indexOf(b),1);drop(b);score+=hs?150:100;kills++;hmT=.2;$('#hm').className='k';snd(200,.2,'triangle',.3,60)}}
+else if(h)spark(h.point,3,sm);
+if(!ammo[cw])reload()}
 
-        // Fények
-        const ambient = new THREE.AmbientLight(0xffffff, 0.5); scene.add(ambient);
-        const pointLight = new THREE.PointLight(0x00bcff, 1); scene.add(pointLight);
+function hurt(n){hp-=n;vig=Math.min(1,vig+.5);snd(120,.15,'sawtooth',.25,60);if(hp<=0){hp=0;over()}}
+function over(){st='over';if(score>C.best){C.best=score;sv()}document.exitPointerLock()}
+function reset(){bots.forEach(drop);bots.length=0;PR.forEach(p=>sc.remove(p.m));PR.length=0;hp=100;score=kills=wave=left=0;brk=1.2;spT=0;pl.x=pl.z=0;py=vy=0;yaw=pitch=0;ammo=W.map(w=>w.mag);sw(0);T=nextShot=0;vig=0;fire=false;st='pause'}
 
-        // Pálya
-        const grid = new THREE.GridHelper(100, 50, 0x00bcff, 0x222222);
-        scene.add(grid);
+/* frissítés */
+function update(dt){T+=dt;
+const f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0),s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0),l=Math.hypot(f,s)||1,sp=(keys.ShiftLeft?9:6)*dt;
+pl.x+=(-Math.sin(yaw)*f+Math.cos(yaw)*s)/l*sp;pl.z+=(-Math.cos(yaw)*f-Math.sin(yaw)*s)/l*sp;fix(pl,.5);
+if(keys.Space&&py===0&&vy===0)vy=7.5;vy-=22*dt;py+=vy*dt;if(py<0){py=0;vy=0}
+if(relEnd&&T>=relEnd){ammo[rw]=W[rw].mag;relEnd=0}
+if(fire&&W[cw].auto)shoot();
+if(!left&&!bots.length){brk-=dt;if(brk<=0){wave++;left=3+wave*2;brk=3;spT=0;if(wave>1)hp=Math.min(100,hp+15);$('#bn').textContent='Hullám '+wave;bnT=2.2}}
+if(left&&bots.length<8){spT-=dt;if(spT<=0){spawn();left--;spT=.7}}
+for(const b of bots){const u=b.userData,dx=pl.x-b.position.x,dz=pl.z-b.position.z,d=Math.hypot(dx,dz)||1;b.rotation.y=Math.atan2(dx,dz);
+if(d>1.7){b.position.x+=dx/d*u.sp*dt;b.position.z+=dz/d*u.sp*dt}
+for(const o of bots)if(o!==b){const ex=b.position.x-o.position.x,ez=b.position.z-o.position.z,e=Math.hypot(ex,ez);if(e>0&&e<1.4){b.position.x+=ex/e*(1.4-e)*.5;b.position.z+=ez/e*(1.4-e)*.5}}
+fix(b.position,.7);u.cd-=dt;if(d<2.3&&u.cd<=0){u.cd=.7;hurt(9)}u.fl-=dt;u.m.emissive.setHex(u.fl>0?0xcc5566:0x550010)}
+for(let i=PR.length-1;i>=0;i--){const p=PR[i];p.t-=dt;p.v.y-=12*dt;p.m.position.addScaledVector(p.v,dt);p.m.scale.setScalar(Math.max(p.t*2.5,.01));if(p.t<=0){sc.remove(p.m);PR.splice(i,1)}}
+kick=Math.max(0,kick-dt*10);mfT-=dt;hmT-=dt;bnT-=dt;vig=Math.max(0,vig-dt*1.2);
+cam.position.set(pl.x,1.6+py,pl.z);cam.rotation.set(pitch+kick*.012,yaw,0);gun.position.z=-.55+kick*.1;gun.rotation.x=kick*.1;mf.visible=mfT>0;
+hud()}
+const hv={},put=(id,v)=>{if(hv[id]!==v){hv[id]=v;$('#'+id).textContent=v}};
+function hud(){put('sc',score);put('wv',wave);put('kl',kills);put('hpn',Math.ceil(hp));const w=W[cw];put('wn',w.n);put('am',relEnd?'ÚJRATÖLTÉS…':ammo[cw]+' / '+w.mag);
+$('#hpb').style.width=hp+'%';$('#hpb').style.background=hp>50?'#3ddc9a':hp>25?'#f5a524':'#ef4b36';$('#vg').style.opacity=vig;$('#hm').style.opacity=hmT>0?1:0;$('#bn').style.opacity=bnT>0?1:0;
+document.querySelectorAll('#sl span').forEach((e,i)=>e.classList.toggle('on',i==cw))}
+function tick(n){requestAnimationFrame(tick);const dt=Math.min((n-last)/1000,.05);last=n;if(st==='play')update(dt);rd.render(sc,cam)}
 
-        // Fegyver Model (Egyszerű blokk)
-        const gunGeo = new THREE.BoxGeometry(0.15, 0.2, 0.7);
-        const gunMat = new THREE.MeshStandardMaterial({ color: currentWep.color });
-        const gunMesh = new THREE.Mesh(gunGeo, gunMat);
-        gunMesh.position.set(0.4, -0.4, -0.6);
-        camera.add(gunMesh);
-        scene.add(camera);
+/* menü */
+function tab(t){['play','set','ctl'].forEach(x=>{$('#t-'+x).hidden=x!==t});document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+function menu(){$('#ov').hidden=false;$('#hud').hidden=true;tab('play');
+const M={main:['Shoot Learn','Éld túl a támadó hullámokat. A fejlövés dupla sebzést okoz.','Indítás'],pause:['Szünet','A játék áll. Folytathatod, vagy új játékot kezdhetsz.','Folytatás'],over:['Vége','Pont: '+score+' · Hullám: '+wave+' · Ölés: '+kills+(score&&score>=C.best?' · Új rekord!':''),'Új játék']}[st];
+$('#mt').textContent=M[0];$('#md').textContent=M[1];$('#go').textContent=M[2];$('#nw').hidden=st!=='pause';$('#bs').textContent=C.best}
+function lock(){try{const r=rd.domElement.requestPointerLock();if(r&&r.catch)r.catch(()=>{})}catch(e){toast('Az egérzár nem érhető el')}}
+$('#go').onclick=()=>{if(st!=='pause')reset();lock()};$('#nw').onclick=()=>{reset();lock()};
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===rd.domElement){st='play';$('#ov').hidden=true;$('#hud').hidden=false;last=performance.now()}else{keys={};fire=false;if(st==='play')st='pause';menu()}});
+document.addEventListener('pointerlockerror',()=>{toast('Várj egy pillanatot, majd kattints újra');menu()});
 
-        // --- Botok ---
-        const bots = [];
-        function spawnBot() {
-            const bot = new THREE.Mesh(
-                new THREE.BoxGeometry(1.5, 3, 1.5),
-                new THREE.MeshStandardMaterial({ color: 0xff0044, emissive: 0xff0000, emissiveIntensity: 0.5 })
-            );
-            bot.position.set(Math.random()*40-20, 1.5, Math.random()*40-20);
-            bot.userData = { hp: 3 };
-            scene.add(bot);
-            bots.push(bot);
-        }
-        for(let i=0; i<6; i++) spawnBot();
+/* beállítások */
+const SET=[['col','Célkereszt színe','color'],['size','Hossz',4,30,1],['th','Vastagság',1,6,1],['gap','Rés',0,16,1],['sens','Érzékenység',.2,3,.05],['fov','Látószög',60,110,1],['vol','Hangerő',0,1,.05]];
+$('#sets').innerHTML=SET.map(s=>`<label class="rw"><span>${s[1]}</span><input data-k="${s[0]}" type="${s[2]=='color'?'color':'range'}" ${s[2]=='color'?'':`min="${s[2]}" max="${s[3]}" step="${s[4]}"`}>${s[2]=='color'?'':`<b data-v="${s[0]}"></b>`}</label>`).join('');
+function applyC(){const r=document.documentElement.style;r.setProperty('--cc',C.col);r.setProperty('--cs',C.size+'px');r.setProperty('--ct',C.th+'px');r.setProperty('--cg',C.gap+'px');cam.fov=C.fov;cam.updateProjectionMatrix();document.querySelectorAll('[data-v]').forEach(b=>b.textContent=C[b.dataset.v])}
+document.querySelectorAll('[data-k]').forEach(i=>{i.value=C[i.dataset.k];i.oninput=()=>{C[i.dataset.k]=i.type=='color'?i.value:+i.value;applyC();sv()}});
 
-        // --- Effektek (Szikrák) ---
-        function createHitEffect(pos) {
-            const particleGeo = new THREE.SphereGeometry(0.05);
-            const particleMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-            for(let i=0; i<5; i++) {
-                const p = new THREE.Mesh(particleGeo, particleMat);
-                p.position.copy(pos);
-                scene.add(p);
-                const dir = new THREE.Vector3(Math.random()-0.5, Math.random(), Math.random()-0.5);
-                const ani = setInterval(() => {
-                    p.position.addScaledVector(dir, 0.1);
-                    p.scale.multiplyScalar(0.9);
-                    if(p.scale.x < 0.01) { scene.remove(p); clearInterval(ani); }
-                }, 20);
-            }
-        }
+/* bemenet */
+addEventListener('keydown',e=>{keys[e.code]=true;if(st!=='play')return;if(['Space','ArrowUp','ArrowDown','Tab'].includes(e.code))e.preventDefault();
+if(e.code=='KeyR')reload();const n={Digit1:0,Digit2:1,Digit3:2}[e.code];if(n!==undefined)sw(n)});
+addEventListener('keyup',e=>keys[e.code]=false);addEventListener('blur',()=>{keys={};fire=false});
+addEventListener('mousedown',e=>{if(st==='play'&&e.button===0){fire=true;shoot()}});addEventListener('mouseup',()=>fire=false);
+addEventListener('wheel',e=>{if(st==='play')sw((cw+(e.deltaY>0?1:2))%3)},{passive:true});
+addEventListener('mousemove',e=>{if(st!=='play'||document.pointerLockElement!==rd.domElement)return;const mx=cl(e.movementX,-200,200),my=cl(e.movementY,-200,200);yaw-=mx*.0022*C.sens;pitch=cl(pitch-my*.0022*C.sens,-1.5,1.5)});
+addEventListener('contextmenu',e=>e.preventDefault());
 
-        // --- Beállítások Kezelése ---
-        const root = document.documentElement;
-        document.getElementById('chColor').addEventListener('input', (e) => root.style.setProperty('--ch-color', e.target.value));
-        document.getElementById('chSize').addEventListener('input', (e) => root.style.setProperty('--ch-size', e.target.value + 'px'));
-        document.getElementById('chThick').addEventListener('input', (e) => root.style.setProperty('--ch-thickness', e.target.value + 'px'));
-
-        // --- Irányítás & Lövés ---
-        document.addEventListener('mousedown', () => { if(isLocked) shoot(); });
-        document.addEventListener('keydown', (e) => {
-            if(weapons[e.key]) {
-                currentWep = weapons[e.key];
-                gunMesh.material.color.set(currentWep.color);
-                document.getElementById('weapon-info').innerText = currentWep.name;
-            }
-        });
-
-        const raycaster = new THREE.Raycaster();
-        function shoot() {
-            if(!canShoot) return;
-            canShoot = false;
-            setTimeout(() => canShoot = true, currentWep.fireRate);
-
-            // Visszarúgás
-            gunMesh.position.z += 0.15;
-            setTimeout(() => gunMesh.position.z -= 0.15, 50);
-
-            raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
-            const intersects = raycaster.intersectObjects(bots);
-
-            if(intersects.length > 0) {
-                const bot = intersects[0].object;
-                createHitEffect(intersects[0].point);
-                bot.userData.hp -= currentWep.damage;
-                if(bot.userData.hp <= 0) {
-                    score += 100;
-                    document.getElementById('score').innerText = score;
-                    bot.position.set(Math.random()*40-20, 1.5, Math.random()*40-20);
-                    bot.userData.hp = 3;
-                }
-            }
-        }
-
-        // Lock/Unlock kezelés
-        document.addEventListener('pointerlockchange', () => {
-            isLocked = document.pointerLockElement === document.body;
-            document.getElementById('settings-panel').style.display = isLocked ? 'none' : 'block';
-            document.getElementById('instructions').style.display = isLocked ? 'none' : 'flex';
-        });
-
-        document.getElementById('instructions').onclick = () => document.body.requestPointerLock();
-
-        // Egér mozgás
-        document.addEventListener('mousemove', (e) => {
-            if(isLocked) {
-                camera.rotation.y -= e.movementX * 0.002;
-                camera.rotation.x -= e.movementY * 0.002;
-                camera.rotation.x = Math.max(-1.5, Math.min(1.5, camera.rotation.x));
-            }
-        });
-
-        // Mozgás
-        const keys = {};
-        document.addEventListener('keydown', e => keys[e.code] = true);
-        document.addEventListener('keyup', e => keys[e.code] = false);
-
-        function animate() {
-            requestAnimationFrame(animate);
-            if(isLocked) {
-                const speed = 0.12;
-                if(keys['KeyW']) camera.translateZ(-speed);
-                if(keys['KeyS']) camera.translateZ(speed);
-                if(keys['KeyA']) camera.translateX(-speed);
-                if(keys['KeyD']) camera.translateX(speed);
-                camera.position.y = 1.6;
-
-                bots.forEach(bot => {
-                    bot.lookAt(camera.position);
-                    bot.translateZ(0.02); // Botok lassan jönnek
-                    if(bot.position.distanceTo(camera.position) < 2) {
-                        hp -= 0.05;
-                        document.getElementById('hp').innerText = Math.floor(hp);
-                    }
-                });
-            }
-            renderer.render(scene, camera);
-        }
-        animate();
-    </script>
+applyC();menu();requestAnimationFrame(tick);
+</script>
 </body>
 </html>
