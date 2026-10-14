@@ -1,528 +1,449 @@
 <!DOCTYPE html>
-<html lang="hu" class="scroll-smooth">
+<html lang="hu">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio — fluxi | Roblox Scriptek & Egyedi Fejlesztés</title>
-  <meta name="description" content="Prémium Roblox scriptek, Admin Panel, egyedi Luau fejlesztés." />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            void: '#0b0914',
-            neon: '#8b5cf6',
-            cyan: '#06b6d4',
-          },
-          boxShadow: {
-            'neon': '0 0 20px rgba(139,92,246,0.45), 0 0 60px rgba(139,92,246,0.15)',
-            'neon-lg': '0 0 30px rgba(139,92,246,0.55), 0 0 80px rgba(139,92,246,0.2)',
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body {
-      background-color: #0b0914;
-      background-image:
-        radial-gradient(ellipse 80% 60% at 12% 8%, rgba(139,92,246,0.25) 0%, transparent 55%),
-        radial-gradient(ellipse 70% 50% at 88% 85%, rgba(6,182,212,0.16) 0%, transparent 50%),
-        radial-gradient(ellipse 50% 40% at 50% 45%, rgba(139,92,246,0.07) 0%, transparent 70%);
-      background-attachment: fixed;
-    }
-    .glass {
-      background: rgba(255,255,255,0.045);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .glass-strong {
-      background: rgba(255,255,255,0.065);
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
-      border: 1px solid rgba(255,255,255,0.11);
-    }
-    .text-glow { text-shadow: 0 0 28px rgba(139,92,246,0.55); }
-    .card-glow:hover {
-      border-color: rgba(139,92,246,0.55);
-      box-shadow: 0 0 0 1px rgba(139,92,246,0.3), 0 14px 44px rgba(0,0,0,0.55), 0 0 48px rgba(139,92,246,0.18);
-    }
-    .faq-answer {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.25s ease;
-      opacity: 0;
-    }
-    .faq-answer.open {
-      max-height: 220px;
-      opacity: 1;
-      padding-top: 0.75rem;
-      padding-bottom: 0.35rem;
-    }
-    .faq-icon { transition: transform 0.3s ease; }
-    .faq-icon.open { transform: rotate(45deg); }
-    .view { display: none; }
-    .view.show { display: block; animation: fadeUp 0.4s ease; }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio — fluxi | Roblox Scriptek & Egyedi Fejlesztés</title>
+<meta name="description" content="Prémium Roblox scriptek, Admin Panel, egyedi Luau fejlesztés.">
+<style>
+  :root{
+    --bg:#0d0e12;--panel:#14161c;--line:#2a2d35;--txt:#f4f5f7;--muted:#8c909b;
+    --acc:#8b5cf6;--cyan:#06b6d4;--pink:#e879f9;--indigo:#6366f1;--green:#2fd3a0;--red:#f0583a;
+    --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    --mono:"JetBrains Mono","Cascadia Mono","SF Mono",ui-monospace,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+  .hidden{display:none!important}
+  .dim{font:500 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+  /* felső sáv */
+  .top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;min-height:51px;padding:0 22px;background:var(--bg);border-bottom:1px solid var(--line)}
+  .logo{align-self:stretch;display:flex;align-items:center;padding-right:18px;border-right:1px solid var(--line);font-size:20px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+  .pill{background:#fff;color:var(--bg);font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:6px 9px}
+  .sp{flex:1}
+
+  /* gombok */
+  .btn{display:inline-block;width:auto;text-align:center;background:#fff;color:var(--bg);border:1px solid #fff;font:700 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:14px 18px;transition:background .15s,color .15s,border-color .15s}
+  .btn:hover{background:transparent;color:#fff}
+  .btn.block{display:block;width:100%}
+  .btn.sm{padding:9px 12px;font-size:11px;line-height:1.3}
+  .btn.o{background:none;color:var(--muted);border-color:var(--line)}
+  .btn.o:hover{color:#fff;border-color:#fff}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* rács */
+  .wrap{width:100%;max-width:1120px;margin:0 auto;padding:22px}
+  .narrow{max-width:560px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));padding:0 1px 1px 0}
+  .grid.g1{grid-template-columns:1fr}
+  .cell{display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);margin:0 -1px -1px 0}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:12px;height:42px;padding:0 20px;border-bottom:1px solid var(--line)}
+  .badge{background:var(--c,var(--acc));color:var(--bg);font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 7px;white-space:nowrap}
+  .body{padding:20px;flex:1;display:flex;flex-direction:column}
+  .sechead{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 16px;margin:38px 0 14px}
+  .sechead h2,.sechead h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
+
+  /* hero */
+  .hero{padding:44px 28px 40px}
+  .hero h1{font-size:clamp(32px,6vw,60px);font-weight:800;letter-spacing:-.02em;line-height:1.08;margin-bottom:18px}
+  .hero h1 span+br+span{color:var(--acc)}
+  .hero p{color:var(--muted);font-size:17px;line-height:1.6;max-width:620px;margin-bottom:28px}
+
+  /* termék */
+  .app{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+  .icon{flex:none;width:64px;height:64px;border-radius:10px;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px}
+  .icon.big{width:88px;height:88px;border-radius:14px;font-size:30px}
+  .app h3,.body h2{font-size:21px;font-weight:700;letter-spacing:-.01em}
+  .price{font:700 15px var(--mono);color:var(--acc);margin-top:4px}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+  .tag{--c:var(--acc);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 7px}
+  .body .btn.block{margin-top:auto}
+  .soon{align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:14px}
+  .preview{aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .desc{color:var(--muted);line-height:1.7;margin:14px 0 26px}
+
+  /* discord + bizalom */
+  .row{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+  .row h3{font-size:18px;font-weight:700;margin-bottom:4px}
+  .row p,.trust p{color:var(--muted);font-size:14px;line-height:1.6}
+  .trust h4{font-size:17px;font-weight:700;margin-bottom:6px}
+
+  /* gyik */
+  .faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;text-align:left;font-size:15px;font-weight:600;transition:background .15s}
+  .faq-q:hover{background:var(--panel)}
+  .faq-icon{font:400 22px/1 var(--mono);color:var(--acc);transition:transform .3s}
+  .faq-icon.open{transform:rotate(45deg)}
+  .faq-answer{max-height:0;overflow:hidden;opacity:0;padding:0 20px;color:var(--muted);font-size:14px;line-height:1.7;transition:max-height .35s ease,opacity .25s ease,padding .25s ease}
+  .faq-answer.open{max-height:220px;opacity:1;padding-bottom:18px}
+
+  /* nézetek + űrlap */
+  .view{display:none}.view.show{display:block}
+  .lbl{display:block;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .field{margin-bottom:22px;position:relative}
+  .in{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:0;color:#fff;padding:12px 14px;font:inherit;font-size:15px;outline:none;transition:border-color .15s}
+  .in:focus{border-color:var(--acc)}
+  textarea.in{resize:vertical}
+  .suffix{position:absolute;right:14px;bottom:13px;font:700 12px var(--mono);color:var(--acc)}
+  .err{color:var(--red);font-size:12.5px;margin-top:6px}
+  .ok{text-align:center;padding:26px 0}
+  .ok h2{margin:16px 0 6px}
+  .ok p{color:var(--muted)}
+
+  .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;padding:10px 22px;border-top:1px solid var(--line)}
+  .foot a:hover{color:var(--acc)}
+  .main-wrap{flex:1}
+
+  @media (max-width:860px){
+    .wrap{padding:14px}
+    .top{padding:0 14px;gap:10px}
+    .top .pill,.top .dim{display:none}
+    .logo{padding-right:12px;font-size:17px}
+    .btn.sm{letter-spacing:.08em;font-size:10px}
+    .hero{padding:30px 20px}
+  }
+</style>
 </head>
-<body class="text-white antialiased min-h-screen">
+<body>
 
-  <!-- HEADER -->
-  <header class="fixed top-0 left-0 right-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-      <a href="/" class="text-2xl font-extrabold tracking-tight text-glow select-none">
-        <span class="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">fluxi</span>
-      </a>
+<header class="top">
+  <a href="/" class="logo">fluxi</a>
+  <span class="pill">Studio</span>
+  <span class="dim">Roblox · Luau</span>
+  <span class="sp"></span>
+  <button id="backBtn" class="btn sm o hidden" onclick="goBack()" data-i18n="back"></button>
+  <button id="langBtn" class="btn sm o" onclick="toggleLang()">EN</button>
+  <button id="orderBtn" class="btn sm" onclick="showCustomOrder()" data-i18n="orderBtn"></button>
+</header>
 
-      <div class="flex items-center gap-2 sm:gap-3">
-        <button id="backBtn" onclick="goBack()" class="hidden glass rounded-full px-3.5 py-2 text-sm font-semibold text-zinc-400 hover:text-white hover:bg-white/10 transition" data-i18n="back">
-          ← vissza
-        </button>
-        <button id="langBtn" onclick="toggleLang()"
-          class="glass rounded-full px-3.5 py-2 text-sm font-semibold text-zinc-400 hover:text-white hover:bg-white/10 transition">
-          EN
-        </button>
-        <button id="orderBtn" onclick="showCustomOrder()"
-          class="relative group rounded-full px-4 sm:px-5 py-2.5 text-sm font-semibold text-white
-                 bg-gradient-to-r from-violet-600 to-fuchsia-600
-                 shadow-neon hover:shadow-neon-lg hover:scale-[1.03] active:scale-[0.98]
-                 transition-all duration-300">
-          <span data-i18n="orderBtn">Rendelj egyedi programozást</span>
-        </button>
+<div class="main-wrap">
+
+<!-- FŐOLDAL -->
+<div id="mainView" class="view show">
+
+  <section class="wrap">
+    <div class="grid g1"><div class="cell">
+      <div class="head"><span class="badge" data-i18n="badge"></span></div>
+      <div class="hero">
+        <h1><span data-i18n="heroTitle"></span><br><span data-i18n="heroTitle2"></span></h1>
+        <p data-i18n="heroSub"></p>
+        <a class="btn" href="#products"><span data-i18n="ctaProducts"></span> ↓</a>
+      </div>
+    </div></div>
+  </section>
+
+  <section id="products" class="wrap" style="padding-top:0">
+    <div class="sechead"><h2 data-i18n="productsTitle"></h2><span class="dim" data-i18n="productsSub"></span></div>
+    <div class="grid">
+      <article class="cell">
+        <div class="head"><span class="badge">01</span></div>
+        <div class="body">
+          <div class="app">
+            <div class="icon">AP</div>
+            <div><h3 data-i18n="p1name"></h3><div class="price">60 R$</div></div>
+          </div>
+          <div class="tags">
+            <span class="tag">Roblox</span>
+            <span class="tag" style="--c:var(--cyan)" data-i18n="tagDelivery"></span>
+            <span class="tag" style="--c:var(--pink)">Luau</span>
+          </div>
+          <button class="btn block" onclick="showDetail('admin')" data-i18n="details"></button>
+        </div>
+      </article>
+      <article class="cell">
+        <div class="head"><span class="badge" style="--c:var(--muted)">02</span></div>
+        <div class="body soon" data-i18n="comingSoon"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-top:0">
+    <div class="grid g1" style="margin-top:38px"><div class="cell">
+      <div class="head"><span class="badge" style="--c:var(--indigo);color:#fff">Discord</span></div>
+      <div class="body row">
+        <div><h3 data-i18n="discordTitle"></h3><p data-i18n="discordSub"></p></div>
+        <a class="btn" href="https://discord.gg/" target="_blank" rel="noopener"><span data-i18n="discordBtn"></span> ↗</a>
+      </div>
+    </div></div>
+
+    <div class="grid trust" style="margin-top:22px">
+      <div class="cell trust"><div class="head"><span class="badge">01</span></div>
+        <div class="body"><h4 data-i18n="trust1Title"></h4><p data-i18n="trust1Desc"></p></div></div>
+      <div class="cell trust"><div class="head"><span class="badge" style="--c:var(--cyan)">02</span></div>
+        <div class="body"><h4 data-i18n="trust2Title"></h4><p data-i18n="trust2Desc"></p></div></div>
+      <div class="cell trust"><div class="head"><span class="badge" style="--c:var(--pink)">03</span></div>
+        <div class="body"><h4 data-i18n="trust3Title"></h4><p data-i18n="trust3Desc"></p></div></div>
+    </div>
+
+    <div class="sechead"><h2 data-i18n="faqTitle"></h2></div>
+    <div class="grid g1">
+      <div class="cell">
+        <button class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq1q"></span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" data-i18n="faq1a"></div>
+      </div>
+      <div class="cell">
+        <button class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq2q"></span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" data-i18n="faq2a"></div>
+      </div>
+      <div class="cell">
+        <button class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq3q"></span><span class="faq-icon">+</span></button>
+        <div class="faq-answer" data-i18n="faq3a"></div>
       </div>
     </div>
-  </header>
+  </section>
+</div>
 
-  <!-- ========== MAIN VIEW ========== -->
-  <div id="mainView" class="view show">
-
-    <!-- HERO -->
-    <section class="relative pt-28 sm:pt-36 pb-12 sm:pb-16 px-4">
-      <div class="max-w-4xl mx-auto text-center">
-        <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs font-medium text-violet-300 mb-6">
-          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-          <span data-i18n="badge">Roblox Script Store · Luau</span>
-        </div>
-
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.1] tracking-tight mb-5">
-          <span data-i18n="heroTitle">Prémium Roblox Scriptek</span><br class="hidden sm:block" />
-          <span class="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent" data-i18n="heroTitle2">& Egyedi Fejlesztések</span>
-        </h1>
-
-        <p class="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed" data-i18n="heroSub">
-          Kész scriptek 1–3 nap, egyedi fejlesztés 1–5 nap. Tiszta Luau kód, 24/7 támogatás.
-        </p>
-
-        <a href="#products"
-           class="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-base font-semibold
-                  bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white
-                  shadow-neon hover:shadow-neon-lg hover:scale-[1.03] transition-all duration-300">
-          <span data-i18n="ctaProducts">Nézd a termékeket</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-        </a>
+<!-- RÉSZLETEK -->
+<div id="detailView" class="view">
+  <div class="wrap narrow" style="padding-top:38px">
+    <div class="grid g1"><article class="cell">
+      <div class="head"><span class="badge">01</span><span class="dim">Roblox · Luau</span></div>
+      <div class="preview"><div class="icon big">AP</div><span class="dim">Preview</span></div>
+      <div class="body">
+        <h2 id="detailName"></h2>
+        <div class="price" id="detailPrice"></div>
+        <p class="desc" id="detailDesc"></p>
+        <button class="btn block" onclick="buyCurrent()"><span data-i18n="buy"></span></button>
       </div>
-    </section>
-
-    <!-- PRODUCTS -->
-    <section id="products" class="px-4 py-10 sm:py-16">
-      <div class="max-w-6xl mx-auto">
-        <div class="mb-8">
-          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight" data-i18n="productsTitle">Studio</h2>
-          <p class="text-zinc-500 mt-1" data-i18n="productsSub">Kész scriptek 1–3 nap alatt</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <!-- Admin Panel -->
-          <article class="group glass rounded-2xl overflow-hidden card-glow transition-all duration-300 hover:-translate-y-1">
-            <div class="relative aspect-video bg-gradient-to-br from-violet-900/60 via-fuchsia-900/40 to-cyan-900/30 overflow-hidden">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center">
-                  <div class="text-4xl mb-2 opacity-80">⚙️</div>
-                  <div class="text-xs font-semibold tracking-widest text-violet-300/80 uppercase">Preview</div>
-                </div>
-              </div>
-              <div class="absolute inset-0 bg-gradient-to-t from-[#0b0914]/80 to-transparent opacity-60"></div>
-            </div>
-
-            <div class="p-5">
-              <div class="flex items-start justify-between gap-3 mb-3">
-                <h3 class="text-lg font-bold" data-i18n="p1name">Admin Panel</h3>
-                <span class="text-lg font-extrabold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent whitespace-nowrap">60 R$</span>
-              </div>
-
-              <div class="flex flex-wrap gap-1.5 mb-4">
-                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-violet-500/15 text-violet-300 border border-violet-500/25">Roblox</span>
-                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/25" data-i18n="tagDelivery">1–3 nap</span>
-                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/25">Luau</span>
-              </div>
-
-              <button onclick="showDetail('admin')"
-                class="block w-full text-center rounded-xl py-2.5 text-sm font-semibold
-                       bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white
-                       shadow-neon hover:shadow-neon-lg hover:scale-[1.02] transition-all duration-300">
-                <span data-i18n="details">Részletek</span>
-              </button>
-            </div>
-          </article>
-
-          <!-- Coming soon -->
-          <article class="glass rounded-2xl overflow-hidden border border-dashed border-white/10 flex flex-col items-center justify-center min-h-[280px] text-center p-6 opacity-55">
-            <div class="text-3xl mb-3">✨</div>
-            <p class="text-sm font-medium text-zinc-400" data-i18n="comingSoon">Hamarosan több termék</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- TRUST + DISCORD + FAQ -->
-    <section class="px-4 py-12 sm:py-16">
-      <div class="max-w-6xl mx-auto">
-        <!-- Discord -->
-        <div class="glass-strong rounded-2xl p-6 sm:p-8 mb-10 flex flex-col sm:flex-row items-center justify-between gap-5 border border-indigo-500/20 shadow-[0_0_40px_rgba(99,102,241,0.12)]">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-2xl">💬</div>
-            <div>
-              <h3 class="font-bold text-lg" data-i18n="discordTitle">Csatlakozz a Discord közösségünkhöz</h3>
-              <p class="text-sm text-zinc-400" data-i18n="discordSub">Támogatás, frissítések, exclusive scriptek</p>
-            </div>
-          </div>
-          <a href="https://discord.gg/" target="_blank" rel="noopener"
-             class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold
-                    bg-indigo-600 hover:bg-indigo-500 text-white transition shadow-[0_0_24px_rgba(99,102,241,0.4)]">
-            <span data-i18n="discordBtn">Csatlakozás</span>
-          </a>
-        </div>
-
-        <!-- Trust -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">
-          <div class="glass rounded-2xl p-5 text-center card-glow transition-all duration-300">
-            <div class="text-3xl mb-3">⚡</div>
-            <h4 class="font-bold mb-1" data-i18n="trust1Title">Gyors átadás</h4>
-            <p class="text-sm text-zinc-500" data-i18n="trust1Desc">Kész scriptek 1–3 nap, egyedi 1–5 nap.</p>
-          </div>
-          <div class="glass rounded-2xl p-5 text-center card-glow transition-all duration-300">
-            <div class="text-3xl mb-3">🛡️</div>
-            <h4 class="font-bold mb-1" data-i18n="trust2Title">Biztonságos kód</h4>
-            <p class="text-sm text-zinc-500" data-i18n="trust2Desc">Tiszta, átlátható Luau — nincs backdoor.</p>
-          </div>
-          <div class="glass rounded-2xl p-5 text-center card-glow transition-all duration-300">
-            <div class="text-3xl mb-3">💬</div>
-            <h4 class="font-bold mb-1" data-i18n="trust3Title">24/7 Támogatás</h4>
-            <p class="text-sm text-zinc-500" data-i18n="trust3Desc">Discord-on mindig elérhető segítség.</p>
-          </div>
-        </div>
-
-        <!-- FAQ -->
-        <div class="max-w-2xl mx-auto">
-          <h2 class="text-2xl font-bold text-center mb-6" data-i18n="faqTitle">Gyakori kérdések</h2>
-          <div class="space-y-3">
-            <div class="glass rounded-xl overflow-hidden">
-              <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-medium hover:bg-white/5 transition">
-                <span data-i18n="faq1q">Hogyan illesztem be a scriptet a Robloxba?</span>
-                <span class="faq-icon text-violet-400 text-xl font-light leading-none">+</span>
-              </button>
-              <div class="faq-answer px-5 text-sm text-zinc-400 leading-relaxed" data-i18n="faq1a">
-                Nyisd meg a Roblox Studio-t, hozz létre egy Scriptet (ServerScriptService vagy LocalScript), majd másold be a megvásárolt kódot. Mentés után indítsd a játékot.
-              </div>
-            </div>
-            <div class="glass rounded-xl overflow-hidden">
-              <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-medium hover:bg-white/5 transition">
-                <span data-i18n="faq2q">Mikor kapom meg a vásárolt scriptet?</span>
-                <span class="faq-icon text-violet-400 text-xl font-light leading-none">+</span>
-              </button>
-              <div class="faq-answer px-5 text-sm text-zinc-400 leading-relaxed" data-i18n="faq2a">
-                Az Admin Panel és a kész termékek 1–3 napon belül érkeznek. Egyedi rendelés esetén általában 1–5 napon belül küldjük el az email címedre.
-              </div>
-            </div>
-            <div class="glass rounded-xl overflow-hidden">
-              <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-medium hover:bg-white/5 transition">
-                <span data-i18n="faq3q">Milyen fizetési módot fogadtok el?</span>
-                <span class="faq-icon text-violet-400 text-xl font-light leading-none">+</span>
-              </button>
-              <div class="faq-answer px-5 text-sm text-zinc-400 leading-relaxed" data-i18n="faq3a">
-                Jelenleg Robux (R$) fizetést fogadunk el. A rendelés leadása után részletes útmutatót kapsz a kifizetésről.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="px-4 py-10 border-t border-white/5">
-      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-600">
-        <div class="font-semibold text-zinc-500">© 2026 fluxi</div>
-        <a href="/" class="hover:text-violet-400 transition">fluxi.hu</a>
-      </div>
-    </footer>
+    </article></div>
   </div>
+</div>
 
-  <!-- ========== DETAIL VIEW ========== -->
-  <div id="detailView" class="view">
-    <div class="max-w-lg mx-auto px-4 pt-28 pb-16">
-      <div class="glass-strong rounded-2xl overflow-hidden">
-        <div class="aspect-video bg-gradient-to-br from-violet-900/60 via-fuchsia-900/40 to-cyan-900/30 flex items-center justify-center">
-          <div class="text-center">
-            <div class="text-5xl mb-2">⚙️</div>
-            <div class="text-xs font-semibold tracking-widest text-violet-300/80 uppercase">Preview</div>
-          </div>
-        </div>
-        <div class="p-6 sm:p-8">
-          <h2 class="text-2xl font-bold mb-1" id="detailName">Admin Panel</h2>
-          <div class="text-xl font-extrabold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent mb-5" id="detailPrice">60 R$</div>
-          <p class="text-zinc-400 leading-relaxed mb-7" id="detailDesc">Teljes admin panel a szerveredhez. Felhasználók kezelése, logok, beállítások és minden, amire szükséged van. Átadás: 1–3 nap.</p>
-          <button onclick="buyCurrent()"
-            class="w-full rounded-xl py-3.5 text-base font-semibold
-                   bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white
-                   shadow-neon hover:shadow-neon-lg hover:scale-[1.02] transition-all duration-300">
-            <span data-i18n="buy">Vásárlás</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== ORDER FORM VIEW ========== -->
-  <div id="orderView" class="view">
-    <div class="max-w-lg mx-auto px-4 pt-28 pb-16">
-      <h1 class="text-2xl font-bold mb-1">
-        <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent" data-i18n="title">studio</span>
-      </h1>
-      <p class="text-zinc-500 mb-6" data-i18n="sub">rendelj egyedi programozást · 1–5 nap</p>
-
-      <div class="glass-strong rounded-2xl p-6 sm:p-8">
+<!-- RENDELÉS -->
+<div id="orderView" class="view">
+  <div class="wrap narrow" style="padding-top:38px">
+    <div class="sechead" style="margin-top:0"><h1 style="color:var(--acc)" data-i18n="title"></h1><span class="dim" data-i18n="sub"></span></div>
+    <div class="grid g1"><div class="cell">
+      <div class="head"><span class="badge">R$</span></div>
+      <div class="body">
         <div id="form">
-          <div class="mb-5">
-            <label class="block text-xs font-semibold text-zinc-400 mb-2 tracking-wide" data-i18n="label1">Mit szeretnéd, hogy megprogramozzak?</label>
-            <textarea id="project" rows="4" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500/60 transition resize-y" data-i18n-placeholder="placeholder1" placeholder="Írd le az ötleted..." required></textarea>
+          <div class="field">
+            <label class="lbl" data-i18n="label1"></label>
+            <textarea id="project" rows="4" class="in" data-i18n-placeholder="placeholder1" required></textarea>
           </div>
-          <div class="mb-5">
-            <label class="block text-xs font-semibold text-zinc-400 mb-2 tracking-wide" data-i18n="label2">Mennyi rubuxt adsz érte?</label>
-            <div class="relative">
-              <input type="number" id="rubux" min="0" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 pr-14 text-white outline-none focus:border-violet-500/60 transition" placeholder="0" required />
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-violet-400 font-semibold text-sm">R$</span>
-            </div>
+          <div class="field">
+            <label class="lbl" data-i18n="label2"></label>
+            <input type="number" id="rubux" min="0" class="in" style="padding-right:48px" placeholder="0" required>
+            <span class="suffix">R$</span>
           </div>
-          <div class="mb-6">
-            <label class="block text-xs font-semibold text-zinc-400 mb-2 tracking-wide" data-i18n="label3">Email címed</label>
-            <input type="email" id="email" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500/60 transition" data-i18n-placeholder="placeholder3" placeholder="pelda@email.hu" required />
-            <div id="emailError" class="hidden text-red-400 text-xs mt-1.5" data-i18n="emailError">Kérlek érvényes email címet adj meg</div>
+          <div class="field">
+            <label class="lbl" data-i18n="label3"></label>
+            <input type="email" id="email" class="in" data-i18n-placeholder="placeholder3" required>
+            <div id="emailError" class="err hidden" data-i18n="emailError"></div>
           </div>
-          <button id="submitBtn" onclick="sendOrder()"
-            class="w-full rounded-xl py-3.5 text-base font-semibold
-                   bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white
-                   shadow-neon hover:shadow-neon-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-            <span data-i18n="submit">Küldés</span>
-          </button>
+          <button id="submitBtn" class="btn block" onclick="sendOrder()"><span data-i18n="submit"></span></button>
         </div>
-
-        <div id="success" class="hidden text-center py-8">
-          <div class="text-4xl mb-4">✅</div>
-          <h2 class="text-xl font-bold mb-2" data-i18n="successTitle">Köszönöm!</h2>
-          <p class="text-zinc-500" data-i18n="successText">Visszajelzek hamarosan az email címeden.</p>
+        <div id="success" class="ok hidden">
+          <span class="badge" style="--c:var(--green)">OK</span>
+          <h2 data-i18n="successTitle"></h2>
+          <p data-i18n="successText"></p>
         </div>
       </div>
-    </div>
+    </div></div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script>
-    (function(){ emailjs.init("I3zAazDdXnuEPYiBm"); })();
+</div>
 
-    const products = {
-      admin: {
-        name: { hu: 'Admin Panel', en: 'Admin Panel' },
-        price: 60,
-        desc: {
-          hu: 'Teljes admin panel a szerveredhez. Felhasználók kezelése, logok, beállítások és minden, amire szükséged van. Átadás: 1–3 nap.',
-          en: 'Full admin panel for your server. User management, logs, settings and everything you need. Delivery: 1–3 days.'
-        }
-      }
-    };
+<footer class="foot">
+  <span class="dim">© 2026 fluxi</span>
+  <a class="dim" href="/">fluxi.hu</a>
+</footer>
 
-    let currentProduct = null;
-    let currentLang = localStorage.getItem('lang') || 'hu';
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  (function(){ emailjs.init("I3zAazDdXnuEPYiBm"); })();
 
-    const i18n = {
-      hu: {
-        back: '← vissza', orderBtn: 'Rendelj egyedi programozást',
-        badge: 'Roblox Script Store · Luau',
-        heroTitle: 'Prémium Roblox Scriptek', heroTitle2: '& Egyedi Fejlesztések',
-        heroSub: 'Kész scriptek 1–3 nap, egyedi fejlesztés 1–5 nap. Tiszta Luau kód, 24/7 támogatás.',
-        ctaProducts: 'Nézd a termékeket',
-        productsTitle: 'Studio', productsSub: 'Kész scriptek 1–3 nap alatt',
-        p1name: 'Admin Panel', tagDelivery: '1–3 nap', details: 'Részletek',
-        comingSoon: 'Hamarosan több termék',
-        discordTitle: 'Csatlakozz a Discord közösségünkhöz',
-        discordSub: 'Támogatás, frissítések, exclusive scriptek', discordBtn: 'Csatlakozás',
-        trust1Title: 'Gyors átadás', trust1Desc: 'Kész scriptek 1–3 nap, egyedi 1–5 nap.',
-        trust2Title: 'Biztonságos kód', trust2Desc: 'Tiszta, átlátható Luau — nincs backdoor.',
-        trust3Title: '24/7 Támogatás', trust3Desc: 'Discord-on mindig elérhető segítség.',
-        faqTitle: 'Gyakori kérdések',
-        faq1q: 'Hogyan illesztem be a scriptet a Robloxba?',
-        faq1a: 'Nyisd meg a Roblox Studio-t, hozz létre egy Scriptet (ServerScriptService vagy LocalScript), majd másold be a megvásárolt kódot. Mentés után indítsd a játékot.',
-        faq2q: 'Mikor kapom meg a vásárolt scriptet?',
-        faq2a: 'Az Admin Panel és a kész termékek 1–3 napon belül érkeznek. Egyedi rendelés esetén általában 1–5 napon belül küldjük el az email címedre.',
-        faq3q: 'Milyen fizetési módot fogadtok el?',
-        faq3a: 'Jelenleg Robux (R$) fizetést fogadunk el. A rendelés leadása után részletes útmutatót kapsz a kifizetésről.',
-        buy: 'Vásárlás', title: 'studio', sub: 'rendelj egyedi programozást · 1–5 nap',
-        label1: 'Mit szeretnéd, hogy megprogramozzak?', label2: 'Mennyi rubuxt adsz érte?', label3: 'Email címed',
-        placeholder1: 'Írd le az ötleted...', placeholder3: 'pelda@email.hu',
-        emailError: 'Kérlek érvényes email címet adj meg', submit: 'Küldés',
-        successTitle: 'Köszönöm!', successText: 'Visszajelzek hamarosan az email címeden.'
-      },
-      en: {
-        back: '← back', orderBtn: 'Order custom programming',
-        badge: 'Roblox Script Store · Luau',
-        heroTitle: 'Premium Roblox Scripts', heroTitle2: '& Custom Development',
-        heroSub: 'Ready scripts in 1–3 days, custom development in 1–5 days. Clean Luau code, 24/7 support.',
-        ctaProducts: 'Browse products',
-        productsTitle: 'Studio', productsSub: 'Ready scripts in 1–3 days',
-        p1name: 'Admin Panel', tagDelivery: '1–3 days', details: 'Details',
-        comingSoon: 'More products coming soon',
-        discordTitle: 'Join our Discord community',
-        discordSub: 'Support, updates, exclusive scripts', discordBtn: 'Join',
-        trust1Title: 'Fast delivery', trust1Desc: 'Ready scripts 1–3 days, custom 1–5 days.',
-        trust2Title: 'Safe code', trust2Desc: 'Clean, transparent Luau — no backdoors.',
-        trust3Title: '24/7 Support', trust3Desc: 'Help is always available on Discord.',
-        faqTitle: 'FAQ',
-        faq1q: 'How do I insert the script into Roblox?',
-        faq1a: 'Open Roblox Studio, create a Script (ServerScriptService or LocalScript), paste the purchased code, save and play.',
-        faq2q: 'When do I receive the purchased script?',
-        faq2a: 'Admin Panel and ready-made products arrive within 1–3 days. Custom orders are usually sent to your email within 1–5 days.',
-        faq3q: 'What payment methods do you accept?',
-        faq3a: 'Currently we accept Robux (R$). After placing an order you will receive detailed payment instructions.',
-        buy: 'Buy', title: 'studio', sub: 'order custom programming · 1–5 days',
-        label1: 'What would you like me to program?', label2: 'How many rubux will you pay?', label3: 'Your email',
-        placeholder1: 'Describe your idea...', placeholder3: 'sample@email.com',
-        emailError: 'Please enter a valid email address', submit: 'Send',
-        successTitle: 'Thank you!', successText: 'I will get back to you soon at your email.'
-      }
-    };
-
-    function setLang(lang) {
-      currentLang = lang;
-      localStorage.setItem('lang', lang);
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        if (i18n[lang][key]) el.textContent = i18n[lang][key];
-      });
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.dataset.i18nPlaceholder;
-        if (i18n[lang][key]) el.placeholder = i18n[lang][key];
-      });
-      document.getElementById('langBtn').textContent = lang === 'hu' ? 'EN' : 'HU';
-      document.documentElement.lang = lang;
-      if (currentProduct && products[currentProduct]) {
-        const p = products[currentProduct];
-        document.getElementById('detailName').textContent = p.name[lang];
-        document.getElementById('detailDesc').textContent = p.desc[lang];
+  const products = {
+    admin: {
+      name: { hu: 'Admin Panel', en: 'Admin Panel' },
+      price: 60,
+      desc: {
+        hu: 'Teljes admin panel a szerveredhez. Felhasználók kezelése, logok, beállítások és minden, amire szükséged van. Átadás: 1–3 nap.',
+        en: 'Full admin panel for your server. User management, logs, settings and everything you need. Delivery: 1–3 days.'
       }
     }
+  };
 
-    function toggleLang() { setLang(currentLang === 'hu' ? 'en' : 'hu'); }
+  let currentProduct = null;
+  let currentLang = localStorage.getItem('lang') || 'hu';
 
-    function showView(id) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('show'));
-      document.getElementById(id).classList.add('show');
-      const isMain = id === 'mainView';
-      document.getElementById('orderBtn').classList.toggle('hidden', !isMain);
-      document.getElementById('backBtn').classList.toggle('hidden', isMain);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  const i18n = {
+    hu: {
+      back: '← vissza', orderBtn: 'Rendelj egyedi programozást',
+      badge: 'Roblox Script Store · Luau',
+      heroTitle: 'Prémium Roblox Scriptek', heroTitle2: '& Egyedi Fejlesztések',
+      heroSub: 'Kész scriptek 1–3 nap, egyedi fejlesztés 1–5 nap. Tiszta Luau kód, 24/7 támogatás.',
+      ctaProducts: 'Nézd a termékeket',
+      productsTitle: 'Studio', productsSub: 'Kész scriptek 1–3 nap alatt',
+      p1name: 'Admin Panel', tagDelivery: '1–3 nap', details: 'Részletek',
+      comingSoon: 'Hamarosan több termék',
+      discordTitle: 'Csatlakozz a Discord közösségünkhöz',
+      discordSub: 'Támogatás, frissítések, exclusive scriptek', discordBtn: 'Csatlakozás',
+      trust1Title: 'Gyors átadás', trust1Desc: 'Kész scriptek 1–3 nap, egyedi 1–5 nap.',
+      trust2Title: 'Biztonságos kód', trust2Desc: 'Tiszta, átlátható Luau — nincs backdoor.',
+      trust3Title: '24/7 Támogatás', trust3Desc: 'Discord-on mindig elérhető segítség.',
+      faqTitle: 'Gyakori kérdések',
+      faq1q: 'Hogyan illesztem be a scriptet a Robloxba?',
+      faq1a: 'Nyisd meg a Roblox Studio-t, hozz létre egy Scriptet (ServerScriptService vagy LocalScript), majd másold be a megvásárolt kódot. Mentés után indítsd a játékot.',
+      faq2q: 'Mikor kapom meg a vásárolt scriptet?',
+      faq2a: 'Az Admin Panel és a kész termékek 1–3 napon belül érkeznek. Egyedi rendelés esetén általában 1–5 napon belül küldjük el az email címedre.',
+      faq3q: 'Milyen fizetési módot fogadtok el?',
+      faq3a: 'Jelenleg Robux (R$) fizetést fogadunk el. A rendelés leadása után részletes útmutatót kapsz a kifizetésről.',
+      buy: 'Vásárlás', title: 'studio', sub: 'rendelj egyedi programozást · 1–5 nap',
+      label1: 'Mit szeretnéd, hogy megprogramozzak?', label2: 'Mennyi rubuxt adsz érte?', label3: 'Email címed',
+      placeholder1: 'Írd le az ötleted...', placeholder3: 'pelda@email.hu',
+      emailError: 'Kérlek érvényes email címet adj meg', submit: 'Küldés',
+      successTitle: 'Köszönöm!', successText: 'Visszajelzek hamarosan az email címeden.'
+    },
+    en: {
+      back: '← back', orderBtn: 'Order custom programming',
+      badge: 'Roblox Script Store · Luau',
+      heroTitle: 'Premium Roblox Scripts', heroTitle2: '& Custom Development',
+      heroSub: 'Ready scripts in 1–3 days, custom development in 1–5 days. Clean Luau code, 24/7 support.',
+      ctaProducts: 'Browse products',
+      productsTitle: 'Studio', productsSub: 'Ready scripts in 1–3 days',
+      p1name: 'Admin Panel', tagDelivery: '1–3 days', details: 'Details',
+      comingSoon: 'More products coming soon',
+      discordTitle: 'Join our Discord community',
+      discordSub: 'Support, updates, exclusive scripts', discordBtn: 'Join',
+      trust1Title: 'Fast delivery', trust1Desc: 'Ready scripts 1–3 days, custom 1–5 days.',
+      trust2Title: 'Safe code', trust2Desc: 'Clean, transparent Luau — no backdoors.',
+      trust3Title: '24/7 Support', trust3Desc: 'Help is always available on Discord.',
+      faqTitle: 'FAQ',
+      faq1q: 'How do I insert the script into Roblox?',
+      faq1a: 'Open Roblox Studio, create a Script (ServerScriptService or LocalScript), paste the purchased code, save and play.',
+      faq2q: 'When do I receive the purchased script?',
+      faq2a: 'Admin Panel and ready-made products arrive within 1–3 days. Custom orders are usually sent to your email within 1–5 days.',
+      faq3q: 'What payment methods do you accept?',
+      faq3a: 'Currently we accept Robux (R$). After placing an order you will receive detailed payment instructions.',
+      buy: 'Buy', title: 'studio', sub: 'order custom programming · 1–5 days',
+      label1: 'What would you like me to program?', label2: 'How many rubux will you pay?', label3: 'Your email',
+      placeholder1: 'Describe your idea...', placeholder3: 'sample@email.com',
+      emailError: 'Please enter a valid email address', submit: 'Send',
+      successTitle: 'Thank you!', successText: 'I will get back to you soon at your email.'
     }
+  };
 
-    function showDetail(id) {
-      currentProduct = id;
-      const p = products[id];
-      if (!p) return;
-      document.getElementById('detailName').textContent = p.name[currentLang];
-      document.getElementById('detailPrice').textContent = p.price + ' R$';
-      document.getElementById('detailDesc').textContent = p.desc[currentLang];
-      showView('detailView');
-    }
-
-    function buyCurrent() {
-      if (!currentProduct || !products[currentProduct]) return;
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (i18n[lang][key]) el.textContent = i18n[lang][key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      if (i18n[lang][key]) el.placeholder = i18n[lang][key];
+    });
+    document.getElementById('langBtn').textContent = lang === 'hu' ? 'EN' : 'HU';
+    document.documentElement.lang = lang;
+    if (currentProduct && products[currentProduct]) {
       const p = products[currentProduct];
-      document.getElementById('project').value = p.name[currentLang];
-      document.getElementById('rubux').value = p.price;
-      showOrderForm();
+      document.getElementById('detailName').textContent = p.name[lang];
+      document.getElementById('detailDesc').textContent = p.desc[lang];
     }
+  }
 
-    function showCustomOrder() {
-      currentProduct = null;
-      document.getElementById('project').value = '';
-      document.getElementById('rubux').value = '';
-      showOrderForm();
+  function toggleLang() { setLang(currentLang === 'hu' ? 'en' : 'hu'); }
+
+  function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('show'));
+    document.getElementById(id).classList.add('show');
+    const isMain = id === 'mainView';
+    document.getElementById('orderBtn').classList.toggle('hidden', !isMain);
+    document.getElementById('backBtn').classList.toggle('hidden', isMain);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showDetail(id) {
+    currentProduct = id;
+    const p = products[id];
+    if (!p) return;
+    document.getElementById('detailName').textContent = p.name[currentLang];
+    document.getElementById('detailPrice').textContent = p.price + ' R$';
+    document.getElementById('detailDesc').textContent = p.desc[currentLang];
+    showView('detailView');
+  }
+
+  function buyCurrent() {
+    if (!currentProduct || !products[currentProduct]) return;
+    const p = products[currentProduct];
+    document.getElementById('project').value = p.name[currentLang];
+    document.getElementById('rubux').value = p.price;
+    showOrderForm();
+  }
+
+  function showCustomOrder() {
+    currentProduct = null;
+    document.getElementById('project').value = '';
+    document.getElementById('rubux').value = '';
+    showOrderForm();
+  }
+
+  function showOrderForm() {
+    document.getElementById('form').classList.remove('hidden');
+    document.getElementById('success').classList.add('hidden');
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').querySelector('span').textContent = i18n[currentLang].submit;
+    showView('orderView');
+  }
+
+  function goBack() {
+    document.getElementById('project').value = '';
+    document.getElementById('rubux').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('emailError').classList.add('hidden');
+    currentProduct = null;
+    showView('mainView');
+  }
+
+  function toggleFaq(btn) {
+    const answer = btn.nextElementSibling;
+    const icon = btn.querySelector('.faq-icon');
+    const isOpen = answer.classList.contains('open');
+    document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+    document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('open'));
+    if (!isOpen) {
+      answer.classList.add('open');
+      icon.classList.add('open');
     }
+  }
 
-    function showOrderForm() {
-      document.getElementById('form').classList.remove('hidden');
-      document.getElementById('success').classList.add('hidden');
-      document.getElementById('form').style.display = '';
-      document.getElementById('success').style.display = 'none';
-      document.getElementById('submitBtn').disabled = false;
-      document.getElementById('submitBtn').querySelector('span').textContent = i18n[currentLang].submit;
-      showView('orderView');
+  function sendOrder() {
+    const project = document.getElementById('project').value.trim();
+    const rubux = document.getElementById('rubux').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const emailError = document.getElementById('emailError');
+    const btn = document.getElementById('submitBtn');
+
+    emailError.classList.add('hidden');
+    if (!email.includes('@') || !email.includes('.')) {
+      emailError.classList.remove('hidden');
+      return;
     }
+    if (!project || !rubux || !email) return;
 
-    function goBack() {
-      document.getElementById('project').value = '';
-      document.getElementById('rubux').value = '';
-      document.getElementById('email').value = '';
-      document.getElementById('emailError').classList.add('hidden');
-      currentProduct = null;
-      showView('mainView');
-    }
+    btn.disabled = true;
+    btn.querySelector('span').textContent = currentLang === 'hu' ? 'Küldés...' : 'Sending...';
 
-    function toggleFaq(btn) {
-      const answer = btn.nextElementSibling;
-      const icon = btn.querySelector('.faq-icon');
-      const isOpen = answer.classList.contains('open');
-      document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
-      document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('open'));
-      if (!isOpen) {
-        answer.classList.add('open');
-        icon.classList.add('open');
-      }
-    }
+    emailjs.send('service_i2ieznq', 'template_6c90y9p', {
+      project, rubux, email
+    }).then(() => {
+      document.getElementById('form').classList.add('hidden');
+      document.getElementById('success').classList.remove('hidden');
+    }).catch(() => {
+      alert(currentLang === 'hu' ? 'Hiba történt a küldés során. Próbáld újra.' : 'An error occurred. Please try again.');
+      btn.disabled = false;
+      btn.querySelector('span').textContent = i18n[currentLang].submit;
+    });
+  }
 
-    function sendOrder() {
-      const project = document.getElementById('project').value.trim();
-      const rubux = document.getElementById('rubux').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const emailError = document.getElementById('emailError');
-      const btn = document.getElementById('submitBtn');
-
-      emailError.classList.add('hidden');
-      if (!email.includes('@') || !email.includes('.')) {
-        emailError.classList.remove('hidden');
-        return;
-      }
-      if (!project || !rubux || !email) return;
-
-      btn.disabled = true;
-      btn.querySelector('span').textContent = currentLang === 'hu' ? 'Küldés...' : 'Sending...';
-
-      emailjs.send('service_i2ieznq', 'template_6c90y9p', {
-        project, rubux, email
-      }).then(() => {
-        document.getElementById('form').style.display = 'none';
-        document.getElementById('success').style.display = 'block';
-        document.getElementById('success').classList.remove('hidden');
-      }).catch(() => {
-        alert(currentLang === 'hu' ? 'Hiba történt a küldés során. Próbáld újra.' : 'An error occurred. Please try again.');
-        btn.disabled = false;
-        btn.querySelector('span').textContent = i18n[currentLang].submit;
-      });
-    }
-
-    setLang(currentLang);
-  </script>
+  setLang(currentLang);
+</script>
 </body>
 </html>
