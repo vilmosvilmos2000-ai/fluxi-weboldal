@@ -1,1 +1,372 @@
-<PLACEHOLDER>
+<!DOCTYPE html><html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>A Számok Birodalma – Matek kaland</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0f13;--ln:#272a33;--tx:#f4f4f5;--mut:#8b8f9a;--ok:#2ee6a6;--no:#ff6b57;--mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 var(--sans)}
+.hd{display:flex;align-items:center;gap:16px;min-height:64px;padding:0 24px;border-bottom:1px solid var(--ln)}
+.logo{margin:0;font:800 18px var(--sans);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.vr{align-self:stretch;width:1px;background:var(--ln)}.sp{flex:1}.hd button{height:40px}
+.chip,.tab.on{background:#fff;color:#000}
+.chip{font:700 12px var(--mono);letter-spacing:.16em;text-transform:uppercase;padding:7px 11px}
+.sub,.m,.tab{font:500 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.w{max-width:1280px;margin:0 auto;padding:24px}
+.tabs{display:inline-flex;border:1px solid var(--ln)}
+.tab{padding:11px 16px}.tab+.tab{border-left:1px solid var(--ln)}.tab b{margin-left:8px;font-weight:500;opacity:.6}
+.story{max-width:68ch;margin:22px 0 24px;font-size:18px;color:#c9ccd4}
+.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));border-top:1px solid var(--ln);border-left:1px solid var(--ln)}
+.c{display:flex;flex-direction:column;gap:20px;padding:20px 20px 24px;border-right:1px solid var(--ln);border-bottom:1px solid var(--ln)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.nb{background:var(--ac);color:#0b0c10;font:700 13px var(--mono);padding:6px 8px;line-height:1}
+.ti{display:flex;align-items:center;gap:16px}
+.ic{flex:none;width:56px;height:56px;border-radius:12px;background:var(--ac);display:grid;place-items:center;font-size:30px}
+h2{margin:0;font:700 25px/1.15 var(--sans);letter-spacing:-.01em}h2 span{color:var(--ac)}
+.m2{margin:4px 0 0;color:var(--mut);font-size:15px}
+.tg{display:inline-block;font:500 11.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ok);border:1px solid var(--ln);padding:5px 8px}
+button{height:46px;padding:0 18px;border:1px solid #fff;border-radius:0;background:#fff;color:#000;font:700 12px var(--mono);letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+button:hover{background:#d9dbe0}button.o{background:transparent;color:var(--tx);border-color:#4a4e5a}button.o:hover{background:#1a1c23}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ac,#fff);outline-offset:2px}
+.cta{width:100%;margin-top:auto}
+.gm{max-width:760px;margin:24px auto 0;border:1px solid var(--ln)}.gm .c{border:0;padding:24px;gap:22px}
+.pb{height:4px;background:var(--ln)}.pb i{display:block;height:100%;background:var(--ac)}
+.q{margin:0;padding:22px;background:#15171d;border:1px solid var(--ln);font:700 clamp(22px,3.4vw,30px)/1.3 var(--sans)}
+.row{display:flex}.row input{flex:1;min-width:0}.row button{height:56px}
+.row2{display:flex;flex-wrap:wrap;gap:12px}
+input{height:56px;padding:0 16px;border:1px solid #4a4e5a;border-radius:0;background:var(--bg);color:var(--tx);font:600 22px var(--mono);-webkit-user-select:text;user-select:text;touch-action:manipulation;-webkit-appearance:none;appearance:none}
+input::placeholder{color:var(--mut)}input:focus{border-color:var(--ac)}
+#m{min-height:22px;font:500 13px var(--mono);letter-spacing:.06em}.ok{color:var(--ok)}.no{color:var(--no)}
+.th{margin:14px 0 0}.th+.gm{margin-top:14px}.t h2{font-size:21px}
+@media(max-width:640px){.sub{display:none}.hd{padding:0 14px;gap:12px}.w{padding:16px 14px}.logo{font-size:15px}}
+</style></head><body><div id="app"></div>
+<script>
+const r=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),p=a=>a[r(0,a.length-1)],F=[1,1,2,6,24,120,720];
+const T=[
+[ // 1. évfolyam
+(a=r(1,9),b=r(1,9))=>[a+" + "+b,a+b],
+(a=r(5,9),b=r(1,a))=>[a+" − "+b,a-b],
+(a=r(10,15),b=r(1,5))=>[a+" + "+b,a+b],
+(a=r(11,20),b=r(1,9))=>[a+" − "+b,a-b],
+(a=r(1,9))=>[a+" + ? = 10",10-a],
+(a=r(1,9))=>["Melyik szám jön közvetlenül "+a+" után?",a+1],
+(a=r(1,9))=>["Melyik szám van "+a+" és "+(a+2)+" között?",a+1],
+(a=r(1,20),b=a+r(1,5),s=r(0,1))=>["Melyik nagyobb: "+(s?a:b)+" vagy "+(s?b:a)+"?",b],
+(a=r(1,9))=>["Mennyi a(z) "+a+" duplája?",a*2],
+(a=r(1,9))=>["Mennyi a(z) "+a*2+" fele?",a],
+(a=r(2,9),b=r(1,9))=>["Van "+a+" almád, kapsz még "+b+"-t. Hány almád van?",a+b],
+(a=r(5,9),b=r(1,4))=>["Van "+a+" kincsed, elvesztesz "+b+"-t. Hány maradt?",a-b],
+(a=r(1,5)*2)=>["2-esével: "+a+", "+(a+2)+", "+(a+4)+", ?",a+6],
+(a=r(1,6)*10)=>["10-esével: "+a+", "+(a+10)+", ?",a+20],
+(a=r(2,5))=>["Hány lába van "+a+" kutyának?",a*4],
+(a=r(2,8))=>["Hány kereke van "+a+" biciklinek?",a*2],
+()=>["Hány napból áll egy hét?",7],
+(a=r(2,9))=>["A(z) "+a+" két szomszédjának összege?",a*2],
+()=>["Hány ujjad van két kezeden?",10],
+(a=r(1,5),b=r(1,5),c=r(1,5))=>[a+" + "+b+" + "+c,a+b+c],
+()=>["Ha ma kedd van, a hét hányadik napja lesz holnap? (hétfő = 1)",3],
+(a=r(3,9))=>[a+" + "+a+" + "+a+" = ? ",a*3]
+],
+[ // 2.
+(a=r(20,70),b=r(10,25))=>[a+" + "+b,a+b],
+(a=r(50,99),b=r(10,40))=>[a+" − "+b,a-b],
+(a=r(2,9))=>[a+" × 2",a*2],
+(a=r(2,9))=>[a+" × 5",a*5],
+(a=r(2,9))=>[a+" × 10",a*10],
+(a=r(2,9),b=r(2,5))=>[a*b+" : "+b,a],
+(a=r(11,89))=>["Melyik szám van közvetlenül "+a+" előtt?",a-1],
+(a=r(2,9),b=r(2,9))=>[a+" × "+b,a*b],
+(a=r(2,9))=>[a+" tízes és 3 egyes: melyik szám ez?",a*10+3],
+(a=r(3,9),b=r(3,9))=>["Egy dobozban "+a+" kincs van. Hány kincs van "+b+" dobozban?",a*b],
+(a=r(3,9),b=r(2,5))=>[a*b+" cukorkát osztasz szét "+b+" gyerek közt egyenlően. Hány jut egyre?",a],
+(a=r(10,50),b=r(10,40))=>[a+" + ? = "+(a+b),b],
+(a=r(2,9))=>["Mennyi a(z) "+a*10+" fele?",a*5],
+(a=r(1,5))=>["Folytasd: "+3*a+", "+6*a+", "+9*a+", ?",12*a],
+(a=r(2,6))=>["Hány lába van "+a+" póknak?",a*8],
+()=>["Hány perc van egy órában?",60],
+(a=r(2,9))=>["Hány centiméter "+a+" méter?",a*100],
+(a=r(2,9))=>["Ha ma "+a+"-e van, hányadika lesz 10 nap múlva?",a+10],
+(a=r(2,9),b=r(2,9),c=r(2,9))=>[a+" × "+b+" + "+c,a*b+c],
+(a=r(1,9)*2)=>["Páros számok: "+a+", "+(a+2)+", ?",a+4],
+(a=r(2,9))=>["Melyik szám duplája "+a*2+"?",a],
+(a=r(5,9))=>["Egy csillagnak "+a+" ága van. Hány ága van 4 csillagnak?",a*4]
+],
+[ // 3.
+(a=r(100,500),b=r(100,400))=>[a+" + "+b,a+b],
+(a=r(500,999),b=r(100,499))=>[a+" − "+b,a-b],
+(a=r(3,9),b=r(11,40))=>[a+" × "+b,a*b],
+(a=r(3,9),b=r(11,60))=>[a*b+" : "+a,b],
+(a=r(6,9),b=r(6,9))=>[a+" × "+b,a*b],
+(a=r(2,9))=>["Hány gramm "+a+" kg?",a*1000],
+(a=r(2,9))=>["Hány deciliter "+a+" liter?",a*10],
+(a=r(3,9),b=r(3,9))=>["Téglalap oldalai "+a+" és "+b+" cm. Mekkora a kerülete (cm)?",2*(a+b)],
+(a=r(3,9))=>["Négyzet oldala "+a+" cm. Mekkora a kerülete (cm)?",4*a],
+(a=r(2,9))=>["Hány nap van "+a+" hétben?",a*7],
+(a=r(2,9),b=r(2,9))=>[a+" × "+b+" + "+a,a*b+a],
+(a=r(3,9),b=r(2,9),c=r(1,a-1))=>[(a*b+c)+" : "+a+" maradéka?",c],
+(a=r(2,9))=>["Mennyi a(z) "+a*100+" tizede?",a*10],
+(a=r(2,9))=>["Mennyi a(z) "+a*12+" negyede?",a*3],
+(a=r(2,9))=>["Mennyi a(z) "+a*9+" harmada?",a*3],
+(a=r(3,9),b=r(5,9))=>["Egy vonat "+a+" órán át óránként "+b+"0 km-t tesz meg. Hány km-t megy összesen?",a*b*10],
+()=>["Hány másodperc egy perc?",60],
+(a=r(2,5))=>["Hány centiméter "+a+" méter és 50 cm?",a*100+50],
+(a=r(2,9))=>["Folytasd: "+a+", "+a*2+", "+a*4+", ?",a*8],
+(a=r(2,9))=>["Mivel kell "+a+"-t szorozni, hogy "+a*7+" legyen?",7],
+(a=r(2,9),b=r(2,9))=>[a*b+" kincset "+a+" ládába osztasz szét egyenlően. Hány jut egy ládába?",b],
+()=>["Melyik a legnagyobb háromjegyű szám?",999],
+(a=r(2,5))=>["Hány tojás van "+a+" tucatban?",a*12]
+],
+[ // 4.
+(a=r(1000,5000),b=r(1000,4999))=>[a+" + "+b,a+b],
+(a=r(5000,9999),b=r(1000,4999))=>[a+" − "+b,a-b],
+(a=r(12,99),b=r(11,30))=>[a+" × "+b,a*b],
+(a=r(12,40),b=r(3,9))=>[a*b+" : "+b,a],
+(a=r(2,9))=>[a*100+" × 10",a*1000],
+(a=p([["XIV",14],["XXIX",29],["XLII",42],["XCIX",99],["MCM",1900]]))=>["Írd át arab számmal: "+a[0],a[1]],
+(a=r(3,12),b=r(3,12))=>["Téglalap oldalai "+a+" és "+b+" cm. Területe (cm²)?",a*b],
+(a=r(3,15))=>["Négyzet oldala "+a+" cm. Területe (cm²)?",a*a],
+(a=r(2,9))=>["Hány perc "+a+" óra?",a*60],
+(a=r(2,9))=>["Hány milliméter "+a+" cm?",a*10],
+(a=r(2,9))=>["Hány méter "+a+" km?",a*1000],
+(a=r(2,9))=>["Kerekítsd tízesre: "+(a*100+47),a*100+50],
+(a=r(2,9))=>["Kerekítsd százasra: "+(a*1000+640),a*1000+600],
+(a=r(2,6))=>["Hány óra "+a+" nap?",a*24],
+(a=r(3,9),b=r(10,30))=>[a+" gyerek mind "+b+" matricát gyűjtött. Összesen hány matricájuk van?",a*b],
+(a=r(2,9),b=r(3,9))=>[a+" cica "+a*b+" halat eszik meg. Hányat eszik egy cica?",b],
+(a=r(2,9))=>["? × "+a+" = "+a*8,8],
+(a=r(2,9))=>["Mennyi a(z) "+a*20+" ötöde?",a*4],
+(a=r(2,9),b=r(2,9),c=r(2,9))=>["("+a+" + "+b+") × "+c,(a+b)*c],
+(a=r(2,9),b=r(2,9),c=r(2,9))=>[a+" + "+b+" × "+c,a+b*c],
+(a=r(2,9))=>["Folytasd: "+a+", "+a*3+", "+a*9+", ?",a*27],
+()=>["Hány csúcsa van egy kockának?",8],
+()=>["Hány lapja van egy kockának?",6]
+],
+[ // 5.
+(a=r(11,99),b=r(11,50))=>[a+" × "+b,a*b],
+(a=r(10,99)/10,b=r(10,99)/10)=>[a+" + "+b,+(a+b).toFixed(1)],
+(a=r(20,99)/10,b=r(10,19)/10)=>[a+" − "+b,+(a-b).toFixed(1)],
+(a=r(2,9),b=r(2,9)/10)=>[a+" × "+b,+(a*b).toFixed(1)],
+(a=r(2,9),b=r(2,9))=>[(a*b/10)+" : "+a,b/10],
+(a=r(2,12))=>["Mennyi "+a+"² ?",a*a],
+(a=r(2,9),b=r(a+1,15))=>[a+" − "+b,a-b],
+(a=r(2,9),b=r(10,20))=>["−"+a+" + "+b,b-a],
+(a=r(2,9),b=r(2,6))=>["Mennyi a(z) "+a*b+" 1/"+b+" része?",a],
+(a=r(2,9))=>["Mennyi a(z) "+a*3+" 2/3 része?",a*2],
+(a=r(2,6),b=r(2,6),c=r(2,6))=>["Téglatest élei "+a+", "+b+", "+c+" cm. Térfogata (cm³)?",a*b*c],
+(a=r(2,9),b=r(5,20))=>["Oldd meg: x + "+a+" = "+(a+b),b],
+(a=r(2,9),b=r(2,9))=>["Oldd meg: "+a+"x = "+a*b,b],
+(a=p([[12,6],[16,5],[18,6],[24,8],[30,8],[36,9]]))=>["Hány pozitív osztója van a(z) "+a[0]+" számnak?",a[1]],
+(a=p([[10,4],[20,8],[30,10]]))=>["Hány prímszám van 1 és "+a[0]+" között (a végpontokat is beleértve)?",a[1]],
+(a=p([[4,6,12],[6,8,24],[4,10,20],[6,9,18],[8,12,24]]))=>["Legkisebb közös többszörös: "+a[0]+" és "+a[1],a[2]],
+(a=r(2,20),b=r(1,10))=>["Mennyi "+a+" és "+(a+2*b)+" átlaga?",a+b],
+(a=r(2,9))=>["Mennyi a(z) "+a*50+" 10%-a?",a*5],
+(a=r(2,9))=>["Hány óra "+a+" nap és 6 óra?",a*24+6],
+()=>["Folytasd: 1, 4, 9, 16, ?",25],
+()=>["Folytasd: 1, 1, 2, 3, 5, 8, ?",13],
+(a=r(2,9))=>["Mennyi "+a+"³ ?",a**3],
+(a=r(30,80),b=r(30,60))=>["Háromszög két szöge "+a+"° és "+b+"°. Mekkora a harmadik (fok)?",180-a-b]
+],
+[ // 6.
+(a=p([["1/2 + 1/4",.75],["3/4 − 1/2",.25],["1/5 + 2/5",.6],["1/2 + 3/10",.8],["3/5 − 1/10",.5],["1/4 + 1/4",.5]]))=>[a[0]+" (írd tizedes törtként)",a[1]],
+(a=r(2,9),b=r(2,9))=>["−"+a+" − "+b,-a-b],
+(a=r(2,9),b=r(2,9))=>["(−"+a+") × "+b,-a*b],
+(a=r(2,9),b=r(2,9))=>["(−"+a+") × (−"+b+")",a*b],
+(a=r(2,9),b=r(2,9))=>["(−"+a*b+") : "+a,-b],
+(a=r(2,9),b=p([10,20,50]))=>["Mennyi "+a*100+" "+b+"%-a?",a*b],
+(a=r(2,9))=>["Egy "+a*100+" Ft-os dolog 25%-kal olcsóbb lett. Mennyibe kerül (Ft)?",a*75],
+(a=p([[12,18,6],[24,36,12],[20,30,10],[15,25,5],[28,42,14]]))=>["Legnagyobb közös osztó: "+a[0]+" és "+a[1],a[2]],
+(a=r(2,5),b=a+r(1,3),c=r(2,6))=>["Két rész aránya "+a+" : "+b+". Ha az első "+a*c+", mennyi a második?",b*c],
+(a=r(2,9))=>["Kör sugara "+a+" cm. Mekkora az átmérője?",2*a],
+(a=r(2,9),b=r(2,9))=>[a/10+" × "+b/10,a*b/100],
+(a=r(2,9),b=r(2,9))=>["Oldd meg: x : "+a+" = "+b,a*b],
+(a=r(2,9),b=r(2,9),c=r(2,9))=>["Oldd meg: "+a+"x + "+b+" = "+(a*c+b),c],
+(a=r(3,9),b=r(5,15))=>["Egy autó "+a+" óra alatt "+a*b*10+" km-t tesz meg. Átlagsebessége (km/h)?",b*10],
+()=>["Hány szimmetriatengelye van egy négyzetnek?",4],
+()=>["Hány szimmetriatengelye van egy szabályos háromszögnek?",3],
+(a=r(3,9),b=r(3,9))=>["Háromszög alapja "+a*2+" cm, magassága "+b+" cm. Területe (cm²)?",a*b],
+(a=r(2,9))=>["|−"+a+"| + |"+a+"| = ?",2*a],
+(a=r(2,6))=>["Hány egész szám van −"+a+" és "+a+" között (a végpontokat is számolva)?",2*a+1],
+()=>["Hány átlója van egy hatszögnek?",9],
+(a=r(1,5))=>["Medián: "+a+", "+(a+2)+", "+(a+3)+", "+(a+9)+", "+(a+20),a+3],
+(a=r(2,9))=>["Egy "+a+" cm élű kocka térfogata (cm³)?",a**3]
+],
+[ // 7.
+(a=r(2,9),b=r(2,9),c=r(2,9))=>["Oldd meg: "+a+"x − "+b+" = "+(a*c-b),c],
+(a=r(2,9),b=r(2,9))=>["Oldd meg: "+a+"(x + "+b+") = "+a*(b+5),5],
+(a=r(2,9),b=r(1,5))=>["Oldd meg: x/"+a+" + "+b+" = "+(b+4),a*4],
+(a=r(2,5),b=r(2,5))=>["2^"+a+" · 2^"+b+" = 2^? Mennyi a kitevő?",a+b],
+(a=r(2,10))=>[a+"³ − "+a+"²",a**3-a**2],
+(a=r(2,9))=>["Egy "+a*50+" Ft-os termék ára 20%-kal nő. Mennyi az új ár (Ft)?",a*60],
+(a=r(2,9))=>["Mennyi a(z) "+a*80+" 25%-a?",a*20],
+(a=r(30,150))=>["Egy szög "+a+"°. Mekkora a mellékszöge?",180-a],
+(a=r(10,80))=>["Hány fokos a "+a+"°-os szög pótszöge?",90-a],
+(a=r(3,8))=>["Egy "+a+" oldalú sokszög belső szögeinek összege (fok)?",(a-2)*180],
+(a=r(2,9),b=r(2,9))=>[a+"x + "+b+"x = ?x. Mennyi a ? ",a+b],
+(a=r(2,6),b=r(2,6))=>["Ha x = "+a+", mennyi "+b+"x + 3?",b*a+3],
+(a=r(2,6),b=r(2,6))=>[a+" kg alma "+a*b*100+" Ft. Mennyibe kerül "+(a+2)+" kg?",(a+2)*b*100],
+(a=r(2,9))=>["Egy "+a+" cm élű kocka felszíne (cm²)?",6*a*a],
+(a=r(3,9),b=r(3,9))=>["Paralelogramma alapja "+a+", magassága "+b+". Területe?",a*b],
+(a=r(2,9))=>["Kör sugara "+a+" cm. Területe π egységben (π·?)?",a*a],
+(a=r(2,9))=>["Kör sugara "+a+" cm. Kerülete π egységben (π·?)?",2*a],
+(a=r(2,6))=>["Mennyi (−"+a+")² + (−"+a+")³ ?",a*a-a**3],
+(a=r(5,9),b=r(2,4),k=r(2,6))=>["Oldd meg: "+a+"x = "+b+"x + "+(a-b)*k,k],
+()=>["A tavirózsa naponta megduplázódik, 20 nap alatt lepi be a tavat. Hányadik napon fedi a tó felét?",19],
+()=>["Anna 3-szor idősebb Bélánál. Együtt 40 évesek. Hány éves Béla?",10],
+(a=r(2,6))=>["Hányféle sorrendben állhat sorba "+a+" ember?",F[a]],
+()=>["Egy számot 5-tel szorozva és 7-et hozzáadva 42-t kapunk. Melyik ez a szám?",7]
+],
+[ // 8.
+(a=p([[3,4,5],[5,12,13],[8,15,17],[6,8,10],[7,24,25],[9,12,15]]))=>["Derékszögű háromszög befogói "+a[0]+" és "+a[1]+". Mekkora az átfogó?",a[2]],
+(a=p([[3,5,4],[5,13,12],[10,26,24],[8,10,6],[15,17,8]]))=>["Átfogó "+a[1]+", egyik befogó "+a[0]+". Mekkora a másik befogó?",a[2]],
+(a=r(2,15))=>["√"+a*a,a],
+(a=r(2,9),b=r(2,9))=>["√"+a*a+" + √"+b*b,a+b],
+(a=r(2,9))=>["√"+a*a*16,a*4],
+(a=r(2,4))=>["3^"+a,3**a],
+(a=r(1,5))=>["2^"+(a+3)+" : 2^"+a+" = 2^? Mennyi a kitevő?",3],
+(x=r(2,9),y=r(1,x-1),s=r(0,1))=>["x + y = "+(x+y)+" és x − y = "+(x-y)+". Mennyi "+(s?"x":"y")+"?",s?x:y],
+(x=r(1,5),y=r(1,5))=>["2x + y = "+(2*x+y)+" és x + y = "+(x+y)+". Mennyi x?",x],
+(a=r(2,5),b=r(1,9),x=r(1,5))=>["f(x) = "+a+"x + "+b+". Mennyi f("+x+")?",a*x+b],
+(a=r(2,6),k=r(1,6))=>["Hol metszi az y = "+a+"x − "+a*k+" egyenes az x tengelyt? (x = ?)",k],
+(a=r(2,9))=>["Egy árat "+a*100+" Ft-ról 20%-kal csökkentenek, majd 25%-kal emelnek. Mennyi az új ár (Ft)?",a*100],
+(a=r(2,9))=>[a*100+" Ft, 10% éves kamat, 2 év után (Ft)?",a*121],
+(a=r(5,9))=>["Ha 4 szám átlaga "+a+", mennyi az összegük?",4*a],
+(a=r(3,6))=>["Hányféleképp választható 1 elnök és 1 titkár "+a+" jelöltből?",a*(a-1)],
+(a=r(2,9))=>["Egy kocka térfogata "+a**3+" cm³. Mekkora az éle (cm)?",a],
+()=>["30 diákból 18 focizik, 15 kosarazik, mindenki sportol legalább az egyiket. Hányan csinálják mindkettőt?",3],
+()=>["2^(−1) + 2^(−1) = ?",1],
+(a=r(2,5),b=r(2,5))=>["Két hasonló háromszög hasonlósági aránya "+a+" : 1. A kicsi területe "+b+". Mekkora a nagyobbé?",b*a*a],
+()=>["3 festő 3 óra alatt 3 szobát fest ki. Hány óra alatt fest ki 9 festő 9 szobát?",3],
+(a=r(4,10))=>["Hány átlója van egy "+a+"-szögnek?",a*(a-3)/2]
+],
+[ // 9.
+(a=r(1,5),b=a+r(1,4))=>["x² − "+(a+b)+"x + "+a*b+" = 0. A nagyobbik gyök?",b],
+(a=r(1,5),b=a+r(1,4))=>["x² − "+(a+b)+"x + "+a*b+" = 0. A kisebbik gyök?",a],
+(b=r(3,9),c=r(1,5))=>["x² + "+b+"x + "+c+" diszkriminánsa?",b*b-4*c],
+(a=r(2,9))=>["A (x + "+a+")² kifejtésében mennyi x együtthatója?",2*a],
+(a=r(1,5),b=r(1,9),x=r(1,5))=>["f(x) = x² − "+a+"x + "+b+". Mennyi f("+x+")?",x*x-a*x+b],
+(a=r(1,6),b=r(1,9))=>["Az y = (x − "+a+")² + "+b+" parabola minimuma?",b],
+(a=r(1,6),b=r(1,9))=>["Az y = (x − "+a+")² + "+b+" parabola csúcsának x koordinátája?",a],
+(a=r(10,30),b=r(10,30),c=r(2,9))=>["A halmaz "+a+" elemű, B "+b+" elemű, metszetük "+c+". Hány elemű az unió?",a+b-c],
+(n=r(3,6))=>["Hány részhalmaza van egy "+n+" elemű halmaznak?",2**n],
+(a=r(3,6))=>["Hányféleképp rendezhető sorba "+a+" különböző könyv?",F[a]],
+(a=r(4,8))=>["Hányféleképp választhatsz ki 2 embert "+a+" emberből (a sorrend nem számít)?",a*(a-1)/2],
+(a=r(2,9),b=r(2,9))=>["Az |x − "+a+"| = "+b+" egyenlet nagyobbik megoldása?",a+b],
+()=>["√48 / √3 = ?",4],
+()=>["√2 · √18 = ?",6],
+(a=r(2,6))=>["2^x = "+2**a+". Mennyi x?",a],
+(a=r(1,9),d=r(2,5))=>["Számtani sorozat: a₁ = "+a+", d = "+d+". Mennyi a₁₀?",a+9*d],
+(n=r(5,20))=>["Mennyi 1 + 2 + … + "+n+" ?",n*(n+1)/2],
+(a=r(2,6),k=r(2,9))=>["Hány pozitív egész x-re igaz: "+a+"x < "+a*k+"?",k-1],
+()=>["Egy 3 × 4 × 12 cm-es téglatest testátlója (cm)?",13],
+()=>["Egy mennyiség 50%-kal nő, majd 50%-kal csökken. Hány %-a lesz az eredetinek?",75],
+()=>["Hány pozitív osztója van a 36-nak?",9],
+(a=p([1,2]))=>["Hol metszi egymást az y = "+a+"x + 1 és az y = 3x − 1 egyenes? (x = ?)",2/(3-a)],
+()=>["Egy kétjegyű szám számjegyeinek összege 9, a számjegyek felcserélésekor a szám 27-tel nő. Melyik ez a szám?",36],
+()=>["Hány olyan háromjegyű szám van, amely csak az 1, 2, 3 számjegyekből áll és a számjegyei különbözőek?",6]
+],
+[ // 10.
+(a=p([[30,.5],[90,1],[0,0],[150,.5],[210,-.5]]))=>["sin("+a[0]+"°) = ?",a[1]],
+(a=p([[60,.5],[0,1],[90,0],[120,-.5],[180,-1]]))=>["cos("+a[0]+"°) = ?",a[1]],
+(a=p([[45,1],[0,0],[135,-1]]))=>["tg("+a[0]+"°) = ?",a[1]],
+(a=r(2,9))=>["Derékszögű háromszögben sin α = 0,6, az átfogó "+a*5+". Mekkora a szemközti befogó?",a*3],
+(a=r(2,6))=>["log₂ "+2**a+" = ?",a],
+(a=r(2,5))=>["lg "+10**a+" = ?",a],
+(a=r(1,4),b=r(1,4))=>["log₂ "+2**a+" + log₂ "+2**b+" = ?",a+b],
+(a=r(1,5),q=r(2,3))=>["Mértani sorozat: a₁ = "+a+", q = "+q+". Mennyi a₅?",a*q**4],
+(q=r(2,3))=>["Mértani sorozat első tagja 1, hányadosa "+q+". Mennyi az első 4 tag összege?",(q**4-1)/(q-1)],
+(a=p([[2,90],[3,60],[4,45],[6,30]]))=>["Hány fok π/"+a[0]+" radián?",a[1]],
+(a=p([[1,3,25],[2,3,40],[3,1,75],[1,1,50],[1,4,20]]))=>["Dobozban "+a[0]+" piros és "+a[1]+" kék golyó van. Mennyi a piros húzásának esélye (%)?",a[2]],
+(a=r(2,6))=>["Hány különböző kimenete van "+a+" pénzfeldobásnak?",2**a],
+(n=r(5,9))=>["Hányféleképp választható ki 3 ember "+n+" emberből?",n*(n-1)*(n-2)/6],
+(a=r(2,9))=>["Háromszög két oldala "+a*2+" és 10 cm, a közbezárt szög 30°. Területe (cm²)?",a*5],
+(a=r(2,6))=>["Mennyi "+a+"! ?",F[a]],
+()=>["Hány megoldása van a sin x = 1 egyenletnek a [0°, 360°] intervallumban?",1],
+()=>["Hány megoldása van a sin x = 0,5 egyenletnek a [0°, 360°] intervallumban?",2],
+()=>["Hány valós gyöke van az x² + 4 = 0 egyenletnek?",0],
+(a=r(2,8),c=r(1,9))=>["Az y = x² − "+2*a+"x + "+c+" függvény minimuma?",c-a*a],
+(a=r(2,9))=>["Az f(x) = √(x − "+a+") értelmezési tartományának legkisebb eleme?",a],
+(a=r(3,7))=>["log₂ x = "+a+". Mennyi x?",2**a],
+()=>["sin²(20°) + cos²(20°) = ?",1],
+()=>["Sorozat: 2, 6, 18, 54, … Mennyi a 6. tag?",486]
+],
+[ // 11.
+(a=r(2,6),n=r(2,5))=>["f(x) = "+a+"x^"+n+". Mennyi f′(1)?",a*n],
+(a=r(2,9),b=r(2,9))=>["f(x) = "+a+"x² + "+b+"x. Mennyi f′(2)?",4*a+b],
+(a=r(1,5))=>["f(x) = x³ − "+3*a*a+"x. Hol van a lokális minimuma? (x = ?)",a],
+(a=r(2,9))=>["lim (x→∞) "+a+"x / (x + 1) = ?",a],
+(a=r(2,9))=>["lim (x→"+a+") (x² − "+a*a+") / (x − "+a+") = ?",2*a],
+(a=r(1,5),d=r(1,4))=>["Számtani sorozat: a₁ = "+a+", d = "+d+". Az első 10 tag összege?",5*(2*a+9*d)],
+(q=p([2,3,4,5]),k=r(1,5))=>["Végtelen mértani sor: a₁ = "+k*(q-1)+", hányados 1/"+q+". Mennyi az összege?",k*q],
+(n=r(5,10))=>["C("+n+", 4) = ?",n*(n-1)*(n-2)*(n-3)/24],
+()=>["Hányféleképp rendezhetők a MAMA betűi?",6],
+()=>["Hányféleképp rendezhetők az ALMA betűi?",12],
+()=>["Egy érmét 3-szor dobunk. Mennyi az esélye (%), hogy pontosan 1 fej lesz?",37.5],
+()=>["Hányféle módon dobhatunk 7 összeget két dobókockával?",6],
+(a=r(2,5))=>["e^(ln "+a+") = ?",a],
+(a=r(2,6))=>["3^x = "+3**a+". Mennyi x?",a],
+()=>["sin 2α = ?, ha sin α = 0,6 és cos α = 0,8",.96],
+()=>["cos 2α = ?, ha cos α = 0,6",-.28],
+(a=r(1,5),b=r(1,5),c=r(1,5),d=r(1,5))=>["Skaláris szorzat: ("+a+", "+b+") · ("+c+", "+d+")",a*c+b*d],
+(a=p([[3,4,5],[6,8,10],[5,12,13]]))=>["A ("+a[0]+", "+a[1]+") vektor hossza?",a[2]],
+(a=r(2,9))=>["Az (x − 1)² + (y − 2)² = "+a*a+" kör sugara?",a],
+(a=r(1,9),b=r(1,9))=>["A(0,0), B("+2*a+", "+2*b+"). A felezőpont koordinátáinak összege?",a+b],
+()=>["Hány megoldása van a sin x = cos x egyenletnek a [0°, 360°) intervallumban?",2],
+()=>["Hány különböző kimenet van három dobókocka dobásánál?",216]
+],
+[ // 12.
+(a=r(2,6))=>["∫(0→2) "+a+"x dx = ?",2*a],
+(a=r(1,5))=>["∫(0→"+a+") 2x dx = ?",a*a],
+(a=r(1,4))=>["∫(0→"+a+") 3x² dx = ?",a**3],
+(a=r(2,9))=>["∫(0→1) "+a+" dx = ?",a],
+(a=r(1,3))=>["Az y = x² görbe alatti terület 0 és "+3*a+" között?",9*a**3],
+(a=r(2,5))=>["(eˣ)′ x = 0-ban + ("+a+"x)′ = ?",1+a],
+()=>["(ln x)′ értéke x = 4-nél?",.25],
+(a=r(2,5))=>["f(x) = (x + 1)^"+a+". Mennyi f′(1)?",a*2**(a-1)],
+(a=r(2,6))=>["f(x) = x·(x + "+a+"). Mennyi f′(1)?",2+a],
+()=>["Két pénzfeldobásnál mennyi az esélye (%), hogy mindkettő fej?",25],
+()=>["Normális eloszlás: átlag 100, szórás 15. Mennyi a z-érték 130-nál?",2],
+(a=r(2,9))=>["Pénzfeldobás: fej esetén "+a*2+" Ft, írásnál 0 Ft. Mennyi a várható nyeremény (Ft)?",a],
+(n=r(4,8))=>["Hány éle van a "+n+" csúcsú teljes gráfnak?",n*(n-1)/2],
+(a=r(2,9),b=r(2,9))=>["("+a+" + "+b+"i)("+a+" − "+b+"i) = ?",a*a+b*b],
+(a=p([[3,4,5],[5,12,13],[8,15,17],[6,8,10]]))=>["|"+a[0]+" + "+a[1]+"i| = ?",a[2]],
+(a=r(2,9))=>["lim (n→∞) ("+a+"n + 1) / n = ?",a],
+()=>["lim (x→0) sin x / x = ?",1],
+()=>["Mennyi 1 + 1/2 + 1/4 + 1/8 + … ?",2],
+()=>["Mennyi 1/2 + 1/4 + 1/8 + … ?",1],
+(a=r(1,5),b=r(1,5),c=r(1,5),d=r(1,5))=>["det [[ "+a+", "+b+" ], [ "+c+", "+d+" ]] = ?",a*d-b*c],
+()=>["Hányféleképp ültethető le 5 ember egy kerek asztalhoz?",24],
+()=>["Hány nullára végződik a 25! ?",6],
+(a=r(1,5))=>["Az f(x) = x³ − 3x + "+a+" inflexiós pontjának x koordinátája?",0]
+]
+];
+const H=[
+[["➕","Összeadás","a + b, hiányzó szám",[0,2,4,10,19,21]],["➖","Kivonás","Elvesztett kincsek, a − b",[1,3,11]],["🔢","Számok és sorozatok","Szomszédok, nagyobb, 2-esével",[5,6,7,12,13]],["👯","Dupla és fele","Duplázás és felezés",[8,9,17]],["🐶","Mesés kérdések","Lábak, kerekek, napok",[14,15,16,18,20]]],
+[["➕","Összeadás, kivonás","Tízesek, hiányzó szám",[0,1,11]],["✖️","Szorzótábla","×2, ×5, ×10 és még több",[2,3,4,7,18]],["➗","Osztás és felezés","Igazságos osztozkodás",[5,10,12,20]],["🔢","Számok és sorozatok","Előtte, tízesek, páros számok",[6,8,13,19]],["📏","Mérés és mesék","Perc, méter, pókok, naptár",[9,14,15,16,17,21]]],
+[["🔢","Számok és összeadás","Háromjegyű számok, kivonás",[0,1,18,21]],["✖️","Szorzás","Kétjegyű szorzó, szorzótábla",[2,4,10,19]],["➗","Osztás és törtrészek","Maradék, tized, negyed, harmad",[3,11,12,13,14,20]],["⚖️","Mérések","kg, liter, perc, tucat",[5,6,9,16,17,22]],["🚂","Kerület és utazás","Téglalap, négyzet, vonat",[7,8,15]]],
+[["🧮","Írásbeli műveletek","Összeadás, kivonás, szorzás, osztás",[0,1,2,3,4]],["🏛️","Számok és sorozatok","Római számok, kerekítés",[5,11,12,20]],["📐","Terület és testek","Téglalap, négyzet, kocka",[6,7,21,22]],["📏","Mértékegységek","Perc, milliméter, méter, óra",[8,9,10,13]],["🐱","Műveleti sorrend, szöveg","Zárójelek, matricák, cicák",[14,15,16,17,18,19]]],
+[["🔟","Szorzás, tizedes törtek","Tizedes összeadás, szorzás, osztás",[0,1,2,3,4]],["🍰","Törtek, százalék, átlag","Törtrész, 10%, átlag",[8,9,16,17]],["⚖️","Egyenletek, negatív számok","x + a = b, −a + b",[6,7,11,12]],["🔍","Oszthatóság, prímek","Osztók, prímszámok, LKT",[13,14,15]],["⚡","Hatványok, sorozatok","Négyzet, köb, Fibonacci",[5,19,20,21]],["📐","Mértékek, geometria","Térfogat, szög, idő",[10,18,22]]],
+[["➖","Negatív számok","Szorzás, osztás, abszolútérték",[1,2,3,4,17,18]],["🍕","Törtek, százalék, arány","Törtek, százalékszámítás, arány",[0,5,6,8,10]],["⚖️","Egyenletek, szöveg","x : a = b, sebesség",[11,12,13]],["📐","Geometria, szimmetria","Kör, háromszög, kocka, átló",[9,14,15,16,19,21]],["📊","Osztók, statisztika","LNKO, medián",[7,20]]],
+[["⚖️","Egyenletek","Zárójelek, törtek",[0,1,2,18]],["⚡","Hatványok, algebra","Hatványok, kifejezések",[3,4,10,11,17]],["💯","Százalék, arányosság","Áremelés, 25%, kilónkénti ár",[5,6,12]],["📐","Szögek, sokszögek","Mellékszög, pótszög, belső szögek",[7,8,9]],["⭕","Kör, terület, felszín","π, kocka, paralelogramma",[13,14,15,16]],["🧩","Logika, szöveges","Tavirózsa, korok, sorrendek",[19,20,21,22]]],
+[["📐","Pitagorasz, hasonlóság","Befogó, átfogó, kocka, hasonló háromszög",[0,1,15,18]],["√","Gyökök, hatványok","Négyzetgyök, hatvány, kitevők",[2,3,4,5,6,17]],["📈","Egyenletrendszer, függvény","x + y, f(x), egyenes",[7,8,9,10]],["💰","Százalék, átlag, kamat","Áremelés, kamatos kamat, átlag",[11,12,13]],["🎲","Kombinatorika, logika","Sorrend, halmazok, átlók",[14,16,19,20]]],
+[["📈","Másodfokú egyenlet, parabola","Gyökök, diszkrimináns, csúcs",[0,1,2,3,4,5,6]],["🎲","Halmazok, kombinatorika","Unió, részhalmaz, sorrend",[7,8,9,10]],["√","Gyökök, abszolútérték","√48 / √3, 2^x, |x − a|",[11,12,13,14]],["🔢","Sorozatok, számelmélet","Számtani sorozat, osztók, 1 + 2 + … + n",[15,16,20,22]],["🧩","Fejtörők","Testátló, százalék, egyenesek",[17,18,19,21,23]]],
+[["📐","Szögfüggvények","sin, cos, tg, derékszögű háromszög",[0,1,2,3,21]],["🌀","Trigonometria haladó","Radián, szinuszos terület, egyenletek",[9,13,15,16]],["🔑","Logaritmus","log₂, lg, azonosságok",[4,5,6,20]],["📈","Mértani sorozatok","a₅, részösszeg, hányados",[7,8,22]],["🎲","Kombinatorika, valószínűség","Golyók, érmék, kiválasztás",[10,11,12,14]],["📉","Függvények, egyenletek","Gyökök, minimum, értelmezési tartomány",[17,18,19]]],
+[["📈","Deriválás","f′(x), lokális minimum",[0,1,2]],["∞","Határérték, sorok","lim, számtani és mértani sor",[3,4,5,6]],["🎲","Kombinatorika, valószínűség","C(n, k), betűk rendezése, kockák",[7,8,9,10,11,21]],["🧭","Vektorok, koordinátageometria","Skaláris szorzat, hossz, kör",[16,17,18,19]],["🌀","Exp., log., trigonometria","e^(ln a), sin 2α, egyenletek",[12,13,14,15,20]]],
+[["∫","Integrálszámítás","Határozott integrál, területek",[0,1,2,3,4]],["📈","Deriválás","(eˣ)′, (ln x)′, inflexiós pont",[5,6,7,8,22]],["🎲","Valószínűség, kombinatorika","Várható érték, gráf, kerek asztal",[9,10,11,12,20,21]],["∞","Határérték, sorok","lim, végtelen összeg",[15,16,17,18]],["🧮","Komplex számok, mátrixok","|a + bi|, determináns",[13,14,19]]]
+];
+const sh=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+function pool(n,t){const fs=H[n-1][t][3].map(k=>T[n-1][k]),seen=new Set(),o=[];for(let k=0;k<60&&o.length<10;k++)fs.forEach(f=>{const q=f();if(!seen.has(q[0])){seen.add(q[0]);o.push(q)}});return sh(o).slice(0,10)}
+const S=[["🌲","Varázserdő","Egy erdei manó állja utad:"],["🕳️","Kristálybarlang","A barlang őre morog:"],["🌉","Ingatag híd","A hídon egy troll kéri a vámot:"],["🌊","Tündérfolyó","A révész csak helyes válaszra visz át:"],["🏰","Elhagyott vár","A kapu felirata:"],["⛰️","Viharhegy","A hegyi szellem kérdez:"],["🐉","A sárkány barlangja","A sárkány dörögve kérdez:"]];
+let g,Q,i,h,th;const $=id=>document.getElementById(id),hs=()=>"❤️".repeat(h)+"🖤".repeat(5-h);
+const K=["#2f6bff","#ef5a3c","#8b5cf6","#f5a31a","#26c9a0","#e0338a","#86c232","#5b6cf0","#f07a22","#22a06b","#2a9de0","#18a8c8"],z=n=>String(n).padStart(2,"0");
+const hd=x=>'<header class="hd"><h1 class="logo">Számok Birodalma</h1><i class="vr"></i><span class="chip">Kaland</span><span class="sub">Matek · 1–12. évfolyam</span><span class="sp"></span>'+x+'</header>';
+function menu(){$("app").innerHTML=hd("")+'<main class="w"><div class="tabs"><span class="tab on">Évfolyamok <b>'+K.length+'</b></span></div><p class="story">A gonosz sárkány ellopta a Varázskristályt! Kelj át az erdőn, barlangon, hídon, folyón, váron és hegyen – minden akadályt egy feladat őriz. Válaszd ki az évfolyamod, majd a témát:</p><div class="gr">'+K.map((c,k)=>'<div class="c" style="--ac:'+c+'"><div class="top"><span class="nb">'+z(k+1)+'</span><span class="m">7 pálya</span></div><div class="ti"><div class="ic">'+S[k%7][0]+'</div><div><h2>'+(k+1)+'. <span>évfolyam</span></h2><p class="m2">Erdőtől a sárkányig</p></div></div><div><span class="tg">'+H[k].length+' téma</span></div><button class="cta" onclick="topics('+(k+1)+')">Témák</button></div>').join("")+'</div></main>'}
+function topics(n){g=n;const L=H[n-1],c=(b,a,ic,nm,ds,tg,go)=>'<div class="c t" style="--ac:'+a+'"><div class="top"><span class="nb">'+b+'</span><span class="m">'+tg+'</span></div><div class="ti"><div class="ic">'+ic+'</div><div><h2>'+nm+'</h2><p class="m2">'+ds+'</p></div></div><button class="cta" onclick="'+go+'">Indítás</button></div>';
+$("app").innerHTML=hd('<button class="o" onclick="menu()">Menü</button>')+'<main class="w"><div class="tabs"><span class="tab on">'+n+'. évfolyam <b>'+L.length+' téma</b></span></div><p class="story">Válassz témát, és indulhat a kaland a sárkány felé! Ha mindenből egy kicsit szeretnél, válaszd a vegyes kalandot.</p><div class="gr">'+L.map((e,j)=>c(z(j+1),K[(n+j-1)%K.length],e[0],e[1],e[2],pool(n,j).length+' kérdés','start('+n+','+j+')')).join("")+c("★",K[n-1],"🗺️","Vegyes kaland","Minden téma egyben, a teljes út",T[n-1].length+' kérdés','start('+n+',-1)')+'</div></main>'}
+function start(n,t){g=n;th=t;Q=t<0?sh(T[n-1].map(f=>f())):pool(n,t);i=0;h=5;show()}
+function show(){const n=Q.length;if(i>=n)return end(1);const x=Math.min(6,Math.floor(i*7/n)),s=S[x];
+$("app").innerHTML=hd('<button class="o" onclick="topics('+g+')">Témák</button>')+'<main class="w"><div class="tabs"><span class="tab on">'+g+'. évfolyam</span><span class="tab">Élet <span id="hp">'+hs()+'</span></span></div><div class="m th">'+(th<0?"Vegyes kaland":H[g-1][th][1])+'</div><div class="gm" style="--ac:'+K[x]+'"><div class="pb"><i style="width:'+i/n*100+'%"></i></div><div class="c"><div class="top"><span class="nb">'+z(x+1)+'</span><span class="m">Feladat '+(i+1)+'/'+n+'</span></div><div class="ti"><div class="ic">'+s[0]+'</div><div><h2>'+s[1]+'</h2><p class="m2">'+s[2]+'</p></div></div><p class="q">'+Q[i][0].replace(/(\d)\.(\d)/g,"$1,$2")+'</p><div class="row"><input id="in" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="go" placeholder="Válaszod"><button onclick="chk()">Mehet</button></div><div id="m"></div></div></div></main>';
+$("in").focus();setTimeout(()=>{const el=$("in");if(el){el.focus()}},50);$("in").onkeydown=e=>e.key=="Enter"&&chk()}
+function chk(){const v=parseFloat($("in").value.replace(",",".").replace("−","-"));if(isNaN(v)||$("in").disabled)return;
+if(Math.abs(v-Q[i][1])<.001){i++;$("in").disabled=true;$("m").className="ok";$("m").textContent="✅ Helyes! Tovább!";setTimeout(show,700)}
+else{h--;if(h<1)return end(0);$("hp").textContent=hs();$("m").className="no";$("m").textContent="❌ Nem jó, vigyázz! Próbáld újra.";$("in").select()}}
+function end(w){$("app").innerHTML=hd('<button class="o" onclick="menu()">Menü</button>')+'<main class="w"><div class="gm" style="--ac:'+(w?K[4]:K[1])+'"><div class="c"><div class="top"><span class="nb">'+(w?"Siker":"Vége")+'</span><span class="m">'+(th<0?"":H[g-1][th][1]+" · ")+g+'. évfolyam</span></div><div class="ti"><div class="ic">'+(w?"🏆":"💀")+'</div><div><h2>'+(w?'Legyőzted a <span>sárkányt!</span>':'A sárkány <span>legyőzött...</span>')+'</h2><p class="m2">'+(w?"Visszaszerezted a Varázskristályt! Megmaradt életeid: "+hs():"Elfogytak az életeid, de a kaland újrakezdhető.")+'</p></div></div><div class="row2"><button onclick="start('+g+','+th+')">Újra ('+g+'. évfolyam)</button><button class="o" onclick="topics('+g+')">Másik téma</button><button class="o" onclick="menu()">Másik évfolyam</button></div></div></div></main>'}
+menu();
+</script></body></html>
