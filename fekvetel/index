@@ -254,9 +254,7 @@
     .availability::before { width: 6px; height: 6px; content: ""; background: #55a56c; border-radius: 50%; }
     h3 { margin: 10px 0 5px; font-size: 19px; font-weight: 640; letter-spacing: -.035em; }
     .product-description { min-height: 42px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
-    .product-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 19px; padding-top: 16px; border-top: 1px solid #edf0eb; }
-    .price { font-size: 18px; font-weight: 730; letter-spacing: -.04em; }
-    .price small { display: block; margin-top: 3px; color: #89928c; font-size: 10px; font-weight: 500; letter-spacing: 0; }
+    .product-bottom { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 19px; padding-top: 16px; border-top: 1px solid #edf0eb; }
     .product-actions { display: flex; align-items: center; gap: 8px; }
     .product-quantity { width: 66px; height: 40px; padding: 0 8px; color: var(--ink); background: white; border: 1px solid #dce3d9; border-radius: 8px; outline: none; font-size: 12px; }
     .product-quantity:focus { border-color: #6b9976; box-shadow: 0 0 0 3px rgba(70, 132, 85, .12); }
@@ -320,7 +318,6 @@
 
     .quote-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 15px; padding: 12px; background: #f6f8f4; border-radius: 9px; }
     .quote-item-name { font-size: 12px; font-weight: 680; }
-    .quote-item-price { margin-top: 3px; color: var(--muted); font-size: 10px; }
     .quantity-control { display: flex; align-items: center; gap: 9px; }
     .quantity-control button { width: 27px; height: 27px; display: grid; place-items: center; color: var(--green); background: white; border: 1px solid #dce3d9; border-radius: 6px; font-size: 16px; }
     .quantity-control span { min-width: 16px; text-align: center; font-size: 12px; font-weight: 700; }
@@ -432,7 +429,6 @@
             <h3>Fékbetét</h3>
             <p class="product-description">Megbízható fékbetét mindennapi használatra. Kérj ajánlatot a szükséges mennyiségre.</p>
             <div class="product-bottom">
-              <div class="price">1 000 Ft<small>irányár / db</small></div>
               <div class="product-actions">
                 <label class="visually-hidden" for="quantity-fekbetet">Fékbetét darabszáma</label>
                 <input class="product-quantity" id="quantity-fekbetet" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="Fékbetét darabszáma">
@@ -466,7 +462,6 @@
             <h3>Gumibot</h3>
             <p class="product-description">Strapabíró gumibot kényelmes markolattal. A pontos részletekért kérj személyre szabott ajánlatot.</p>
             <div class="product-bottom">
-              <div class="price">6 000 Ft<small>irányár / db</small></div>
               <div class="product-actions">
                 <label class="visually-hidden" for="quantity-gumibot">Gumibot darabszáma</label>
                 <input class="product-quantity" id="quantity-gumibot" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="Gumibot darabszáma">
@@ -528,10 +523,10 @@
   <script>
     (() => {
       const products = {
-        fekbetet: { name: "Fékbetét", price: 1000 },
-        gumibot: { name: "Gumibot", price: 6000 }
+        fekbetet: { name: "Fékbetét" },
+        gumibot: { name: "Gumibot" }
       };
-      const formEndpoint = "https://formsubmit.co/ajax/vilmos.vilmos2000@gmail.com";
+      const formEndpoint = "https://formsubmit.co/ajax/3e9fa0cf6c01f5b79d00c9c50fdc045696221ef1270439f7290a3972122fa65c";
       const quantities = new Map();
       const dialog = document.getElementById("quote-dialog");
       const quoteItems = document.getElementById("quote-items");
@@ -539,8 +534,6 @@
       const sendButton = document.getElementById("send-quote");
       const form = document.getElementById("quote-form");
       const formStatus = document.getElementById("form-status");
-      const formatPrice = (amount) => `${new Intl.NumberFormat("hu-HU").format(amount)} Ft`;
-
       function renderQuote() {
         const entries = [...quantities.entries()].filter(([, quantity]) => quantity > 0);
         const totalQuantity = entries.reduce((total, [, quantity]) => total + quantity, 0);
@@ -556,7 +549,7 @@
         quoteItems.innerHTML = entries.map(([id, quantity]) => {
           const product = products[id];
           return `<div class="quote-item">
-            <div><div class="quote-item-name">${product.name}</div><div class="quote-item-price">${formatPrice(product.price)} / db · irányár</div></div>
+            <div class="quote-item-name">${product.name}</div>
             <div class="quantity-control" aria-label="${product.name} mennyisége">
               <button type="button" data-action="decrease" data-id="${id}" aria-label="Egy darabbal kevesebb">−</button>
               <span>${quantity}</span>
@@ -606,7 +599,7 @@
 
         const lines = [...quantities.entries()].map(([id, quantity]) => {
           const product = products[id];
-          return `- ${product.name}: ${quantity} db (irányár: ${formatPrice(product.price)} / db)`;
+          return `- ${product.name}: ${quantity} db`;
         });
         const formData = new FormData(form);
         formData.set("products", lines.join("\n"));
