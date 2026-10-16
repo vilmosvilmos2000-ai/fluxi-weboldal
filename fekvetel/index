@@ -1,1 +1,650 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101c18">
+  <title>Műhely és Társai — Alkatrészek és felszerelések</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17211d;
+      --muted: #69736e;
+      --paper: #f5f6f2;
+      --white: #fff;
+      --green: #1d5b43;
+      --green-dark: #164632;
+      --lime: #d6f36a;
+      --line: #e4e8e1;
+      --shadow: 0 18px 50px rgba(22, 39, 31, .12);
+    }
 
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+
+    .topbar {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      color: #eaf2e8;
+      background: #101c18;
+      font-size: 12px;
+      letter-spacing: .025em;
+    }
+
+    .topbar strong { color: var(--lime); font-weight: 650; }
+
+    .site-header {
+      position: sticky;
+      z-index: 5;
+      top: 0;
+      background: rgba(255, 255, 255, .94);
+      border-bottom: 1px solid rgba(23, 33, 29, .07);
+      backdrop-filter: blur(14px);
+    }
+
+    .header-inner {
+      width: min(1180px, calc(100% - 48px));
+      height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 760;
+      letter-spacing: -.035em;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      color: var(--lime);
+      background: var(--green);
+      border-radius: 11px;
+    }
+
+    .brand-mark svg { width: 21px; height: 21px; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      margin-left: auto;
+      color: #4d5953;
+      font-size: 13px;
+      font-weight: 550;
+    }
+
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { color: var(--green); }
+
+    .quote-button, .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 0;
+      color: white;
+      background: var(--green);
+      font-weight: 650;
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    .quote-button:hover, .primary-button:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+    .quote-button {
+      min-height: 43px;
+      padding: 0 16px;
+      border-radius: 9px;
+      font-size: 12px;
+    }
+
+    .quote-button svg { width: 16px; height: 16px; }
+
+    .count {
+      min-width: 21px;
+      height: 21px;
+      display: grid;
+      place-items: center;
+      padding: 0 5px;
+      color: var(--green-dark);
+      background: var(--lime);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    main { overflow: hidden; }
+
+    .hero {
+      position: relative;
+      padding: 76px 24px 81px;
+      color: white;
+      background: #15291f;
+      isolation: isolate;
+    }
+
+    .hero::before, .hero::after {
+      position: absolute;
+      z-index: -1;
+      content: "";
+      pointer-events: none;
+    }
+
+    .hero::before {
+      inset: 0;
+      opacity: .22;
+      background-image: linear-gradient(rgba(255,255,255,.075) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.075) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: linear-gradient(90deg, transparent, black 70%);
+    }
+
+    .hero::after {
+      width: 440px;
+      height: 440px;
+      top: -210px;
+      right: -40px;
+      border: 1px solid rgba(214, 243, 106, .28);
+      border-radius: 50%;
+      box-shadow: 0 0 0 54px rgba(214, 243, 106, .035), 0 0 0 110px rgba(214, 243, 106, .025);
+    }
+
+    .hero-inner { width: min(1180px, 100%); margin: 0 auto; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 21px;
+      color: var(--lime);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before { width: 20px; height: 1px; content: ""; background: var(--lime); }
+
+    h1 {
+      max-width: 690px;
+      margin: 0;
+      font-size: clamp(42px, 6.2vw, 72px);
+      font-weight: 620;
+      letter-spacing: -.065em;
+      line-height: 1.02;
+    }
+
+    h1 span { color: var(--lime); }
+
+    .hero-copy {
+      max-width: 500px;
+      margin: 23px 0 0;
+      color: #c3cec5;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .hero-points { display: flex; gap: 26px; margin-top: 31px; color: #e0e8e1; font-size: 12px; }
+    .hero-points span { display: inline-flex; align-items: center; gap: 8px; }
+    .hero-points i { width: 6px; height: 6px; background: var(--lime); border-radius: 50%; }
+
+    .catalog {
+      width: min(1180px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 70px 0 82px;
+    }
+
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 22px; margin-bottom: 27px; }
+    .section-kicker { margin: 0 0 8px; color: var(--green); font-size: 11px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+    h2 { margin: 0; font-size: clamp(28px, 4vw, 38px); letter-spacing: -.05em; font-weight: 640; }
+    .section-note { max-width: 320px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+    .product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+
+    .product-card {
+      min-width: 0;
+      padding: 13px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      transition: box-shadow .2s ease, transform .2s ease;
+    }
+
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 14px 35px rgba(22, 39, 31, .08); }
+
+    .product-art {
+      height: 218px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #edf1e8;
+      border-radius: 10px;
+    }
+
+    .product-art.dark { background: #e9ede6; }
+    .product-art svg { width: min(230px, 65%); height: 160px; }
+
+    .product-info { padding: 18px 8px 8px; }
+    .product-meta { display: flex; justify-content: space-between; gap: 12px; color: #758078; font-size: 10px; font-weight: 650; letter-spacing: .075em; text-transform: uppercase; }
+    .availability { display: inline-flex; align-items: center; gap: 6px; color: #39724f; letter-spacing: 0; text-transform: none; }
+    .availability::before { width: 6px; height: 6px; content: ""; background: #55a56c; border-radius: 50%; }
+    h3 { margin: 10px 0 5px; font-size: 19px; font-weight: 640; letter-spacing: -.035em; }
+    .product-description { min-height: 42px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .product-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 19px; padding-top: 16px; border-top: 1px solid #edf0eb; }
+    .price { font-size: 18px; font-weight: 730; letter-spacing: -.04em; }
+    .price small { display: block; margin-top: 3px; color: #89928c; font-size: 10px; font-weight: 500; letter-spacing: 0; }
+    .product-actions { display: flex; align-items: center; gap: 8px; }
+    .product-quantity { width: 66px; height: 40px; padding: 0 8px; color: var(--ink); background: white; border: 1px solid #dce3d9; border-radius: 8px; outline: none; font-size: 12px; }
+    .product-quantity:focus { border-color: #6b9976; box-shadow: 0 0 0 3px rgba(70, 132, 85, .12); }
+
+    .add-button {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 13px;
+      color: var(--green);
+      background: #eff5eb;
+      border: 1px solid #dce8d8;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .add-button:hover { color: white; background: var(--green); border-color: var(--green); }
+    .add-button svg { width: 15px; height: 15px; }
+
+    .process {
+      padding: 55px 24px 61px;
+      background: #eaf0e6;
+    }
+
+    .process-inner { width: min(1180px, 100%); margin: 0 auto; }
+    .process-heading { margin-bottom: 27px; }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
+    .step { padding-top: 16px; border-top: 1px solid #cad7c7; }
+    .step-number { color: var(--green); font-size: 11px; font-weight: 750; letter-spacing: .08em; }
+    .step h3 { margin-top: 12px; font-size: 15px; }
+    .step p { max-width: 300px; margin: 7px 0 0; color: #69736e; font-size: 12px; line-height: 1.7; }
+
+    footer { padding: 25px 24px; color: #c4cec6; background: #101c18; font-size: 11px; }
+    .footer-inner { width: min(1180px, 100%); display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 auto; }
+    footer a { color: white; text-decoration: none; }
+
+    dialog {
+      width: min(680px, calc(100% - 28px));
+      max-height: min(92vh, 850px);
+      padding: 0;
+      overflow: auto;
+      color: var(--ink);
+      background: white;
+      border: 0;
+      border-radius: 17px;
+      box-shadow: var(--shadow);
+    }
+
+    dialog::backdrop { background: rgba(10, 19, 14, .58); backdrop-filter: blur(4px); }
+    .dialog-header { display: flex; align-items: start; justify-content: space-between; gap: 15px; padding: 24px 26px 19px; border-bottom: 1px solid var(--line); }
+    .dialog-header h2 { font-size: 25px; }
+    .dialog-header p { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .close-button { width: 35px; height: 35px; flex: 0 0 auto; display: grid; place-items: center; color: #68736d; background: #f2f4f0; border: 0; border-radius: 50%; font-size: 20px; line-height: 1; }
+    .dialog-body { padding: 20px 26px 26px; }
+    .list-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 730; }
+    .clear-button { padding: 4px 0; color: #758078; background: transparent; border: 0; font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }
+    .quote-items { display: grid; gap: 8px; }
+    .empty-state { padding: 15px; color: #67736c; background: #f5f7f3; border: 1px dashed #d6ddd4; border-radius: 9px; font-size: 12px; line-height: 1.6; }
+
+    .quote-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 15px; padding: 12px; background: #f6f8f4; border-radius: 9px; }
+    .quote-item-name { font-size: 12px; font-weight: 680; }
+    .quote-item-price { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .quantity-control { display: flex; align-items: center; gap: 9px; }
+    .quantity-control button { width: 27px; height: 27px; display: grid; place-items: center; color: var(--green); background: white; border: 1px solid #dce3d9; border-radius: 6px; font-size: 16px; }
+    .quantity-control span { min-width: 16px; text-align: center; font-size: 12px; font-weight: 700; }
+    .remove-button { padding: 4px; color: #7a857e; background: transparent; border: 0; font-size: 11px; text-decoration: underline; }
+
+    .form-heading { margin: 23px 0 12px; font-size: 12px; font-weight: 730; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: #46524b; font-size: 11px; font-weight: 650; }
+    .field input, .field textarea { width: 100%; min-height: 41px; padding: 10px 11px; color: var(--ink); background: white; border: 1px solid #dce2da; border-radius: 7px; outline: none; font-size: 12px; }
+    .field textarea { min-height: 76px; resize: vertical; }
+    .field input:focus, .field textarea:focus { border-color: #6b9976; box-shadow: 0 0 0 3px rgba(70, 132, 85, .12); }
+    .privacy-note { margin: 12px 0 15px; color: #78827b; font-size: 10px; line-height: 1.6; }
+    .form-status { margin: 12px 0 0; color: var(--green-dark); font-size: 12px; line-height: 1.6; }
+    .form-status.error { color: #a32e2e; }
+    .form-actions { display: flex; justify-content: end; }
+    .primary-button { min-height: 44px; padding: 0 17px; border-radius: 8px; font-size: 12px; }
+    .primary-button:disabled { cursor: not-allowed; background: #9aa79e; transform: none; }
+    .primary-button svg { width: 16px; height: 16px; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 700px) {
+      .header-inner { width: calc(100% - 32px); height: 66px; }
+      .nav-links { display: none; }
+      .hero { padding: 63px 20px 64px; }
+      .hero-points { flex-wrap: wrap; gap: 12px 19px; }
+      .catalog { width: calc(100% - 32px); padding: 52px 0 58px; }
+      .section-heading { align-items: start; flex-direction: column; }
+      .section-note { max-width: 460px; }
+      .product-grid { grid-template-columns: 1fr; }
+      .product-art { height: 205px; }
+      .process { padding: 42px 20px; }
+      .steps { grid-template-columns: 1fr; gap: 18px; }
+      .footer-inner { align-items: start; flex-direction: column; gap: 8px; }
+      .dialog-header { padding: 21px 18px 16px; }
+      .dialog-body { padding: 17px 18px 20px; }
+    }
+
+    @media (max-width: 420px) {
+      .brand { gap: 8px; font-size: 13px; }
+      .brand-mark { width: 32px; height: 32px; }
+      .quote-button { min-height: 39px; gap: 7px; padding: 0 10px; font-size: 11px; }
+      .product-bottom { align-items: start; flex-direction: column; }
+      .product-actions { width: 100%; }
+      .product-quantity { flex: 0 0 66px; }
+      .add-button { flex: 1; justify-content: center; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .quote-item { grid-template-columns: minmax(0, 1fr) auto; }
+      .quote-item .remove-button { grid-column: 1 / -1; justify-self: end; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">Szakértő segítség alkatrészekhez <strong>· Kérj személyre szabott ajánlatot</strong></div>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#" aria-label="Műhely és Társai – főoldal">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M14.2 5.1a5.1 5.1 0 0 0-6.6 6.3L3.4 15.6a2.1 2.1 0 1 0 3 3l4.2-4.2a5.1 5.1 0 0 0 6.3-6.6l-3.1 3.1-3.2-.8-.8-3.2 3.2-3.1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        MŰHELY ÉS TÁRSAI
+      </a>
+      <nav class="nav-links" aria-label="Fő navigáció">
+        <a href="#termekek">Termékek</a>
+        <a href="#folyamat">Hogyan működik?</a>
+      </nav>
+      <button class="quote-button" id="open-quote" type="button" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5.5h16v11H9l-5 3v-14Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Ajánlatkérés <span class="count" id="quote-count" aria-label="0 termék">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">Alkatrészek, amikre számíthatsz</div>
+        <h1>A jó munka<br><span>jó alkatrésszel</span> kezdődik.</h1>
+        <p class="hero-copy">Válogass kínálatunkból, állítsd össze az igényedet, és kérj személyre szabott ajánlatot egyszerűen, egy helyen.</p>
+        <div class="hero-points"><span><i></i> Gyors ajánlatadás</span><span><i></i> Szakértői segítség</span><span><i></i> Egyszerű igénylés</span></div>
+      </div>
+    </section>
+
+    <section class="catalog" id="termekek">
+      <div class="section-heading">
+        <div><p class="section-kicker">Válogass kínálatunkból</p><h2>Termékek</h2></div>
+        <p class="section-note">Tedd a kívánt termékeket az ajánlatkéréshez, add meg az adataidat, és hamarosan felvesszük veled a kapcsolatot.</p>
+      </div>
+
+      <div class="product-grid">
+        <article class="product-card">
+          <div class="product-art" aria-hidden="true">
+            <svg viewBox="0 0 240 160" fill="none">
+              <ellipse cx="120" cy="133" rx="68" ry="10" fill="#d7ded2"/>
+              <path d="M72 95c0-27 21-48 48-48h16v22h-16c-14 0-26 12-26 26v20H72V95Z" fill="#335b45"/>
+              <path d="M136 51h19c23 0 42 19 42 42v22h-24V93c0-10-8-18-18-18h-19V51Z" fill="#254132"/>
+              <path d="M104 74h34v49h-34z" fill="#89988b"/>
+              <path d="M114 82h14v33h-14z" fill="#d4ddd2"/>
+              <circle cx="120" cy="98" r="36" stroke="#73877a" stroke-width="7" stroke-dasharray="4 5"/>
+              <circle cx="120" cy="98" r="23" stroke="#d6f36a" stroke-width="3"/>
+              <circle cx="120" cy="98" r="7" fill="#d6f36a"/>
+              <path d="m86 65-9-10m76 10 9-10M86 128l-9 10m76-10 9 10" stroke="#66796c" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="product-info">
+            <div class="product-meta"><span>Fékalkatrész</span><span class="availability">Elérhető</span></div>
+            <h3>Fékbetét</h3>
+            <p class="product-description">Megbízható fékbetét mindennapi használatra. Kérj ajánlatot a szükséges mennyiségre.</p>
+            <div class="product-bottom">
+              <div class="price">1 000 Ft<small>irányár / db</small></div>
+              <div class="product-actions">
+                <label class="visually-hidden" for="quantity-fekbetet">Fékbetét darabszáma</label>
+                <input class="product-quantity" id="quantity-fekbetet" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="Fékbetét darabszáma">
+                <button class="add-button" type="button" data-add="fekbetet">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  Ajánlatkéréshez adom
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-art dark" aria-hidden="true">
+            <svg viewBox="0 0 240 160" fill="none">
+              <ellipse cx="121" cy="132" rx="67" ry="9" fill="#d7ded2"/>
+              <g transform="rotate(-35 120 82)">
+                <rect x="105" y="28" width="30" height="91" rx="14" fill="#344d3c"/>
+                <path d="M105 45h30M105 53h30M105 61h30M105 69h30" stroke="#536c59" stroke-width="3"/>
+                <rect x="109" y="107" width="22" height="31" rx="7" fill="#202e25"/>
+                <path d="M112 114h16M112 121h16M112 128h16" stroke="#617264" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="120" cy="37" r="4" fill="#d6f36a"/>
+              </g>
+              <path d="m63 52 15-15m84 87 15-15" stroke="#b6c1b4" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="68" cy="47" r="3" fill="#b6c1b4"/>
+              <circle cx="172" cy="119" r="3" fill="#b6c1b4"/>
+            </svg>
+          </div>
+          <div class="product-info">
+            <div class="product-meta"><span>Felszerelés</span><span class="availability">Elérhető</span></div>
+            <h3>Gumibot</h3>
+            <p class="product-description">Strapabíró gumibot kényelmes markolattal. A pontos részletekért kérj személyre szabott ajánlatot.</p>
+            <div class="product-bottom">
+              <div class="price">6 000 Ft<small>irányár / db</small></div>
+              <div class="product-actions">
+                <label class="visually-hidden" for="quantity-gumibot">Gumibot darabszáma</label>
+                <input class="product-quantity" id="quantity-gumibot" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="Gumibot darabszáma">
+                <button class="add-button" type="button" data-add="gumibot">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  Ajánlatkéréshez adom
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="process" id="folyamat">
+      <div class="process-inner">
+        <div class="process-heading"><p class="section-kicker">Egyszerű és gyors</p><h2>Így kérhetsz ajánlatot</h2></div>
+        <div class="steps">
+          <article class="step"><span class="step-number">01 / VÁLASSZ</span><h3>Tedd össze az igényedet</h3><p>Válaszd ki a termékeket, majd a listában állítsd be a kívánt darabszámot.</p></article>
+          <article class="step"><span class="step-number">02 / KÜLDD EL</span><h3>Add meg az adataidat</h3><p>Töltsd ki az ajánlatkérő űrlapot, és ellenőrizd az e-mailben az összesítést.</p></article>
+          <article class="step"><span class="step-number">03 / EGYEZTESSÜNK</span><h3>Hamarosan jelentkezünk</h3><p>Átnézzük a kérésedet, és a megadott elérhetőségen felvesszük veled a kapcsolatot.</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner"><span>© <span id="year"></span> Műhely és Társai</span><a href="mailto:vilmos.vilmos2000@gmail.com">Kapcsolat: vilmos.vilmos2000@gmail.com</a></div>
+  </footer>
+
+  <dialog id="quote-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-header">
+      <div><h2 id="dialog-title">Ajánlatkérés</h2><p>Állítsd össze a terméklistát, majd add meg, hogyan érhetünk el.</p></div>
+      <button class="close-button" id="close-quote" type="button" aria-label="Bezárás">×</button>
+    </div>
+    <div class="dialog-body">
+      <div class="list-heading"><span>Az ajánlatkérésed</span><button class="clear-button" id="clear-quote" type="button">Lista ürítése</button></div>
+      <div class="quote-items" id="quote-items" aria-live="polite"></div>
+      <form id="quote-form">
+        <input type="hidden" id="quote-products" name="products">
+        <h3 class="form-heading">Kapcsolattartási adatok</h3>
+        <div class="form-grid">
+          <div class="field"><label for="customer-name">Név *</label><input id="customer-name" name="name" autocomplete="name" required maxlength="100"></div>
+          <div class="field"><label for="customer-email">E-mail-cím *</label><input id="customer-email" name="email" type="email" autocomplete="email" required maxlength="254"></div>
+          <div class="field"><label for="customer-phone">Telefonszám</label><input id="customer-phone" name="phone" type="tel" autocomplete="tel" maxlength="40"></div>
+          <div class="field"><label for="customer-company">Cégnév</label><input id="customer-company" name="company" autocomplete="organization" maxlength="120"></div>
+          <div class="field full"><label for="customer-message">Megjegyzés</label><textarea id="customer-message" name="message" maxlength="1000" placeholder="Például: mikorra lenne szükséged a termékekre?"></textarea></div>
+        </div>
+        <p class="privacy-note">Az ajánlatkérés elküldéséhez internetkapcsolat szükséges. Első használatkor erősítsd meg a címedre érkező FormSubmit aktiváló e-mailt.</p>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        <div class="form-actions"><button class="primary-button" id="send-quote" type="submit" disabled>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 3-7.5 18-3.8-7.7L2 9.5 21 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.7 13.3 15 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Ajánlatkérés elküldése
+        </button></div>
+      </form>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      const products = {
+        fekbetet: { name: "Fékbetét", price: 1000 },
+        gumibot: { name: "Gumibot", price: 6000 }
+      };
+      const formEndpoint = "https://formsubmit.co/ajax/vilmos.vilmos2000@gmail.com";
+      const quantities = new Map();
+      const dialog = document.getElementById("quote-dialog");
+      const quoteItems = document.getElementById("quote-items");
+      const quoteCount = document.getElementById("quote-count");
+      const sendButton = document.getElementById("send-quote");
+      const form = document.getElementById("quote-form");
+      const formStatus = document.getElementById("form-status");
+      const formatPrice = (amount) => `${new Intl.NumberFormat("hu-HU").format(amount)} Ft`;
+
+      function renderQuote() {
+        const entries = [...quantities.entries()].filter(([, quantity]) => quantity > 0);
+        const totalQuantity = entries.reduce((total, [, quantity]) => total + quantity, 0);
+        quoteCount.textContent = String(totalQuantity);
+        quoteCount.setAttribute("aria-label", `${totalQuantity} termék`);
+        sendButton.disabled = entries.length === 0;
+
+        if (entries.length === 0) {
+          quoteItems.innerHTML = '<div class="empty-state">Még nincs termék a listában. Válassz egy terméket, és add meg, hány darabra kérsz ajánlatot.</div>';
+          return;
+        }
+
+        quoteItems.innerHTML = entries.map(([id, quantity]) => {
+          const product = products[id];
+          return `<div class="quote-item">
+            <div><div class="quote-item-name">${product.name}</div><div class="quote-item-price">${formatPrice(product.price)} / db · irányár</div></div>
+            <div class="quantity-control" aria-label="${product.name} mennyisége">
+              <button type="button" data-action="decrease" data-id="${id}" aria-label="Egy darabbal kevesebb">−</button>
+              <span>${quantity}</span>
+              <button type="button" data-action="increase" data-id="${id}" aria-label="Egy darabbal több">+</button>
+            </div>
+            <button class="remove-button" type="button" data-action="remove" data-id="${id}" aria-label="${product.name} eltávolítása">Eltávolítás</button>
+          </div>`;
+        }).join("");
+      }
+
+      document.querySelectorAll("[data-add]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.add;
+          const quantityInput = button.closest(".product-actions").querySelector(".product-quantity");
+          const quantity = quantityInput.valueAsNumber;
+          if (!quantityInput.reportValidity() || !Number.isSafeInteger(quantity) || quantity < 1) return;
+          quantities.set(id, (quantities.get(id) || 0) + quantity);
+          renderQuote();
+        });
+      });
+
+      quoteItems.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+        const { action, id } = button.dataset;
+        const current = quantities.get(id) || 0;
+        if (action === "increase") quantities.set(id, current + 1);
+        if (action === "decrease" && current > 1) quantities.set(id, current - 1);
+        if (action === "decrease" && current === 1) quantities.delete(id);
+        if (action === "remove") quantities.delete(id);
+        renderQuote();
+      });
+
+      document.getElementById("open-quote").addEventListener("click", () => dialog.showModal());
+      document.getElementById("close-quote").addEventListener("click", () => dialog.close());
+      document.getElementById("clear-quote").addEventListener("click", () => {
+        quantities.clear();
+        renderQuote();
+      });
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!form.reportValidity() || quantities.size === 0) return;
+
+        const lines = [...quantities.entries()].map(([id, quantity]) => {
+          const product = products[id];
+          return `- ${product.name}: ${quantity} db (irányár: ${formatPrice(product.price)} / db)`;
+        });
+        const formData = new FormData(form);
+        formData.set("products", lines.join("\n"));
+        formData.set("_subject", `Új ajánlatkérés – ${formData.get("name")}`);
+        formData.set("_replyto", formData.get("email"));
+        formStatus.textContent = "";
+        formStatus.classList.remove("error");
+        sendButton.disabled = true;
+        sendButton.textContent = "Küldés...";
+
+        try {
+          const response = await fetch(formEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(Object.fromEntries(formData))
+          });
+          const result = await response.json();
+          if (!response.ok || (result.success !== true && result.success !== "true")) {
+            throw new Error(result.message || `A beküldés sikertelen (HTTP ${response.status}).`);
+          }
+
+          quantities.clear();
+          form.reset();
+          renderQuote();
+          formStatus.textContent = "Köszönjük! Az ajánlatkérésedet elküldtük e-mailben.";
+        } catch (error) {
+          console.error("Az ajánlatkérés Netlify-beküldése nem sikerült.", error);
+          formStatus.textContent = "Nem sikerült elküldeni az ajánlatkérést. Ellenőrizd az internetkapcsolatot, és próbáld újra.";
+          formStatus.classList.add("error");
+          sendButton.disabled = false;
+        } finally {
+          sendButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 3-7.5 18-3.8-7.7L2 9.5 21 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.7 13.3 15 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Ajánlatkérés elküldése';
+        }
+      });
+
+      document.getElementById("year").textContent = String(new Date().getFullYear());
+      renderQuote();
+    })();
+  </script>
+</body>
+</html>
