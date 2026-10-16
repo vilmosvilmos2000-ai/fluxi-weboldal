@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scooter Control Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --bg:#0b0e13; --panel:#121722; --panel-2:#161c28; --border:#232b3a;
+    --text:#e6eaf2; --muted:#8a94a6;
+    --cyan:#2dd4e8; --green:#3ddc84; --amber:#f2a93c; --red:#ff5c5c;
+  }
+  html,body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;}
+  .font-data{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+  .panel{background:var(--panel);border:1px solid var(--border);}
+  .panel-2{background:var(--panel-2);border:1px solid var(--border);}
+  .btn{transition:background-color .15s ease, border-color .15s ease, opacity .15s ease;}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+  #logBox::-webkit-scrollbar, #charListBox::-webkit-scrollbar{width:8px;}
+  #logBox::-webkit-scrollbar-thumb, #charListBox::-webkit-scrollbar-thumb{background:#2a3242;border-radius:4px;}
+  #logBox::-webkit-scrollbar-track, #charListBox::-webkit-scrollbar-track{background:transparent;}
+  .log-info{color:#9fb3c8;}
+  .log-success{color:var(--green);}
+  .log-error{color:var(--red);}
+  .log-warn{color:var(--amber);}
+  .log-data{color:var(--cyan);}
+  .dot{width:9px;height:9px;border-radius:9999px;display:inline-block;}
+  .dot-disconnected{background:#4b5566;}
+  .dot-connecting{background:var(--amber);animation:pulse 1s ease-in-out infinite;}
+  .dot-connected{background:var(--green);box-shadow:0 0 0 3px rgba(61,220,132,.15);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  @media (prefers-reduced-motion: reduce){ .dot-connecting{animation:none;} }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{opacity:1;}
+  ::selection{background:rgba(45,212,232,.25);}
+</style>
+</head>
+<body class="min-h-screen">
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+
+    <!-- Header -->
+    <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div>
+        <div class="flex items-center gap-2 text-xs font-data text-[var(--muted)] mb-1">
+          <span id="statusDot" class="dot dot-disconnected"></span>
+          <span id="statusText">Disconnected</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">Scooter Control Console</h1>
+        <p class="text-sm text-[var(--muted)] mt-1">Direct BLE diagnostics and speed-limit configuration, run from this page.</p>
+      </div>
+      <div class="text-right text-xs font-data text-[var(--muted)] hidden sm:block">
+        <div id="secureContextNote"></div>
+      </div>
+    </header>
+
+    <!-- Caution notice -->
+    <div class="panel-2 border-l-4 rounded-r-md px-4 py-3 mb-6 text-sm text-[var(--muted)]" style="border-left-color:var(--amber);">
+      <span class="font-medium text-[var(--amber)]">Caution.</span>
+      Only connect to and modify a scooter you own. Changing a speed limiter can affect braking distance and stability,
+      may violate local rules for the roads, paths or lanes you ride on, and can void your warranty. You take on that risk.
+      The write command in this tool is a placeholder — see the code comments before using it on real hardware.
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT COLUMN -->
+      <div class="lg:col-span-5 flex flex-col gap-6">
+
+        <!-- Connection card -->
+        <section class="panel rounded-lg p-5">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)] mb-4">Connection</h2>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <button id="connectBtn" class="btn rounded-md px-4 py-2 text-sm font-medium bg-[var(--cyan)] text-[#06202a] hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cyan)]">
+              Connect Scooter
+            </button>
+            <button id="disconnectBtn" class="btn rounded-md px-4 py-2 text-sm font-medium border border-[var(--border)] text-[var(--text)] hover:bg-[var(--panel-2)]" disabled>
+              Disconnect
+            </button>
+            <button id="forgetBtn" class="btn rounded-md px-3 py-2 text-xs font-medium text-[var(--muted)] hover:text-[var(--text)]" disabled>
+              Choose a different device
+            </button>
+          </div>
+          <dl class="grid grid-cols-3 gap-y-2 text-sm font-data">
+            <dt class="text-[var(--muted)]">Device</dt>
+            <dd id="deviceName" class="col-span-2 truncate">—</dd>
+            <dt class="text-[var(--muted)]">Device ID</dt>
+            <dd id="deviceId" class="col-span-2 truncate">—</dd>
+          </dl>
+        </section>
+
+        <!-- Status card -->
+        <section class="panel rounded-lg p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">Status</h2>
+            <button id="readStatusBtn" class="btn rounded-md px-3 py-1.5 text-xs font-medium border border-[var(--border)] hover:bg-[var(--panel-2)]" disabled>
+              Read status
+            </button>
+          </div>
+          <dl class="grid grid-cols-3 gap-y-3 text-sm">
+            <dt class="text-[var(--muted)]">Battery</dt>
+            <dd class="col-span-2 font-data" id="batteryValue">—</dd>
+            <dt class="text-[var(--muted)]">Manufacturer</dt>
+            <dd class="col-span-2 font-data" id="manufacturerValue">—</dd>
+            <dt class="text-[var(--muted)]">Model</dt>
+            <dd class="col-span-2 font-data" id="modelValue">—</dd>
+            <dt class="text-[var(--muted)]">Firmware</dt>
+            <dd class="col-span-2 font-data" id="firmwareValue">—</dd>
+          </dl>
+        </section>
+
+        <!-- Speed limit control -->
+        <section class="panel rounded-lg p-5">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)] mb-4">Speed limit</h2>
+
+          <label class="block text-xs text-[var(--muted)] mb-1.5" for="controlCharSelect">Write target (discovered characteristics)</label>
+          <select id="controlCharSelect" class="w-full mb-4 rounded-md bg-[var(--panel-2)] border border-[var(--border)] px-3 py-2 text-sm font-data disabled:opacity-40" disabled>
+            <option>Connect and discover a device first</option>
+          </select>
+
+          <div class="flex gap-2 mb-4">
+            <button class="btn preset-btn rounded-md px-3 py-1.5 text-xs border border-[var(--border)] hover:bg-[var(--panel-2)]" data-speed="20">20 km/h · Eco</button>
+            <button class="btn preset-btn rounded-md px-3 py-1.5 text-xs border border-[var(--border)] hover:bg-[var(--panel-2)]" data-speed="25">25 km/h · Drive</button>
+            <button class="btn preset-btn rounded-md px-3 py-1.5 text-xs border border-[var(--border)] hover:bg-[var(--panel-2)]" data-speed="32">32 km/h · Sport</button>
+          </div>
+
+          <div class="flex items-end gap-3">
+            <div class="flex-1">
+              <label class="block text-xs text-[var(--muted)] mb-1.5" for="speedInput">Custom limit (km/h)</label>
+              <input id="speedInput" type="number" min="0" max="60" value="25" step="1"
+                class="w-full rounded-md bg-[var(--panel-2)] border border-[var(--border)] px-3 py-2 text-sm font-data focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--cyan)]">
+            </div>
+            <button id="modifySpeedBtn" class="btn rounded-md px-4 py-2 text-sm font-medium bg-[var(--amber)] text-[#2a1c05] hover:opacity-90" disabled>
+              Modify speed limit
+            </button>
+          </div>
+          <p class="text-xs text-[var(--muted)] mt-3">
+            Sends the byte array built by <code class="font-data">buildSpeedLimitCommand()</code> to the characteristic selected above.
+            That function is a labeled placeholder — replace it with your scooter's real command format.
+          </p>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="lg:col-span-7 flex flex-col gap-6">
+
+        <!-- Log terminal -->
+        <section class="panel rounded-lg p-5 flex flex-col" style="height:420px;">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">Log</h2>
+            <button id="clearLogBtn" class="text-xs text-[var(--muted)] hover:text-[var(--text)]">Clear</button>
+          </div>
+          <div id="logBox" aria-live="polite" class="font-data text-xs leading-relaxed flex-1 overflow-y-auto rounded-md panel-2 p-3 space-y-0.5"></div>
+        </section>
+
+        <!-- Discovered services -->
+        <section class="panel rounded-lg p-5 flex flex-col" style="height:260px;">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)] mb-3">Discovered services & characteristics</h2>
+          <div id="charListBox" class="font-data text-xs leading-relaxed flex-1 overflow-y-auto rounded-md panel-2 p-3 text-[var(--muted)]">
+            Nothing discovered yet — connect to a device.
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <footer class="text-xs text-[var(--muted)] mt-8 pb-4">
+      Requires Chrome or Edge on desktop or Android (Web Bluetooth is not supported in Firefox or Safari),
+      served over HTTPS or localhost. The device picker only lists devices in range that are advertising.
+    </footer>
+  </main>
+
+<script>
+'use strict';
+
+/* ==========================================================================
+ * CONFIGURATION — edit this section for your own scooter
+ *
+ * Nothing below is a verified protocol for any specific commercial scooter.
+ * Standard Bluetooth SIG UUIDs (battery, device info) are real and will work
+ * on any device that implements them. Everything marked PLACEHOLDER is a
+ * stand-in you must replace with values you find via the discovery panel on
+ * the right, or by sniffing your scooter's traffic yourself (e.g. with the
+ * nRF Connect app, or a Bluetooth HCI snoop log + Wireshark).
+ * ========================================================================== */
+const CONFIG = {
+  // Restrict the device picker to names starting with this string, e.g. 'MiScooter'.
+  // Leave '' to show ALL nearby Bluetooth devices (navigator.bluetooth acceptAllDevices).
+  DEVICE_NAME_FILTER: '',
+
+  // Standard Bluetooth SIG services read automatically if the device exposes them.
+  STANDARD_SERVICES: ['battery_service', 'device_information', 'generic_access'],
+
+  // --- PLACEHOLDER custom scooter UUIDs ---------------------------------
+  // 0xFFE0/0xFFE1 is a very common 16-bit UUID range used by generic/no-name
+  // BLE serial modules (HM-10 and its many clones) — it is NOT scooter-specific
+  // and is only here as a realistic-looking example. Replace with your device's
+  // real service/characteristic UUIDs once you've found them via discovery.
+  SCOOTER_SERVICE_UUID: '0000ffe0-0000-1000-8000-00805f9b34fb',       // PLACEHOLDER
+  CONTROL_CHARACTERISTIC_UUID: '0000ffe1-0000-1000-8000-00805f9b34fb', // PLACEHOLDER — write target
+  STATUS_CHARACTERISTIC_UUID: '0000ffe2-0000-1000-8000-00805f9b34fb',  // PLACEHOLDER — read/notify target
+
+  // A second common pattern worth trying: the Nordic UART Service (NUS),
+  // used by a lot of ESP32/nRF-based hobby and clone hardware for serial-
+  // over-BLE. Also not scooter-specific — just another realistic starting point.
+  NORDIC_UART: {
+    service: '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
+    rxWrite: '6e400002-b5a3-f393-e0a9-e50e24dcca9e',
+    txNotify: '6e400003-b5a3-f393-e0a9-e50e24dcca9e',
+  },
+};
+
+// Canonical 128-bit UUID for the standard Battery Level characteristic (0x2A19),
+// used below to recognise it while walking discovered characteristics.
+const BATTERY_LEVEL_UUID = '00002a19-0000-1000-8000-00805f9b34fb';
+const MANUFACTURER_NAME_UUID = '00002a29-0000-1000-8000-00805f9b34fb';
+const MODEL_NUMBER_UUID = '00002a24-0000-1000-8000-00805f9b34fb';
+const FIRMWARE_REV_UUID = '00002a26-0000-1000-8000-00805f9b34fb';
+
+/* ==========================================================================
+ * PLACEHOLDER COMMAND BUILDER
+ *
+ * This frame format is invented for demonstration only — it is NOT a real
+ * manufacturer protocol. Actual scooter platforms (Xiaomi/Ninebot, Segway,
+ * etc.) typically wrap settings changes in a proprietary frame that is often
+ * authenticated or encrypted, which a simple fixed byte array like this
+ * cannot satisfy. Replace this function's body with your scooter's actual,
+ * documented or reverse-engineered command structure before relying on it.
+ * ========================================================================== */
+function buildSpeedLimitCommand(speedKmh) {
+  const HEADER = [0x55, 0xAA];        // placeholder frame-start bytes
+  const CMD_WRITE_SETTING = 0x10;     // placeholder "write setting" command id
+  const SUBCMD_SPEED_LIMIT = 0x01;    // placeholder "speed limit" sub-id
+  const value = Math.max(0, Math.min(255, Math.round(speedKmh))) & 0xFF;
+
+  const payload = [CMD_WRITE_SETTING, SUBCMD_SPEED_LIMIT, value];
+  const length = payload.length;
+  const frame = [...HEADER, length, ...payload];
+  const checksum = frame.reduce((xor, b) => xor ^ b, 0); // placeholder XOR checksum
+
+  return new Uint8Array([...frame, checksum]);
+}
+
+/* ==========================================================================
+ * STATE
+ * ========================================================================== */
+const state = {
+  device: null,
+  server: null,
+  characteristicsIndex: {},   // uuid -> { characteristic, serviceUuid, properties: string[] }
+  writableCharacteristics: [], // [{ serviceUuid, charUuid, characteristic }]
+};
+
+/* ==========================================================================
+ * DOM REFERENCES
+ * ========================================================================== */
+const el = {
+  connectBtn: document.getElementById('connectBtn'),
+  disconnectBtn: document.getElementById('disconnectBtn'),
+  forgetBtn: document.getElementById('forgetBtn'),
+  readStatusBtn: document.getElementById('readStatusBtn'),
+  modifySpeedBtn: document.getElementById('modifySpeedBtn'),
+  clearLogBtn: document.getElementById('clearLogBtn'),
+  statusDot: document.getElementById('statusDot'),
+  statusText: document.getElementById('statusText'),
+  deviceName: document.getElementById('deviceName'),
+  deviceId: document.getElementById('deviceId'),
+  batteryValue: document.getElementById('batteryValue'),
+  manufacturerValue: document.getElementById('manufacturerValue'),
+  modelValue: document.getElementById('modelValue'),
+  firmwareValue: document.getElementById('firmwareValue'),
+  controlCharSelect: document.getElementById('controlCharSelect'),
+  speedInput: document.getElementById('speedInput'),
+  logBox: document.getElementById('logBox'),
+  charListBox: document.getElementById('charListBox'),
+  secureContextNote: document.getElementById('secureContextNote'),
+};
+
+/* ==========================================================================
+ * UTILITIES
+ * ========================================================================== */
+function nowStamp() {
+  const d = new Date();
+  return d.toTimeString().split(' ')[0] + '.' + String(d.getMilliseconds()).padStart(3, '0');
+}
+
+function bufferToHex(dataViewOrBuffer) {
+  const bytes = dataViewOrBuffer instanceof DataView
+    ? new Uint8Array(dataViewOrBuffer.buffer, dataViewOrBuffer.byteOffset, dataViewOrBuffer.byteLength)
+    : new Uint8Array(dataViewOrBuffer);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+}
+
+function describeProperties(props) {
+  const out = [];
+  if (props.read) out.push('read');
+  if (props.write) out.push('write');
+  if (props.writeWithoutResponse) out.push('writeNoResp');
+  if (props.notify) out.push('notify');
+  if (props.indicate) out.push('indicate');
+  return out;
+}
+
+function log(message, type = 'info') {
+  const line = document.createElement('div');
+  line.className = `log-${type}`;
+  line.textContent = `[${nowStamp()}] ${message}`;
+  el.logBox.appendChild(line);
+  el.logBox.scrollTop = el.logBox.scrollHeight;
+}
+
+/* ==========================================================================
+ * UI STATE HELPERS
+ * ========================================================================== */
+function setConnectionUI(mode, deviceLabel) {
+  // mode: 'disconnected' | 'connecting' | 'connected'
+  el.statusDot.className = 'dot dot-' + mode;
+  el.statusText.textContent =
+    mode === 'connected' ? `Connected — ${deviceLabel}` :
+    mode === 'connecting' ? 'Connecting…' : 'Disconnected';
+
+  const connected = mode === 'connected';
+  el.disconnectBtn.disabled = !connected;
+  el.readStatusBtn.disabled = !connected;
+  el.modifySpeedBtn.disabled = !connected;
+  el.forgetBtn.disabled = !state.device;
+  el.connectBtn.textContent = connected ? 'Reconnect' : 'Connect Scooter';
+}
+
+function resetStatusValues() {
+  el.batteryValue.textContent = '—';
+  el.manufacturerValue.textContent = '—';
+  el.modelValue.textContent = '—';
+  el.firmwareValue.textContent = '—';
+}
+
+function populateControlCharacteristicSelect() {
+  const select = el.controlCharSelect;
+  select.innerHTML = '';
+
+  if (state.writableCharacteristics.length === 0) {
+    select.innerHTML = '<option>No writable characteristics found</option>';
+    select.disabled = true;
+    return;
+  }
+
+  select.disabled = false;
+  let preferredIndex = -1;
+
+  state.writableCharacteristics.forEach((entry, i) => {
+    const opt = document.createElement('option');
+    opt.value = entry.charUuid;
+    opt.textContent = `${entry.charUuid.slice(0, 8)}…  (svc ${entry.serviceUuid.slice(0, 8)}…)`;
+    select.appendChild(opt);
+    if (entry.charUuid === CONFIG.CONTROL_CHARACTERISTIC_UUID) preferredIndex = i;
+  });
+
+  select.selectedIndex = preferredIndex >= 0 ? preferredIndex : 0;
+  if (preferredIndex >= 0) {
+    log('Configured CONTROL_CHARACTERISTIC_UUID matched a discovered characteristic — auto-selected.', 'success');
+  } else {
+    log('CONTROL_CHARACTERISTIC_UUID (placeholder) was not found on this device. Pick the real write target from the dropdown, or update CONFIG.', 'warn');
+  }
+}
+
+function renderCharacteristicList() {
+  const entries = Object.values(state.characteristicsIndex);
+  if (entries.length === 0) {
+    el.charListBox.textContent = 'Nothing discovered yet — connect to a device.';
+    return;
+  }
+  el.charListBox.innerHTML = '';
+  entries
+    .sort((a, b) => a.serviceUuid.localeCompare(b.serviceUuid))
+    .forEach(entry => {
+      const row = document.createElement('div');
+      row.className = 'mb-1';
+      row.textContent = `${entry.charUuid}   [${entry.properties.join(', ') || 'none'}]`;
+      el.charListBox.appendChild(row);
+    });
+}
+
+/* ==========================================================================
+ * BLUETOOTH CORE
+ * ========================================================================== */
+function optionalServicesList() {
+  return [
+    ...CONFIG.STANDARD_SERVICES,
+    CONFIG.SCOOTER_SERVICE_UUID,
+    CONFIG.NORDIC_UART.service,
+  ];
+}
+
+function ensureBluetoothAvailable() {
+  if (!navigator.bluetooth) {
+    throw new Error('Web Bluetooth is not available in this browser. Use Chrome or Edge on desktop/Android.');
+  }
+}
+
+async function connectScooter() {
+  el.connectBtn.disabled = true;
+  try {
+    ensureBluetoothAvailable();
+
+    let device = state.device;
+
+    if (!device) {
+      const requestOptions = CONFIG.DEVICE_NAME_FILTER
+        ? { filters: [{ namePrefix: CONFIG.DEVICE_NAME_FILTER }], optionalServices: optionalServicesList() }
+        : { acceptAllDevices: true, optionalServices: optionalServicesList() };
+
+      log('Opening device picker…', 'info');
+      device = await navigator.bluetooth.requestDevice(requestOptions);
+      state.device = device;
+      device.addEventListener('gattserverdisconnected', onDisconnected);
+      log(`Selected device: ${device.name || '(unnamed)'}  [${device.id}]`, 'success');
+    } else {
+      log(`Reconnecting to ${device.name || '(unnamed)'}…`, 'info');
+    }
+
+    setConnectionUI('connecting');
+    el.deviceName.textContent = device.name || '(unnamed)';
+    el.deviceId.textContent = device.id;
+
+    log('Connecting to GATT server…', 'info');
+    const server = await device.gatt.connect();
+    state.server = server;
+    log('GATT server connected.', 'success');
+
+    setConnectionUI('connected', device.name || '(unnamed)');
+
+    log('Discovering services and characteristics…', 'info');
+    await discoverAll(server);
+    log('Discovery complete.', 'success');
+
+    await readStatus();
+  } catch (err) {
+    log(`Connection failed: ${err.message}`, 'error');
+    setConnectionUI(state.device && state.device.gatt.connected ? 'connected' : 'disconnected');
+  } finally {
+    el.connectBtn.disabled = false;
+  }
+}
+
+async function discoverAll(server) {
+  state.characteristicsIndex = {};
+  state.writableCharacteristics = [];
+
+  let services = [];
+  try {
+    services = await server.getPrimaryServices();
+  } catch (err) {
+    log(`Could not enumerate services: ${err.message}`, 'error');
+    return;
+  }
+
+  log(`Found ${services.length} primary service(s).`, 'info');
+
+  for (const service of services) {
+    log(`Service ${service.uuid}`, 'data');
+
+    let chars = [];
+    try {
+      chars = await service.getCharacteristics();
+    } catch (err) {
+      log(`  could not enumerate characteristics: ${err.message}`, 'error');
+      continue;
+    }
+
+    for (const ch of chars) {
+      const props = describeProperties(ch.properties);
+      log(`  characteristic ${ch.uuid}  [${props.join(', ') || 'none'}]`, 'data');
+
+      state.characteristicsIndex[ch.uuid] = {
+        characteristic: ch,
+        serviceUuid: service.uuid,
+        properties: props,
+      };
+
+      if (ch.properties.write || ch.properties.writeWithoutResponse) {
+        state.writableCharacteristics.push({ serviceUuid: service.uuid, charUuid: ch.uuid, characteristic: ch });
+      }
+    }
+  }
+
+  renderCharacteristicList();
+  populateControlCharacteristicSelect();
+}
+
+async function readStatus() {
+  try {
+    const battery = state.characteristicsIndex[BATTERY_LEVEL_UUID];
+    if (battery && battery.properties.includes('read')) {
+      const value = await battery.characteristic.readValue();
+      const pct = value.getUint8(0);
+      el.batteryValue.textContent = `${pct}%`;
+      log(`Battery level: ${pct}%`, 'success');
+    } else {
+      log('Battery Level characteristic not found on this device.', 'warn');
+    }
+
+    const manufacturer = state.characteristicsIndex[MANUFACTURER_NAME_UUID];
+    if (manufacturer && manufacturer.properties.includes('read')) {
+      const value = await manufacturer.characteristic.readValue();
+      el.manufacturerValue.textContent = new TextDecoder().decode(value.buffer);
+    }
+
+    const model = state.characteristicsIndex[MODEL_NUMBER_UUID];
+    if (model && model.properties.includes('read')) {
+      const value = await model.characteristic.readValue();
+      el.modelValue.textContent = new TextDecoder().decode(value.buffer);
+    }
+
+    const firmware = state.characteristicsIndex[FIRMWARE_REV_UUID];
+    if (firmware && firmware.properties.includes('read')) {
+      const value = await firmware.characteristic.readValue();
+      el.firmwareValue.textContent = new TextDecoder().decode(value.buffer);
+    }
+
+    // Best-effort read of the configured custom status characteristic, if present.
+    const custom = state.characteristicsIndex[CONFIG.STATUS_CHARACTERISTIC_UUID];
+    if (custom && custom.properties.includes('read')) {
+      const value = await custom.characteristic.readValue();
+      log(`Custom status characteristic raw value: ${bufferToHex(value)}`, 'data');
+    }
+  } catch (err) {
+    log(`Read failed: ${err.message}`, 'error');
+  }
+}
+
+async function modifySpeedLimit() {
+  try {
+    const selectedUuid = el.controlCharSelect.value;
+    const target = state.writableCharacteristics.find(e => e.charUuid === selectedUuid);
+
+    if (!target) {
+      log('No valid control characteristic selected. Connect and discover a device first, or update CONFIG.', 'error');
+      return;
+    }
+
+    const speed = Number(el.speedInput.value);
+    if (!Number.isFinite(speed) || speed < 0 || speed > 60) {
+      log('Enter a speed limit between 0 and 60 km/h.', 'error');
+      return;
+    }
+
+    const command = buildSpeedLimitCommand(speed);
+    log(`Writing to ${target.charUuid}: ${bufferToHex(command)}  (target ${speed} km/h)`, 'info');
+
+    const ch = target.characteristic;
+    if (ch.properties.write) {
+      await ch.writeValueWithResponse(command);
+    } else if (ch.properties.writeWithoutResponse) {
+      await ch.writeValueWithoutResponse(command);
+    } else {
+      throw new Error('Selected characteristic is not writable.');
+    }
+
+    log('Command sent successfully. Verify the change on the scooter itself — this placeholder command is not guaranteed to do anything meaningful on real hardware.', 'success');
+  } catch (err) {
+    log(`Write failed: ${err.message}`, 'error');
+  }
+}
+
+function disconnectScooter() {
+  if (state.device && state.device.gatt.connected) {
+    log('Disconnecting…', 'info');
+    state.device.gatt.disconnect(); // triggers onDisconnected via the event listener
+  }
+}
+
+function forgetDevice() {
+  state.device = null;
+  state.server = null;
+  state.characteristicsIndex = {};
+  state.writableCharacteristics = [];
+  el.deviceName.textContent = '—';
+  el.deviceId.textContent = '—';
+  resetStatusValues();
+  renderCharacteristicList();
+  populateControlCharacteristicSelect();
+  setConnectionUI('disconnected');
+  log('Device selection cleared. Next "Connect" will open the picker again.', 'info');
+}
+
+function onDisconnected(event) {
+  const name = event.target && event.target.name;
+  log(`Device disconnected${name ? `: ${name}` : ''}.`, 'warn');
+  state.server = null;
+  setConnectionUI('disconnected');
+}
+
+/* ==========================================================================
+ * EVENT WIRING
+ * ========================================================================== */
+el.connectBtn.addEventListener('click', connectScooter);
+el.disconnectBtn.addEventListener('click', disconnectScooter);
+el.forgetBtn.addEventListener('click', forgetDevice);
+el.readStatusBtn.addEventListener('click', readStatus);
+el.modifySpeedBtn.addEventListener('click', modifySpeedLimit);
+el.clearLogBtn.addEventListener('click', () => { el.logBox.innerHTML = ''; });
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => { el.speedInput.value = btn.dataset.speed; });
+});
+
+/* ==========================================================================
+ * INIT
+ * ========================================================================== */
+(function init() {
+  if (!navigator.bluetooth) {
+    log('navigator.bluetooth is undefined — this browser does not support Web Bluetooth. Try Chrome or Edge.', 'error');
+    el.connectBtn.disabled = true;
+  }
+  if (!window.isSecureContext) {
+    el.secureContextNote.textContent = 'Not a secure context — serve over HTTPS or localhost.';
+    log('This page is not running in a secure context. Web Bluetooth requires HTTPS or http://localhost.', 'warn');
+  }
+  log('Ready. Click "Connect Scooter" to open the device picker.', 'info');
+})();
+</script>
+</body>
+</html>
