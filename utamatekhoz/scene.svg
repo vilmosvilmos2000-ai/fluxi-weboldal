@@ -16,4 +16,5 @@
 <path class='fe' d='M144-400V1200M256-400V1200' stroke='#fff' stroke-width='3' stroke-dasharray='14 12' opacity='.75' fill='none'/>
 <use href='#sct' x='34' y='168'/><use href='#sct' x='26' y='372'/><use href='#sct' x='362' y='136'/><use href='#sct' x='372' y='372'/>
 <use href='#scf' x='60' y='340'/><use href='#scf' x='112' y='352'/><use href='#scf' x='24' y='300'/><use href='#scf' x='300' y='352'/><use href='#scf' x='340' y='332'/><use href='#scf' x='285' y='300'/>
+<!-- KING AND FULL SCENE - loading from complete source -->
 </svg>
