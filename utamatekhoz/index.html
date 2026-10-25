@@ -799,7 +799,7 @@ mean,
 ()=>{const a=rn(3,12),b=rn(3,15);return[`Egy téglalap kerülete ${2*(a+b)} cm, egyik oldala ${a} cm. Mekkora a területe (cm²)?`,a*b]}],
 /*10*/[()=>{const p=rn(-7,8);let q=rn(-7,8);while(p==q)q=rn(-7,8);return[`Oldd meg: x² ${sg(-(p+q),"x")} ${sg(p*q)} = 0.  Mennyi a nagyobbik gyök?`,Math.max(p,q)]},
 ()=>{const p=rn(-6,2),q=p+rn(3,7);return[`Hány egész szám megoldása az x² ${sg(-(p+q),"x")} ${sg(p*q)} < 0 egyenlőtlenségnek?`,q-p-1]},
-()=>{const k=rn(1,5),w=rn(0,2);return[`Derékszögű háromszög befogói ${3*k} és ${4*k} cm, α a ${3*k} cm-es befogóval szemközti szög. Mennyi ${"["sin","cos","tg"][w]} α? (tizedes tört)`,[.6,.8,.75][w]]},
+()=>{const k=rn(1,5),w=rn(0,2);return[`Derékszögű háromszög befogói ${3*k} és ${4*k} cm, α a ${3*k} cm-es befogóval szemközti szög. Mennyi ${["sin","cos","tg"][w]} α? (tizedes tört)`,[.6,.8,.75][w]]},
 ()=>{const k=rn(2,15);return[`Derékszögű háromszög átfogója ${2*k} cm, egyik hegyesszöge 30°. Mekkora a vele szemközti befogó (cm)?`,k]},
 ()=>{const m=rn(2,4),n=rn(2,4),p=rn(2,6),q=rn(1,5);return[`(x${sup(m)})${sup(n)} · x${sup(p)} : x${sup(q)} = x^k.  Mennyi k?`,m*n+p-q]},
 ()=>{const m=pk([2,3,5]),u=rn(1,4),v=rn(1,4);return[`Mennyi √${m*u*u} · √${m*v*v} ?`,m*u*v]},
@@ -823,7 +823,7 @@ mean,
 // 10 különböző feladat az adott osztályhoz: a sablonok körbejárnak, az ismétlődő szöveget újrasorsoljuk
 function gen(n){const G=sh([...GEN[n]]),r=[];let t=0;while(r.length<10&&t++<300){const q=G[r.length%G.length]();if(!r.some(x=>x[0]==q[0]))r.push(q)}return sh(r)}
 // ---------- Játékmechanika (az eredeti térképes játékból) ----------
-const O=[["🌊","Széles folyó állja az utad!","🌉","Felépült a híd!"],["🧱","Magas fal áll előtted!","🪜","Megvan a létra!"],["🔥","Tűzfal lángol az úton!","💧","Eloltottad a tüzet!"],["🕳️","Mély szakadék tátong előtted!","🪢","Kifeszült a kötélhíd!"],["🌿","Tüskés bozót nőtt az utat!","🪓","Kivágtad az utat!"],["🐊","Krokodilos mocsár következik!","🪨","Átugrálsz a köveken!"],["🚪","Bezárt kapu előtt állsz!","🔑","Kinyílt a kapu!"],["⛰️","Meredek hegy magasodik előtted!","⛏️","Lépcsőt vájtál a hegybe!"],["🐉","Alvó sárkány torlaszolja az utat!","🎵","Elaltattad a sárkányt!"],["🌋","Forró láva folyik előtted!","🧊","Jégösvény fagyott a lávára!"]];
+const O=[["🌊","Széles folyó állja az utad!","🌉","Felépült a híd!"],["🧱","Magas fal áll előtted!","🪜","Megvan a létra!"],["🔥","Tűzfal lángol az úton!","💧","Eloltottad a tüzet!"],["🕳️","Mély szakadék tátong előtted!","🪢","Kifeszült a kötélhíd!"],["🌿","Tüskés bozót nőtt az úton!","🪓","Kivágtad az utat!"],["🐊","Krokodilos mocsár következik!","🪨","Átugrálsz a köveken!"],["🚪","Bezárt kapu előtt állsz!","🔑","Kinyílt a kapu!"],["⛰️","Meredek hegy magasodik előtted!","⛏️","Lépcsőt vájtál a hegybe!"],["🐉","Alvó sárkány torlaszolja az utat!","🎵","Elaltattad a sárkányt!"],["🌋","Forró láva folyik előtted!","🧊","Jégösvény fagyott a lávára!"]];
 /* ---- vektoros ikonok az emojik helyett ---- */
 const FE=/\uFE0F/g,RX=/[\p{Extended_Pictographic}\u2606]/gu;
 const FL=(c,m)=>`<path d='M24 28V46M24 38Q32 34 33 30' stroke='#3fae3f' stroke-width='3' fill='none' stroke-linecap='round'/><g fill='${c}'><circle cx='24' cy='11' r='7'/><circle cx='32.6' cy='17.2' r='7'/><circle cx='29.3' cy='27.3' r='7'/><circle cx='18.7' cy='27.3' r='7'/><circle cx='15.4' cy='17.2' r='7'/></g><circle cx='24' cy='20' r='6' fill='${m}'/>`;
