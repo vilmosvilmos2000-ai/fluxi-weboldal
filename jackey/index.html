@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JackeY – A kedvenc furry</title>
-  <meta name="description" content="JackeY (jackeyfurry) – a legkedvesebb furry, Discord tulajdonos, femboy, 27 éves. Minecraft, Fortnite, VRChat, Sonic és Yu-Gi-Oh! rajongó.">
+  <title>JackeY Galéria – fluxi.hu</title>
+  <meta name="description" content="JackeY képgaléria – furry avatarok, live stream pillanatok és aranyos karakterek gyűjteménye.">
   <meta name="theme-color" content="#6d4aff">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦊%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +34,6 @@
       overflow-x: hidden;
     }
 
-    /* Soft purple gradient background */
     .bg {
       position: fixed;
       inset: 0;
@@ -50,12 +49,11 @@
     .wrap {
       position: relative;
       z-index: 1;
-      max-width: 720px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: clamp(24px, 5vw, 48px) 20px 80px;
+      padding: clamp(20px, 4vw, 40px) 16px 80px;
     }
 
-    /* Back link */
     .back {
       display: inline-flex;
       align-items: center;
@@ -64,184 +62,199 @@
       text-decoration: none;
       font-weight: 600;
       font-size: 0.95rem;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       transition: color 0.2s;
     }
     .back:hover { color: var(--lilac); }
 
-    /* Profile card */
-    .card {
+    .header-card {
       background: rgba(42, 32, 64, 0.85);
       backdrop-filter: blur(16px);
       border: 2px solid rgba(183, 148, 246, 0.35);
-      border-radius: 28px;
-      padding: clamp(24px, 5vw, 40px);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset;
-      animation: rise 0.7s ease-out;
-    }
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Avatar + name */
-    .header {
+      border-radius: 24px;
+      padding: clamp(20px, 4vw, 32px);
+      margin-bottom: 32px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 20px;
-      margin-bottom: 28px;
     }
+
     .avatar {
-      width: 96px;
-      height: 96px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       background: linear-gradient(135deg, #9b6dff, #6d4aff 40%, #ff5fa2);
       display: grid;
       place-items: center;
-      font-size: 3.2rem;
-      border: 4px solid rgba(255,255,255,0.2);
-      box-shadow: 0 8px 24px rgba(109, 74, 255, 0.45);
+      font-size: 2.6rem;
+      border: 3px solid rgba(255,255,255,0.2);
+      box-shadow: 0 6px 20px rgba(109, 74, 255, 0.4);
       flex-shrink: 0;
-      position: relative;
     }
-    .avatar::after {
-      content: "";
-      position: absolute;
-      inset: -6px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      background: linear-gradient(135deg, var(--violet), var(--pink)) border-box;
-      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-      mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0.6;
-    }
-    .name-block h1 {
-      font-size: clamp(1.8rem, 5vw, 2.4rem);
+
+    .header-text h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
       font-weight: 800;
       letter-spacing: -0.03em;
-      line-height: 1.1;
       background: linear-gradient(90deg, #e0d4ff, #fff, #ffc0e0);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      line-height: 1.15;
     }
-    .name-block .user {
-      font-size: 1.05rem;
+    .header-text p {
       color: var(--lilac);
       font-weight: 600;
       margin-top: 4px;
+      font-size: 1rem;
     }
-    .name-block .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.85);
+    .header-text .desc {
+      color: rgba(255,255,255,0.8);
+      font-weight: 400;
+      margin-top: 8px;
+      font-size: 0.95rem;
+      max-width: 520px;
     }
-    .heart { color: #ff5fa2; }
 
-    /* Badges */
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 28px;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      background: rgba(255,255,255,0.08);
-      border: 1.5px solid rgba(255,255,255,0.12);
-      color: #e8e0ff;
-      transition: transform 0.15s, background 0.15s;
-    }
-    .badge:hover { transform: translateY(-2px); background: rgba(255,255,255,0.14); }
-    .badge.owner { background: rgba(109, 74, 255, 0.35); border-color: var(--violet); color: #d4c4ff; }
-    .badge.purple { background: rgba(183, 148, 246, 0.25); border-color: var(--lilac); }
-    .badge.pink { background: rgba(255, 95, 162, 0.2); border-color: var(--pink); }
-    .badge.cyan { background: rgba(25, 211, 218, 0.15); border-color: var(--cyan); }
-    .badge.sun { background: rgba(255, 201, 60, 0.15); border-color: var(--sun); color: #ffe9a8; }
-
-    /* About section */
-    .section {
-      margin-bottom: 28px;
-    }
-    .section h2 {
-      font-size: 1.15rem;
+    .section-title {
+      font-size: 1.35rem;
       font-weight: 700;
       color: var(--lilac);
-      margin-bottom: 12px;
+      margin-bottom: 18px;
       letter-spacing: -0.01em;
     }
-    .about {
-      font-size: 1.05rem;
-      color: rgba(255,255,255,0.9);
-      line-height: 1.65;
-    }
-    .about strong { color: #fff; }
 
-    /* Interests grid */
-    .interests {
+    .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
     }
-    .interest {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
-      background: rgba(0,0,0,0.25);
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      font-weight: 600;
-      font-size: 0.92rem;
-      transition: border-color 0.2s, transform 0.15s;
-    }
-    .interest:hover {
-      border-color: var(--lilac);
-      transform: translateY(-2px);
-    }
-    .interest span { font-size: 1.3rem; }
 
-    /* Kindness box */
-    .kind {
-      background: linear-gradient(135deg, rgba(109, 74, 255, 0.25), rgba(255, 95, 162, 0.15));
-      border: 1.5px solid rgba(183, 148, 246, 0.4);
-      border-radius: 18px;
-      padding: 20px 22px;
-      text-align: center;
-      margin-top: 8px;
+    .gallery-item {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--card);
+      border: 2px solid rgba(183, 148, 246, 0.25);
+      aspect-ratio: 9 / 16;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.25s, box-shadow 0.25s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
-    .kind p {
-      font-size: 1.1rem;
+    .gallery-item:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: var(--violet);
+      box-shadow: 0 16px 40px rgba(109, 74, 255, 0.35);
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+    .gallery-item .caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 14px;
+      background: linear-gradient(transparent, rgba(26, 18, 46, 0.92));
+      font-size: 0.85rem;
       font-weight: 600;
-      color: #f0e8ff;
-      line-height: 1.5;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.25s;
     }
-    .kind .quote {
-      font-size: 0.95rem;
-      color: rgba(255,255,255,0.7);
-      margin-top: 8px;
-      font-style: italic;
+    .gallery-item:hover .caption {
+      opacity: 1;
     }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(10, 6, 20, 0.94);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      cursor: zoom-out;
+    }
+    .lightbox.active {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: min(95vw, 480px);
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      border: 2px solid rgba(183, 148, 246, 0.4);
+      object-fit: contain;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 1.6rem;
+      border-radius: 50%;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s;
+    }
+    .lightbox-close:hover {
+      background: var(--pink);
+    }
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 1.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s;
+    }
+    .lightbox-nav:hover { background: var(--violet); }
+    .lightbox-prev { left: 16px; }
+    .lightbox-next { right: 16px; }
 
     footer {
       text-align: center;
-      margin-top: 40px;
+      margin-top: 48px;
       color: rgba(255,255,255,0.4);
       font-size: 0.85rem;
     }
     footer a { color: var(--lilac); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+      }
+      .gallery-item {
+        aspect-ratio: 9 / 16;
+      }
+    }
   </style>
 </head>
 <body>
@@ -250,60 +263,149 @@
   <div class="wrap">
     <a class="back" href="/">← Vissza a fluxi.hu-ra</a>
 
-    <article class="card">
-      <div class="header">
-        <div class="avatar" title="JackeY avatar">🦊</div>
-        <div class="name-block">
-          <h1>JackeY</h1>
-          <div class="user">@jackeyfurry</div>
-          <div class="status">
-            <span class="heart">❤️</span> Kapcsolatban · 27 éves
-          </div>
-        </div>
-      </div>
-
-      <div class="badges">
-        <span class="badge owner">● Tulajdonos</span>
-        <span class="badge purple">● Lila</span>
-        <span class="badge">Goobastera</span>
-        <span class="badge">Tag</span>
-        <span class="badge pink">Bisexuális</span>
-        <span class="badge cyan">Furry</span>
-        <span class="badge pink">Femboy</span>
-        <span class="badge">Fiú</span>
-        <span class="badge sun">27 éves</span>
-      </div>
-
-      <section class="section">
-        <h2>Róla</h2>
-        <p class="about">
-          <strong>JackeY</strong> a Discord szerver tulajdonosa és a legkedvesebb furry, akit ismerek.
-          27 éves, femboy, biszexuális, és mindig segítőkész, kedves mindenkivel.
-          A lila szín és a aranyos róka-avatar tökéletesen illik hozzá.
+    <div class="header-card">
+      <div class="avatar" title="JackeY">🦊</div>
+      <div class="header-text">
+        <h1>JackeY Galéria</h1>
+        <p>@jackeyfurry · Képgaléria</p>
+        <p class="desc">
+          Válogatás JackeY live streamjeiből és furry avatarjaiból.
+          A legaranyosabb pillanatok egy helyen. 💜
         </p>
-      </section>
-
-      <section class="section">
-        <h2>Kedvenc dolgai</h2>
-        <div class="interests">
-          <div class="interest"><span>🎮</span> Fortnite</div>
-          <div class="interest"><span>⛏️</span> Minecraft</div>
-          <div class="interest"><span>🥽</span> VRChat</div>
-          <div class="interest"><span>🃏</span> Yu-Gi-Oh!</div>
-          <div class="interest"><span>🦔</span> Sonic The Hedgehog</div>
-          <div class="interest"><span>💜</span> Furry közösség</div>
-        </div>
-      </section>
-
-      <div class="kind">
-        <p>A kedvenc furrym, mert nagyon kedves.</p>
-        <p class="quote">„JackeY mindig ott van, ha kell, és mosolyt csal az ember arcára.”</p>
       </div>
-    </article>
+    </div>
+
+    <h2 class="section-title">📸 Pillanatok</h2>
+
+    <div class="gallery" id="gallery">
+      <div class="gallery-item" data-src="IMG_6298.jpg" data-caption="JackeY – lila-kék avatar">
+        <img src="IMG_6298.jpg" alt="JackeY lila-kék furry avatar" loading="lazy">
+        <div class="caption">Lila-kék avatar</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6299.jpg" data-caption="JackeY – fehér nyúl avatar csokival">
+        <img src="IMG_6299.jpg" alt="JackeY fehér nyúl avatar" loading="lazy">
+        <div class="caption">Fehér nyúl + csoki</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6300.jpg" data-caption="JackeY – sötétkék karakter karokkal fel">
+        <img src="IMG_6300.jpg" alt="JackeY sötétkék avatar" loading="lazy">
+        <div class="caption">Sötétkék karakter</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6301.jpg" data-caption="JackeY – piros szemüveges karakter">
+        <img src="IMG_6301.jpg" alt="JackeY piros szemüveges" loading="lazy">
+        <div class="caption">Szemüveges piros</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6302.jpg" data-caption="JackeY – fekete-fehér hoodies karakter">
+        <img src="IMG_6302.jpg" alt="JackeY fekete-fehér" loading="lazy">
+        <div class="caption">Fekete-fehér hoodie</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6305.jpg" data-caption="JackeY – kettős jelenet lila karakterekkel">
+        <img src="IMG_6305.jpg" alt="JackeY kettős jelenet" loading="lazy">
+        <div class="caption">Kettős jelenet</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6306.jpg" data-caption="JackeY – közeli lila-kék arc">
+        <img src="IMG_6306.jpg" alt="JackeY közeli" loading="lazy">
+        <div class="caption">Közeli portré</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6307.jpg" data-caption="JackeY – fehér nyúl és barna tárgy">
+        <img src="IMG_6307.jpg" alt="JackeY fehér nyúl közel" loading="lazy">
+        <div class="caption">Fehér nyúl közelről</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6308.jpg" data-caption="JackeY – kacsintó lila karakter">
+        <img src="IMG_6308.jpg" alt="JackeY kacsintás" loading="lazy">
+        <div class="caption">Kacsintó mosoly</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6309.jpg" data-caption="JackeY – fehér nyúl lehunyt szemmel">
+        <img src="IMG_6309.jpg" alt="JackeY lehunyt szem" loading="lazy">
+        <div class="caption">Nyugodt pillanat</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6310.jpg" data-caption="JackeY – széles mosolyú lila karakter">
+        <img src="IMG_6310.jpg" alt="JackeY mosoly" loading="lazy">
+        <div class="caption">Széles mosoly</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6311.jpg" data-caption="JackeY – nyelvkiöltő lila karakter">
+        <img src="IMG_6311.jpg" alt="JackeY nyelv" loading="lazy">
+        <div class="caption">Játékos nyelv</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6312.jpg" data-caption="JackeY – fehér-kék kockás inges karakter">
+        <img src="IMG_6312.jpg" alt="JackeY kockás" loading="lazy">
+        <div class="caption">Kockás ing</div>
+      </div>
+      <div class="gallery-item" data-src="IMG_6313.jpg" data-caption="JackeY – táncoló / mutató lila karakter">
+        <img src="IMG_6313.jpg" alt="JackeY tánc" loading="lazy">
+        <div class="caption">Tánc / gesztus</div>
+      </div>
+    </div>
 
     <footer>
-      Készült szeretettel a <a href="/">fluxi.hu</a> számára · JackeY 🦊
+      Készült szeretettel a <a href="/">fluxi.hu</a> számára · JackeY 🦊 · Galéria
     </footer>
   </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" aria-label="Bezárás">×</button>
+    <button class="lightbox-nav lightbox-prev" aria-label="Előző">‹</button>
+    <img src="" alt="Nagyított kép" id="lightbox-img">
+    <button class="lightbox-nav lightbox-next" aria-label="Következő">›</button>
+  </div>
+
+  <script>
+    const gallery = document.getElementById('gallery');
+    const items = Array.from(gallery.querySelectorAll('.gallery-item'));
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    let currentIndex = 0;
+
+    function openLightbox(index) {
+      currentIndex = index;
+      const item = items[currentIndex];
+      lightboxImg.src = item.dataset.src;
+      lightboxImg.alt = item.querySelector('img').alt;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % items.length;
+      openLightbox(currentIndex);
+    }
+
+    function showPrev() {
+      currentIndex = (currentIndex - 1 + items.length) % items.length;
+      openLightbox(currentIndex);
+    }
+
+    items.forEach((item, i) => {
+      item.addEventListener('click', () => openLightbox(i));
+    });
+
+    lightbox.querySelector('.lightbox-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeLightbox();
+    });
+    lightbox.querySelector('.lightbox-next').addEventListener('click', (e) => {
+      e.stopPropagation();
+      showNext();
+    });
+    lightbox.querySelector('.lightbox-prev').addEventListener('click', (e) => {
+      e.stopPropagation();
+      showPrev();
+    });
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') showNext();
+      if (e.key === 'ArrowLeft') showPrev();
+    });
+  </script>
 </body>
 </html>
